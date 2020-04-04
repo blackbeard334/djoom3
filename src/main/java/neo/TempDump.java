@@ -357,7 +357,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     }
 
     public static int atoi(idStr ascii) {
-        return atoi(ascii.toString());
+        return atoi(ascii.getData());
     }
 
     public static int atoi(char[] ascii) {
@@ -373,7 +373,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     }
 
     public static float atof(idStr ascii) {
-        return atof(ascii.toString());
+        return atof(ascii.getData());
     }
 
     public static String ctos(char[] ascii) {//TODO:rename this moronic overloading!
@@ -429,7 +429,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             return null;
         }
 
-        return atobb(ascii.toString());
+        return atobb(ascii.getData());
     }
 
     public static ByteBuffer atobb(char[] ascii) {

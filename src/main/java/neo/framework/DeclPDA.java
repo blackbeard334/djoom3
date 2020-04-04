@@ -151,27 +151,27 @@ public class DeclPDA {
 //
 
         public String GetFrom() {
-            return this.from.toString();
+            return this.from.getData();
         }
 
         public String GetBody() {
-            return this.text.toString();
+            return this.text.getData();
         }
 
         public String GetSubject() {
-            return this.subject.toString();
+            return this.subject.getData();
         }
 
         public String GetDate() {
-            return this.date.toString();
+            return this.date.getData();
         }
 
         public String GetTo() {
-            return this.to.toString();
+            return this.to.getData();
         }
 
         public String GetImage() {
-            return this.image.toString();
+            return this.image.getData();
         }
     }
 
@@ -279,23 +279,23 @@ public class DeclPDA {
         }
 
         public String GetRoq() {
-            return this.video.toString();
+            return this.video.getData();
         }
 
         public String GetWave() {
-            return this.audio.toString();
+            return this.audio.getData();
         }
 
         public String GetVideoName() {
-            return this.videoName.toString();
+            return this.videoName.getData();
         }
 
         public String GetInfo() {
-            return this.info.toString();
+            return this.info.getData();
         }
 
         public String GetPreview() {
-            return this.preview.toString();
+            return this.preview.getData();
         }
     }
 
@@ -395,19 +395,19 @@ public class DeclPDA {
         }
 
         public String GetAudioName() {
-            return this.audioName.toString();
+            return this.audioName.getData();
         }
 
         public String GetWave() {
-            return this.audio.toString();
+            return this.audio.getData();
         }
 
         public String GetInfo() {
-            return this.info.toString();
+            return this.info.getData();
         }
 
         public String GetPreview() {
-            return this.preview.toString();
+            return this.preview.getData();
         }
     }
 
@@ -519,21 +519,21 @@ public class DeclPDA {
 
                 if (0 == token.Icmp("pda_email")) {
                     src.ReadToken(token);
-                    this.emails.Append(token.toString());
+                    this.emails.Append(token.getData());
                     declManager.FindType(DECL_EMAIL, token);
                     continue;
                 }
 
                 if (0 == token.Icmp("pda_audio")) {
                     src.ReadToken(token);
-                    this.audios.Append(token.toString());
+                    this.audios.Append(token.getData());
                     declManager.FindType(DECL_AUDIO, token);
                     continue;
                 }
 
                 if (0 == token.Icmp("pda_video")) {
                     src.ReadToken(token);
-                    this.videos.Append(token.toString());
+                    this.videos.Append(token.getData());
                     declManager.FindType(DECL_VIDEO, token);
                     continue;
                 }
@@ -665,31 +665,31 @@ public class DeclPDA {
         }
 
         public String GetPdaName() {
-            return this.pdaName.toString();
+            return this.pdaName.getData();
         }
 
         public String GetSecurity() {
-            return this.security.toString();
+            return this.security.getData();
         }
 
         public String GetFullName() {
-            return this.fullName.toString();
+            return this.fullName.getData();
         }
 
         public String GetIcon() {
-            return this.icon.toString();
+            return this.icon.getData();
         }
 
         public String GetPost() {
-            return this.post.toString();
+            return this.post.getData();
         }
 
         public String GetID() {
-            return this.id.toString();
+            return this.id.getData();
         }
 
         public String GetTitle() {
-            return this.title.toString();
+            return this.title.getData();
         }
     }
 }

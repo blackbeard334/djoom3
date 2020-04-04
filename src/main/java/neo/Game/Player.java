@@ -431,7 +431,7 @@ public class Player {
         public int nextItemPickup;
         public int nextItemNum;
         public int onePickupTime;
-        public idList<idItemInfo>      pickupItemNames = new idList<>(idItemInfo.class);
+        public idList<idItemInfo>      pickupItemNames = new idList<idItemInfo>(idItemInfo.class);
         public idList<idObjectiveInfo> objectiveNames  = new idList<>();
 
         public idInventory() {
@@ -1712,7 +1712,7 @@ public class Player {
                 if (gameLocal.isMultiplayer) {
                     this.hud = uiManager.FindGui("guis/mphud.gui", true, false, true);
                 } else if (this.spawnArgs.GetString("hud", "", temp)) {
-                    this.hud = uiManager.FindGui(temp.toString(), true, false, true);
+                    this.hud = uiManager.FindGui(temp.getData(), true, false, true);
                 }
                 if (this.hud != null) {
                     this.hud.Activate(true, gameLocal.time);
@@ -1720,7 +1720,7 @@ public class Player {
 
                 // load cursor
                 if (this.spawnArgs.GetString("cursor", "", temp)) {
-                    this.cursor = uiManager.FindGui(temp.toString(), true, gameLocal.isMultiplayer, gameLocal.isMultiplayer);
+                    this.cursor = uiManager.FindGui(temp.getData(), true, gameLocal.isMultiplayer, gameLocal.isMultiplayer);
                 }
                 if (this.cursor != null) {
                     this.cursor.Activate(true, gameLocal.time);
@@ -1803,7 +1803,7 @@ public class Player {
             if (GetPDA() != null) {
                 // Add any emails from the inventory
                 for (int i = 0; i < this.inventory.emails.Num(); i++) {
-                    GetPDA().AddEmail(this.inventory.emails.oGet(i).toString());
+                    GetPDA().AddEmail(this.inventory.emails.oGet(i).getData());
                 }
                 GetPDA().SetSecurity(common.GetLanguageDict().GetString("#str_00066"));
             }
@@ -2323,7 +2323,7 @@ public class Player {
             this.weapon.Restore(savefile);
 
             for (i = 0; i < this.inventory.emails.Num(); i++) {
-                GetPDA().AddEmail(this.inventory.emails.oGet(i).toString());
+                GetPDA().AddEmail(this.inventory.emails.oGet(i).getData());
             }
 
             savefile.ReadUserInterface(this.hud);
@@ -2518,7 +2518,7 @@ public class Player {
             idKeyValue kv;
             kv = this.spawnArgs.MatchPrefix("pm_", null);
             while (kv != null) {
-                cvarSystem.SetCVarString(kv.GetKey().toString(), kv.GetValue().toString());
+                cvarSystem.SetCVarString(kv.GetKey().getData(), kv.GetValue().getData());
                 kv = this.spawnArgs.MatchPrefix("pm_", kv);
             }
 
@@ -2636,7 +2636,7 @@ public class Player {
             if (!gameLocal.isMultiplayer || gameLocal.isServer) {
                 kv = this.spawnArgs.MatchPrefix("pm_", null);
                 while (kv != null) {
-                    cvarSystem.SetCVarString(kv.GetKey().toString(), kv.GetValue().toString());
+                    cvarSystem.SetCVarString(kv.GetKey().getData(), kv.GetValue().getData());
                     kv = this.spawnArgs.MatchPrefix("pm_", kv);
                 }
             }
@@ -4272,7 +4272,7 @@ public class Player {
         }
 
         public boolean Give(final idStr statname, final idStr value) {
-            return this.Give(statname.toString(), value.toString());
+            return this.Give(statname.getData(), value.getData());
         }
 
 
@@ -4370,7 +4370,7 @@ public class Player {
             info.icon.oSet(item.GetString("inv_icon"));
             this.inventory.pickupItemNames.Append(info);
             if (this.hud != null) {
-                this.hud.SetStateString("itemicon", info.icon.toString());
+                this.hud.SetStateString("itemicon", info.icon.getData());
                 this.hud.HandleNamedEvent("invPickup");
             }
             return true;
@@ -4410,7 +4410,7 @@ public class Player {
         }
 
         public idDict FindInventoryItem(final idStr name) {
-            return FindInventoryItem(name.toString());
+            return FindInventoryItem(name.getData());
         }
 
         public void GivePDA(final idStr pdaName, idDict item) {
@@ -4445,7 +4445,7 @@ public class Player {
                     pdaName.oSet(pda.GetPdaName());
                     pdaName.RemoveColors();
                     this.hud.SetStateString("pda", "1");
-                    this.hud.SetStateString("pda_text", pdaName.toString());
+                    this.hud.SetStateString("pda_text", pdaName.getData());
                     final String sec = pda.GetSecurity();
                     this.hud.SetStateString("pda_security", ((sec != null) && !sec.isEmpty()) ? "1" : "0");//TODO:!= null and !usEmpty, check that this combination isn't the wrong way around anywhere. null== instead of !=null
                     this.hud.HandleNamedEvent("pdaPickup");
@@ -4522,7 +4522,7 @@ public class Player {
         public void CompleteObjective(final String title) {
             final int c = this.inventory.objectiveNames.Num();
             for (int i = 0; i < c; i++) {
-                if (idStr.Icmp(this.inventory.objectiveNames.oGet(i).title.toString(), title) == 0) {
+                if (idStr.Icmp(this.inventory.objectiveNames.oGet(i).title.getData(), title) == 0) {
                     this.inventory.objectiveNames.RemoveIndex(i);
                     break;
                 }
@@ -4900,10 +4900,10 @@ public class Player {
             // set the appropriate ammo in the dropped object
             final idKeyValue keyval = item.spawnArgs.MatchPrefix("inv_ammo_");
             if (keyval != null) {
-                item.spawnArgs.SetInt(keyval.GetKey().toString(), ammoavailable);
+                item.spawnArgs.SetInt(keyval.GetKey().getData(), ammoavailable);
                 final idStr inclipKey = keyval.GetKey();
                 inclipKey.Insert("inclip_", 4);
-                item.spawnArgs.SetInt(inclipKey.toString(), inclip);
+                item.spawnArgs.SetInt(inclipKey.getData(), inclip);
             }
             if (!died) {
                 // remove from our local inventory completely
@@ -5520,7 +5520,7 @@ public class Player {
                         this.objectiveSystem.SetStateString(va("inv_text_%d", j), itext);
                         final idKeyValue kv = item.MatchPrefix("inv_id", null);
                         if (kv != null) {
-                            this.objectiveSystem.SetStateString(va("inv_id_%d", j), kv.GetValue().toString());
+                            this.objectiveSystem.SetStateString(va("inv_id_%d", j), kv.GetValue().getData());
                         }
                     }
                 }
@@ -5592,8 +5592,8 @@ public class Player {
                     }
                     int i;
                     for (i = 0; (i < 5) && (i < c); i++) {
-                        this.hud.SetStateString(va("itemtext%d", this.inventory.nextItemNum), this.inventory.pickupItemNames.oGet(0).name.toString());
-                        this.hud.SetStateString(va("itemicon%d", this.inventory.nextItemNum), this.inventory.pickupItemNames.oGet(0).icon.toString());
+                        this.hud.SetStateString(va("itemtext%d", this.inventory.nextItemNum), this.inventory.pickupItemNames.oGet(0).name.getData());
+                        this.hud.SetStateString(va("itemicon%d", this.inventory.nextItemNum), this.inventory.pickupItemNames.oGet(0).icon.getData());
                         this.hud.HandleNamedEvent(va("itemPickup%d", this.inventory.nextItemNum++));
                         this.inventory.pickupItemNames.RemoveIndex(0);
                         if (this.inventory.nextItemNum == 1) {
@@ -6579,7 +6579,7 @@ public class Player {
                     this.currentWeapon = this.idealWeapon;
                     this.weaponGone = false;
                     this.animPrefix.oSet(this.spawnArgs.GetString(va("def_weapon%d", this.currentWeapon)));
-                    this.weapon.GetEntity().GetWeaponDef(this.animPrefix.toString(), this.inventory.clip[ this.currentWeapon]);
+                    this.weapon.GetEntity().GetWeaponDef(this.animPrefix.getData(), this.inventory.clip[ this.currentWeapon]);
                     this.animPrefix.Strip("weapon_");
 
                     this.weapon.GetEntity().NetCatchup();
@@ -6604,7 +6604,7 @@ public class Player {
                         this.currentWeapon = this.idealWeapon;
                         this.weaponGone = false;
                         this.animPrefix.oSet(this.spawnArgs.GetString(va("def_weapon%d", this.currentWeapon)));
-                        this.weapon.GetEntity().GetWeaponDef(this.animPrefix.toString(), this.inventory.clip[ this.currentWeapon]);
+                        this.weapon.GetEntity().GetWeaponDef(this.animPrefix.getData(), this.inventory.clip[ this.currentWeapon]);
                         this.animPrefix.Strip("weapon_");
 
                         this.weapon.GetEntity().Raise();
@@ -6718,7 +6718,7 @@ public class Player {
             if (!this.weapon.GetEntity().IsLinked()) {
                 if (this.idealWeapon != -1) {
                     this.animPrefix.oSet(this.spawnArgs.GetString(va("def_weapon%d", this.idealWeapon)));
-                    this.weapon.GetEntity().GetWeaponDef(this.animPrefix.toString(), this.inventory.clip[ this.idealWeapon]);
+                    this.weapon.GetEntity().GetWeaponDef(this.animPrefix.getData(), this.inventory.clip[ this.idealWeapon]);
                     assert (this.weapon.GetEntity().IsLinked());
                 } else {
                     return;
@@ -7898,13 +7898,13 @@ public class Player {
                             this.focusUI.SetStateString(va("inv_text_%d", j), itext);
                             kv = item.MatchPrefix("inv_id", null);
                             if (kv != null) {
-                                this.focusUI.SetStateString(va("inv_id_%d", j), kv.GetValue().toString());
+                                this.focusUI.SetStateString(va("inv_id_%d", j), kv.GetValue().getData());
                             }
                             this.focusUI.SetStateInt(iname, 1);
                         }
 
                         for (j = 0; j < this.inventory.pdaSecurity.Num(); j++) {
-                            final String p = this.inventory.pdaSecurity.oGet(j).toString();
+                            final String p = this.inventory.pdaSecurity.oGet(j).getData();
                             if (isNotNullOrEmpty(p)) {
                                 this.focusUI.SetStateInt(p, 1);
                             }
@@ -7917,7 +7917,7 @@ public class Player {
 
                         kv = this.focusGUIent.spawnArgs.MatchPrefix("gui_parm", null);
                         while (kv != null) {
-                            this.focusUI.SetStateString(kv.GetKey().toString(), kv.GetValue().toString());
+                            this.focusUI.SetStateString(kv.GetKey().getData(), kv.GetValue().getData());
                             kv = this.focusGUIent.spawnArgs.MatchPrefix("gui_parm", kv);
                         }
                     }
@@ -8189,7 +8189,7 @@ public class Player {
                 for (i = 0; i < c; i++) {
                     final idDeclVideo video = GetVideo(i);
                     if (video == null) {
-                        work = va("Video CD %s not found", this.inventory.videos.oGet(i).toString());
+                        work = va("Video CD %s not found", this.inventory.videos.oGet(i).getData());
                     } else {
                         work = video.GetVideoName();
                     }
@@ -8212,9 +8212,9 @@ public class Player {
             this.objectiveSystem.SetStateString("objective3", "");
             for (int i = 0; i < this.inventory.objectiveNames.Num(); i++) {
                 this.objectiveSystem.SetStateString(va("objective%d", i + 1), "1");
-                this.objectiveSystem.SetStateString(va("objectivetitle%d", i + 1), this.inventory.objectiveNames.oGet(i).title.toString());
-                this.objectiveSystem.SetStateString(va("objectivetext%d", i + 1), this.inventory.objectiveNames.oGet(i).text.toString());
-                this.objectiveSystem.SetStateString(va("objectiveshot%d", i + 1), this.inventory.objectiveNames.oGet(i).screenshot.toString());
+                this.objectiveSystem.SetStateString(va("objectivetitle%d", i + 1), this.inventory.objectiveNames.oGet(i).title.getData());
+                this.objectiveSystem.SetStateString(va("objectivetext%d", i + 1), this.inventory.objectiveNames.oGet(i).text.getData());
+                this.objectiveSystem.SetStateString(va("objectiveshot%d", i + 1), this.inventory.objectiveNames.oGet(i).screenshot.getData());
             }
             this.objectiveSystem.StateChanged(gameLocal.time);
         }

@@ -730,17 +730,17 @@ public class Event {
 
                 // read the event name
                 savefile.ReadString(name);
-                event.eventdef = idEventDef.FindEvent(name.toString());
+                event.eventdef = idEventDef.FindEvent(name.getData());
                 if (null == event.eventdef) {
-                    savefile.Error("idEvent::Restore: unknown event '%s'", name.toString());
+                    savefile.Error("idEvent::Restore: unknown event '%s'", name.getData());
                 }
 
                 // read the classtype
                 savefile.ReadString(name);
                 try {
-                    event.typeinfo = java.lang.Class.forName(name.toString());
+                    event.typeinfo = java.lang.Class.forName(name.getData());
                 } catch (final ClassNotFoundException e) {
-                    savefile.Error("idEvent::Restore: unknown class '%s' on event '%s'", name.toString(), event.eventdef.GetName());
+                    savefile.Error("idEvent::Restore: unknown class '%s' on event '%s'", name.getData(), event.eventdef.GetName());
                 }
 
                 savefile.ReadObject(event.object);

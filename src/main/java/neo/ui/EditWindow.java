@@ -196,12 +196,12 @@ public class EditWindow {
                 if (((key == K_ENTER) || (key == K_KP_ENTER)) && (event.evValue2 != 0)) {
                     RunScript(etoi(ON_ACTION));
                     RunScript(etoi(ON_ENTER));
-                    return this.cmd.toString();
+                    return this.cmd.getData();
                 }
 
                 if (key == K_ESCAPE) {
                     RunScript(etoi(ON_ESC));
-                    return this.cmd.toString();
+                    return this.cmd.getData();
                 }
 
                 if (this.readonly) {
@@ -382,18 +382,18 @@ public class EditWindow {
                 if ((key == K_ENTER) || (key == K_KP_ENTER)) {
                     RunScript(etoi(ON_ACTION));
                     RunScript(etoi(ON_ENTER));
-                    return this.cmd.toString();
+                    return this.cmd.getData();
                 }
 
                 if (key == K_ESCAPE) {
                     RunScript(etoi(ON_ESC));
-                    return this.cmd.toString();
+                    return this.cmd.getData();
                 }
 
             } else if ((event.evType == SE_KEY) && (0 == event.evValue2)) {
                 if ((key == K_ENTER) || (key == K_KP_ENTER)) {
                     RunScript(etoi(ON_ENTERRELEASE));
-                    return this.cmd.toString();
+                    return this.cmd.getData();
                 } else {
                     RunScript(etoi(ON_ACTIONRELEASE));
                 }
@@ -531,7 +531,7 @@ public class EditWindow {
                 return;
             }
 
-            this.cvar = cvarSystem.Find(this.cvarStr.data.toString());
+            this.cvar = cvarSystem.Find(this.cvarStr.data.getData());
             if (null == this.cvar) {
                 common.Warning("idEditWindow::InitCvar: gui '%s' window '%s' references undefined cvar '%s'", this.gui.GetSourceFile(), this.name, this.cvarStr.c_str());
                 return;
@@ -547,7 +547,7 @@ public class EditWindow {
                     if (read) {
                         this.text.data.oSet(this.cvar.GetString());
                     } else {
-                        this.cvar.SetString(this.text.data.toString());
+                        this.cvar.SetString(this.text.data.getData());
                         if ((this.cvarMax != 0) && (this.cvar.GetInteger() > this.cvarMax)) {
                             this.cvar.SetInteger(this.cvarMax);
                         }

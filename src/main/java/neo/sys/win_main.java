@@ -452,7 +452,7 @@ public class win_main {//TODO: rename to plain "main" or something.
     }
 
     public static void Sys_Mkdir(final idStr path) {
-        Sys_Mkdir(path.toString());
+        Sys_Mkdir(path.getData());
     }
 
     /*
@@ -1583,7 +1583,7 @@ public class win_main {//TODO: rename to plain "main" or something.
 
     public static FileChannel tmpfile() throws IOException {
 
-        final File tmp = File.createTempFile("bla", "bla");
+        final File tmp = File.createTempFile(NeoFixStrings.BLA, NeoFixStrings.BLA);
         tmp.deleteOnExit();
 
         return FileChannel.open(tmp.toPath(), fopenOptions("wb+"));

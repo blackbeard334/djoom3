@@ -146,7 +146,7 @@ public class ListWindow {
 
                 if (((key == K_ENTER) || (key == K_KP_ENTER))) {
                     RunScript(etoi(ON_ENTER));
-                    return this.cmd.toString();
+                    return this.cmd.getData();
                 }
 
                 if (key == K_MWHEELUP) {
@@ -169,7 +169,7 @@ public class ListWindow {
                                 if (IsSelected(cur) && (this.gui.GetTime() < (this.clickTime + doubleClickSpeed))) {
                                     // Double-click causes ON_ENTER to get run
                                     RunScript(etoi(ON_ENTER));
-                                    return this.cmd.toString();
+                                    return this.cmd.getData();
                                 }
                                 SetCurrentSel(cur);
 
@@ -277,76 +277,76 @@ public class ListWindow {
             final idList<Integer> tabStops = new idList<>();
             final idList<Integer> tabAligns = new idList<>();
             if (this.tabStopStr.Length() != 0) {
-                final idParser src = new idParser(this.tabStopStr.toString(), this.tabStopStr.Length(), "tabstops", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                final idToken tok = new idToken();
-                while (src.ReadToken(tok)) {
-                    if (tok.equals(",")) {
+                final idParser src = new idParser(this.tabStopStr.getData(), this.tabStopStr.Length(), "tabstops", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                final idToken token = new idToken();
+                while (src.ReadToken(token)) {
+                    if (token.equals(",")) {
                         continue;
                     }
-                    tabStops.Append(Integer.parseInt(tok.toString()));
+                    tabStops.Append(Integer.parseInt(token.getData()));
                 }
             }
             if (this.tabAlignStr.Length() != 0) {
-                final idParser src = new idParser(this.tabAlignStr.toString(), this.tabAlignStr.Length(), "tabaligns", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                final idToken tok = new idToken();
-                while (src.ReadToken(tok)) {
-                    if (tok.equals(",")) {
+                final idParser src = new idParser(this.tabAlignStr.getData(), this.tabAlignStr.Length(), "tabaligns", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                final idToken token = new idToken();
+                while (src.ReadToken(token)) {
+                    if (token.equals(",")) {
                         continue;
                     }
-                    tabAligns.Append(Integer.parseInt(tok.toString()));
+                    tabAligns.Append(Integer.parseInt(token.getData()));
                 }
             }
             final idList<Integer> tabVAligns = new idList<>();
             if (this.tabVAlignStr.Length() != 0) {
-                final idParser src = new idParser(this.tabVAlignStr.toString(), this.tabVAlignStr.Length(), "tabvaligns", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                final idToken tok = new idToken();
-                while (src.ReadToken(tok)) {
-                    if (tok.equals(",")) {
+                final idParser src = new idParser(this.tabVAlignStr.getData(), this.tabVAlignStr.Length(), "tabvaligns", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                final idToken token = new idToken();
+                while (src.ReadToken(token)) {
+                    if (token.equals(",")) {
                         continue;
                     }
-                    tabVAligns.Append(Integer.parseInt(tok.toString()));
+                    tabVAligns.Append(Integer.parseInt(token.getData()));
                 }
             }
 
             final idList<Integer> tabTypes = new idList<>();
             if (this.tabTypeStr.Length() != 0) {
-                final idParser src = new idParser(this.tabTypeStr.toString(), this.tabTypeStr.Length(), "tabtypes", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                final idToken tok = new idToken();
-                while (src.ReadToken(tok)) {
-                    if (tok.equals(",")) {
+                final idParser src = new idParser(this.tabTypeStr.getData(), this.tabTypeStr.Length(), "tabtypes", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                final idToken token = new idToken();
+                while (src.ReadToken(token)) {
+                    if (token.equals(",")) {
                         continue;
                     }
-                    tabTypes.Append(Integer.parseInt(tok.toString()));
+                    tabTypes.Append(Integer.parseInt(token.getData()));
                 }
             }
             final idList<idVec2> tabSizes = new idList<>();
             if (this.tabIconSizeStr.Length() != 0) {
-                final idParser src = new idParser(this.tabIconSizeStr.toString(), this.tabIconSizeStr.Length(), "tabiconsizes", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                final idToken tok = new idToken();
-                while (src.ReadToken(tok)) {
-                    if (tok.equals(",")) {
+                final idParser src = new idParser(this.tabIconSizeStr.getData(), this.tabIconSizeStr.Length(), "tabiconsizes", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                final idToken token = new idToken();
+                while (src.ReadToken(token)) {
+                    if (token.equals(",")) {
                         continue;
                     }
                     final idVec2 size = new idVec2();
-                    size.x = Integer.parseInt(tok.toString());
+                    size.x = Integer.parseInt(token.getData());
 
-                    src.ReadToken(tok);	//","
-                    src.ReadToken(tok);
+                    src.ReadToken(token);	//","
+                    src.ReadToken(token);
 
-                    size.y = Integer.parseInt(tok.toString());
+                    size.y = Integer.parseInt(token.getData());
                     tabSizes.Append(size);
                 }
             }
 
             final idList<Float> tabIconVOffsets = new idList<>();
             if (this.tabIconVOffsetStr.Length() != 0) {
-                final idParser src = new idParser(this.tabIconVOffsetStr.toString(), this.tabIconVOffsetStr.Length(), "tabiconvoffsets", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                final idToken tok = new idToken();
-                while (src.ReadToken(tok)) {
-                    if (tok.equals(",")) {
+                final idParser src = new idParser(this.tabIconVOffsetStr.getData(), this.tabIconVOffsetStr.Length(), "tabiconvoffsets", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                final idToken token = new idToken();
+                while (src.ReadToken(token)) {
+                    if (token.equals(",")) {
                         continue;
                     }
-                    tabIconVOffsets.Append(Float.parseFloat(tok.toString()));
+                    tabIconVOffsets.Append(Float.parseFloat(token.getData()));
                 }
             }
 
@@ -452,7 +452,7 @@ public class ListWindow {
                             // leaving the icon name empty doesn't draw anything
                             if (isNotNullOrEmpty(work)) {
 
-                                if (this.iconMaterials.Get(work.toString(), hashMat) == false) {
+                                if (this.iconMaterials.Get(work.getData(), hashMat) == false) {
                                     iconMat = declManager.FindMaterial("_default");
                                 } else {
                                     iconMat = hashMat[0];

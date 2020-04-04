@@ -183,7 +183,7 @@ public class CmdArgs {
                         return;
                     }
                     if (idLib.cvarSystem != null) {
-                        token.oSet(idLib.cvarSystem.GetCVarString(token.toString()));
+                        token.oSet(idLib.cvarSystem.GetCVarString(token.getData()));
                     } else {
                         token.oSet("<unknown>");
                     }
@@ -200,7 +200,7 @@ public class CmdArgs {
                 this.argc++;
 
                 final char[] tokenizedClam = clam(this.tokenized, totalLen);
-                idStr.Copynz(tokenizedClam, token.toString(), this.tokenized.length - totalLen);
+                idStr.Copynz(tokenizedClam, token.getData(), this.tokenized.length - totalLen);
                 unClam(this.tokenized, tokenizedClam);
 
                 totalLen += len + 1;

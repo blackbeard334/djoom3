@@ -816,7 +816,7 @@ public class CollisionModel_local {
                 common.Printf("idCollisionModelManagerLocal::GetModelBounds: invalid model handle\n");
                 return "";
             }
-            return this.models[model].name.toString();
+            return this.models[model].name.getData();
         }
 
         @Override// bounds of the model
@@ -5251,13 +5251,13 @@ public class CollisionModel_local {
             filename.SetFileExtension(PROC_FILE_EXT);
             src = new idLexer(name, LEXFL_NOSTRINGCONCAT | LEXFL_NODOLLARPRECOMPILE);
             if (!src.IsLoaded()) {
-                common.Warning("idCollisionModelManagerLocal::LoadProcBSP: couldn't load %s", filename.toString());
+                common.Warning("idCollisionModelManagerLocal::LoadProcBSP: couldn't load %s", filename.getData());
 //		delete src;
                 return;
             }
 
             if (!src.ReadToken(token) || (token.Icmp(PROC_FILE_ID) != 0)) {
-                common.Warning("idCollisionModelManagerLocal::LoadProcBSP: bad id '%s' instead of '%s'", token.toString(), PROC_FILE_ID);
+                common.Warning("idCollisionModelManagerLocal::LoadProcBSP: bad id '%s' instead of '%s'", token.getData(), PROC_FILE_ID);
                 //		delete src;
                 return;
             }
@@ -5288,7 +5288,7 @@ public class CollisionModel_local {
                     break;
                 }
 
-                src.Error("idCollisionModelManagerLocal::LoadProcBSP: bad token \"%s\"", token.toString());
+                src.Error("idCollisionModelManagerLocal::LoadProcBSP: bad token \"%s\"", token.getData());
             }
 
 //	delete src;
@@ -6875,11 +6875,11 @@ public class CollisionModel_local {
                 return null;
             }
 
-            if (null == renderModelManager.CheckModel(fileName.toString())) {
+            if (null == renderModelManager.CheckModel(fileName.getData())) {
                 return null;
             }
 
-            renderModel = renderModelManager.FindModel(fileName.toString());
+            renderModel = renderModelManager.FindModel(fileName.getData());
 
             model = AllocModel();
             model.name = new idStr(fileName);
@@ -7415,7 +7415,7 @@ public class CollisionModel_local {
                 if (token.type == TT_NUMBER) {
                     b.contents = token.GetIntValue();		// old .cm files use a single integer
                 } else {
-                    b.contents = ContentsFromString(token.toString());
+                    b.contents = ContentsFromString(token.getData());
                 }
                 b.checkcount = 0;
                 b.primitiveNum = 0;
@@ -7470,7 +7470,7 @@ public class CollisionModel_local {
                     continue;
                 }
 
-                src.Error("ParseCollisionModel: bad token \"%s\"", token.toString());
+                src.Error("ParseCollisionModel: bad token \"%s\"", token.getData());
             }
             // calculate edge normals
             this.checkCount++;
@@ -7500,7 +7500,7 @@ public class CollisionModel_local {
             // load it
             fileName = new idStr(name);
             fileName.SetFileExtension(CM_FILE_EXT);
-            src = new idLexer(fileName.toString());
+            src = new idLexer(fileName.getData());
             src.SetFlags(LEXFL_NOSTRINGCONCAT | LEXFL_NODOLLARPRECOMPILE);
             if (!src.IsLoaded()) {
                 return false;

@@ -650,7 +650,7 @@ public class Window {
         private static final drawWin_t dw = new drawWin_t();
 
         public drawWin_t FindChildByName(final String _name) {
-            if (idStr.Icmp(this.name.toString(), _name) == 0) {
+            if (idStr.Icmp(this.name.getData(), _name) == 0) {
                 dw.simp = null;
                 dw.win = this;
                 return dw;
@@ -812,7 +812,7 @@ public class Window {
                 }
 
                 if ((owner != null) && (this.parent != null)) {
-                    owner[0] = this.parent.FindChildByName(this.name.toString());
+                    owner[0] = this.parent.FindChildByName(this.name.getData());
                 }
 
                 return retVar;
@@ -829,15 +829,15 @@ public class Window {
                 if (n > 0) {
                     final idStr winName = key.Left(n);
                     final idStr var = key.Right(key.Length() - n - 2);
-                    final drawWin_t win = GetGui().GetDesktop().FindChildByName(winName.toString());
+                    final drawWin_t win = GetGui().GetDesktop().FindChildByName(winName.getData());
                     if (win != null) {
                         if (win.win != null) {
-                            return win.win.GetWinVarByName(var.toString(), false, owner);
+                            return win.win.GetWinVarByName(var.getData(), false, owner);
                         } else {
                             if (owner != null) {
                                 owner[0] = win;
                             }
-                            return win.simp.GetWinVarByName(var.toString());
+                            return win.simp.GetWinVarByName(var.getData());
                         }
                     }
                 }
@@ -1130,7 +1130,7 @@ public class Window {
         }
 
         public String GetName() {
-            return this.name.toString();//TODO:return idStr???
+            return this.name.getData();//TODO:return idStr???
         }
 
         static int simpleCount = 0, plainCount = 0;
@@ -1153,7 +1153,7 @@ public class Window {
 
             src.ExpectTokenType(TT_NAME, 0, token);
 
-            SetInitialState(token.toString());
+            SetInitialState(token.getData());
 
             src.ExpectTokenString("{");
             src.ExpectAnyToken(token);
@@ -1179,9 +1179,9 @@ public class Window {
                     }
                     src.ExpectTokenType(TT_NAME, 0, token);
                     token2 = token;
-//                    System.out.printf(">>>>>>>>%s\n", token.toString());
+//                    System.out.printf(">>>>>>>>%s\n", token.getData());
                     src.UnreadToken(token);
-                    final drawWin_t dw = FindChildByName(token2.toString());
+                    final drawWin_t dw = FindChildByName(token2.getData());
                     if ((dw != null) && (dw.win != null)) {
                         SaveExpressionParseState();
                         dw.win.Parse(src, rebuild);
@@ -1328,7 +1328,7 @@ public class Window {
                         return false;
                     }
 
-                    final rvNamedEvent ev = new rvNamedEvent(token.toString());
+                    final rvNamedEvent ev = new rvNamedEvent(token.getData());
 
                     src.SetMarker();
 
@@ -1348,7 +1348,7 @@ public class Window {
 //                            src.GetStringFromMarker(str, false);
 //
 //                            // Parse it one more time to knock unwanted tabs out
-//                            idLexer src2 = new idLexer(str.toString(), str.Length(), "", src.GetFlags());
+//                            idLexer src2 = new idLexer(str.getData(), str.Length(), "", src.GetFlags());
 //                            src2.ParseBracedSectionExact(out, 1);
 //
 //                            // Save the script		
@@ -1363,7 +1363,7 @@ public class Window {
                         src.Error("Unexpected end of file");
                         return false;
                     }
-                    ev.time = atoi(token.toString());
+                    ev.time = atoi(token.getData());
 
                     // reset the mark since we dont want it to include the time
                     src.SetMarker();
@@ -1385,7 +1385,7 @@ public class Window {
 //                            src.GetStringFromMarker(str, false);
 //
 //                            // Parse it one more time to knock unwanted tabs out
-//                            idLexer src2 = new idLexer(str.toString(), str.Length(), "", src.GetFlags());
+//                            idLexer src2 = new idLexer(str.getData(), str.Length(), "", src.GetFlags());
 //                            src2.ParseBracedSectionExact(out, 1);
 //
 //                            // Save the script		
@@ -1401,7 +1401,7 @@ public class Window {
                     work = token;
                     work.ToLower();
                     final idWinFloat varf = new idWinFloat();
-                    varf.SetName(work.toString());
+                    varf.SetName(work.getData());
                     this.definedVars.Append(varf);
 
                     // add the float to the editors wrapper dict
@@ -1409,7 +1409,7 @@ public class Window {
                     src.SetMarker();
 
                     // Read in the float 
-                    this.regList.AddReg(work.toString(), etoi(FLOAT), src, this, varf);
+                    this.regList.AddReg(work.getData(), etoi(FLOAT), src, this, varf);
 
                     // If we are in the gui editor then add the float to the defines
 //                    if (ID_ALLOW_TOOLS) {
@@ -1426,7 +1426,7 @@ public class Window {
                     work = token;
                     work.ToLower();
                     final idWinVec4 var = new idWinVec4();
-                    var.SetName(work.toString());
+                    var.SetName(work.getData());
 
                     // set the marker so we can determine what was parsed
                     // set the marker after the vec4 name
@@ -1436,7 +1436,7 @@ public class Window {
                     //        when this window is destoyed which even happens during parsing with simple windows ?
                     //definedVars.Append(var);
                     this.gui.GetDesktop().definedVars.Append(var);
-                    this.gui.GetDesktop().regList.AddReg(work.toString(), etoi(VEC4), src, this.gui.GetDesktop(), var);
+                    this.gui.GetDesktop().regList.AddReg(work.getData(), etoi(VEC4), src, this.gui.GetDesktop(), var);
 
                     // store the original vec4 for the editor
                     // If we are in the gui editor then add the float to the defines
@@ -1454,7 +1454,7 @@ public class Window {
                     work = token;
                     work.ToLower();
                     final idWinFloat varf = new idWinFloat();
-                    varf.SetName(work.toString());
+                    varf.SetName(work.getData());
                     this.definedVars.Append(varf);
 
                     // add the float to the editors wrapper dict
@@ -1462,7 +1462,7 @@ public class Window {
                     src.SetMarker();
 
                     // Parse the float
-                    this.regList.AddReg(work.toString(), etoi(FLOAT), src, this, varf);
+                    this.regList.AddReg(work.getData(), etoi(FLOAT), src, this, varf);
 
                     // If we are in the gui editor then add the float to the defines
 //                    if (ID_ALLOW_TOOLS) {
@@ -1474,7 +1474,7 @@ public class Window {
 //                            rvGEWindowWrapper.GetWrapper(this).GetVariableDict().Set(va("float\t\"%s\"", token.c_str()), str);
 //                        }
 //                    }
-                } else if (ParseScriptEntry(token.toString(), src)) {
+                } else if (ParseScriptEntry(token.getData(), src)) {
                     // add the script to the wrappers script list
                     // If we are in the gui editor then add the internal var to the 
                     // the wrapper
@@ -1487,14 +1487,14 @@ public class Window {
 //                            src.GetStringFromMarker(str, false);
 //
 //                            // Parse it one more time to knock unwanted tabs out
-//                            idLexer src2 = new idLexer(str.toString(), str.Length(), "", src.GetFlags());
+//                            idLexer src2 = new idLexer(str.getData(), str.Length(), "", src.GetFlags());
 //                            src2.ParseBracedSectionExact(out, 1);
 //
 //                            // Save the script		
 //                            rvGEWindowWrapper.GetWrapper(this).GetScriptDict().Set(token, out);
 //                        }
 //                    }
-                } else if (ParseInternalVar(token.toString(), src)) {
+                } else if (ParseInternalVar(token.getData(), src)) {
                     // gui editor support		
                     // If we are in the gui editor then add the internal var to the 
                     // the wrapper
@@ -1506,7 +1506,7 @@ public class Window {
 //                        }
 //                    }
                 } else {
-                    ParseRegEntry(token.toString(), src);
+                    ParseRegEntry(token.getData(), src);
                     // hook into the main window parsing for the gui editor
                     // If we are in the gui editor then add the internal var to the 
                     // the wrapper
@@ -1793,7 +1793,7 @@ public class Window {
                 this.gui.GetPendingCmd().Clear();
             }
             this.cmd.oSet("");
-            return this.gui.GetReturnCmd().toString();
+            return this.gui.GetReturnCmd().getData();
         }
 
         public void CalcRects(float x, float y) {
@@ -1837,7 +1837,7 @@ public class Window {
             if ((this.flags & WIN_SHOWCOORDS) != 0) {
                 this.dc.EnableClipping(false);
                 str = new idStr(String.format("x: %d y: %d  cursorx: %d cursory: %d", (int) this.rect.x(), (int) this.rect.y(), (int) this.gui.CursorX(), (int) this.gui.CursorY()));
-                this.dc.DrawText(str.toString(), 0.25f, 0, this.dc.colorWhite, new idRectangle(0, 0, 100, 20), false);
+                this.dc.DrawText(str.getData(), 0.25f, 0, this.dc.colorWhite, new idRectangle(0, 0, 100, 20), false);
                 this.dc.EnableClipping(true);
             }
 
@@ -1913,7 +1913,7 @@ public class Window {
             if ((gui_debug.GetInteger() != 0) && ((this.flags & WIN_DESKTOP) != 0)) {
                 this.dc.EnableClipping(false);
                 str = new idStr(String.format("x: %.1f y: %.1f", this.gui.CursorX(), this.gui.CursorY()));
-                this.dc.DrawText(str.toString(), 0.25f, 0, this.dc.colorWhite, new idRectangle(0, 0, 100, 20), false);
+                this.dc.DrawText(str.getData(), 0.25f, 0, this.dc.colorWhite, new idRectangle(0, 0, 100, 20), false);
                 this.dc.DrawText(this.gui.GetSourceFile(), 0.25f, 0, this.dc.colorWhite, new idRectangle(0, 20, 300, 20), false);
                 this.dc.EnableClipping(true);
             }
@@ -2011,9 +2011,9 @@ public class Window {
                 shadowRect.x += this.textShadow;
                 shadowRect.y += this.textShadow;
 
-                this.dc.DrawText(shadowText.toString(), this.textScale.data, this.textAlign, colorBlack, shadowRect, !itob(this.flags & WIN_NOWRAP), -1);
+                this.dc.DrawText(shadowText.getData(), this.textScale.data, this.textAlign, colorBlack, shadowRect, !itob(this.flags & WIN_NOWRAP), -1);
             }
-            this.dc.DrawText(this.text.data.toString(), this.textScale.data, this.textAlign, this.foreColor.data, this.textRect, !itob(this.flags & WIN_NOWRAP), -1);
+            this.dc.DrawText(this.text.data.getData(), this.textScale.data, this.textAlign, this.foreColor.data, this.textRect, !itob(this.flags & WIN_NOWRAP), -1);
 
             if (gui_edit.GetBool()) {
                 this.dc.EnableClipping(false);
@@ -2082,7 +2082,7 @@ public class Window {
                     if (this.overChild != child) {
                         if (this.overChild != null) {
                             this.overChild.MouseExit();
-                            str = this.overChild.cmd.toString();
+                            str = this.overChild.cmd.getData();
                             if (isNotNullOrEmpty(str)) {
                                 this.gui.GetDesktop().AddCommand(str);
                                 this.overChild.cmd.oSet("");
@@ -2090,7 +2090,7 @@ public class Window {
                         }
                         this.overChild = child;
                         this.overChild.MouseEnter();
-                        str = this.overChild.cmd.toString();
+                        str = this.overChild.cmd.getData();
                         if (isNotNullOrEmpty(str)) {
                             this.gui.GetDesktop().AddCommand(str);
                             this.overChild.cmd.oSet("");
@@ -2105,7 +2105,7 @@ public class Window {
             }
             if (this.overChild != null) {
                 this.overChild.MouseExit();
-                str = this.overChild.cmd.toString();
+                str = this.overChild.cmd.getData();
                 if (isNotNullOrEmpty(str)) {
                     this.gui.GetDesktop().AddCommand(str);
                     this.overChild.cmd.oSet("");
@@ -2397,7 +2397,7 @@ public class Window {
         }
 
         public void WriteSaveGameString(final idStr string, idFile savefile) {
-            WriteSaveGameString(string.toString(), savefile);
+            WriteSaveGameString(string.getData(), savefile);
         }
 
         public void WriteSaveGameTransition(idTransitionData trans, idFile savefile) {
@@ -2408,12 +2408,12 @@ public class Window {
             dw.win = null;
             int offset = this.gui.GetDesktop().GetWinVarOffset(trans.data, dw);
             if ((dw.win != null) || (dw.simp != null)) {
-                winName = new idStr((dw.win != null) ? dw.win.GetName() : dw.simp.name.toString());
+                winName = new idStr((dw.win != null) ? dw.win.GetName() : dw.simp.name.getData());
             }
-            fdw = this.gui.GetDesktop().FindChildByName(winName.toString());
+            fdw = this.gui.GetDesktop().FindChildByName(winName.getData());
             if ((offset != -1) && (fdw != null) && ((fdw.win != null) || (fdw.simp != null))) {
                 savefile.WriteInt(offset);
-                WriteSaveGameString(winName.toString(), savefile);
+                WriteSaveGameString(winName.getData(), savefile);
                 savefile.Write(trans.interp);
             } else {
                 offset = -1;
@@ -2517,7 +2517,7 @@ public class Window {
             // Named Events
             for (i = 0; i < this.namedEvents.Num(); i++) {
                 if (this.namedEvents.oGet(i) != null) {
-                    WriteSaveGameString(this.namedEvents.oGet(i).mName.toString(), savefile);
+                    WriteSaveGameString(this.namedEvents.oGet(i).mName.getData(), savefile);
                     if (this.namedEvents.oGet(i).mEvent != null) {
                         this.namedEvents.oGet(i).mEvent.WriteToSaveGame(savefile);
                     }
@@ -3065,7 +3065,7 @@ public class Window {
         }
 
         public void AddCommand(final String _cmd) {
-            String str = this.cmd.toString();
+            String str = this.cmd.getData();
             if (!str.isEmpty()) {
                 str += " ; ";
                 str += _cmd;
@@ -3140,7 +3140,7 @@ public class Window {
         }
 
         public String GetComment() {
-            return this.comment.toString();
+            return this.comment.getData();
         }
 
         public void SetComment(final String p) {
@@ -3324,11 +3324,11 @@ public class Window {
                     continue;
                 }
 
-                final idParser src = new idParser(kv.GetValue().toString(), kv.GetValue().Length(), "",
+                final idParser src = new idParser(kv.GetValue().getData(), kv.GetValue().Length(), "",
                         LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
-                if (!ParseInternalVar(kv.GetKey().toString(), src)) {
+                if (!ParseInternalVar(kv.GetKey().getData(), src)) {
                     // Kill the old register since the parse reg entry will add a new one
-                    if (!ParseRegEntry(kv.GetKey().toString(), src)) {
+                    if (!ParseRegEntry(kv.GetKey().getData(), src)) {
                         continue;
                     }
                 }
@@ -3737,12 +3737,12 @@ public class Window {
             }
 
             if (var == null) {
-                var = GetWinVarByName(token.toString(), true);
+                var = GetWinVarByName(token.getData(), true);
             }
             if (var != null) {
                 a = /*(int)*/ var;
                 //assert(dynamic_cast<idWinVec4*>(var));
-                var.Init(token.toString(), this);
+                var.Init(token.getData(), this);
                 b = component;
                 if (var instanceof idWinVec4) {// if (dynamic_cast < idWinVec4 > (var)) {
                     if (src.ReadToken(token)) {
@@ -3768,7 +3768,7 @@ public class Window {
                 return 0;
             } else {
                 // ugly but used for post parsing to fixup named vars
-                final String p = token.toString();//new char[token.Length() + 1];
+                final String p = token.getData();//new char[token.Length() + 1];
 //                strcpy(p, token);
 //                a = (int) p;
                 a = new idWinStr(p);
@@ -4041,11 +4041,11 @@ public class Window {
             work = new idStr(name);
             work.ToLower();
 
-            final idWinVar var = GetWinVarByName(work.toString(), false);
+            final idWinVar var = GetWinVarByName(work.getData(), false);
             if (var != null) {
                 for (int i = 0; i < NumRegisterVars; i++) {
                     if (idStr.Icmp(work, RegisterVars[i].name) == 0) {
-                        this.regList.AddReg(work.toString(), etoi(RegisterVars[i].type), src, this, var);
+                        this.regList.AddReg(work.getData(), etoi(RegisterVars[i].type), src, this, var);
                         DBG_ParseRegEntry++;
                         return true;
                     }
@@ -4068,24 +4068,24 @@ public class Window {
                         if ((tok.subtype & TT_INTEGER) != 0) {
 //                            vari = new idWinInt();
                             vari.data = atoi(tok);
-                            vari.SetName(work.toString());
+                            vari.SetName(work.getData());
                             this.definedVars.Append(vari);
                         } else if ((tok.subtype & TT_FLOAT) != 0) {
 //                            varf = new idWinFloat();
                             varf.data = atof(tok);
-                            varf.SetName(work.toString());
+                            varf.SetName(work.getData());
                             this.definedVars.Append(varf);
                         } else {
 //                            vars = new idWinStr();
                             vars.data = tok;
-                            vars.SetName(work.toString());
+                            vars.SetName(work.getData());
                             this.definedVars.Append(vars);
                         }
                         break;
                     default:
                         vars = new idWinStr();
                         vars.data = tok;
-                        vars.SetName(work.toString());
+                        vars.SetName(work.getData());
                         this.definedVars.Append(vars);
                         break;
                 }
@@ -4220,7 +4220,7 @@ public class Window {
             if (idStr.Icmp(_name, "font") == 0) {
                 final idStr fontStr = new idStr();
                 ParseString(src, fontStr);
-                this.fontNum = (char) this.dc.FindFont(fontStr.toString());
+                this.fontNum = (char) this.dc.FindFont(fontStr.getData());
                 return true;
             }
             return false;

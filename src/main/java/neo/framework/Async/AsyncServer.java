@@ -485,16 +485,16 @@ public class AsyncServer {
 
             mapName = new idStr(String.format("maps/%s", sessLocal.mapSpawnData.serverInfo.GetString("si_map")));
             mapName.SetFileExtension(".map");
-            ff = fileSystem.FindFile(mapName.toString(), !this.serverReloadingEngine);
+            ff = fileSystem.FindFile(mapName.getData(), !this.serverReloadingEngine);
             switch (ff) {
                 case FIND_NO:
-                    common.Printf("Can't find map %s\n", mapName.toString());
+                    common.Printf("Can't find map %s\n", mapName.getData());
                     cmdSystem.BufferCommandText(CMD_EXEC_APPEND, "disconnect\n");
                     return;
                 case FIND_ADDON:
                     // NOTE: we have no problem with addon dependencies here because if the map is in
                     // an addon pack that's already on search list, then all it's deps are assumed to be on search as well
-                    common.Printf("map %s is in an addon pak - reloading\n", mapName.toString());
+                    common.Printf("map %s is in an addon pak - reloading\n", mapName.getData());
                     addonReload = true;
                     break;
                 default:
@@ -924,7 +924,7 @@ public class AsyncServer {
 
                     final idStr msg1 = new idStr();
                     GetAsyncStatsAvgMsg(msg1);
-                    common.Printf(va("%s\n", msg1.toString()));
+                    common.Printf(va("%s\n", msg1.getData()));
 
                     this.nextAsyncStatsTime = this.serverTime + 1000;
                 }
@@ -1947,7 +1947,7 @@ public class AsyncServer {
                     if (this.challenges[ichallenge].authReplyMsg != AUTH_REPLY_PRINT) {
                         msg2 = authReplyMsg[this.challenges[ichallenge].authReplyMsg.ordinal()];
                     } else {
-                        msg2 = this.challenges[ichallenge].authReplyPrint.toString();
+                        msg2 = this.challenges[ichallenge].authReplyPrint.getData();
                     }
                     l_msg = common.GetLanguageDict().GetString(msg2);
 
@@ -2367,7 +2367,7 @@ public class AsyncServer {
                 if (replyMsg != AUTH_REPLY_PRINT) {
                     msg1 = authReplyMsg[replyMsg.ordinal()];
                 } else {
-                    msg1 = replyPrintMsg.toString();
+                    msg1 = replyPrintMsg.getData();
                 }
                 // maybe localize it
                 final String l_msg = common.GetLanguageDict().GetString(msg1);
@@ -2428,7 +2428,7 @@ public class AsyncServer {
             }
 
             if (!VerifyChecksumMessage(iclient, from, msg, reply, this.challenges[iclient].OS)) {
-                PrintOOB(from, SERVER_PRINT_MISC.ordinal(), reply.toString());
+                PrintOOB(from, SERVER_PRINT_MISC.ordinal(), reply.getData());
                 return;
             }
 
@@ -2525,7 +2525,7 @@ public class AsyncServer {
             }
 
             if (!VerifyChecksumMessage(clientNum, null, msg, reply, this.clients[clientNum].OS)) {
-                reply.oSet(DropClient(clientNum, reply.toString()));
+                reply.oSet(DropClient(clientNum, reply.getData()));
                 return;
             }
             common.DPrintf("client %d: passed pure checks (reliable channel)\n", clientNum);
@@ -2670,17 +2670,17 @@ public class AsyncServer {
                 if (i > 0) {
                     paklist.oPluSet(";");
                 }
-                paklist.oPluSet(pakNames.oGet(i).toString());
+                paklist.oPluSet(pakNames.oGet(i).getData());
             }
 
             // read the message and pass it to the game code
-            common.DPrintf("got download request for %d paks - %s\n", numPaks - voidSlots, paklist.toString());
+            common.DPrintf("got download request for %d paks - %s\n", numPaks - voidSlots, paklist.getData());
 
             outMsg.Init(msgBuf, msgBuf.capacity());
             outMsg.WriteShort(CONNECTIONLESS_MESSAGE_ID);
             outMsg.WriteString("downloadInfo");
             outMsg.WriteLong(dlRequest);
-            if (!game.DownloadRequest(Sys_NetAdrToString(from), ctos(this.challenges[iclient].guid), paklist.toString(), pakbuf)) {
+            if (!game.DownloadRequest(Sys_NetAdrToString(from), ctos(this.challenges[iclient].guid), paklist.getData(), pakbuf)) {
                 common.DPrintf("game: no downloads\n");
                 outMsg.WriteByte(SERVER_DL_NONE.ordinal());
                 this.serverPort.SendPacket(from, outMsg.GetData(), outMsg.GetSize());
@@ -2735,13 +2735,13 @@ public class AsyncServer {
                     if ((0 == dlSize[i]) || (0 == pakURLs.oGet(i).Length())) {
                         // still send the relative path so the client knows what it missed
                         tmpMsg.WriteByte(SERVER_PAK_NO.ordinal());
-                        tmpMsg.WriteString(pakNames.oGet(i).toString());
+                        tmpMsg.WriteString(pakNames.oGet(i).getData());
                     } else {
                         totalDlSize += dlSize[i];
                         numActualPaks++;
                         tmpMsg.WriteByte(SERVER_PAK_YES.ordinal());
-                        tmpMsg.WriteString(pakNames.oGet(i).toString());
-                        tmpMsg.WriteString(pakURLs.oGet(i).toString());
+                        tmpMsg.WriteString(pakNames.oGet(i).getData());
+                        tmpMsg.WriteString(pakURLs.oGet(i).getData());
                         tmpMsg.WriteLong(dlSize[i]);
                     }
 

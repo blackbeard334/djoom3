@@ -361,8 +361,8 @@ public class Model_ase {
                     matname = new idStr(ase.token.substring(1));
                     // convert the 3DSMax material pathname to a qpath
                     matname.BackSlashesToSlashes();
-                    qpath = new idStr(fileSystem.OSPathToRelativePath(matname.toString()));
-                    idStr.Copynz(ase.currentMaterial.name, qpath.toString(), ase.currentMaterial.name.length);
+                    qpath = new idStr(fileSystem.OSPathToRelativePath(matname.getData()));
+                    idStr.Copynz(ase.currentMaterial.name, qpath.getData(), ase.currentMaterial.name.length);
                     break;
                 case "*UVW_U_OFFSET":
                     material = ase.model.materials.oGet(ase.model.materials.Num() - 1);

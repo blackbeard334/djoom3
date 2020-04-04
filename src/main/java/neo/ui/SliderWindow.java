@@ -166,7 +166,7 @@ public class SliderWindow {
             if (this.buddyWin != null) {
                 this.buddyWin.HandleBuddyUpdate(this);
             } else {
-                this.gui.SetStateFloat(this.cvarStr.data.toString(), this.value.data);
+                this.gui.SetStateFloat(this.cvarStr.data.getData(), this.value.data);
                 UpdateCvar(false);
             }
 
@@ -321,7 +321,7 @@ public class SliderWindow {
             if (this.buddyWin != null) {
                 this.buddyWin.HandleBuddyUpdate(this);
             } else {
-                this.gui.SetStateFloat(this.cvarStr.data.toString(), this.value.data);
+                this.gui.SetStateFloat(this.cvarStr.data.getData(), this.value.data);
             }
             UpdateCvar(false);
 
@@ -422,7 +422,7 @@ public class SliderWindow {
                 return;
             }
 
-            this.cvar = cvarSystem.Find(this.cvarStr.data.toString());
+            this.cvar = cvarSystem.Find(this.cvarStr.data.getData());
             if (null == this.cvar) {
                 common.Warning("idSliderWindow.InitCvar: gui '%s' window '%s' references undefined cvar '%s'", this.gui.GetSourceFile(), this.name, this.cvarStr.c_str());
                 this.cvar_init = true;
@@ -439,11 +439,11 @@ public class SliderWindow {
             }
             if (force || this.liveUpdate.oCastBoolean()) {
                 this.value.data = this.cvar.GetFloat();
-                if (this.value.data != this.gui.State().GetFloat(this.cvarStr.data.toString())) {
+                if (this.value.data != this.gui.State().GetFloat(this.cvarStr.data.getData())) {
                     if (read) {
-                        this.gui.SetStateFloat(this.cvarStr.data.toString(), this.value.data);
+                        this.gui.SetStateFloat(this.cvarStr.data.getData(), this.value.data);
                     } else {
-                        this.value.data = this.gui.State().GetFloat(this.cvarStr.data.toString());
+                        this.value.data = this.gui.State().GetFloat(this.cvarStr.data.getData());
                         this.cvar.SetFloat(this.value.data);
                     }
                 }

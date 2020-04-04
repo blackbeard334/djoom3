@@ -35,10 +35,10 @@ import static neo.TempDump.NOT;
 import static neo.TempDump.flatten;
 import static neo.TempDump.wrapToNativeBuffer;
 import static neo.idlib.Lib.idLib.common;
-import static org.lwjgl.opengl.EXTTextureCompressionS3TC.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-import static org.lwjgl.opengl.EXTTextureCompressionS3TC.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_BORDER_COLOR;
+import static neo.opengl.QGLConstants.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+import static neo.opengl.QGLConstants.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+import static neo.opengl.QGLConstants.GL_TEXTURE_2D;
+import static neo.opengl.QGLConstants.GL_TEXTURE_BORDER_COLOR;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -291,7 +291,7 @@ public class Image_init {
                 final idList<Integer>[] classifications = new idList[IC_COUNT];
 
                 for (i = 0; i < count; i++) {
-                    final int cl = ClassifyImage(sortedArray[i].image.imgName.toString());
+                    final int cl = ClassifyImage(sortedArray[i].image.imgName.getData());
                     classifications[cl].Append(i);
                 }
 
@@ -360,7 +360,7 @@ public class Image_init {
                 int side;
                 final int[] orderRemap = {1, 3, 4, 2, 5, 6};
                 for (side = 0; side < 6; side++) {
-                    filename = String.format("%s%d%04i.tga", baseName.toString(), orderRemap[side], frameNum);
+                    filename = String.format("%s%d%04i.tga", baseName.getData(), orderRemap[side], frameNum);
 
                     common.Printf("reading %s\n", filename);
                     pics[side] = R_LoadImage(filename, width, height, null, true);
@@ -412,7 +412,7 @@ public class Image_init {
                     pics[side] = null;//Mem_Free(pics[side]);
 
                 }
-                filename = String.format("%sCM%04i.tga", baseName.toString(), frameNum);
+                filename = String.format("%sCM%04i.tga", baseName.getData(), frameNum);
 
                 common.Printf("writing %s\n", filename);
                 R_WriteTGA(filename, combined, width[0], height[0] * 6);

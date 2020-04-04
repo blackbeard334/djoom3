@@ -212,7 +212,7 @@ public class Moveable {
             this.spawnArgs.GetString("broken", "", this.brokenModel);
 
             if (this.health != 0) {
-                if (!this.brokenModel.IsEmpty() && NOT(renderModelManager.CheckModel(this.brokenModel.toString()))) {
+                if (!this.brokenModel.IsEmpty() && NOT(renderModelManager.CheckModel(this.brokenModel.getData()))) {
                     gameLocal.Error("idMoveable '%s' at (%s): cannot load broken model '%s'", this.name, GetPhysics().GetOrigin().ToString(0), this.brokenModel);
                 }
             }
@@ -361,7 +361,7 @@ public class Moveable {
                     f = v > this.maxDamageVelocity ? 1.0f : idMath.Sqrt(v - this.minDamageVelocity) * (1.0f / idMath.Sqrt(this.maxDamageVelocity - this.minDamageVelocity));
                     dir = velocity;
                     dir.NormalizeFast();
-                    ent.Damage(this, GetPhysics().GetClipModel().GetOwner(), dir, this.damage.toString(), f, INVALID_JOINT);
+                    ent.Damage(this, GetPhysics().GetClipModel().GetOwner(), dir, this.damage.getData(), f, INVALID_JOINT);
                     this.nextDamageTime = gameLocal.time + 1000;
                 }
             }
@@ -381,7 +381,7 @@ public class Moveable {
             }
 
             if (!this.brokenModel.IsEmpty()) {
-                SetModel(this.brokenModel.toString());
+                SetModel(this.brokenModel.getData());
             }
 
             if (this.explode) {
@@ -949,7 +949,7 @@ public class Moveable {
             idKeyValue kv = this.spawnArgs.MatchPrefix("def_debris");
             // bool first = true;
             while (kv != null) {
-                final idDict debris_args = gameLocal.FindEntityDefDict(kv.GetValue().toString(), false);
+                final idDict debris_args = gameLocal.FindEntityDefDict(kv.GetValue().getData(), false);
                 if (debris_args != null) {
                     final idEntity[] ent = {null};
                     idVec3 dir2;

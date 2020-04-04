@@ -109,23 +109,23 @@ public class Anim_Import {
                         }
                         this.dest = token;
                     } else {
-                        this.commandLine.oPluSet(va(" -%s", token.toString()));
+                        this.commandLine.oPluSet(va(" -%s", token.getData()));
                     }
                 } else {
-                    this.commandLine.oPluSet(va(" %s", token.toString()));
+                    this.commandLine.oPluSet(va(" %s", token.getData()));
                 }
             }
 
             if (sourcedir.Length() != 0) {
                 this.src.StripPath();
                 sourcedir.BackSlashesToSlashes();
-                this.src.oSet(String.format("%s/%s", sourcedir.toString(), this.src.toString()));
+                this.src.oSet(String.format("%s/%s", sourcedir.getData(), this.src.getData()));
             }
 
             if (destdir.Length() != 0) {
                 this.dest.StripPath();
                 destdir.BackSlashesToSlashes();
-                this.dest.oSet(String.format("%s/%s", destdir.toString(), this.dest.toString()));
+                this.dest.oSet(String.format("%s/%s", destdir.getData(), this.dest.getData()));
             }
 
             return true;
@@ -189,7 +189,7 @@ public class Anim_Import {
                     parser.ParseRestOfLine(parms);
 
                     if (defaultCommands.Length() != 0) {
-                        temp.oSet(String.format("%s %s", temp.toString(), defaultCommands));
+                        temp.oSet(String.format("%s %s", temp.getData(), defaultCommands));
                     }
 
                     if (parms.Length() != 0) {
@@ -212,10 +212,10 @@ public class Anim_Import {
                         } else if (command.equals("camera")) {
                             this.dest.SetFileExtension(MD5_CAMERA_EXT);
                         } else {
-                            this.dest.SetFileExtension(command.toString());
+                            this.dest.SetFileExtension(command.getData());
                         }
 //				idStr back = commandLine;
-                        this.commandLine.oSet(String.format("%s %s -dest %s -game %s%s", command.toString(), this.src.toString(), this.dest.toString(), game, this.commandLine.toString()));
+                        this.commandLine.oSet(String.format("%s %s -dest %s -game %s%s", command.getData(), this.src.getData(), this.dest.getData(), game, this.commandLine.getData()));
                         if (ConvertMayaToMD5()) {
                             count++;
                         } else {
@@ -471,7 +471,7 @@ public class Anim_Import {
             this.dest.oSet(model);
             this.dest.SetFileExtension(MD5_MESH_EXT);
 
-            this.commandLine.oSet(String.format("mesh %s -dest %s -game %s", this.src.toString(), this.dest.toString(), game));
+            this.commandLine.oSet(String.format("mesh %s -dest %s -game %s", this.src.getData(), this.dest.getData(), game));
             if (!ConvertMayaToMD5()) {
                 gameLocal.Printf("Failed to export '%s' : %s", this.src, Maya_Error);
                 return false;

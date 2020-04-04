@@ -193,7 +193,7 @@ public class Anim_Testmodel {
             headModel = this.spawnArgs.GetString("def_head", "");
             if (isNotNullOrEmpty(headModel)) {
                 jointName.oSet(this.spawnArgs.GetString("head_joint"));
-                joint = this.animator.GetJointHandle(jointName.toString());
+                joint = this.animator.GetJointHandle(jointName.getData());
                 if (joint == INVALID_JOINT) {
                     gameLocal.Warning("Joint '%s' not found for 'head_joint'", jointName);
                 } else {
@@ -226,13 +226,13 @@ public class Anim_Testmodel {
                             copyJoint.mod = JOINTMOD_LOCAL_OVERRIDE;
                         }
 
-                        copyJoint.from[0] = this.animator.GetJointHandle(jointName.toString());
+                        copyJoint.from[0] = this.animator.GetJointHandle(jointName.getData());
                         if (copyJoint.from[0] == INVALID_JOINT) {
                             gameLocal.Warning("Unknown copy_joint '%s'", jointName);
                             continue;
                         }
 
-                        copyJoint.to[0] = this.headAnimator.GetJointHandle(jointName.toString());
+                        copyJoint.to[0] = this.headAnimator.GetJointHandle(jointName.getData());
                         if (copyJoint.to[0] == INVALID_JOINT) {
                             gameLocal.Warning("Unknown copy_joint '%s' on head", jointName);
                             continue;
@@ -281,7 +281,7 @@ public class Anim_Testmodel {
             this.headAnim = 0;
             if (this.headAnimator != null) {
                 this.headAnimator.ClearAllAnims(gameLocal.time, 0);
-                this.headAnim = this.headAnimator.GetAnim(this.animName.toString());
+                this.headAnim = this.headAnimator.GetAnim(this.animName.getData());
                 if (0 == this.headAnim) {
                     this.headAnim = this.headAnimator.GetAnim("idle");
                 }
@@ -318,7 +318,7 @@ public class Anim_Testmodel {
             this.headAnim = 0;
             if (this.headAnimator != null) {
                 this.headAnimator.ClearAllAnims(gameLocal.time, 0);
-                this.headAnim = this.headAnimator.GetAnim(this.animName.toString());
+                this.headAnim = this.headAnimator.GetAnim(this.animName.getData());
                 if (0 == this.headAnim) {
                     this.headAnim = this.headAnimator.GetAnim("idle");
                 }
@@ -412,7 +412,7 @@ public class Anim_Testmodel {
             this.headAnim = 0;
             if (this.headAnimator != null) {
                 this.headAnimator.ClearAllAnims(gameLocal.time, 0);
-                this.headAnim = this.headAnimator.GetAnim(this.animName.toString());
+                this.headAnim = this.headAnimator.GetAnim(this.animName.getData());
                 if (0 == this.headAnim) {
                     this.headAnim = this.headAnimator.GetAnim("idle");
                     if (0 == this.headAnim) {
@@ -426,7 +426,7 @@ public class Anim_Testmodel {
             }
 
             this.animName.oSet(name);
-            gameLocal.Printf("anim '%s', %d.%03d seconds, %d frames\n", this.animName.toString(), this.animator.AnimLength(this.anim) / 1000, this.animator.AnimLength(this.anim) % 1000, this.animator.NumFrames(this.anim));
+            gameLocal.Printf("anim '%s', %d.%03d seconds, %d frames\n", this.animName.getData(), this.animator.AnimLength(this.anim) / 1000, this.animator.AnimLength(this.anim) % 1000, this.animator.NumFrames(this.anim));
 
             // reset the anim
             this.mode = -1;
@@ -648,7 +648,7 @@ public class Anim_Testmodel {
 
                 name.oSet(args.Argv(1));
 
-                entityDef = gameLocal.FindEntityDefDict(name.toString(), false);
+                entityDef = gameLocal.FindEntityDefDict(name.getData(), false);
                 if (entityDef != null) {
                     dict = entityDef;
                 } else {
@@ -661,13 +661,13 @@ public class Anim_Testmodel {
                             name.DefaultFileExtension(".ase");
                         }
 
-                        if (name.toString().contains(".ma") || name.toString().contains(".mb")) {
+                        if (name.getData().contains(".ma") || name.getData().contains(".mb")) {
                             final idModelExport exporter = new idModelExport();
-                            exporter.ExportModel(name.toString());
+                            exporter.ExportModel(name.getData());
                             name.SetFileExtension(MD5_MESH_EXT);
                         }
 
-                        if (NOT(renderModelManager.CheckModel(name.toString()))) {
+                        if (NOT(renderModelManager.CheckModel(name.getData()))) {
                             gameLocal.Printf("Can't register model\n");
                             return;
                         }

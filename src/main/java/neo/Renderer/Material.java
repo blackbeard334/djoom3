@@ -155,9 +155,9 @@ import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGESCAPECHARS;
 import static neo.idlib.Text.Token.TT_NUMBER;
 import static neo.idlib.precompiled.MAX_EXPRESSION_OPS;
 import static neo.idlib.precompiled.MAX_EXPRESSION_REGISTERS;
+import static neo.opengl.QGLConstants.GL_FRAGMENT_PROGRAM_ARB;
+import static neo.opengl.QGLConstants.GL_VERTEX_PROGRAM_ARB;
 import static neo.ui.UserInterface.uiManager;
-import static org.lwjgl.opengl.ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB;
-import static org.lwjgl.opengl.ARBVertexProgram.GL_VERTEX_PROGRAM_ARB;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -1148,7 +1148,7 @@ public class Material {
             }
             final idImage image = this.stages[0].texture.image[0];
             if (image != null) {
-                return image.imgName.toString();
+                return image.imgName.getData();
             }
             return "_scratch";
         }
@@ -1343,7 +1343,7 @@ public class Material {
         //------------------------------------------------------------------
         // returns the renderbump command line for this shader, or an empty string if not present
         public String GetRenderBump() {
-            return this.renderBump.toString();
+            return this.renderBump.getData();
         }
 
         // set specific material flag(s)
@@ -1378,7 +1378,7 @@ public class Material {
 
         // get material description
         public String GetDescription() {
-            return this.desc.toString();
+            return this.desc.getData();
         }
 
         // get sort order
@@ -1524,7 +1524,7 @@ public class Material {
                 }
             } else {
                 // look for an explicit one
-                this.editorImage = globalImages.ImageFromFile(this.editorImageName.toString(), TF_DEFAULT, true, TR_REPEAT, TD_DEFAULT);
+                this.editorImage = globalImages.ImageFromFile(this.editorImageName.getData(), TF_DEFAULT, true, TR_REPEAT, TD_DEFAULT);
             }
 
             if (null == this.editorImage) {
@@ -1804,13 +1804,13 @@ public class Material {
                     break;
                 } else if (0 == token.Icmp("qer_editorimage")) {
                     src.ReadTokenOnLine(token);
-                    this.editorImageName = new idStr(token.toString());
+                    this.editorImageName = new idStr(token.getData());
                     src.SkipRestOfLine();
                     continue;
                 } // description
                 else if (0 == token.Icmp("description")) {
                     src.ReadTokenOnLine(token);
-                    this.desc = new idStr(token.toString());
+                    this.desc = new idStr(token.getData());
                     continue;
                 } // check for the surface / content bit flags
                 else if (CheckSurfaceParm(token)) {
@@ -1936,7 +1936,7 @@ public class Material {
                     } else if (0 == token.Icmp("entity3")) {
                         this.entityGui = 3;
                     } else {
-                        this.gui = uiManager.FindGui(token.toString(), true);
+                        this.gui = uiManager.FindGui(token.getData(), true);
                     }
                     continue;
                 } // sort
@@ -1946,7 +1946,7 @@ public class Material {
                 } // spectrum <integer>
                 else if (0 == token.Icmp("spectrum")) {
                     src.ReadTokenOnLine(token);
-                    this.spectrum = atoi(token.toString());
+                    this.spectrum = atoi(token.getData());
                     continue;
                 } // deform < sprite | tube | flare >
                 else if (0 == token.Icmp("deform")) {
@@ -2012,7 +2012,7 @@ public class Material {
                     ParseStage(src, trpDefault);
                     continue;
                 } else {
-                    common.Warning("unknown general material parameter '%s' in '%s'", token.toString(), GetName());
+                    common.Warning("unknown general material parameter '%s' in '%s'", token.getData(), GetName());
                     SetMaterialFlag(MF_DEFAULTED);
                     return;
                 }
@@ -2102,7 +2102,7 @@ public class Material {
             } else if (0 == token.Icmp("portalSky")) {
                 this.sort = SS_PORTAL_SKY;
             } else {
-                this.sort = Float.parseFloat(token.toString());
+                this.sort = Float.parseFloat(token.getData());
             }
         }
 
@@ -2448,7 +2448,7 @@ public class Material {
                         }
                     }
                     ts.cinematic[0] = idCinematic.Alloc();
-                    ts.cinematic[0].InitFromFile(token.toString(), loop);
+                    ts.cinematic[0].InitFromFile(token.getData(), loop);
                     continue;
                 }
 
@@ -2458,7 +2458,7 @@ public class Material {
                         continue;
                     }
                     ts.cinematic[0] = new idSndWindow();
-                    ts.cinematic[0].InitFromFile(token.toString(), true);
+                    ts.cinematic[0].InitFromFile(token.getData(), true);
                     continue;
                 }
 
@@ -2552,7 +2552,7 @@ public class Material {
                         this.texGenRegisters[1] = ParseExpression(src);
                         this.texGenRegisters[2] = ParseExpression(src);
                     } else {
-                        common.Warning("bad texGen '%s' in material %s", token.toString(), GetName());
+                        common.Warning("bad texGen '%s' in material %s", token.getData(), GetName());
                         SetMaterialFlag(MF_DEFAULTED);
                     }
                     continue;
@@ -2746,27 +2746,27 @@ public class Material {
                 }
                 if (0 == token.Icmp("program")) {
                     if (src.ReadTokenOnLine(token)) {
-                        newStage.vertexProgram = R_FindARBProgram(GL_VERTEX_PROGRAM_ARB, token.toString());
-                        newStage.fragmentProgram = R_FindARBProgram(GL_FRAGMENT_PROGRAM_ARB, token.toString());
+                        newStage.vertexProgram = R_FindARBProgram(GL_VERTEX_PROGRAM_ARB, token.getData());
+                        newStage.fragmentProgram = R_FindARBProgram(GL_FRAGMENT_PROGRAM_ARB, token.getData());
                     }
                     continue;
                 }
                 if (0 == token.Icmp("fragmentProgram")) {
                     if (src.ReadTokenOnLine(token)) {
-                        newStage.fragmentProgram = R_FindARBProgram(GL_FRAGMENT_PROGRAM_ARB, token.toString());
+                        newStage.fragmentProgram = R_FindARBProgram(GL_FRAGMENT_PROGRAM_ARB, token.getData());
                     }
                     continue;
                 }
                 if (0 == token.Icmp("vertexProgram")) {
                     if (src.ReadTokenOnLine(token)) {
-                        newStage.vertexProgram = R_FindARBProgram(GL_VERTEX_PROGRAM_ARB, token.toString());
+                        newStage.vertexProgram = R_FindARBProgram(GL_VERTEX_PROGRAM_ARB, token.getData());
                     }
                     continue;
                 }
                 if (0 == token.Icmp("megaTexture")) {
                     if (src.ReadTokenOnLine(token)) {
                         newStage.megaTexture = new idMegaTexture();
-                        if (!newStage.megaTexture.InitFromMegaFile(token.toString())) {
+                        if (!newStage.megaTexture.InitFromMegaFile(token.getData())) {
 //					delete newStage.megaTexture;
                             newStage.megaTexture = null;
                             SetMaterialFlag(MF_DEFAULTED);
@@ -2788,7 +2788,7 @@ public class Material {
                     continue;
                 }
 
-                common.Warning("unknown token '%s' in material '%s'", token.toString(), GetName());
+                common.Warning("unknown token '%s' in material '%s'", token.getData(), GetName());
                 SetMaterialFlag(MF_DEFAULTED);
                 return;
             }
@@ -2911,7 +2911,7 @@ public class Material {
                 this.deformDecl = declManager.FindType(DECL_PARTICLE, token, true);
                 return;
             }
-            src.Warning("Bad deform type '%s'", token.toString());
+            src.Warning("Bad deform type '%s'", token.getData());
             SetMaterialFlag(MF_DEFAULTED);
         }
 

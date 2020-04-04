@@ -207,7 +207,7 @@ public class RegExp {
             for (int i = 0; i < 4; i++) {
                 f.WriteUnsignedShort(this.regs[i]);
             }
-            f.WriteHashString(this.name.toString());
+            f.WriteHashString(this.name.getData());
         }
 
         public void WriteToSaveGame(idFile savefile) {
@@ -249,7 +249,7 @@ public class RegExp {
         //
 
         public idRegisterList() {
-            this.regs = new idList<>(4);//.SetGranularity(4);
+            this.regs = new idList<idRegister>(4);//.SetGranularity(4);
             this.regHash = new idHashIndex(32, 4);//.SetGranularity(4);
 //            regHash.Clear(32, 4);
         }
@@ -266,13 +266,13 @@ public class RegExp {
                 reg = new idRegister(name, type);
                 reg.var = var;
                 if (type == idRegister.REGTYPE.STRING.ordinal()) {
-                    final idToken tok = new idToken();
-                    if (src.ReadToken(tok)) {
-                        if("#str_07184".equals(tok.toString())){
+                    final idToken token = new idToken();
+                    if (src.ReadToken(token)) {
+                        if("#str_07184".equals(token.getData())){
                             reg.DBG_D3_KEY = true;
                         }
-                        tok.oSet(common.GetLanguageDict().GetString(tok.toString()));
-                        var.Init(tok.toString(), win);
+                        token.oSet(common.GetLanguageDict().GetString(token.getData()));
+                        var.Init(token.getData(), win);
                     }
                 } else {
                     for (int i = 0; i < numRegs; i++) {
@@ -288,9 +288,9 @@ public class RegExp {
                 final int numRegs = idRegister.REGCOUNT[type];
                 reg.var = var;
                 if (type == idRegister.REGTYPE.STRING.ordinal()) {
-                    final idToken tok = new idToken();
-                    if (src.ReadToken(tok)) {
-                        var.Init(tok.toString(), win);
+                    final idToken token = new idToken();
+                    if (src.ReadToken(token)) {
+                        var.Init(token.getData(), win);
                     }
                 } else {
                     for (int i = 0; i < numRegs; i++) {

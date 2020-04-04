@@ -142,9 +142,9 @@ public class AAS_local {
             } else {
                 Shutdown();
 
-                this.file = AASFileManager.LoadAAS(mapName.toString(), mapFileCRC);
+                this.file = AASFileManager.LoadAAS(mapName.getData(), mapFileCRC);
                 if (NOT(this.file)) {
-                    common.DWarning("Couldn't load AAS file: '%s'", mapName.toString());
+                    common.DWarning("Couldn't load AAS file: '%s'", mapName.getData());
                     return false;
                 }
                 SetupRouting();

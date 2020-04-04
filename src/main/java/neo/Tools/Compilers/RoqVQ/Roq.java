@@ -299,7 +299,7 @@ public class Roq {
                 return;
             }
 
-            InitRoQFile(this.paramFile.outputFilename.toString());
+            InitRoQFile(this.paramFile.outputFilename.getData());
 
             this.numberOfFrames = this.paramFile.NumberOfFrames();
 
@@ -617,7 +617,7 @@ public class Roq {
         }
 
         public String CurrentFilename() {
-            return this.currentFile.toString();
+            return this.currentFile.getData();
         }
 
         public int NormalFrameSize() {

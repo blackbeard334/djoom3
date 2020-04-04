@@ -165,8 +165,8 @@ public class ServerScan {
             this.challenge = 0;
 
             this.net_info = new idDict();
-            this.net_servers = new idList<>();
-            this.m_sortedServers = new idList<>();
+            this.net_servers = new idList<inServer_t>();
+            this.m_sortedServers = new idList<Integer>();
             this.screenshot = new idStr();
             LocalClear();
         }
@@ -179,18 +179,18 @@ public class ServerScan {
             final idStr serv = new idStr(Sys_NetAdrToString(server.adr));
 
             if (server.challenge != this.challenge) {
-                common.DPrintf("idServerScan::InfoResponse - ignoring response from %s, wrong challenge %d.", serv.toString(), server.challenge);
+                common.DPrintf("idServerScan::InfoResponse - ignoring response from %s, wrong challenge %d.", serv.getData(), server.challenge);
                 return 0;
             }
 
             if (this.scan_state == NET_SCAN) {
-                final idKeyValue info = this.net_info.FindKey(serv.toString());
+                final idKeyValue info = this.net_info.FindKey(serv.getData());
                 if (null == info) {
-                    common.DPrintf("idServerScan::InfoResponse NET_SCAN: reply from unknown %s\n", serv.toString());
+                    common.DPrintf("idServerScan::InfoResponse NET_SCAN: reply from unknown %s\n", serv.getData());
                     return 0;
                 }
-                final int id = Integer.parseInt(info.GetValue().toString());
-                this.net_info.Delete(serv.toString());
+                final int id = Integer.parseInt(info.GetValue().getData());
+                this.net_info.Delete(serv.getData());
                 final inServer_t iserv = this.net_servers.oGet(id);
                 server.ping = Sys_Milliseconds() - iserv.time;
                 server.id = iserv.id;
@@ -202,7 +202,7 @@ public class ServerScan {
                 for (int i = 0; i < Num(); i++) {
 //                    if (memcmp((this.oGet(i).adr, server.adr, sizeof(netadr_t)) == 0) {
                     if (!this.oGet(i).adr.equals(server.adr)) {//TODO:override equals?
-                        common.DPrintf("idServerScan::InfoResponse LAN_SCAN: duplicate server %s\n", serv.toString());
+                        common.DPrintf("idServerScan::InfoResponse LAN_SCAN: duplicate server %s\n", serv.getData());
                         return 1;
                     }
                 }
@@ -340,9 +340,9 @@ public class ServerScan {
             // check for timeouts
             int i = 0;
             while (i < this.net_info.GetNumKeyVals()) {
-                if (timeout_limit > this.net_servers.oGet(Integer.parseInt(this.net_info.GetKeyVal(i).GetValue().toString())).time) {
-                    common.DPrintf("timeout %s\n", this.net_info.GetKeyVal(i).GetKey().toString());
-                    this.net_info.Delete(this.net_info.GetKeyVal(i).GetKey().toString());
+                if (timeout_limit > this.net_servers.oGet(Integer.parseInt(this.net_info.GetKeyVal(i).GetValue().getData())).time) {
+                    common.DPrintf("timeout %s\n", this.net_info.GetKeyVal(i).GetKey().getData());
+                    this.net_info.Delete(this.net_info.GetKeyVal(i).GetKey().getData());
                 } else {
                     i++;
                 }
@@ -567,7 +567,7 @@ public class ServerScan {
 //            if (false) {
 //                // filter out pure servers that won't provide checksumed game code for client OS
 //                keyval = server.serverInfo.FindKey("si_pure");
-//                if (keyval != null && 0 == idStr.Cmp(keyval.GetValue().toString(), "1")) {
+//                if (keyval != null && 0 == idStr.Cmp(keyval.GetValue().getData(), "1")) {
 //                    if ((server.OSMask & (1 << BUILD_OS_ID)) == 0) {
 //                        return true;
 //                    }
@@ -594,9 +594,9 @@ public class ServerScan {
             // players filter
             keyval = server.serverInfo.FindKey("si_maxPlayers");
             if (keyval != null) {
-                if ((gui_filter_players.GetInteger() == 1) && (server.clients == Integer.parseInt(keyval.GetValue().toString()))) {
+                if ((gui_filter_players.GetInteger() == 1) && (server.clients == Integer.parseInt(keyval.GetValue().getData()))) {
                     return true;
-                } else if ((gui_filter_players.GetInteger() == 2) && ((0 == server.clients) || (server.clients == Integer.parseInt(keyval.GetValue().toString())))) {
+                } else if ((gui_filter_players.GetInteger() == 2) && ((0 == server.clients) || (server.clients == Integer.parseInt(keyval.GetValue().getData())))) {
                     return true;
                 }
             }

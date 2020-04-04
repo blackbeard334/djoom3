@@ -72,7 +72,7 @@ public class RoqParam {
         //
 
         public String RoqFilename() {
-            return this.outputFilename.toString();
+            return this.outputFilename.getData();
         }
 
         public String RoqTempFilename() {
@@ -86,9 +86,9 @@ public class RoqParam {
                 }
             }
 
-            this.tempFilename = new idStr(String.format("/%s.temp", this.outputFilename.toString().substring(j + 1)));
+            this.tempFilename = new idStr(String.format("/%s.temp", this.outputFilename.getData().substring(j + 1)));
 
-            return this.tempFilename.toString();
+            return this.tempFilename.getData();
         }
 
         public String GetNextImageFilename() {
@@ -115,11 +115,11 @@ public class RoqParam {
                 }
             }
 
-            return this.currentFile.toString();
+            return this.currentFile.getData();
         }
 
         public String SoundFilename() {
-            return this.soundfile.toString();
+            return this.soundfile.getData();
         }
 
         public void InitFromFile(final String fileName) {
@@ -248,7 +248,7 @@ public class RoqParam {
 // starting palette
                 if (token.Icmp("start_palette") == 0) {
                     src.ReadToken(token);
-                    this.startPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.toString()));
+                    this.startPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.getData()));
 //			common.Error("  + starting palette is %s\n", startPal );
                     this.startPalette = true;
                     readarg++;
@@ -257,7 +257,7 @@ public class RoqParam {
 // ending palette
                 if (token.Icmp("end_palette") == 0) {
                     src.ReadToken(token);
-                    this.endPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.toString()));
+                    this.endPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.getData()));
 //			common.Printf("  + ending palette is %s\n", endPal );
                     this.endPalette = true;
                     readarg++;
@@ -266,7 +266,7 @@ public class RoqParam {
 // fixed palette
                 if (token.Icmp("fixed_palette") == 0) {
                     src.ReadToken(token);
-                    this.startPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.toString()));
+                    this.startPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.getData()));
 //			common.Printf("  + fixed palette is %s\n", startPal );
                     this.fixedPalette = true;
                     readarg++;
@@ -384,10 +384,10 @@ public class RoqParam {
                                 if (arg1.oGet(0) == '[') {
                                     this.range[this.field] = 1;
                                     if (this.useTimecodeForRange) {
-                                        this.realnum += parseTimecodeRange(arg1.toString(), this.field, this.skipnum, this.startnum, this.endnum, this.numfiles, this.padding, this.numpadding);
+                                        this.realnum += parseTimecodeRange(arg1.getData(), this.field, this.skipnum, this.startnum, this.endnum, this.numfiles, this.padding, this.numpadding);
 //								common.Printf("  + reading %s from %d to %d\n", file[field], startnum[field], endnum[field]);
                                     } else {
-                                        this.realnum += parseRange(arg1.toString(), this.field, this.skipnum, this.startnum, this.endnum, this.numfiles, this.padding, this.numpadding);
+                                        this.realnum += parseRange(arg1.getData(), this.field, this.skipnum, this.startnum, this.endnum, this.numfiles, this.padding, this.numpadding);
 //								common.Printf("  + reading %s from %d to %d\n", file[field], startnum[field], endnum[field]);
                                     }
                                 } else if ((arg1.oGet(0) != '[') && (arg2.oGet(0) == '[') && (arg3.oGet(0) == '[')) {  //a double ranger...
@@ -395,9 +395,9 @@ public class RoqParam {
 
                                     this.file2.oSet(this.field, arg1);
                                     this.range[this.field] = 2;
-                                    files1 = parseRange(arg2.toString(), this.field, this.skipnum, this.startnum, this.endnum, this.numfiles, this.padding, this.numpadding);
+                                    files1 = parseRange(arg2.getData(), this.field, this.skipnum, this.startnum, this.endnum, this.numfiles, this.padding, this.numpadding);
 //							common.Printf("  + reading %s from %d to %d\n", file[field], startnum[field], endnum[field]);
-                                    files2 = parseRange(arg3.toString(), this.field, this.skipnum2, this.startnum2, this.endnum2, this.numfiles, this.padding2, this.numpadding2);
+                                    files2 = parseRange(arg3.getData(), this.field, this.skipnum2, this.startnum2, this.endnum2, this.numfiles, this.padding2, this.numpadding2);
 //							common.Printf("  + reading %s from %d to %d\n", file2[field], startnum2[field], endnum2[field]);
                                     if (files1 != files2) {
                                         common.Error("You had %d files for %s and %d for %s!", files1, arg1, files2, arg2);
@@ -448,7 +448,7 @@ public class RoqParam {
 
             if (this.range[myfield] == 1) {
 
-                left = this.file.oGet(myfield).toString();
+                left = this.file.oGet(myfield).getData();
                 strp = left.indexOf("*");
                 strp++;
                 right = String.format("%s", left.substring(strp));
@@ -483,7 +483,7 @@ public class RoqParam {
                 }
             } else if (this.range[myfield] == 2) {
 
-                left = this.file.oGet(myfield).toString();
+                left = this.file.oGet(myfield).getData();
                 strp = left.indexOf("*");
                 strp++;
                 right = String.format("%s", left.substring(strp));
@@ -501,7 +501,7 @@ public class RoqParam {
                     fileName.oSet(String.format("%s%d%s", left, index, right));
                 }
 
-                left = this.file2.oGet(myfield).toString();
+                left = this.file2.oGet(myfield).getData();
                 strp = left.indexOf("*");
                 strp++;
                 right = String.format("%s", left.substring(strp));
@@ -519,7 +519,7 @@ public class RoqParam {
                     fileName.oPluSet(va("\n%s%d%s", left, index, right));
                 }
             } else {
-                fileName.oSet(this.file.oGet(myfield).toString());
+                fileName.oSet(this.file.oGet(myfield).getData());
             }
         }
 

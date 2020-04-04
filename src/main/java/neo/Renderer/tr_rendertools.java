@@ -99,36 +99,36 @@ import static neo.idlib.Lib.colorCyan;
 import static neo.idlib.Text.Str.va;
 import static neo.idlib.math.Vector.VectorMA;
 import static neo.idlib.math.Vector.VectorSubtract;
+import static neo.opengl.QGLConstants.GL_ALL_ATTRIB_BITS;
+import static neo.opengl.QGLConstants.GL_ALWAYS;
+import static neo.opengl.QGLConstants.GL_COLOR_BUFFER_BIT;
+import static neo.opengl.QGLConstants.GL_CULL_FACE;
+import static neo.opengl.QGLConstants.GL_DEPTH_COMPONENT;
+import static neo.opengl.QGLConstants.GL_DEPTH_TEST;
+import static neo.opengl.QGLConstants.GL_EQUAL;
+import static neo.opengl.QGLConstants.GL_FLOAT;
+import static neo.opengl.QGLConstants.GL_INCR;
+import static neo.opengl.QGLConstants.GL_KEEP;
+import static neo.opengl.QGLConstants.GL_LINES;
+import static neo.opengl.QGLConstants.GL_LINE_LOOP;
+import static neo.opengl.QGLConstants.GL_MODELVIEW;
+import static neo.opengl.QGLConstants.GL_POLYGON;
+import static neo.opengl.QGLConstants.GL_POLYGON_OFFSET_FILL;
+import static neo.opengl.QGLConstants.GL_POLYGON_OFFSET_LINE;
+import static neo.opengl.QGLConstants.GL_PROJECTION;
+import static neo.opengl.QGLConstants.GL_QUADS;
+import static neo.opengl.QGLConstants.GL_RGBA;
+import static neo.opengl.QGLConstants.GL_SCISSOR_TEST;
+import static neo.opengl.QGLConstants.GL_STENCIL_BUFFER_BIT;
+import static neo.opengl.QGLConstants.GL_STENCIL_INDEX;
+import static neo.opengl.QGLConstants.GL_STENCIL_TEST;
+import static neo.opengl.QGLConstants.GL_TEXTURE_2D;
+import static neo.opengl.QGLConstants.GL_TEXTURE_COORD_ARRAY;
+import static neo.opengl.QGLConstants.GL_TRIANGLES;
+import static neo.opengl.QGLConstants.GL_UNSIGNED_BYTE;
 import static neo.ui.DeviceContext.idDeviceContext.colorBlue;
 import static neo.ui.DeviceContext.idDeviceContext.colorRed;
 import static neo.ui.DeviceContext.idDeviceContext.colorWhite;
-import static org.lwjgl.opengl.GL11.GL_ALL_ATTRIB_BITS;
-import static org.lwjgl.opengl.GL11.GL_ALWAYS;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_COMPONENT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_EQUAL;
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL11.GL_INCR;
-import static org.lwjgl.opengl.GL11.GL_KEEP;
-import static org.lwjgl.opengl.GL11.GL_LINES;
-import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
-import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
-import static org.lwjgl.opengl.GL11.GL_POLYGON;
-import static org.lwjgl.opengl.GL11.GL_POLYGON_OFFSET_FILL;
-import static org.lwjgl.opengl.GL11.GL_POLYGON_OFFSET_LINE;
-import static org.lwjgl.opengl.GL11.GL_PROJECTION;
-import static org.lwjgl.opengl.GL11.GL_QUADS;
-import static org.lwjgl.opengl.GL11.GL_RGBA;
-import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
-import static org.lwjgl.opengl.GL11.GL_STENCIL_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_STENCIL_INDEX;
-import static org.lwjgl.opengl.GL11.GL_STENCIL_TEST;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 
 import java.nio.ByteBuffer;
 
@@ -2014,7 +2014,7 @@ public class tr_rendertools {
         text = rb_debugText[text_index = 0];
         for (i = 0; i < rb_numDebugText; i++, text = rb_debugText[++text_index]) {
             if (!text.depthTest) {
-                RB_DrawText(text.text.toString(), text.origin, text.scale, text.color, text.viewAxis, text.align);
+                RB_DrawText(text.text.getData(), text.origin, text.scale, text.color, text.viewAxis, text.align);
             }
         }
 
@@ -2025,7 +2025,7 @@ public class tr_rendertools {
         text = rb_debugText[text_index = 0];
         for (i = 0; i < rb_numDebugText; i++, text = rb_debugText[++text_index]) {
             if (text.depthTest) {
-                RB_DrawText(text.text.toString(), text.origin, text.scale, text.color, text.viewAxis, text.align);
+                RB_DrawText(text.text.getData(), text.origin, text.scale, text.color, text.viewAxis, text.align);
             }
         }
 

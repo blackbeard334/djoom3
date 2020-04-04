@@ -486,7 +486,7 @@ public class Str {
         }
 
         public int Cmp(final idStr text) {
-            return Cmp(text.toString());
+            return Cmp(text.getData());
         }
 
         public int Cmpn(final String text, int n) {
@@ -506,7 +506,7 @@ public class Str {
         }
 
         public int Icmp(final idStr text) {
-            return this.Icmp(text.toString());
+            return this.Icmp(text.getData());
         }
 
         public int Icmpn(final String text, int n) {
@@ -527,7 +527,7 @@ public class Str {
 
         public int IcmpNoColor(final idStr text) {
 
-            return this.IcmpNoColor(text.toString());
+            return this.IcmpNoColor(text.getData());
         }
 
         // compares paths and makes sure folders come first
@@ -1077,7 +1077,7 @@ public class Str {
         }
 
         public idStr SetFileExtension(final idStr extension) {
-            return SetFileExtension(extension.toString());
+            return SetFileExtension(extension.getData());
         }
 
         public idStr StripFileExtension() {// remove any file extension
@@ -1174,7 +1174,7 @@ public class Str {
         }
 
         public void AppendPath(final idStr text) {
-            Append(text.toString());
+            Append(text.getData());
         }
 
         public idStr StripFilename() {// remove the filename from a path
@@ -1284,7 +1284,7 @@ public class Str {
         public static int Length(final char[] s) {
             int i;
             for (i = 0; (i < s.length) && (s[i] != 0); i++) {
-				
+				;
 			}
 
             return i;
@@ -1408,7 +1408,7 @@ public class Str {
         }
 
         public static int Cmp(final idStr s1, final idStr s2) {
-            return Cmp(s1.toString(), s2.toString());
+            return Cmp(s1.getData(), s2.getData());
         }
 
         public static int Cmp(final String s1, final String s2) {
@@ -1454,11 +1454,11 @@ public class Str {
         }
 
         public static int Icmpn(final idStr s1, final idStr s2, int n) {
-            return Icmpn(s1.toString(), s2.toString(), n);
+            return Icmpn(s1.getData(), s2.getData(), n);
         }
 
         public static int Icmpn(final idStr s1, final String s2, int n) {
-            return Icmpn(s1.toString(), s2, n);
+            return Icmpn(s1.getData(), s2, n);
         }
 
         public static int IcmpNoColor(final String s1, final String s2) {
@@ -1950,7 +1950,7 @@ public class Str {
                         filterIndex++;
                     }
                     if (buf.Length() > 0) {
-                        index = /*new idStr(name).*/ Find(buf.toString(), casesensitive);//TODO:remove stuff
+                        index = /*new idStr(name).*/ Find(buf.getData(), casesensitive);//TODO:remove stuff
                         if (index == -1) {
                             return false;
                         }
@@ -2503,7 +2503,9 @@ public class Str {
         @Override
         @Deprecated
         public String toString() {
-            return getData();
+            // direct access replaced
+        	// TODO: analyze indirect access as object.toString()
+        	return getData();
         }
 
         public String getData() {

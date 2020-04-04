@@ -181,10 +181,10 @@ public class Model_ma {
                 parser.ReadToken(token);
                 if (0 == token.Icmp("n")) {
                     parser.ReadToken(token);
-                    header.name = token.toString();
+                    header.name = token.getData();
                 } else if (0 == token.Icmp("p")) {
                     parser.ReadToken(token);
-                    header.parent = token.toString();
+                    header.parent = token.getData();
                 }
             } else if (0 == token.Icmp(";")) {
                 break;
@@ -229,7 +229,7 @@ public class Model_ma {
                 parser.ReadToken(token);
             }
         }
-        header.name = token.toString();
+        header.name = token.getData();
         return true;
     }
 
@@ -838,7 +838,7 @@ public class Model_ma {
                     maFileNode_t fileNode;
                     fileNode = new maFileNode_t();// Mem_Alloc(sizeof(maFileNode_t));
                     fileNode.name = header.name;
-                    fileNode.path = token.toString();
+                    fileNode.path = token.getData();
 
                     maGlobal.model.fileNodes.Set(fileNode.name, fileNode);
                 } else {
@@ -943,10 +943,10 @@ public class Model_ma {
 
             //Is this attribute a material node attribute
             final maMaterialNode_s[] matNode = new maMaterialNode_s[1];
-            maGlobal.model.materialNodes.Get(srcName.toString(), matNode);
+            maGlobal.model.materialNodes.Get(srcName.getData(), matNode);
             if (matNode[0] != null) {
                 final maMaterialNode_s[] destNode = new maMaterialNode_s[1];
-                maGlobal.model.materialNodes.Get(destName.toString(), destNode);
+                maGlobal.model.materialNodes.Get(destName.getData(), destNode);
                 if (destNode[0] != null) {
                     destNode[0].child = matNode[0];
                 }
@@ -954,10 +954,10 @@ public class Model_ma {
 
             //Is this attribute a file node
             final maFileNode_t[] fileNode = new maFileNode_t[1];
-            maGlobal.model.fileNodes.Get(srcName.toString(), fileNode);
+            maGlobal.model.fileNodes.Get(srcName.getData(), fileNode);
             if (fileNode[0] != null) {
                 final maMaterialNode_s[] destNode = new maMaterialNode_s[1];
-                maGlobal.model.materialNodes.Get(destName.toString(), destNode);
+                maGlobal.model.materialNodes.Get(destName.getData(), destNode);
                 if (destNode[0] != null) {
                     destNode[0].file = fileNode[0];
                 }
@@ -969,7 +969,7 @@ public class Model_ma {
             for (int i = 0; i < maGlobal.model.objects.Num(); i++) {
                 if (maGlobal.model.objects.oGet(i).name.equals(srcName)) {
                     //maGlobal.model.objects.oGet(i).materialRef = MA_AddMaterial(destName);
-                    maGlobal.model.objects.oGet(i).materialName = destName.toString();
+                    maGlobal.model.objects.oGet(i).materialName = destName.getData();
                     break;
                 }
             }

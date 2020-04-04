@@ -835,7 +835,7 @@ public class Script_Compiler {
             // Save the token's line number and filename since when we emit opcodes the current 
             // token is always the next one to be read 
             this.currentLineNumber = this.token.line;
-            this.currentFileNumber = gameLocal.program.GetFilenum(this.parserPtr.GetFileName().toString());
+            this.currentFileNumber = gameLocal.program.GetFilenum(this.parserPtr.GetFileName().getData());
 
             bla2++;
             if (!this.parserPtr.ReadToken(this.token)) {
@@ -843,7 +843,7 @@ public class Script_Compiler {
                 return;
             }
 
-            if (this.currentFileNumber != gameLocal.program.GetFilenum(this.parserPtr.GetFileName().toString())) {
+            if (this.currentFileNumber != gameLocal.program.GetFilenum(this.parserPtr.GetFileName().getData())) {
                 if ((this.braceDepth > 0) && !this.token.equals("}")) {
                     // missing a closing brace.  try to give as much info as possible.
                     if (this.scope.Type() == ev_function) {
@@ -867,7 +867,7 @@ public class Script_Compiler {
                 case TT_LITERAL: {
                     // handle quoted vectors as a unit
                     this.immediateType = type_vector;
-                    final idLexer lex = new idLexer(this.token.toString(), this.token.Length(), this.parserPtr.GetFileName().toString(), LEXFL_NOERRORS);
+                    final idLexer lex = new idLexer(this.token.getData(), this.token.Length(), this.parserPtr.GetFileName().getData(), LEXFL_NOERRORS);
                     final idToken token2 = new idToken();
                     this.immediate = new eval_s(new float[3]);
                     for (i = 0; i < 3; i++) {
@@ -951,7 +951,7 @@ public class Script_Compiler {
          =============
          */
         private boolean CheckToken(final String string) {
-            if (!this.token.toString().equals(string)) {//TODO:try to use the idStr::Cmp in the overridden token.equals() method.
+            if (!this.token.getData().equals(string)) {//TODO:try to use the idStr::Cmp in the overridden token.equals() method.
                 return false;
             }
 
@@ -1037,7 +1037,7 @@ public class Script_Compiler {
             } else if (this.token.equals("scriptEvent")) {
                 type = type_scriptevent;
             } else {
-                type = gameLocal.program.FindType(this.token.toString());
+                type = gameLocal.program.FindType(this.token.getData());
                 if ((type != null) && !type.Inherits(type_object)) {
                     type = null;
                 }
@@ -1058,7 +1058,7 @@ public class Script_Compiler {
 
             type = CheckType();
             if (null == type) {
-                Error("\"%s\" is not a type", this.token.toString());
+                Error("\"%s\" is not a type", this.token.getData());
             }
 
             if ((type == type_scriptevent) && (this.scope != def_namespace)) {
@@ -1273,7 +1273,7 @@ public class Script_Compiler {
             idVarDef def;
 
             blaaaa++;
-            def = GetImmediate(this.immediateType, this.immediate, this.token.toString());
+            def = GetImmediate(this.immediateType, this.immediate, this.token.getData());
             NextToken();
 
             return def;
@@ -1604,7 +1604,7 @@ public class Script_Compiler {
             }
 
             ParseName(name);
-            def = LookupDef(name.toString(), this.basetype);
+            def = LookupDef(name.getData(), this.basetype);
             if (NOT(def)) {
                 if (this.basetype != null) {
                     Error("%s is not a member of %s", name, this.basetype.TypeDef().Name());
@@ -1617,7 +1617,7 @@ public class Script_Compiler {
                     ExpectToken("::");
                     ParseName(name);
                     namespaceDef = def;
-                    def = gameLocal.program.GetDef(null, name.toString(), namespaceDef);
+                    def = gameLocal.program.GetDef(null, name.getData(), namespaceDef);
                     if (NOT(def)) {
                         Error("Unknown value \"%s::%s\"", namespaceDef.GlobalName(), name);
                     }
@@ -2389,12 +2389,12 @@ public class Script_Compiler {
 
                 // check for a function prototype or declaraction
                 if (CheckToken("(")) {
-                    ParseFunctionDef(newtype.FieldType(), name.toString());
+                    ParseFunctionDef(newtype.FieldType(), name.getData());
                 } else {
                     type = gameLocal.program.GetType(newtype, true);
                     assert (NOT(type.def));
-                    gameLocal.program.AllocDef(type, name.toString(), this.scope, true);
-                    objtype.AddField(type, name.toString());
+                    gameLocal.program.AllocDef(type, name.getData(), this.scope, true);
+                    objtype.AddField(type, name.getData());
                     ExpectToken(";");
                 }
             } while (!CheckToken("}"));
@@ -2425,7 +2425,7 @@ public class Script_Compiler {
                 do {
                     type = ParseType();
                     ParseName(parmName);
-                    newtype.AddFunctionParm(type, parmName.toString());
+                    newtype.AddFunctionParm(type, parmName.getData());
                 } while (CheckToken(","));
 
                 ExpectToken(")");
@@ -2638,7 +2638,7 @@ public class Script_Compiler {
 
                     // global variables are initialized at start up
                     if (type == type_string) {
-                        def.SetString(this.token.toString(), false);
+                        def.SetString(this.token.getData(), false);
                     } else {
                         if (negate) {
                             this.immediate = new eval_s(-this.immediate._float);
@@ -2761,20 +2761,20 @@ public class Script_Compiler {
             if (type == type_scriptevent) {
                 type = ParseType();
                 ParseName(name);
-                ParseEventDef(type, name.toString());
+                ParseEventDef(type, name.getData());
                 return;
             }
 
             ParseName(name);
 
             if (type == type_namespace) {
-                def = gameLocal.program.GetDef(type, name.toString(), this.scope);
+                def = gameLocal.program.GetDef(type, name.getData(), this.scope);
                 if (NOT(def)) {
-                    def = gameLocal.program.AllocDef(type, name.toString(), this.scope, true);
+                    def = gameLocal.program.AllocDef(type, name.getData(), this.scope, true);
                 }
                 ParseNamespace(def);
             } else if (CheckToken("::")) {
-                def = gameLocal.program.GetDef(null, name.toString(), this.scope);
+                def = gameLocal.program.GetDef(null, name.getData(), this.scope);
                 if (NOT(def)) {
                     Error("Unknown object name '%s'", name);
                 }
@@ -2783,17 +2783,17 @@ public class Script_Compiler {
                 this.scope = def;
 
                 ExpectToken("(");
-                ParseFunctionDef(type, name.toString());
+                ParseFunctionDef(type, name.getData());
                 this.scope = oldscope;
             } else if (type == type_object) {
-                ParseObjectDef(name.toString());
+                ParseObjectDef(name.getData());
             } else if (CheckToken("(")) {		// check for a function prototype or declaraction
-                ParseFunctionDef(type, name.toString());
+                ParseFunctionDef(type, name.getData());
             } else {
-                ParseVariableDef(type, name.toString());
+                ParseVariableDef(type, name.getData());
                 while (CheckToken(",")) {
                     ParseName(name);
-                    ParseVariableDef(type, name.toString());
+                    ParseVariableDef(type, name.getData());
                 }
                 ExpectToken(";");
             }

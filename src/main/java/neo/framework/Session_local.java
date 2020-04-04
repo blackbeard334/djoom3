@@ -688,7 +688,7 @@ public class Session_local {
             if (this.aviCaptureMode) {
                 idStr name;
 
-                name = new idStr(va("demos/%s/%s_%05i.tga", this.aviDemoShortName.toString(), this.aviDemoShortName.toString(), this.aviTicStart));
+                name = new idStr(va("demos/%s/%s_%05i.tga", this.aviDemoShortName.getData(), this.aviDemoShortName.getData(), this.aviTicStart));
 
                 final float ratio = 30.0f / (1000.0f / USERCMD_MSEC / com_aviDemoTics.GetInteger());
                 this.aviDemoFrameCount += ratio;
@@ -696,8 +696,8 @@ public class Session_local {
                     // skipped frames so write them out
                     int c = (int) (this.aviDemoFrameCount - this.aviTicStart);
                     while (c-- != 0) {
-                        renderSystem.TakeScreenshot(com_aviDemoWidth.GetInteger(), com_aviDemoHeight.GetInteger(), name.toString(), com_aviDemoSamples.GetInteger(), null);
-                        name.oSet(va("demos/%s/%s_%05i.tga", this.aviDemoShortName.toString(), this.aviDemoShortName.toString(), ++this.aviTicStart));
+                        renderSystem.TakeScreenshot(com_aviDemoWidth.GetInteger(), com_aviDemoHeight.GetInteger(), name.getData(), com_aviDemoSamples.GetInteger(), null);
+                        name.oSet(va("demos/%s/%s_%05i.tga", this.aviDemoShortName.getData(), this.aviDemoShortName.getData(), ++this.aviTicStart));
                     }
                 }
                 this.aviTicStart = (int) this.aviDemoFrameCount;
@@ -706,7 +706,7 @@ public class Session_local {
                 console.ClearNotifyLines();
 
                 // this will call Draw, possibly multiple times if com_aviDemoSamples is > 1
-                renderSystem.TakeScreenshot(com_aviDemoWidth.GetInteger(), com_aviDemoHeight.GetInteger(), name.toString(), com_aviDemoSamples.GetInteger(), null);
+                renderSystem.TakeScreenshot(com_aviDemoWidth.GetInteger(), com_aviDemoHeight.GetInteger(), name.getData(), com_aviDemoSamples.GetInteger(), null);
             }
 
             // at startup, we may be backwards
@@ -1207,7 +1207,7 @@ public class Session_local {
                 if (type == MSG_PROMPT) {
                     if (this.msgRetIndex == 0) {
                         this.guiMsg.State().GetString("str_entry", "", this.msgFireBack[0]);
-                        return this.msgFireBack[0].toString();
+                        return this.msgFireBack[0].getData();
                     } else {
                         return null;
                     }
@@ -1221,12 +1221,12 @@ public class Session_local {
                                 this.guiMsg.State().GetString("visible_xpchk"),
                                 this.guiMsg.State().GetString("str_xpkey"),
                                 this.guiMsg.State().GetString("str_xpchk")));
-                        return this.msgFireBack[0].toString();
+                        return this.msgFireBack[0].getData();
                     } else {
                         return null;
                     }
                 } else {
-                    return this.msgFireBack[this.msgRetIndex].toString();
+                    return this.msgFireBack[this.msgRetIndex].getData();
                 }
             }
             return null;
@@ -1300,16 +1300,16 @@ public class Session_local {
                         if (dltotal != 0) {
                             sTotal.BestUnit("%.2f", dltotal, MEASURE_SIZE);
                             if (lapsed < 2000) {
-                                sMsg = String.format("%s / %s", sNow.toString(), sTotal.toString());
+                                sMsg = String.format("%s / %s", sNow.getData(), sTotal.getData());
                             } else {
                                 sETA = String.format("%.0f sec", ((((float) dltotal / (float) dlnow) - 1.0f) * lapsed) / 1000);
-                                sMsg = String.format("%s / %s ( %s - %s )", sNow.toString(), sTotal.toString(), sBW.toString(), sETA);
+                                sMsg = String.format("%s / %s ( %s - %s )", sNow.getData(), sTotal.getData(), sBW.getData(), sETA);
                             }
                         } else {
                             if (lapsed < 2000) {
-                                sMsg = sNow.toString();
+                                sMsg = sNow.getData();
                             } else {
-                                sMsg = String.format("%s - %s", sNow.toString(), sBW.toString());
+                                sMsg = String.format("%s - %s", sNow.getData(), sBW.getData());
                             }
                         }
                         if (dltotal != 0) {
@@ -1639,7 +1639,7 @@ public class Session_local {
 
         @Override
         public String GetCurrentMapName() {
-            return this.currentMapName.toString();
+            return this.currentMapName.getData();
         }
 
         @Override
@@ -1925,10 +1925,10 @@ public class Session_local {
                 // Open savegame file
                 // only allow loads from the game directory because we don't want a base game to load
                 final idStr game = new idStr(cvarSystem.GetCVarString("fs_game"));
-                this.savegameFile = fileSystem.OpenFileRead(in.toString(), true, game.Length() != 0 ? game.toString() : null);
+                this.savegameFile = fileSystem.OpenFileRead(in.getData(), true, game.Length() != 0 ? game.getData() : null);
 
                 if (this.savegameFile == null) {
-                    common.Warning("Couldn't open savegame file %s", in.toString());
+                    common.Warning("Couldn't open savegame file %s", in.getData());
                     return false;
                 }
 
@@ -1940,8 +1940,8 @@ public class Session_local {
                 this.savegameFile.ReadString(gamename);
 
                 // if this isn't a savegame for the correct game, abort loadgame
-                if (!gamename.toString().equals(GAME_NAME)) {
-                    common.Warning("Attempted to load an invalid savegame: %s", in.toString());
+                if (!gamename.getData().equals(GAME_NAME)) {
+                    common.Warning("Attempted to load an invalid savegame: %s", in.getData());
 
                     this.loadingSaveGame = false;
                     fileSystem.CloseFile(this.savegameFile);
@@ -1984,7 +1984,7 @@ public class Session_local {
                     this.mapSpawnData.serverInfo = cvarSystem.MoveCVarsToDict(CVAR_SERVERINFO);
                     this.mapSpawnData.serverInfo.Set("si_gameType", "singleplayer");
 
-                    this.mapSpawnData.serverInfo.Set("si_map", saveMap.toString());
+                    this.mapSpawnData.serverInfo.Set("si_map", saveMap.getData());
 
                     this.mapSpawnData.syncedCVars.Clear();
                     this.mapSpawnData.syncedCVars = cvarSystem.MoveCVarsToDict(CVAR_NETWORKSYNC);
@@ -2060,9 +2060,9 @@ public class Session_local {
 //                descriptionFile.SetFileExtension(".txt");
 //
 //                // Open savegame file
-//                idFile fileOut = fileSystem.OpenFileWrite(gameFile.toString());
+//                idFile fileOut = fileSystem.OpenFileWrite(gameFile.getData());
 //                if (fileOut == null) {
-//                    common.Warning("Failed to open save file '%s'\n", gameFile.toString());
+//                    common.Warning("Failed to open save file '%s'\n", gameFile.getData());
 //                    if (pauseWorld != null) {
 //                        soundSystem.SetPlayingSoundWorld(pauseWorld);
 //                        pauseWorld.UnPause();
@@ -2099,13 +2099,13 @@ public class Session_local {
 //                if (!autosave) {
 //                    renderSystem.CropRenderSize(320, 240, false);
 //                    game.Draw(0);
-//                    renderSystem.CaptureRenderToFile(previewFile.toString(), true);
+//                    renderSystem.CaptureRenderToFile(previewFile.getData(), true);
 //                    renderSystem.UnCrop();
 //                }
 //
 //                // Write description, which is just a text file with
 //                // the unclean save name on line 1, map name on line 2, screenshot on line 3
-//                idFile fileDesc = fileSystem.OpenFileWrite(descriptionFile.toString());
+//                idFile fileDesc = fileSystem.OpenFileWrite(descriptionFile.getData());
 //                if (fileDesc == null) {
 //                    common.Warning("Failed to open description file '%s'\n", descriptionFile);
 //                    if (pauseWorld != null) {
@@ -2131,7 +2131,7 @@ public class Session_local {
 //                    idStr sshot = new idStr(mapSpawnData.serverInfo.GetString("si_map"));
 //                    sshot.StripPath();
 //                    sshot.StripFileExtension();
-//                    fileDesc.Printf("\"guis/assets/autosave/%s\"\n", sshot.toString());
+//                    fileDesc.Printf("\"guis/assets/autosave/%s\"\n", sshot.getData());
 //                } else {
 //                    fileDesc.Printf("\"\"\n");
 //                }
@@ -2155,7 +2155,7 @@ public class Session_local {
         }
 
         public String GetAuthMsg() {
-            return this.authMsg.toString();
+            return this.authMsg.getData();
         }
 
         public void Clear() {
@@ -2372,7 +2372,7 @@ public class Session_local {
             SaveCmdDemoToFile(cmdDemoFile);
 
             if (save) {
-                final idFile statsFile = fileSystem.OpenFileWrite(statsName.toString());
+                final idFile statsFile = fileSystem.OpenFileWrite(statsName.getData());
                 if (statsFile != null) {
                     statsFile.WriteInt(this.statIndex);//statsFile->Write( &statIndex, sizeof( statIndex ) );//TODO
                     for (int i = 0; i < (this.numClients * this.statIndex); i++) {
@@ -2396,10 +2396,10 @@ public class Session_local {
             final idStr fullDemoName = new idStr("demos/");
             fullDemoName.Append(demoName);
             fullDemoName.DefaultFileExtension(".cdemo");
-            this.cmdDemoFile = fileSystem.OpenFileRead(fullDemoName.toString());
+            this.cmdDemoFile = fileSystem.OpenFileRead(fullDemoName.getData());
 
             if (this.cmdDemoFile == null) {
-                common.Printf("Couldn't open %s\n", fullDemoName.toString());
+                common.Printf("Couldn't open %s\n", fullDemoName.getData());
                 return;
             }
 
@@ -2411,7 +2411,7 @@ public class Session_local {
             // start the map
             ExecuteMapChange();
 
-            this.cmdDemoFile = fileSystem.OpenFileRead(fullDemoName.toString());
+            this.cmdDemoFile = fileSystem.OpenFileRead(fullDemoName.getData());
 
             // have to do this twice as the execmapchange clears the cmddemofile
             LoadCmdDemoFromFile(this.cmdDemoFile);
@@ -2555,7 +2555,7 @@ public class Session_local {
             this.guiLoading.SetStateString("demo", common.GetLanguageDict().GetString("#str_02087"));
             this.readDemo = new idDemoFile();
             demoName.DefaultFileExtension(".demo");
-            if (!this.readDemo.OpenForReading(demoName.toString())) {
+            if (!this.readDemo.OpenForReading(demoName.getData())) {
                 common.Printf("couldn't open %s\n", demoName);
 //		delete readDemo;
                 this.readDemo = null;
@@ -2615,12 +2615,12 @@ public class Session_local {
             cvarSystem.SetCVarInteger("com_compressDemos", Integer.parseInt(scheme));
 
             final idDemoFile demoread = new idDemoFile(), demowrite = new idDemoFile();
-            if (!demoread.OpenForReading(fullDemoName.toString())) {
-                common.Printf("Could not open %s for reading\n", fullDemoName.toString());
+            if (!demoread.OpenForReading(fullDemoName.getData())) {
+                common.Printf("Could not open %s for reading\n", fullDemoName.getData());
                 return;
             }
-            if (!demowrite.OpenForWriting(compressedName.toString())) {
-                common.Printf("Could not open %s for writing\n", compressedName.toString());
+            if (!demowrite.OpenForWriting(compressedName.getData())) {
+                common.Printf("Could not open %s for writing\n", compressedName.getData());
                 demoread.Close();
                 cvarSystem.SetCVarBool("com_preloadDemos", savedPreload);
                 cvarSystem.SetCVarInteger("com_compressDemos", savedCompression);
@@ -2689,7 +2689,7 @@ public class Session_local {
                 return;
             }
 
-            BeginAVICapture(demoName.toString());
+            BeginAVICapture(demoName.getData());
 
             // I don't understand why I need to do this twice, something
             // strange with the nvidia swapbuffers?
@@ -2737,7 +2737,7 @@ public class Session_local {
             this.aviCaptureMode = true;
             this.aviDemoFrameCount = 0;
             this.aviTicStart = 0;
-            this.sw.AVIOpen(va("demos/%s/", this.aviDemoShortName), this.aviDemoShortName.toString());
+            this.sw.AVIOpen(va("demos/%s/", this.aviDemoShortName), this.aviDemoShortName.getData());
         }
 
         public void EndAVICapture() {
@@ -2933,7 +2933,7 @@ public class Session_local {
             // load / program a gui to stay up on the screen while loading
             final idStr stripped = new idStr(mapName).StripFileExtension().StripPath();
 
-            final String guiMap = va("guis/map/%." + MAX_STRING_CHARS + "s.gui", stripped.toString());//char guiMap[ MAX_STRING_CHARS ];
+            final String guiMap = va("guis/map/%." + MAX_STRING_CHARS + "s.gui", stripped.getData());//char guiMap[ MAX_STRING_CHARS ];
             // give the gamecode a chance to override
             game.GetMapLoadingGUI(guiMap.toCharArray());
 
@@ -3005,7 +3005,7 @@ public class Session_local {
                     }
                 }
                 declText.Append("}");
-                mapDef.SetText(declText.toString());
+                mapDef.SetText(declText.getData());
                 mapDef.ReplaceSourceFileText();
             }
         }
@@ -3088,7 +3088,7 @@ public class Session_local {
             uiManager.Reload(true);
 
             // set the loading gui that we will wipe to
-            LoadLoadingGui(mapString.toString());
+            LoadLoadingGui(mapString.getData());
 
             // cause prints to force screen updates as a pacifier,
             // and draw the loading gui instead of game draws
@@ -3098,7 +3098,7 @@ public class Session_local {
             // work for new maps etc. after the first load. we can also drop the sizes into the default.cfg
             fileSystem.ResetReadCount();
             if (!reloadingSameMap) {
-                this.bytesNeededForMapLoad = GetBytesNeededForMapLoad(mapString.toString());
+                this.bytesNeededForMapLoad = GetBytesNeededForMapLoad(mapString.getData());
             } else {
                 this.bytesNeededForMapLoad = 30 * 1024 * 1024;
             }
@@ -3109,7 +3109,7 @@ public class Session_local {
             ShowLoadingGui();
 
             // note any warning prints that happen during the load process
-            common.ClearWarnings(mapString.toString());
+            common.ClearWarnings(mapString.getData());
 
             // release the mouse cursor
             // before we do this potentially long operation
@@ -3126,7 +3126,7 @@ public class Session_local {
             common.Printf("Map: %s\n", mapString);
 
             // let the renderSystem load all the geometry
-            if (!this.rw.InitFromMap(fullMapName.toString())) {
+            if (!this.rw.InitFromMap(fullMapName.getData())) {
                 common.Error("couldn't load %s", fullMapName);
             }
 
@@ -3168,9 +3168,9 @@ public class Session_local {
             // actually purge/load the media
             if (!reloadingSameMap) {
                 renderSystem.EndLevelLoad();
-                soundSystem.EndLevelLoad(mapString.toString());
+                soundSystem.EndLevelLoad(mapString.getData());
                 declManager.EndLevelLoad();
-                SetBytesNeededForMapLoad(mapString.toString(), fileSystem.GetReadCount());
+                SetBytesNeededForMapLoad(mapString.getData(), fileSystem.GetReadCount());
             }
             uiManager.EndLevelLoad();
 
@@ -3373,7 +3373,7 @@ public class Session_local {
             if (0 == idStr.Icmp(cmd, "loadGame")) {
                 final int choice = this.guiActive.State().GetInt("loadgame_sel_0");
                 if ((choice >= 0) && (choice < this.loadGameList.Num())) {
-                    sessLocal.LoadGame(this.loadGameList.oGet(choice).toString());
+                    sessLocal.LoadGame(this.loadGameList.oGet(choice).getData());
                 }
                 return true;
             }
@@ -3392,9 +3392,9 @@ public class Session_local {
                         final idStr game = new idStr(cvarSystem.GetCVarString("fs_game"));
                         idFile file;
                         if (game.Length() != 0) {
-                            file = fileSystem.OpenFileRead(saveFileName.toString(), true, game.toString());
+                            file = fileSystem.OpenFileRead(saveFileName.getData(), true, game.getData());
                         } else {
-                            file = fileSystem.OpenFileRead(saveFileName.toString());
+                            file = fileSystem.OpenFileRead(saveFileName.getData());
                         }
 
                         if (file != null) {
@@ -3403,7 +3403,7 @@ public class Session_local {
                             // The file exists, see if it's an autosave
                             saveFileName.SetFileExtension(".txt");
                             final idLexer src = new idLexer(LEXFL_NOERRORS | LEXFL_NOSTRINGCONCAT);
-                            if (src.LoadFile(saveFileName.toString())) {
+                            if (src.LoadFile(saveFileName.getData())) {
                                 final idToken tok = new idToken();
                                 src.ReadToken(tok); // Name
                                 src.ReadToken(tok); // Map
@@ -3429,9 +3429,9 @@ public class Session_local {
             if (0 == idStr.Icmp(cmd, "deleteGame")) {
                 final int choice = this.guiActive.State().GetInt("loadgame_sel_0");
                 if ((choice >= 0) && (choice < this.loadGameList.Num())) {
-                    fileSystem.RemoveFile(va("savegames/%s.save", this.loadGameList.oGet(choice).toString()));
-                    fileSystem.RemoveFile(va("savegames/%s.tga", this.loadGameList.oGet(choice).toString()));
-                    fileSystem.RemoveFile(va("savegames/%s.txt", this.loadGameList.oGet(choice).toString()));
+                    fileSystem.RemoveFile(va("savegames/%s.save", this.loadGameList.oGet(choice).getData()));
+                    fileSystem.RemoveFile(va("savegames/%s.tga", this.loadGameList.oGet(choice).getData()));
+                    fileSystem.RemoveFile(va("savegames/%s.txt", this.loadGameList.oGet(choice).getData()));
                     SetSaveGameGuiVars();
                     this.guiActive.StateChanged(com_frameTime);
                 }
@@ -3446,7 +3446,7 @@ public class Session_local {
                     idStr saveName, description;
                     String screenshot;
                     final idLexer src = new idLexer(LEXFL_NOERRORS | LEXFL_NOSTRINGCONCAT);
-                    if (src.LoadFile(va("savegames/%s.txt", this.loadGameList.oGet(choice).toString()))) {
+                    if (src.LoadFile(va("savegames/%s.txt", this.loadGameList.oGet(choice).getData()))) {
                         final idToken tok = new idToken();
 
                         src.ReadToken(tok);
@@ -3456,7 +3456,7 @@ public class Session_local {
                         description = tok;
 
                         src.ReadToken(tok);
-                        screenshot = tok.toString();
+                        screenshot = tok.getData();
 
                     } else {
                         saveName = this.loadGameList.oGet(choice);
@@ -3464,7 +3464,7 @@ public class Session_local {
                         screenshot = "";
                     }
                     if (screenshot.length() == 0) {
-                        screenshot = va("savegames/%s.tga", this.loadGameList.oGet(choice).toString());
+                        screenshot = va("savegames/%s.tga", this.loadGameList.oGet(choice).getData());
                     }
                     material = declManager.FindMaterial(screenshot);
                     if (material != null) {
@@ -3473,16 +3473,16 @@ public class Session_local {
                     this.guiActive.SetStateString("loadgame_shot", screenshot);
 
                     saveName.RemoveColors();
-                    this.guiActive.SetStateString("saveGameName", saveName.toString());
-                    this.guiActive.SetStateString("saveGameDescription", description.toString());
+                    this.guiActive.SetStateString("saveGameName", saveName.getData());
+                    this.guiActive.SetStateString("saveGameDescription", description.getData());
 
                     final long[] timeStamp = {0};
-                    fileSystem.ReadFile(va("savegames/%s.save", this.loadGameList.oGet(choice).toString()), null, timeStamp);
+                    fileSystem.ReadFile(va("savegames/%s.save", this.loadGameList.oGet(choice).getData()), null, timeStamp);
                     final idStr date = new idStr(Sys_TimeStampToStr(timeStamp[0]));
                     final int tab = date.Find('\t');
                     final idStr time = date.Right(date.Length() - tab - 1);
-                    this.guiActive.SetStateString("saveGameDate", date.Left(tab).toString());
-                    this.guiActive.SetStateString("saveGameTime", time.toString());
+                    this.guiActive.SetStateString("saveGameDate", date.Left(tab).getData());
+                    this.guiActive.SetStateString("saveGameTime", time.getData());
                 }
                 return true;
             }
@@ -3573,7 +3573,7 @@ public class Session_local {
                 if (0 == idStr.Icmp(cmd, "loadMod")) {
                     final int choice = this.guiActive.State().GetInt("modsList_sel_0");
                     if ((choice >= 0) && (choice < this.modsList.Num())) {
-                        cvarSystem.SetCVarString("fs_game", this.modsList.oGet(choice).toString());
+                        cvarSystem.SetCVarString("fs_game", this.modsList.oGet(choice).getData());
                         cmdSystem.BufferCommandText(CMD_EXEC_APPEND, "reloadEngine menu\n");
                     }
                 }
@@ -3773,7 +3773,7 @@ public class Session_local {
                     idStr skin;
                     if ((args.Argc() - icmd) >= 1) {
                         skin = new idStr(args.Argv(icmd++));
-                        cvarSystem.SetCVarString("ui_skin", skin.toString());
+                        cvarSystem.SetCVarString("ui_skin", skin.getData());
                         SetMainMenuSkin();
                     }
                     continue;
@@ -3811,10 +3811,10 @@ public class Session_local {
                         idStr snd = new idStr(args.Argv(icmd++));
                         int channel = 1;
                         if (snd.Length() == 1) {
-                            channel = Integer.parseInt(snd.toString());
+                            channel = Integer.parseInt(snd.getData());
                             snd = new idStr(args.Argv(icmd++));
                         }
-                        this.menuSoundWorld.PlayShaderDirectly(snd.toString(), channel);
+                        this.menuSoundWorld.PlayShaderDirectly(snd.getData(), channel);
 
                     }
                     continue;
@@ -3823,7 +3823,7 @@ public class Session_local {
                 if (0 == idStr.Icmp(cmd, "music")) {
                     if ((args.Argc() - icmd) >= 1) {
                         final idStr snd = new idStr(args.Argv(icmd++));
-                        this.menuSoundWorld.PlayShaderDirectly(snd.toString(), 2);
+                        this.menuSoundWorld.PlayShaderDirectly(snd.getData(), 2);
                     }
                     continue;
                 }
@@ -3890,15 +3890,15 @@ public class Session_local {
 
                     final int oldSpec = com_machineSpec.GetInteger();
 
-                    if (idStr.Icmp(vcmd.toString(), "low") == 0) {
+                    if (idStr.Icmp(vcmd.getData(), "low") == 0) {
                         com_machineSpec.SetInteger(0);
-                    } else if (idStr.Icmp(vcmd.toString(), "medium") == 0) {
+                    } else if (idStr.Icmp(vcmd.getData(), "medium") == 0) {
                         com_machineSpec.SetInteger(1);
-                    } else if (idStr.Icmp(vcmd.toString(), "high") == 0) {
+                    } else if (idStr.Icmp(vcmd.getData(), "high") == 0) {
                         com_machineSpec.SetInteger(2);
-                    } else if (idStr.Icmp(vcmd.toString(), "ultra") == 0) {
+                    } else if (idStr.Icmp(vcmd.getData(), "ultra") == 0) {
                         com_machineSpec.SetInteger(3);
-                    } else if (idStr.Icmp(vcmd.toString(), "recommended") == 0) {
+                    } else if (idStr.Icmp(vcmd.getData(), "recommended") == 0) {
                         cmdSystem.BufferCommandText(CMD_EXEC_NOW, "setMachineSpec\n");
                     }
 
@@ -3908,7 +3908,7 @@ public class Session_local {
                         cmdSystem.BufferCommandText(CMD_EXEC_NOW, "execMachineSpec\n");
                     }
 
-                    if (idStr.Icmp(vcmd.toString(), "restart") == 0) {
+                    if (idStr.Icmp(vcmd.getData(), "restart") == 0) {
                         this.guiActive.HandleNamedEvent("cvar write render");
                         cmdSystem.BufferCommandText(CMD_EXEC_NOW, "vid_restart\n");
                     }
@@ -3953,7 +3953,7 @@ public class Session_local {
                         this.guiActive.SetStateInt("com_machineSpec", com_machineSpec.GetInteger());
 
                         //Restore the language
-                        cvarSystem.SetCVarString("sys_lang", lang.toString());
+                        cvarSystem.SetCVarString("sys_lang", lang.getData());
 
                     }
                     continue;
@@ -4151,13 +4151,13 @@ public class Session_local {
                 this.guiMsgRestore = null;
                 this.msgRunning = false;
                 this.msgRetIndex = 0;
-                DispatchCommand(this.guiActive, this.msgFireBack[0].toString());
+                DispatchCommand(this.guiActive, this.msgFireBack[0].getData());
             } else if (idStr.Icmp(menuCommand, "right") == 0) {
                 this.guiActive = this.guiMsgRestore;
                 this.guiMsgRestore = null;
                 this.msgRunning = false;
                 this.msgRetIndex = 1;
-                DispatchCommand(this.guiActive, this.msgFireBack[1].toString());
+                DispatchCommand(this.guiActive, this.msgFireBack[1].getData());
             }
         }
         static final String NOTEDATFILE = "C:/notenumber.dat";
@@ -4215,7 +4215,7 @@ public class Session_local {
 
                     final int count = this.guiTakeNotes.State().GetInt("person_numsel");
                     if (count == 0) {
-                        fileList.Append(new idStr(fileName.toString() + "/Nobody"));
+                        fileList.Append(new idStr(fileName.getData() + "/Nobody"));
                     } else {
                         for (i = 0; i < count; i++) {
                             final int person = this.guiTakeNotes.State().GetInt(va("person_sel_%d", i));
@@ -4238,7 +4238,7 @@ public class Session_local {
                     workName.Append("/");
                     workName.Append(p);
                     final int[] workNote = {noteNumber[0]};
-                    R_ScreenshotFilename(workNote, workName.toString(), shotName);
+                    R_ScreenshotFilename(workNote, workName.getData(), shotName);
 
                     noteNum = shotName;
                     noteNum.StripPath();
@@ -4249,13 +4249,13 @@ public class Session_local {
                         workName.Append("viewNotes");
                     }
 
-                    str = new idStr(String.format("recordViewNotes \"%s\" \"%s\" \"%s\"\n", workName.toString(), noteNum.toString(), this.guiTakeNotes.State().GetString("note")));
+                    str = new idStr(String.format("recordViewNotes \"%s\" \"%s\" \"%s\"\n", workName.getData(), noteNum.getData(), this.guiTakeNotes.State().GetString("note")));
 
-                    cmdSystem.BufferCommandText(CMD_EXEC_NOW, str.toString());
+                    cmdSystem.BufferCommandText(CMD_EXEC_NOW, str.getData());
                     cmdSystem.ExecuteCommandBuffer();
 
                     UpdateScreen();
-                    renderSystem.TakeScreenshot(renderSystem.GetScreenWidth(), renderSystem.GetScreenHeight(), shotName.toString(), 1, null);
+                    renderSystem.TakeScreenshot(renderSystem.GetScreenWidth(), renderSystem.GetScreenHeight(), shotName.getData(), 1, null);
                 }
                 noteNumber[0]++;
 
@@ -4283,7 +4283,7 @@ public class Session_local {
             // NOTE: no fs_game_base for savegames
             final idStr game = new idStr(cvarSystem.GetCVarString("fs_game"));
             if (game.Length() != 0) {
-                files = fileSystem.ListFiles("savegames", ".save", false, false, game.toString());
+                files = fileSystem.ListFiles("savegames", ".save", false, false, game.getData());
             } else {
                 files = fileSystem.ListFiles("savegames", ".save");
             }
@@ -4375,7 +4375,7 @@ public class Session_local {
             int i;
             idStr name;
             final idStrList fileList = new idStrList();
-            final idList<fileTIME_T> fileTimes = new idList<>();
+            final idList<fileTIME_T> fileTimes = new idList<fileTIME_T>();
 
             this.loadGameList.Clear();
             fileList.Clear();
@@ -4401,7 +4401,7 @@ public class Session_local {
                 final String date = Sys_TimeStampToStr(fileTimes.oGet(i).timeStamp);
                 name.Append(date);
 
-                this.guiActive.SetStateString(va("loadgame_item_%d", i), name.toString());
+                this.guiActive.SetStateString(va("loadgame_item_%d", i), name.getData());
             }
             this.guiActive.DeleteStateVar(va("loadgame_item_%d", fileList.Num()));
 
@@ -4486,7 +4486,7 @@ public class Session_local {
                     skin = str;
                     str.oSet("");
                 }
-                if (skin.Icmp(uiSkin.toString()) == 0) {
+                if (skin.Icmp(uiSkin.getData()) == 0) {
                     skinId = count;
                 }
                 count++;

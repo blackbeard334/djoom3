@@ -44,7 +44,7 @@ public class FieldWindow {
         public void Draw(int time, float x, float y) {
             final float scale = this.textScale.oCastFloat();
             final int len = this.text.Length();
-            this.cursorPos = this.gui.State().GetInt(this.cursorVar.toString());
+            this.cursorPos = this.gui.State().GetInt(this.cursorVar.getData());
             if ((len != this.lastTextLength) || (this.cursorPos != this.lastCursorPos)) {
                 CalcPaintOffset(len);
             }
@@ -56,7 +56,7 @@ public class FieldWindow {
                 this.cursorPos = len;
             }
 //            dc->DrawText(&text[paintOffset], scale, 0, foreColor, rect, false, ((flags & WIN_FOCUS) || showCursor) ? cursorPos - paintOffset : -1);
-            this.dc.DrawText(this.text.data.toString().substring(this.paintOffset), scale, 0, this.foreColor.data, rect, false, (itob(this.flags & WIN_FOCUS) || this.showCursor) ? this.cursorPos - this.paintOffset : -1);
+            this.dc.DrawText(this.text.data.getData().substring(this.paintOffset), scale, 0, this.foreColor.data, rect, false, (itob(this.flags & WIN_FOCUS) || this.showCursor) ? this.cursorPos - this.paintOffset : -1);
         }
 
         @Override

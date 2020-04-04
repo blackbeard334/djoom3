@@ -689,7 +689,7 @@ public class Weapon {
 
             final idStr objectname = new idStr();
             savefile.ReadString(objectname);
-            this.weaponDef = gameLocal.FindEntityDef(objectname.toString());
+            this.weaponDef = gameLocal.FindEntityDef(objectname.getData());
             this.meleeDef = gameLocal.FindEntityDef(this.weaponDef.dict.GetString("def_melee"), false);
 
             final idDeclEntityDef projectileDef = gameLocal.FindEntityDef(this.weaponDef.dict.GetString("def_projectile"), false);
@@ -1135,7 +1135,7 @@ public class Weapon {
             this.meleeDistance = this.weaponDef.dict.GetFloat("melee_distance");
             this.meleeDefName.oSet(this.weaponDef.dict.GetString("def_melee"));
             if (this.meleeDefName.Length() != 0) {
-                this.meleeDef = gameLocal.FindEntityDef(this.meleeDefName.toString(), false);
+                this.meleeDef = gameLocal.FindEntityDef(this.meleeDefName.getData(), false);
                 if (null == this.meleeDef) {
                     gameLocal.Error("Unknown melee '%s'", this.meleeDefName);
                 }
@@ -1235,7 +1235,7 @@ public class Weapon {
 
          ***********************************************************************/
         public String Icon() {
-            return this.icon.toString();
+            return this.icon.getData();
         }
 
         public void UpdateGUI() {
@@ -1665,7 +1665,7 @@ public class Weapon {
             }
 
             if (this.idealState.Length() != 0) {
-                SetState(this.idealState.toString(), this.animBlendFrames);
+                SetState(this.idealState.getData(), this.animBlendFrames);
             }
 
             // update script state, which may call Event_LaunchProjectiles, among other things
@@ -1673,7 +1673,7 @@ public class Weapon {
             while ((this.thread.Execute() || (this.idealState.Length() != 0)) && (count-- != 0)) {
                 // happens for weapons with no clip (like grenades)
                 if (this.idealState.Length() != 0) {
-                    SetState(this.idealState.toString(), this.animBlendFrames);
+                    SetState(this.idealState.getData(), this.animBlendFrames);
                 }
             }
 
@@ -1976,7 +1976,7 @@ public class Weapon {
             for (i = 0; i < num; i++) {
                 kv = ammoDict.GetKeyVal(i);
                 if (kv.GetValue().equals(text)) {
-                    return kv.GetKey().toString();
+                    return kv.GetKey().getData();
                 }
             }
 
@@ -2000,8 +2000,8 @@ public class Weapon {
                 num = ammoDict.GetNumKeyVals();
                 for (i = 0; i < num; i++) {
                     kv = ammoDict.GetKeyVal(i);
-                    if (idStr.Icmp(kv.GetKey().toString(), name) == 0) {
-                        return kv.GetValue().toString();
+                    if (idStr.Icmp(kv.GetKey().getData(), name) == 0) {
+                        return kv.GetValue().getData();
                     }
                 }
             }
@@ -2909,7 +2909,7 @@ public class Weapon {
 						idVec3 globalKickDir;
                         this.meleeDef.dict.GetVector("kickDir", "0 0 0", kickDir);
                         globalKickDir = this.muzzleAxis.oMultiply(kickDir);
-                        ent.Damage(this.owner, this.owner, globalKickDir, this.meleeDefName.toString(), this.owner.PowerUpModifier(MELEE_DAMAGE), tr[0].c.id);
+                        ent.Damage(this.owner, this.owner, globalKickDir, this.meleeDefName.getData(), this.owner.PowerUpModifier(MELEE_DAMAGE), tr[0].c.id);
                         hit = true;
                     }
 

@@ -18,10 +18,10 @@ import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_CUR;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_SET;
 import static neo.framework.Session.session;
-import static org.lwjgl.opengl.ARBVertexProgram.GL_VERTEX_PROGRAM_ARB;
-import static org.lwjgl.opengl.GL11.GL_RGBA;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static neo.opengl.QGLConstants.GL_RGBA;
+import static neo.opengl.QGLConstants.GL_TEXTURE_2D;
+import static neo.opengl.QGLConstants.GL_UNSIGNED_BYTE;
+import static neo.opengl.QGLConstants.GL_VERTEX_PROGRAM_ARB;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -306,7 +306,7 @@ public class MegaTexture {
 
             int width, height;
 
-            this.fileHandle = fileSystem.OpenFileRead(name.toString());
+            this.fileHandle = fileSystem.OpenFileRead(name.getData());
             if (null == this.fileHandle) {
                 common.Printf("idMegaTexture: failed to open %s\n", name);
                 return false;
@@ -532,7 +532,7 @@ public class MegaTexture {
                 name_s.StripFileExtension();
                 name_s.Append(".tga");
 
-                final String name = name_s.toString();
+                final String name = name_s.getData();
 
                 //
                 // open the file
@@ -601,7 +601,7 @@ public class MegaTexture {
                         mtHeader.tilesWide, mtHeader.tilesHigh, mtHeader.tileSize, outName);
 
                 // open the output megatexture file
-                final idFile out = fileSystem.OpenFileWrite(outName.toString());
+                final idFile out = fileSystem.OpenFileWrite(outName.getData());
 
                 out.Write(WriteDdsFileHeader_t(mtHeader));
                 out.Seek(TILE_SIZE * TILE_SIZE * 4, FS_SEEK_SET);
@@ -765,7 +765,7 @@ public class MegaTexture {
 
 //	delete out;
 //	delete file;
-                GenerateMegaPreview(outName.toString());
+                GenerateMegaPreview(outName.getData());
 //if (false){
 //	if ( (targa_header.attributes & (1<<5)) ) {			// image flp bit
 //		R_VerticalFlip( *pic, *width, *height );
@@ -904,7 +904,7 @@ public class MegaTexture {
             outName.StripFileExtension();
             outName.oPluSet("_preview.tga");
 
-            common.Printf("Creating %s.\n", outName.toString());
+            common.Printf("Creating %s.\n", outName.getData());
 
             megaTextureHeader_t header;
             final ByteBuffer headerBuffer = ReadDdsFileHeader_t();
@@ -952,7 +952,7 @@ public class MegaTexture {
                 }
             }
 
-            R_WriteTGA(outName.toString(), pic, width * tileSize, height * tileSize, false);
+            R_WriteTGA(outName.getData(), pic, width * tileSize, height * tileSize, false);
 
 //            R_StaticFree(pic);
 //	delete fileHandle;

@@ -76,19 +76,19 @@ import static neo.TempDump.NOT;
 import static neo.TempDump.isNotNullOrEmpty;
 import static neo.framework.Common.common;
 import static neo.idlib.Lib.idLib.fileSystem;
-import static org.lwjgl.opengl.ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB;
-import static org.lwjgl.opengl.ARBMultitexture.GL_TEXTURE0_ARB;
-import static org.lwjgl.opengl.ARBVertexProgram.GL_PROGRAM_ERROR_POSITION_ARB;
-import static org.lwjgl.opengl.ARBVertexProgram.GL_PROGRAM_ERROR_STRING_ARB;
-import static org.lwjgl.opengl.ARBVertexProgram.GL_PROGRAM_FORMAT_ASCII_ARB;
-import static org.lwjgl.opengl.ARBVertexProgram.GL_VERTEX_PROGRAM_ARB;
-import static org.lwjgl.opengl.GL11.GL_ALWAYS;
-import static org.lwjgl.opengl.GL11.GL_COLOR_ARRAY;
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL11.GL_INVALID_OPERATION;
-import static org.lwjgl.opengl.GL11.GL_STENCIL_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static neo.opengl.QGLConstants.GL_ALWAYS;
+import static neo.opengl.QGLConstants.GL_COLOR_ARRAY;
+import static neo.opengl.QGLConstants.GL_FLOAT;
+import static neo.opengl.QGLConstants.GL_FRAGMENT_PROGRAM_ARB;
+import static neo.opengl.QGLConstants.GL_INVALID_OPERATION;
+import static neo.opengl.QGLConstants.GL_PROGRAM_ERROR_POSITION_ARB;
+import static neo.opengl.QGLConstants.GL_PROGRAM_ERROR_STRING_ARB;
+import static neo.opengl.QGLConstants.GL_PROGRAM_FORMAT_ASCII_ARB;
+import static neo.opengl.QGLConstants.GL_STENCIL_BUFFER_BIT;
+import static neo.opengl.QGLConstants.GL_TEXTURE0_ARB;
+import static neo.opengl.QGLConstants.GL_TEXTURE_COORD_ARRAY;
+import static neo.opengl.QGLConstants.GL_UNSIGNED_BYTE;
+import static neo.opengl.QGLConstants.GL_VERTEX_PROGRAM_ARB;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -479,7 +479,7 @@ public class draw_arb2 {
 
         // load the program even if we don't support it, so
         // fs_copyfiles can generate cross-platform data dumps
-        fileSystem.ReadFile(fullPath.toString(), /*(void **)&*/ fileBuffer, null);
+        fileSystem.ReadFile(fullPath.getData(), /*(void **)&*/ fileBuffer, null);
         if (NOT(fileBuffer[0])) {
             common.Printf(": File not found\n");
             return;

@@ -102,7 +102,7 @@ public class IK /*ea*/ {
                     gameLocal.Warning("idIK::Restore: IK for entity '%s' at (%s) has no model set.",
                             this.self.name, this.self.GetPhysics().GetOrigin().ToString(0));
                 }
-                this.modifiedAnim = this.animator.GetAnim(anim.toString());
+                this.modifiedAnim = this.animator.GetAnim(anim.getData());
                 if (this.modifiedAnim == 0) {
                     gameLocal.Warning("idIK::Restore: IK for entity '%s' at (%s) has no modified animation.",
                             this.self.name, this.self.GetPhysics().GetOrigin().ToString(0));

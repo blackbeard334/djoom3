@@ -65,7 +65,7 @@ public class DeclEntityDef {
                     break;
                 }
                 if (token.type != TT_STRING) {
-                    src.Warning("Expected quoted string, but found '%s'", token.toString());
+                    src.Warning("Expected quoted string, but found '%s'", token.getData());
                     MakeDefault();
                     return false;
                 }
@@ -76,8 +76,8 @@ public class DeclEntityDef {
                     return false;
                 }
 
-                if (this.dict.FindKey(token.toString()) != null) {
-                    src.Warning("'%s' already defined", token.toString());
+                if (this.dict.FindKey(token.getData()) != null) {
+                    src.Warning("'%s' already defined", token.getData());
                 }
                 this.dict.Set(token, token2);
             }
@@ -89,7 +89,7 @@ public class DeclEntityDef {
             // if they don't conflict.  We can't have circular recursions, because each entityDef will
             // never be parsed mroe than once
             // find all of the dicts first, because copying inherited values will modify the dict
-            final idList<idDeclEntityDef> defList = new idList<>();
+            final idList<idDeclEntityDef> defList = new idList<idDeclEntityDef>();
 
             while (true) {
                 final idKeyValue kv;
@@ -106,7 +106,7 @@ public class DeclEntityDef {
                 }
 
                 // delete this key/value pair
-                this.dict.Delete(kv.GetKey().toString());
+                this.dict.Delete(kv.GetKey().getData());
             }
 
             // now copy over the inherited key / value pairs

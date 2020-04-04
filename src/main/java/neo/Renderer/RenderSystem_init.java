@@ -62,6 +62,30 @@ import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.Session.session;
 import static neo.idlib.Lib.idLib.common;
 import static neo.idlib.Lib.idLib.cvarSystem;
+import static neo.opengl.QGLConstants.GL_DECR;
+import static neo.opengl.QGLConstants.GL_DECR_WRAP_EXT;
+import static neo.opengl.QGLConstants.GL_EXTENSIONS;
+import static neo.opengl.QGLConstants.GL_FRONT;
+import static neo.opengl.QGLConstants.GL_INCR;
+import static neo.opengl.QGLConstants.GL_INCR_WRAP_EXT;
+import static neo.opengl.QGLConstants.GL_INVALID_ENUM;
+import static neo.opengl.QGLConstants.GL_INVALID_OPERATION;
+import static neo.opengl.QGLConstants.GL_INVALID_VALUE;
+import static neo.opengl.QGLConstants.GL_MAX_TEXTURE_COORDS_ARB;
+import static neo.opengl.QGLConstants.GL_MAX_TEXTURE_IMAGE_UNITS_ARB;
+import static neo.opengl.QGLConstants.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT;
+import static neo.opengl.QGLConstants.GL_MAX_TEXTURE_SIZE;
+import static neo.opengl.QGLConstants.GL_MAX_TEXTURE_UNITS_ARB;
+import static neo.opengl.QGLConstants.GL_NO_ERROR;
+import static neo.opengl.QGLConstants.GL_OUT_OF_MEMORY;
+import static neo.opengl.QGLConstants.GL_RENDERER;
+import static neo.opengl.QGLConstants.GL_RGB;
+import static neo.opengl.QGLConstants.GL_STACK_OVERFLOW;
+import static neo.opengl.QGLConstants.GL_STACK_UNDERFLOW;
+import static neo.opengl.QGLConstants.GL_STENCIL_INDEX;
+import static neo.opengl.QGLConstants.GL_UNSIGNED_BYTE;
+import static neo.opengl.QGLConstants.GL_VENDOR;
+import static neo.opengl.QGLConstants.GL_VERSION;
 import static neo.sys.win_glimp.GLimp_Init;
 import static neo.sys.win_glimp.GLimp_SetScreenParms;
 import static neo.sys.win_glimp.GLimp_Shutdown;
@@ -71,30 +95,6 @@ import static neo.sys.win_input.Sys_ShutdownInput;
 import static neo.sys.win_main.Sys_GetProcessorString;
 import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.ui.UserInterface.uiManager;
-import static org.lwjgl.opengl.ARBFragmentProgram.GL_MAX_TEXTURE_COORDS_ARB;
-import static org.lwjgl.opengl.ARBFragmentProgram.GL_MAX_TEXTURE_IMAGE_UNITS_ARB;
-import static org.lwjgl.opengl.ARBMultitexture.GL_MAX_TEXTURE_UNITS_ARB;
-import static org.lwjgl.opengl.EXTStencilWrap.GL_DECR_WRAP_EXT;
-import static org.lwjgl.opengl.EXTStencilWrap.GL_INCR_WRAP_EXT;
-import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT;
-import static org.lwjgl.opengl.GL11.GL_DECR;
-import static org.lwjgl.opengl.GL11.GL_EXTENSIONS;
-import static org.lwjgl.opengl.GL11.GL_FRONT;
-import static org.lwjgl.opengl.GL11.GL_INCR;
-import static org.lwjgl.opengl.GL11.GL_INVALID_ENUM;
-import static org.lwjgl.opengl.GL11.GL_INVALID_OPERATION;
-import static org.lwjgl.opengl.GL11.GL_INVALID_VALUE;
-import static org.lwjgl.opengl.GL11.GL_MAX_TEXTURE_SIZE;
-import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
-import static org.lwjgl.opengl.GL11.GL_OUT_OF_MEMORY;
-import static org.lwjgl.opengl.GL11.GL_RENDERER;
-import static org.lwjgl.opengl.GL11.GL_RGB;
-import static org.lwjgl.opengl.GL11.GL_STACK_OVERFLOW;
-import static org.lwjgl.opengl.GL11.GL_STACK_UNDERFLOW;
-import static org.lwjgl.opengl.GL11.GL_STENCIL_INDEX;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
-import static org.lwjgl.opengl.GL11.GL_VENDOR;
-import static org.lwjgl.opengl.GL11.GL_VERSION;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -588,7 +588,7 @@ public class RenderSystem_init {
             if (lastNumber[0] == 99999) {
                 break;
             }
-            final int len = fileSystem.ReadFile(fileName.toString(), null, null);
+            final int len = fileSystem.ReadFile(fileName.getData(), null, null);
             if (len <= 0) {
                 break;
             }
@@ -1007,7 +1007,7 @@ public class RenderSystem_init {
             // put the console away
             console.Close();
 
-            tr.TakeScreenshot(width, height, checkname.toString(), blends, null);
+            tr.TakeScreenshot(width, height, checkname.getData(), blends, null);
 
             common.Printf("Wrote %s\n", checkname);
         }
@@ -1623,7 +1623,7 @@ public class RenderSystem_init {
             final idStr wavString = new idStr(args.Argv((args.Argc() == 2) ? 1 : 2));
             wavString.StripFileExtension();
             wavString.oPluSet(".wav");
-            session.sw.PlayShaderDirectly(wavString.toString());
+            session.sw.PlayShaderDirectly(wavString.getData());
         }
     }
 
@@ -1721,7 +1721,7 @@ public class RenderSystem_init {
                 }
                 final int[] w1 = {0}, h1 = {0};
 
-                final ByteBuffer data1 = R_LoadImageProgram(image1.imgName.toString(), w1, h1, null);
+                final ByteBuffer data1 = R_LoadImageProgram(image1.imgName.getData(), w1, h1, null);
 
                 for (j = 0; j < i; j++) {
                     final idImage image2 = globalImages.images.oGet(j);
@@ -1752,7 +1752,7 @@ public class RenderSystem_init {
 
                     final int[] w2 = {0}, h2 = {0};
 
-                    final ByteBuffer data2 = R_LoadImageProgram(image2.imgName.toString(), w2, h2, null);
+                    final ByteBuffer data2 = R_LoadImageProgram(image2.imgName.getData(), w2, h2, null);
 
                     if ((w2 != w1) || (h2 != h1)) {
 //                        R_StaticFree(data2);
@@ -2220,9 +2220,9 @@ public class RenderSystem_init {
         // put the console away
         console.Close();
 
-        tr.TakeScreenshot(width, height, checkName.toString(), blends, null);
+        tr.TakeScreenshot(width, height, checkName.getData(), blends, null);
 
-        common.Printf("Wrote %s\n", checkName.toString());
+        common.Printf("Wrote %s\n", checkName.getData());
     }
 
     /*

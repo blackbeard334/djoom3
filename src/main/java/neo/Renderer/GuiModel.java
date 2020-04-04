@@ -52,8 +52,8 @@ public class GuiModel {
 
         public idGuiModel() {
             this.surfaces = new idList<>();
-            this.indexes = new idList<>(1000);//.SetGranularity(1000);
-            this.verts = new idList<>(1000);//.SetGranularity(1000);
+            this.indexes = new idList<Integer>(1000);//.SetGranularity(1000);
+            this.verts = new idList<idDrawVert>(1000);//.SetGranularity(1000);
         }
 
 

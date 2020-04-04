@@ -174,34 +174,34 @@ public class DeclFX {
             for (int i = 0; i < list.events.Num(); i++) {
                 switch (list.events.oGet(i).type) {
                     case FX_LIGHT:
-                        common.Printf("FX_LIGHT %s\n", list.events.oGet(i).data.toString());
+                        common.Printf("FX_LIGHT %s\n", list.events.oGet(i).data.getData());
                         break;
                     case FX_PARTICLE:
-                        common.Printf("FX_PARTICLE %s\n", list.events.oGet(i).data.toString());
+                        common.Printf("FX_PARTICLE %s\n", list.events.oGet(i).data.getData());
                         break;
                     case FX_MODEL:
-                        common.Printf("FX_MODEL %s\n", list.events.oGet(i).data.toString());
+                        common.Printf("FX_MODEL %s\n", list.events.oGet(i).data.getData());
                         break;
                     case FX_SOUND:
-                        common.Printf("FX_SOUND %s\n", list.events.oGet(i).data.toString());
+                        common.Printf("FX_SOUND %s\n", list.events.oGet(i).data.getData());
                         break;
                     case FX_DECAL:
-                        common.Printf("FX_DECAL %s\n", list.events.oGet(i).data.toString());
+                        common.Printf("FX_DECAL %s\n", list.events.oGet(i).data.getData());
                         break;
                     case FX_SHAKE:
-                        common.Printf("FX_SHAKE %s\n", list.events.oGet(i).data.toString());
+                        common.Printf("FX_SHAKE %s\n", list.events.oGet(i).data.getData());
                         break;
                     case FX_ATTACHLIGHT:
-                        common.Printf("FX_ATTACHLIGHT %s\n", list.events.oGet(i).data.toString());
+                        common.Printf("FX_ATTACHLIGHT %s\n", list.events.oGet(i).data.getData());
                         break;
                     case FX_ATTACHENTITY:
-                        common.Printf("FX_ATTACHENTITY %s\n", list.events.oGet(i).data.toString());
+                        common.Printf("FX_ATTACHENTITY %s\n", list.events.oGet(i).data.getData());
                         break;
                     case FX_LAUNCH:
-                        common.Printf("FX_LAUNCH %s\n", list.events.oGet(i).data.toString());
+                        common.Printf("FX_LAUNCH %s\n", list.events.oGet(i).data.getData());
                         break;
                     case FX_SHOCKWAVE:
-                        common.Printf("FX_SHOCKWAVE %s\n", list.events.oGet(i).data.toString());
+                        common.Printf("FX_SHOCKWAVE %s\n", list.events.oGet(i).data.getData());
                         break;
                 }
             }
@@ -213,7 +213,7 @@ public class DeclFX {
         }
 //
 //
-        public idList<idFXSingleAction> events = new idList<>();
+        public idList<idFXSingleAction> events = new idList<idFXSingleAction>();
         public idStr joint = new idStr();
 //
 
@@ -381,7 +381,7 @@ public class DeclFX {
                     src.ReadToken(token);
                     FXAction.data.oSet(token);
                     for (int i = 0; i < this.events.Num(); i++) {
-                        if (this.events.oGet(i).name.Icmp(FXAction.data.toString()) == 0) {
+                        if (this.events.oGet(i).name.Icmp(FXAction.data.getData()) == 0) {
                             FXAction.sibling = i;
                             FXAction.lightColor.oSet(this.events.oGet(i).lightColor);
                             FXAction.lightRadius = this.events.oGet(i).lightRadius;
@@ -463,7 +463,7 @@ public class DeclFX {
                     FXAction.type = FX_MODEL;
 
                     // precache it
-                    renderModelManager.FindModel(FXAction.data.toString());
+                    renderModelManager.FindModel(FXAction.data.getData());
                     continue;
                 }
 
@@ -473,7 +473,7 @@ public class DeclFX {
                     FXAction.type = FX_PARTICLE;
 
                     // precache it
-                    renderModelManager.FindModel(FXAction.data.toString());
+                    renderModelManager.FindModel(FXAction.data.getData());
                     continue;
                 }
 

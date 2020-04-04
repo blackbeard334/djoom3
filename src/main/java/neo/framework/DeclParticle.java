@@ -972,7 +972,7 @@ public class DeclParticle {
         //
         
         public idDeclParticle(){
-            this.stages = new idList<>();
+            this.stages = new idList<idParticleStage>();
             this.bounds = new idBounds();
         }
 
@@ -1029,7 +1029,7 @@ public class DeclParticle {
                     continue;
                 }
 
-                src.Warning("bad token %s", token.toString());
+                src.Warning("bad token %s", token.getData());
                 MakeDefault();
                 return false;
             }
@@ -1215,7 +1215,7 @@ public class DeclParticle {
                     } else if (0 == token.Icmp("sphere")) {
                         stage.distributionType = PDIST_SPHERE;
                     } else {
-                        src.Error("bad distribution type: %s\n", token.toString());
+                        src.Error("bad distribution type: %s\n", token.getData());
                     }
                     ParseParms(src, stage.distributionParms, stage.distributionParms.length);
                     continue;
@@ -1228,7 +1228,7 @@ public class DeclParticle {
                     } else if (0 == token.Icmp("outward")) {
                         stage.directionType = PDIR_OUTWARD;
                     } else {
-                        src.Error("bad direction type: %s\n", token.toString());
+                        src.Error("bad direction type: %s\n", token.getData());
                     }
                     ParseParms(src, stage.directionParms, stage.directionParms.length);
                     continue;
@@ -1247,7 +1247,7 @@ public class DeclParticle {
                     } else if (0 == token.Icmp("z")) {
                         stage.orientation = POR_Z;
                     } else {
-                        src.Error("bad orientation type: %s\n", token.toString());
+                        src.Error("bad orientation type: %s\n", token.getData());
                     }
                     ParseParms(src, stage.orientationParms, stage.orientationParms.length);
                     continue;
@@ -1264,7 +1264,7 @@ public class DeclParticle {
                     } else if (0 == token.Icmp("spherical")) {
                         stage.customPathType = PPATH_ORBIT;
                     } else {
-                        src.Error("bad path type: %s\n", token.toString());
+                        src.Error("bad path type: %s\n", token.getData());
                     }
                     ParseParms(src, stage.customPathParms, stage.customPathParms.length);
                     continue;
@@ -1349,7 +1349,7 @@ public class DeclParticle {
                     continue;
                 }
 
-                src.Error("unknown token %s\n", token.toString());
+                src.Error("unknown token %s\n", token.getData());
             }
 
             // derive values
@@ -1379,7 +1379,7 @@ public class DeclParticle {
                     return;
                 }
                 token.StripQuotes();
-                parms[count] = atof(token.toString());
+                parms[count] = atof(token.getData());
                 count++;
             }
         }
@@ -1397,14 +1397,14 @@ public class DeclParticle {
 
             if (token.IsNumeric()) {
                 // can have a to + 2nd parm
-                parm.from = parm.to = atof(token.toString());
+                parm.from = parm.to = atof(token.getData());
                 if (src.ReadToken(token)) {
                     if (0 == token.Icmp("to")) {
                         if (!src.ReadToken(token)) {
                             src.Error("missing second parameter");
                             return;
                         }
-                        parm.to = atof(token.toString());
+                        parm.to = atof(token.getData());
                     } else {
                         src.UnreadToken(token);
                     }

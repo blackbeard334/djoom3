@@ -4806,7 +4806,7 @@ public class Physics_AF {
                 gameLocal.Error("idPhysics_AF::AddBody: body '%s' added twice.", body.name);
             }
 
-            if (GetBody(body.name.toString()) != null) {
+            if (GetBody(body.name.getData()) != null) {
                 gameLocal.Error("idPhysics_AF::AddBody: a body with the name '%s' already exists.", body.name);
             }
 
@@ -4836,7 +4836,7 @@ public class Physics_AF {
             if (this.constraints.Find(constraint) != null) {
                 gameLocal.Error("idPhysics_AF::AddConstraint: constraint '%s' added twice.", constraint.name);
             }
-            if (GetConstraint(constraint.name.toString()) != null) {
+            if (GetConstraint(constraint.name.getData()) != null) {
                 gameLocal.Error("idPhysics_AF::AddConstraint: a constraint with the name '%s' already exists.", constraint.name);
             }
             if (null == constraint.body1) {
@@ -4947,7 +4947,7 @@ public class Physics_AF {
         }
 
         public idAFBody GetBody(final idStr bodyName) {
-            return GetBody(bodyName.toString());
+            return GetBody(bodyName.getData());
         }
 
         public idAFBody GetBody(final int id) {
@@ -7215,7 +7215,7 @@ public class Physics_AF {
             if (af_showBodyNames.GetBool()) {
                 for (i = 0; i < this.bodies.Num(); i++) {
                     body = this.bodies.oGet(i);
-                    gameRenderWorld.DrawText(body.GetName().toString(), body.GetWorldOrigin(), 0.08f, colorCyan, gameLocal.GetLocalPlayer().viewAngles.ToMat3(), 1);
+                    gameRenderWorld.DrawText(body.GetName().getData(), body.GetWorldOrigin(), 0.08f, colorCyan, gameLocal.GetLocalPlayer().viewAngles.ToMat3(), 1);
                 }
             }
 
@@ -7266,13 +7266,13 @@ public class Physics_AF {
                 for (i = 0; i < this.primaryConstraints.Num(); i++) {
                     constraint = this.primaryConstraints.oGet(i);
                     constraint.GetCenter(center);
-                    gameRenderWorld.DrawText(constraint.GetName().toString(), center, 0.08f, colorCyan, gameLocal.GetLocalPlayer().viewAngles.ToMat3(), 1);
+                    gameRenderWorld.DrawText(constraint.GetName().getData(), center, 0.08f, colorCyan, gameLocal.GetLocalPlayer().viewAngles.ToMat3(), 1);
                 }
                 if (!af_showPrimaryOnly.GetBool()) {
                     for (i = 0; i < this.auxiliaryConstraints.Num(); i++) {
                         constraint = this.auxiliaryConstraints.oGet(i);
                         constraint.GetCenter(center);
-                        gameRenderWorld.DrawText(constraint.GetName().toString(), center, 0.08f, colorCyan, gameLocal.GetLocalPlayer().viewAngles.ToMat3(), 1);
+                        gameRenderWorld.DrawText(constraint.GetName().getData(), center, 0.08f, colorCyan, gameLocal.GetLocalPlayer().viewAngles.ToMat3(), 1);
                     }
                 }
             }
