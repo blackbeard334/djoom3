@@ -1,6 +1,6 @@
 package neo.openal;
 
-public interface QALConstants {
+public interface QALConstantsIfc {
 
     int AL_BUFFER = 0x1009;
 

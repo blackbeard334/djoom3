@@ -7,7 +7,7 @@ import java.nio.IntBuffer;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.ALC10;
 
-public interface QAL /*extends QALConstants*/ {
+public class QAL implements QALConstantsIfc {
 
 	public static void alBufferData(int bufferName, int format, ByteBuffer data, int frequency) {
     	AL10.alBufferData(bufferName, format, data, frequency);

@@ -372,7 +372,7 @@ public class win_glimp {
 ////        // create our window classes if we haven't already
 ////        GLW_CreateWindowClasses();
 ////
-////	// this will load the dll and set all our qgl* function pointers,
+////	// this will load the dll and set all our QGL* function pointers,
 ////	// but doesn't create a window
 ////
 ////	// r_glDriver is only intended for using instrumented OpenGL

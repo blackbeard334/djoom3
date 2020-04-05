@@ -24,6 +24,7 @@ import neo.TempDump;
 /**
  * so yeah, it's easier to use this class as an interface. rather than refactor
  * all the qwgl stuff to gl and such.
+ * @deprecated use {@link QGL} instead
  */
 public class qgl {
 

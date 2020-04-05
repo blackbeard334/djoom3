@@ -52,7 +52,7 @@ public class precompiled {
 //#pragma warning(disable : 4996)				// unsafe string operations
 //
 //#include <malloc.h>							// no malloc.h on mac or unix
-//#include <windows.h>						// for qgl.h
+//#include <windows.h>						// for QGL.h
 //#undef FindText								// stupid namespace poluting Microsoft monkeys
 //
 //#endif /* _WIN32 */
@@ -108,7 +108,7 @@ public class precompiled {
     public static final int MAX_EXPRESSION_OPS = 4096;
     public static final int MAX_EXPRESSION_REGISTERS = 4096;
 //// renderer
-//#include "../renderer/qgl.h"
+//#include "../renderer/QGL.h"
 //#include "../renderer/Cinematic.h"
 //#include "../renderer/Material.h"
 //#include "../renderer/Model.h"
