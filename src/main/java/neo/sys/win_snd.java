@@ -10,9 +10,8 @@ import java.util.logging.Logger;
 
 import javax.sound.sampled.SourceDataLine;
 
-import org.lwjgl.openal.ALC;
-
 import neo.TempDump.TODO_Exception;
+import neo.openal.QAL;
 import neo.Sound.snd_local.idAudioHardware;
 import neo.Sound.snd_system.idSoundSystemLocal;
 
@@ -226,7 +225,7 @@ public class win_snd {
     public static boolean Sys_LoadOpenAL() {
         if (ID_OPENAL) {
             try {
-                ALC.create();
+            	QAL.loadOpenAL();
             } catch (final UnsatisfiedLinkError ex) {
                 Logger.getLogger(win_snd.class.getName()).log(Level.SEVERE, null, ex);
                 common.Warning("LoadLibrary %s failed.", idSoundSystemLocal.s_libOpenAL.GetString());
@@ -247,7 +246,7 @@ public class win_snd {
      ===============
      */
     public static void Sys_FreeOpenAL() {
-        ALC.destroy();
+    	QAL.freeOpenAL();
     }
 
 }

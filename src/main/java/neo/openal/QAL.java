@@ -4,8 +4,12 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALC10;
+import org.lwjgl.openal.ALCCapabilities;
+import org.lwjgl.openal.ALCapabilities;
 
 public class QAL implements QALConstantsIfc {
 
@@ -136,5 +140,18 @@ public class QAL implements QALConstantsIfc {
     public static int alSourceUnqueueBuffers(int sourceName) {
     	return AL10.alSourceUnqueueBuffers(sourceName);
     }
+
+    public static void createCapabilities(long openalDevice) {
+        final ALCCapabilities alcCapabilities = ALC.createCapabilities(openalDevice);
+        final ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
+	}
+
+    public static void freeOpenAL() {
+		ALC.destroy();
+	}
+
+    public static void loadOpenAL() {
+		ALC.create();
+	}
 
 }

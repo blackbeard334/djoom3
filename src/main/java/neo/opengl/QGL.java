@@ -13,13 +13,12 @@ import org.lwjgl.opengl.ARBVertexBufferObject;
 import org.lwjgl.opengl.ARBVertexProgram;
 import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.EXTDepthBoundsTest;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
-
-import neo.TempDump;
 
 /**
  * so yeah, it's easier to use this class as an interface. rather than refactor
@@ -54,6 +53,10 @@ public class QGL {
 		if (GL_DEBUG) {
 //            System.out.println(functionName);
 		}
+	}
+
+	public static void createCapabilities() {
+		GL.createCapabilities();
 	}
 
 	public static void qglActiveTextureARB(int texture) {
@@ -423,7 +426,7 @@ public class QGL {
 
 	public static void qglPrioritizeTextures(int n, int textures, float priorities) {
 		DEBUG_printName("glPrioritizeTextures");
-		throw new TempDump.TODO_Exception();
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	public static /* PFNGLPROGRAMENVPARAMETER4FVARBPROC */ void qglProgramEnvParameter4fvARB(int target, Enum<?> index,
