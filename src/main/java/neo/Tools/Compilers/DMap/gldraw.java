@@ -1,8 +1,22 @@
 package neo.Tools.Compilers.DMap;
 
-import static neo.Renderer.qgl.qglVertex3fv;
 import static neo.Renderer.tr_backend.RB_SetGL2D;
 import static neo.Tools.Compilers.DMap.dmap.dmapGlobals;
+import static neo.opengl.QGL.qglBegin;
+import static neo.opengl.QGL.qglBlendFunc;
+import static neo.opengl.QGL.qglClear;
+import static neo.opengl.QGL.qglClearColor;
+import static neo.opengl.QGL.qglColor3f;
+import static neo.opengl.QGL.qglDisable;
+import static neo.opengl.QGL.qglDrawBuffer;
+import static neo.opengl.QGL.qglEnd;
+import static neo.opengl.QGL.qglFlush;
+import static neo.opengl.QGL.qglLoadIdentity;
+import static neo.opengl.QGL.qglMatrixMode;
+import static neo.opengl.QGL.qglOrtho;
+import static neo.opengl.QGL.qglPolygonMode;
+import static neo.opengl.QGL.qglVertex3f;
+import static neo.opengl.QGL.qglVertex3fv;
 import static neo.opengl.QGLConstantsIfc.GL_COLOR_BUFFER_BIT;
 import static neo.opengl.QGLConstantsIfc.GL_DEPTH_TEST;
 import static neo.opengl.QGLConstantsIfc.GL_FILL;
@@ -15,20 +29,6 @@ import static neo.opengl.QGLConstantsIfc.GL_ONE_MINUS_SRC_ALPHA;
 import static neo.opengl.QGLConstantsIfc.GL_POLYGON;
 import static neo.opengl.QGLConstantsIfc.GL_PROJECTION;
 import static neo.opengl.QGLConstantsIfc.GL_SRC_ALPHA;
-import static neo.Renderer.qgl.glBegin;
-import static neo.Renderer.qgl.glBlendFunc;
-import static neo.Renderer.qgl.glClear;
-import static neo.Renderer.qgl.glClearColor;
-import static neo.Renderer.qgl.glColor3f;
-import static neo.Renderer.qgl.glDisable;
-import static neo.Renderer.qgl.glDrawBuffer;
-import static neo.Renderer.qgl.glEnd;
-import static neo.Renderer.qgl.glFlush;
-import static neo.Renderer.qgl.glLoadIdentity;
-import static neo.Renderer.qgl.glMatrixMode;
-import static neo.Renderer.qgl.glOrtho;
-import static neo.Renderer.qgl.glPolygonMode;
-import static neo.Renderer.qgl.glVertex3f;
 
 import neo.TempDump.TODO_Exception;
 import neo.Tools.Compilers.DMap.dmap.mapTri_s;
@@ -48,12 +48,12 @@ public class gldraw {
             return;
         }
 
-        glDrawBuffer(GL_FRONT);
+        qglDrawBuffer(GL_FRONT);
 
         RB_SetGL2D();
 
-        glClearColor(0.5f, 0.5f, 0.5f, 0);
-        glClear(GL_COLOR_BUFFER_BIT);
+        qglClearColor(0.5f, 0.5f, 0.5f, 0);
+        qglClear(GL_COLOR_BUFFER_BIT);
 
 //#if 0
 //	int		w, h, g;
@@ -71,20 +71,20 @@ public class gldraw {
 //    gluPerspective (90,  1,  2,  16384);
 //	gluLookAt (mx, my, draw_maxs[2] + g/2, mx , my, draw_maxs[2], 0, 1, 0);
 //#else
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(dmapGlobals.drawBounds.oGet(0, 0), dmapGlobals.drawBounds.oGet(1, 0),
+        qglMatrixMode(GL_PROJECTION);
+        qglLoadIdentity();
+        qglOrtho(dmapGlobals.drawBounds.oGet(0, 0), dmapGlobals.drawBounds.oGet(1, 0),
                 dmapGlobals.drawBounds.oGet(0, 1), dmapGlobals.drawBounds.oGet(1, 1),
                 -1, 1);
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
+        qglMatrixMode(GL_MODELVIEW);
+        qglLoadIdentity();
 //#endif
-        glColor3f(0, 0, 0);
+        qglColor3f(0, 0, 0);
 //	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glDisable(GL_DEPTH_TEST);
+        qglPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        qglDisable(GL_DEPTH_TEST);
 //	glEnable (GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 //#if 0
 ////glColor4f (1,0,0,0.5);
@@ -98,7 +98,7 @@ public class gldraw {
 //
 //	glEnd ();
 //#endif
-        glFlush();
+        qglFlush();
 
     }
 
@@ -107,7 +107,7 @@ public class gldraw {
             return;
         }
 
-        glColor3f(1, 0, 0);
+        qglColor3f(1, 0, 0);
     }
 
     static void Draw_SetGrey() {
@@ -115,7 +115,7 @@ public class gldraw {
             return;
         }
 
-        glColor3f(0.5f, 0.5f, 0.5f);
+        qglColor3f(0.5f, 0.5f, 0.5f);
     }
 
     static void Draw_SetBlack() {
@@ -123,7 +123,7 @@ public class gldraw {
             return;
         }
 
-        glColor3f(0.0f, 0.0f, 0.0f);
+        qglColor3f(0.0f, 0.0f, 0.0f);
     }
 
     static void DrawWinding(final idWinding w) {
@@ -133,21 +133,21 @@ public class gldraw {
             return;
         }
 
-        glColor3f(0.3f, 0.0f, 0.0f);
-        glBegin(GL_POLYGON);
+        qglColor3f(0.3f, 0.0f, 0.0f);
+        qglBegin(GL_POLYGON);
         for (i = 0; i < w.GetNumPoints(); i++) {
-            glVertex3f(w.oGet(i).oGet(0), w.oGet(i).oGet(1), w.oGet(i).oGet(2));
+            qglVertex3f(w.oGet(i).oGet(0), w.oGet(i).oGet(1), w.oGet(i).oGet(2));
         }
-        glEnd();
+        qglEnd();
 
-        glColor3f(1, 0, 0);
-        glBegin(GL_LINE_LOOP);
+        qglColor3f(1, 0, 0);
+        qglBegin(GL_LINE_LOOP);
         for (i = 0; i < w.GetNumPoints(); i++) {
-            glVertex3f(w.oGet(i).oGet(0), w.oGet(i).oGet(1), w.oGet(i).oGet(2));
+            qglVertex3f(w.oGet(i).oGet(0), w.oGet(i).oGet(1), w.oGet(i).oGet(2));
         }
-        glEnd();
+        qglEnd();
 
-        glFlush();
+        qglFlush();
     }
 
     static void DrawAuxWinding(final idWinding w) {
@@ -157,21 +157,21 @@ public class gldraw {
             return;
         }
 
-        glColor3f(0.0f, 0.3f, 0.0f);
-        glBegin(GL_POLYGON);
+        qglColor3f(0.0f, 0.3f, 0.0f);
+        qglBegin(GL_POLYGON);
         for (i = 0; i < w.GetNumPoints(); i++) {
-            glVertex3f(w.oGet(i).oGet(0), w.oGet(i).oGet(1), w.oGet(i).oGet(2));
+            qglVertex3f(w.oGet(i).oGet(0), w.oGet(i).oGet(1), w.oGet(i).oGet(2));
         }
-        glEnd();
+        qglEnd();
 
-        glColor3f(0.0f, 1.0f, 0.0f);
-        glBegin(GL_LINE_LOOP);
+        qglColor3f(0.0f, 1.0f, 0.0f);
+        qglBegin(GL_LINE_LOOP);
         for (i = 0; i < w.GetNumPoints(); i++) {
-            glVertex3f(w.oGet(i).oGet(0), w.oGet(i).oGet(1), w.oGet(i).oGet(2));
+            qglVertex3f(w.oGet(i).oGet(0), w.oGet(i).oGet(1), w.oGet(i).oGet(2));
         }
-        glEnd();
+        qglEnd();
 
-        glFlush();
+        qglFlush();
     }
 
     static void DrawLine(idVec3 v1, idVec3 v2, int color) {
@@ -181,38 +181,38 @@ public class gldraw {
 
         switch (color) {
             case 0:
-                glColor3f(0, 0, 0);
+                qglColor3f(0, 0, 0);
                 break;
             case 1:
-                glColor3f(0, 0, 1);
+                qglColor3f(0, 0, 1);
                 break;
             case 2:
-                glColor3f(0, 1, 0);
+                qglColor3f(0, 1, 0);
                 break;
             case 3:
-                glColor3f(0, 1, 1);
+                qglColor3f(0, 1, 1);
                 break;
             case 4:
-                glColor3f(1, 0, 0);
+                qglColor3f(1, 0, 0);
                 break;
             case 5:
-                glColor3f(1, 0, 1);
+                qglColor3f(1, 0, 1);
                 break;
             case 6:
-                glColor3f(1, 1, 0);
+                qglColor3f(1, 1, 0);
                 break;
             case 7:
-                glColor3f(1, 1, 1);
+                qglColor3f(1, 1, 1);
                 break;
         }
 
-        glBegin(GL_LINES);
+        qglBegin(GL_LINES);
 
         qglVertex3fv(v1.ToFloatPtr());
         qglVertex3fv(v2.ToFloatPtr());
 
-        glEnd();
-        glFlush();
+        qglEnd();
+        qglFlush();
     }
 //============================================================
     static final int GLSERV_PORT = 25001;

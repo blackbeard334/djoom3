@@ -11,6 +11,7 @@ import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.UsercmdGen.usercmdGen;
 import static neo.idlib.Lib.idLib.common;
 import static neo.idlib.Lib.idLib.cvarSystem;
+import static neo.opengl.QGL.createCapabilities;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
@@ -49,7 +50,6 @@ import java.util.logging.Logger;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.opengl.GL;
 
 import neo.TempDump.NeoFixStrings;
 import neo.TempDump.TODO_Exception;
@@ -288,7 +288,7 @@ public class win_glimp {
         glfwSetWindowPos(window, (currentMode.width() / 2) - (parms.width / 2), (currentMode.height() / 2) - (parms.height / 2));
         if (window != 0) {
             glfwMakeContextCurrent(window);
-            GL.createCapabilities();
+            createCapabilities();
 //                win32.cdsFullscreen = true;
             glfwShowWindow(window);
             glfwSetInputMode(window, GLFW.GLFW_LOCK_KEY_MODS, GLFW_TRUE);

@@ -1,5 +1,6 @@
 package neo;
 
+import static neo.openal.QAL.alGetError;
 import static neo.Renderer.Material.MAX_ENTITY_SHADER_PARMS;
 import static neo.Renderer.RenderWorld.MAX_GLOBAL_SHADER_PARMS;
 import static neo.Renderer.RenderWorld.MAX_RENDERENTITY_GUI;
@@ -27,7 +28,6 @@ import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL10;
 
 import com.rits.cloning.Cloner;
 
@@ -621,7 +621,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
 
     private static void breakOnALError() {
         final int e;
-        if ((e = AL10.alGetError()) != 0) {
+        if ((e = alGetError()) != 0) {
             throw new RuntimeException(e + " minutes, to miiiiiiiidnight!");
         }
     }

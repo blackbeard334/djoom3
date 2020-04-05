@@ -4,151 +4,154 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import neo.openal.lwjgl3.Lwjgl3QAL;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.ALC;
+import org.lwjgl.openal.ALC10;
+import org.lwjgl.openal.ALCCapabilities;
+import org.lwjgl.openal.ALCapabilities;
 
 public class QAL implements QALConstantsIfc {
 
-	// TODO: Change fix initialization to dynamic
-	private static QALIfc impl = new Lwjgl3QAL();
-
 	public static void alBufferData(int bufferName, int format, ByteBuffer data, int frequency) {
-    	impl.alBufferData(bufferName, format, data, frequency);
+    	AL10.alBufferData(bufferName, format, data, frequency);
     }
 
 	public static boolean alcCloseDevice(long deviceHandle) {
-    	return impl.alcCloseDevice(deviceHandle);
+    	return ALC10.alcCloseDevice(deviceHandle);
     }
 
 	public static long alcCreateContext(long deviceHandle, IntBuffer attrList) {
-    	return impl.alcCreateContext(deviceHandle, attrList);
+    	return ALC10.alcCreateContext(deviceHandle, attrList);
     }
 
 	public static void alcDestroyContext(long context) {
-    	impl.alcDestroyContext(context);
+    	ALC10.alcDestroyContext(context);
     }
 
 	public static String alcGetString(long deviceHandle, int token) {
-    	return impl.alcGetString(deviceHandle, token);
+    	return ALC10.alcGetString(deviceHandle, token);
     }
 
 	public static boolean alcMakeContextCurrent(long context) {
-    	return impl.alcMakeContextCurrent(context);
+    	return ALC10.alcMakeContextCurrent(context);
     }
 
 	public static long alcOpenDevice(ByteBuffer deviceSpecifier) {
-    	return impl.alcOpenDevice(deviceSpecifier);
+    	return ALC10.alcOpenDevice(deviceSpecifier);
     }
 
 	public static void alcProcessContext(long context) {
-    	impl.alcProcessContext(context);
+    	ALC10.alcProcessContext(context);
     }
 
 	public static void alcSuspendContext(long context) {
-    	impl.alcSuspendContext(context);
+    	ALC10.alcSuspendContext(context);
     }
 
 	public static void alDeleteBuffers(int bufferName) {
-		impl.alDeleteBuffers(bufferName);
+		AL10.alDeleteBuffers(bufferName);
 	}
 
 	public static void alDeleteBuffers(IntBuffer bufferNames) {
-    	impl.alDeleteBuffers(bufferNames);
+    	AL10.alDeleteBuffers(bufferNames);
     }
 
 	public static void alDeleteSources(int source) {
-		impl.alDeleteSources(source);
+		AL10.alDeleteSources(source);
 	}
 
 	public static void alDeleteSources(IntBuffer source) {
-		impl.alDeleteSources(source);
+		AL10.alDeleteSources(source);
 	}
 
     public static int alGenBuffers() {
-		return impl.alGenBuffers();
+		return AL10.alGenBuffers();
 	}
 
     public static void alGenBuffers(IntBuffer bufferNames) {
-		impl.alGenBuffers(bufferNames);
+		AL10.alGenBuffers(bufferNames);
     }
 
     public static int alGenSources() {
-		return impl.alGenSources();
+		return AL10.alGenSources();
 	}
 
     public static int alGetError() {
-		return impl.alGetError();
+		return AL10.alGetError();
 	}
 
     public static int alGetSourcei(int source, int param) {
-		return impl.alGetSourcei(source, param);
+		return AL10.alGetSourcei(source, param);
 	}
 
     public static boolean alIsBuffer(int bufferName) {
-    	return impl.alIsBuffer(bufferName);
+    	return AL10.alIsBuffer(bufferName);
     }
 
     public static boolean alIsExtensionPresent(ByteBuffer extName) {
-		return impl.alIsExtensionPresent(extName);
+		return AL10.alIsExtensionPresent(extName);
 	}
 
     public static boolean alIsExtensionPresent(CharSequence extName) {
-		return impl.alIsExtensionPresent(extName);
+		return AL10.alIsExtensionPresent(extName);
 	}
 
     public static boolean alIsSource(int sourceName) {
-		return impl.alIsSource(sourceName);
+		return AL10.alIsSource(sourceName);
 	}
 
     public static void alListener3f(int paramName, float value1, float value2, float value3) {
-    	impl.alListener3f(paramName, value1, value2, value3);
+    	AL10.alListener3f(paramName, value1, value2, value3);
     }
 
     public static void alListenerf(int paramName, float value) {
-    	impl.alListenerf(paramName, value);
+    	AL10.alListenerf(paramName, value);
     }
 
     public static void alListenerfv(int paramName, FloatBuffer values) {
-    	impl.alListenerfv(paramName, values);
+    	AL10.alListenerfv(paramName, values);
     }
 
     public static void alSource3f(int source, int param, float v1, float v2, float v3) {
-    	impl.alSource3f(source, param, v1, v2, v3);
+    	AL10.alSource3f(source, param, v1, v2, v3);
     }
 
     public static void alSourcef(int source, int param, float value) {
-		impl.alSourcef(source, param, value);
+		AL10.alSourcef(source, param, value);
 	}
 
     public static void alSourcei(int source, int param, int value) {
-		impl.alSourcei(source, param, value);
+		AL10.alSourcei(source, param, value);
 	}
 
     public static void alSourcePlay(int source) {
-    	impl.alSourcePlay(source);
+    	AL10.alSourcePlay(source);
     }
 
     public static void alSourceQueueBuffers(int sourceName, int bufferName) {
-    	impl.alSourceQueueBuffers(sourceName, bufferName);
+    	AL10.alSourceQueueBuffers(sourceName, bufferName);
     }
 
     public static void alSourceStop(int source) {
-		impl.alSourceStop(source);
+		AL10.alSourceStop(source);
 	}
 
     public static int alSourceUnqueueBuffers(int sourceName) {
-    	return impl.alSourceUnqueueBuffers(sourceName);
+    	return AL10.alSourceUnqueueBuffers(sourceName);
     }
 
     public static void createCapabilities(long openalDevice) {
-    	impl.createCapabilities(openalDevice);
-    }
+        final ALCCapabilities alcCapabilities = ALC.createCapabilities(openalDevice);
+        final ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
+	}
 
     public static void freeOpenAL() {
-    	impl.freeOpenAL();
-    }
+		ALC.destroy();
+	}
 
-   public static void loadOpenAL() {
-    	impl.loadOpenAL();
-    }
+    public static void loadOpenAL() {
+		ALC.create();
+	}
 
 }
