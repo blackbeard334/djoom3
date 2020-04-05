@@ -40,14 +40,14 @@ import static neo.framework.KeyInput.K_SCROLL;
 import static neo.framework.KeyInput.K_SHIFT;
 import static neo.framework.KeyInput.K_UPARROW;
 import static neo.idlib.Lib.idLib.cvarSystem;
-import static neo.opengl.GLFWtest.getShiftedScancode;
+import static neo.opengl.QUser.getShiftedScancode;
 import static neo.sys.win_local.win32;
 
 import java.awt.event.InputEvent;
 
 import neo.TempDump.TODO_Exception;
 import neo.idlib.Text.Str.idStr;
-import neo.opengl.GLFWtest;
+import neo.opengl.QUser;
 
 /**
  *
@@ -326,7 +326,7 @@ static char[] keyScanTable = s_scantokey;
     public static int IN_DIMapKey(final int key, final int scancode, final int mods) {
 
         if ((key >= 260) && (scancode >= 128)) {
-            return GLFWtest.mapKey(key);
+            return QUser.mapKey(key);
         }
         if (scancode > 256) {
 			return 0;
@@ -637,7 +637,7 @@ static char[] keyScanTable = s_scantokey;
 	public static int Sys_ReturnKeyboardInputEvent(int[] ch, final int action, final int key, final int scancode, final int mods) {
 		ch[0] = IN_DIMapKey(key, scancode, mods);
 //        action[0] = Keyboard.getEventKeyState();//state = (polled_didod[ n ].dwData & 0x80) == 0x80;
-		GLFWtest.processKeyboardInputEvents(ch[0], action, GetTickCount());
+		QUser.processKeyboardInputEvents(ch[0], action, GetTickCount());
 		return ch[0];
 	}
 

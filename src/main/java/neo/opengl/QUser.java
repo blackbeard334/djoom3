@@ -91,7 +91,7 @@ import neo.TempDump.NeoFixStrings;
 import neo.framework.UsercmdGen.idUsercmdGenLocal.idUsercmdGenLocalData;
 import neo.sys.win_glimp.glimpParms_t;
 
-public class GLFWtest {
+public class QUser {
 	static long window;
 	static Long monitor;
 	static GLFWErrorCallback errorCallback;
@@ -123,11 +123,11 @@ public class GLFWtest {
 //
 ////	DisplayMode		devmode;
 ////	int			modeNum;
-		boolean matched;
+		//boolean matched;
 //
 		// first make sure the user is not trying to select a mode that his card/monitor
 		// can't handle
-		matched = false;
+		//matched = false;
 		DisplayMode[] modes = null;
 		{
 			if (errorCallback == null) {
@@ -237,7 +237,7 @@ public class GLFWtest {
 			}
 		}
 		if (best_match != null) {
-			matched = true;
+			//matched = true;
 			dm = best_match;
 		}
 
