@@ -1,7 +1,6 @@
 package neo.opengl;
 
 import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -36,7 +35,7 @@ public class QGL {
 
 	public static final boolean qGL_FALSE = false;
 
-	public static final boolean qGL_TRUE  = true;
+	public static final boolean qGL_TRUE = true;
 
 	public static void checkGLError() {
 		if (GL_DEBUG) {
@@ -109,7 +108,8 @@ public class QGL {
 		ARBVertexBufferObject.glBufferDataARB(target, data, usage);
 	}
 
-	public static /* PFNGLBUFFERSUBDATAARBPROC */void qglBufferSubDataARB(int target, long offset, long size, ByteBuffer data) {
+	public static /* PFNGLBUFFERSUBDATAARBPROC */void qglBufferSubDataARB(int target, long offset, long size,
+			ByteBuffer data) {
 		DEBUG_printName("glBufferSubDataARB");
 		ARBVertexBufferObject.glBufferSubDataARB(target, offset, data);
 	}
@@ -562,21 +562,21 @@ public class QGL {
 	}
 
 	@Deprecated
-	public static void qglTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format,
-			int type, byte[] pixels) {
+	public static void qglTexImage2D(int target, int level, int internalformat, int width, int height, int border,
+			int format, int type, byte[] pixels) {
 		DEBUG_printName("glTexImage2D");
 		qglTexImage2D(target, level, internalformat, width, height, border, format, type, wrap(pixels));
 		throw new UnsupportedOperationException();
 	}
 
-	public static void qglTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format,
-			int type, ByteBuffer pixels) {
+	public static void qglTexImage2D(int target, int level, int internalformat, int width, int height, int border,
+			int format, int type, ByteBuffer pixels) {
 		DEBUG_printName("glTexImage2D");
 		GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
 	}
 
-	public static void qglTexImage3D(int GLenum1, int GLint1, int GLint2, int GLsizei1, int GLsizei2, int GLsizei3, int GLint4,
-			int GLenum2, int GLenum3, ByteBuffer GLvoid) {
+	public static void qglTexImage3D(int GLenum1, int GLint1, int GLint2, int GLsizei1, int GLsizei2, int GLsizei3,
+			int GLint4, int GLenum2, int GLenum3, ByteBuffer GLvoid) {
 		DEBUG_printName("glTexImage3D");
 		GL12.glTexImage3D(GLenum1, GLint1, GLint2, GLsizei1, GLsizei2, GLsizei3, GLint4, GLenum2, GLenum3, GLvoid);
 	}
@@ -596,8 +596,8 @@ public class QGL {
 		GL11.glTexParameteri(target, pName, param);
 	}
 
-	public static void qglTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format,
-			int type, ByteBuffer pixels) {
+	public static void qglTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height,
+			int format, int type, ByteBuffer pixels) {
 		DEBUG_printName("glTexSubImage2D");
 		GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
 	}
@@ -617,7 +617,8 @@ public class QGL {
 		qglVertex3f(v[0], v[1], v[2]);
 	}
 
-	public static void qglVertexAttribPointerARB(int index, int size, int type, boolean normalized, int stride, long pointer) {
+	public static void qglVertexAttribPointerARB(int index, int size, int type, boolean normalized, int stride,
+			long pointer) {
 		DEBUG_printName("glVertexAttribPointerARB");
 		ARBVertexShader.glVertexAttribPointerARB(index, size, type, normalized, stride, pointer);
 	}
@@ -642,40 +643,31 @@ public class QGL {
 		GL11.glViewport(x, y, width, height);
 	}
 
-    /**
-     * @deprecated the calling functions should send ByteBuffers instead.
-     */
-    @Deprecated
-    private static ByteBuffer wrap(final byte[] byteArray) {
+	/**
+	 * @deprecated the calling functions should send ByteBuffers instead.
+	 */
+	@Deprecated
+	private static ByteBuffer wrap(final byte[] byteArray) {
 
-        return (ByteBuffer) BufferUtils.
-                createByteBuffer(byteArray.length | 16).
-                put(byteArray).
-                flip();
-    }
+		return (ByteBuffer) BufferUtils.createByteBuffer(byteArray.length | 16).put(byteArray).flip();
+	}
 
-    /**
-     * @deprecated the calling functions should send FloatBuffers instead.
-     */
-    @Deprecated
-    private static FloatBuffer wrap(final float[] floatArray) {
+	/**
+	 * @deprecated the calling functions should send FloatBuffers instead.
+	 */
+	@Deprecated
+	private static FloatBuffer wrap(final float[] floatArray) {
 
-        return (FloatBuffer) BufferUtils.
-                createFloatBuffer(floatArray.length | 16).
-                put(floatArray).
-                flip();
-    }
+		return (FloatBuffer) BufferUtils.createFloatBuffer(floatArray.length | 16).put(floatArray).flip();
+	}
 
-    /**
-     * @deprecated the calling functions should send IntBuffers instead.
-     */
-    @Deprecated
-    private static IntBuffer wrap(final int[] intArray) {
+	/**
+	 * @deprecated the calling functions should send IntBuffers instead.
+	 */
+	@Deprecated
+	private static IntBuffer wrap(final int[] intArray) {
 
-        return (IntBuffer) BufferUtils.
-                createIntBuffer(intArray.length).
-                put(intArray).
-                flip();
-    }
+		return (IntBuffer) BufferUtils.createIntBuffer(intArray.length).put(intArray).flip();
+	}
 
 }
