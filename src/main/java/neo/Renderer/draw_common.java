@@ -192,8 +192,6 @@ import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import org.lwjgl.BufferUtils;
-
 import neo.TempDump.NeoFixStrings;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Material.newShaderStage_t;
@@ -211,6 +209,7 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.opengl.Nio;
 
 /**
  *
@@ -284,57 +283,11 @@ public class draw_common {
             qglTexCoordPointer(3, GL_FLOAT, 0, vertexCache.Position(surf.dynamicTexCoords));
         }
         if (pStage.texture.texgen == TG_SCREEN) {
-            qglEnable(GL_TEXTURE_GEN_S);
-            qglEnable(GL_TEXTURE_GEN_T);
-            qglEnable(GL_TEXTURE_GEN_Q);
-
-            final float[] mat = new float[16], plane = new float[4];
-            myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.projectionMatrix, mat);
-
-            plane[0] = mat[0];
-            plane[1] = mat[4];
-            plane[2] = mat[8];
-            plane[3] = mat[12];
-            qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
-
-            plane[0] = mat[1];
-            plane[1] = mat[5];
-            plane[2] = mat[9];
-            plane[3] = mat[13];
-            qglTexGenfv(GL_T, GL_OBJECT_PLANE, plane);
-
-            plane[0] = mat[3];
-            plane[1] = mat[7];
-            plane[2] = mat[11];
-            plane[3] = mat[15];
-            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, plane);
+        	RB_PrepareStageTexturing(surf);
         }
 
         if (pStage.texture.texgen == TG_SCREEN2) {
-            qglEnable(GL_TEXTURE_GEN_S);
-            qglEnable(GL_TEXTURE_GEN_T);
-            qglEnable(GL_TEXTURE_GEN_Q);
-
-            final float[] mat = new float[16], plane = new float[4];
-            myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.projectionMatrix, mat);
-
-            plane[0] = mat[0];
-            plane[1] = mat[4];
-            plane[2] = mat[8];
-            plane[3] = mat[12];
-            qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
-
-            plane[0] = mat[1];
-            plane[1] = mat[5];
-            plane[2] = mat[9];
-            plane[3] = mat[13];
-            qglTexGenfv(GL_T, GL_OBJECT_PLANE, plane);
-
-            plane[0] = mat[3];
-            plane[1] = mat[7];
-            plane[2] = mat[11];
-            plane[3] = mat[15];
-            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, plane);
+        	RB_PrepareStageTexturing(surf);
         }
 
         if (pStage.texture.texgen == TG_GLASSWARP) {
@@ -348,30 +301,7 @@ public class draw_common {
                 GL_SelectTexture(1);
                 globalImages.scratchImage2.Bind();
 
-                qglEnable(GL_TEXTURE_GEN_S);
-                qglEnable(GL_TEXTURE_GEN_T);
-                qglEnable(GL_TEXTURE_GEN_Q);
-
-                final float[] mat = new float[16], plane = new float[4];
-                myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.projectionMatrix, mat);
-
-                plane[0] = mat[ 0];
-                plane[1] = mat[ 4];
-                plane[2] = mat[ 8];
-                plane[3] = mat[12];
-                qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
-
-                plane[0] = mat[ 1];
-                plane[1] = mat[ 5];
-                plane[2] = mat[ 9];
-                plane[3] = mat[13];
-                qglTexGenfv(GL_T, GL_OBJECT_PLANE, plane);
-
-                plane[0] = mat[ 3];
-                plane[1] = mat[ 7];
-                plane[2] = mat[11];
-                plane[3] = mat[15];
-                qglTexGenfv(GL_Q, GL_OBJECT_PLANE, plane);
+                RB_PrepareStageTexturing(surf);
 
                 GL_SelectTexture(0);
             }
@@ -421,17 +351,51 @@ public class draw_common {
                 qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, ac.normalOffset());
 
                 qglMatrixMode(GL_TEXTURE);
-                final float[] mat = new float[16];
 
-                R_TransposeGLMatrix(backEnd.viewDef.worldSpace.modelViewMatrix, mat);
-
-                qglLoadMatrixf(mat);
+                qglLoadMatrixf(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.modelViewMatrix));
                 qglMatrixMode(GL_MODELVIEW);
             }
         }
     }
 
-    /*
+    private static void RB_PrepareStageTexturing(final drawSurf_s surf) {
+        qglEnable(GL_TEXTURE_GEN_S);
+        qglEnable(GL_TEXTURE_GEN_T);
+        qglEnable(GL_TEXTURE_GEN_Q);
+
+        final float[] mat = new float[16]; //, plane = new float[4];
+        myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.projectionMatrix, mat);
+
+//        plane[0] = mat[0];
+//        plane[1] = mat[4];
+//        plane[2] = mat[8];
+//        plane[3] = mat[12];
+//        qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
+        qglTexGenfv(GL_S, GL_OBJECT_PLANE, toFloatBuffer(mat[0], mat[4], mat[8], mat[12]));
+
+//        plane[0] = mat[1];
+//        plane[1] = mat[5];
+//        plane[2] = mat[9];
+//        plane[3] = mat[13];
+//        qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
+        qglTexGenfv(GL_T, GL_OBJECT_PLANE, toFloatBuffer(mat[1], mat[5], mat[6], mat[13]));
+
+//        plane[0] = mat[3];
+//        plane[1] = mat[7];
+//        plane[2] = mat[11];
+//        plane[3] = mat[15];
+//        qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
+        qglTexGenfv(GL_Q, GL_OBJECT_PLANE, toFloatBuffer(mat[3], mat[7], mat[11], mat[15]));
+    }
+
+    private static FloatBuffer toFloatBuffer(float x, float y, float z, float d) {
+        return (FloatBuffer) Nio.newFloatBuffer(4).put(x)
+            	.put(y)
+            	.put(z)
+            	.put(d).flip();
+    }
+
+   /*
      ================
      RB_FinishStageTexturing
      ================
@@ -565,7 +529,7 @@ public class draw_common {
 
                 R_GlobalPlaneToLocal(surf.space.modelMatrix, backEnd.viewDef.clipPlanes[0], plane);
                 plane.oPluSet(3, 0.5f);	// the notch is in the middle
-                qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane.ToFloatPtr());
+                qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane.toFloatBuffer());
                 GL_SelectTexture(0);
             }
 
@@ -662,7 +626,7 @@ public class draw_common {
                     if (color[3] <= 0) {
                         continue;
                     }
-                    qglColor4fv(color);
+                    qglColor4fv(Nio.wrap(color));
 
                     qglAlphaFunc(GL_GREATER, regs[ pStage.alphaTestRegister]);
 
@@ -685,7 +649,7 @@ public class draw_common {
 
             // draw the entire surface solid
             if (drawSolid) {
-                qglColor4fv(color);
+                qglColor4fv(Nio.wrap(color));
                 globalImages.whiteImage.Bind();
 
                 // draw it
@@ -770,7 +734,7 @@ public class draw_common {
      ==================
      */
     public static void RB_SetProgramEnvironment() {
-        final FloatBuffer parm = BufferUtils.createFloatBuffer(4);
+        final FloatBuffer parm = Nio.newFloatBuffer(4);
         int pot;
 
         if (!glConfig.ARBVertexProgramAvailable) {
@@ -848,7 +812,7 @@ public class draw_common {
         }
 
         final viewEntity_s space = backEnd.currentSpace;
-        final FloatBuffer parm = BufferUtils.createFloatBuffer(4);
+        final FloatBuffer parm = Nio.newFloatBuffer(4);
 
         // set eye position in local space
         R_GlobalPointToLocal(space.modelMatrix, backEnd.viewDef.renderView.vieworg, /*(idVec3 *)*/ parm);
@@ -886,7 +850,7 @@ public class draw_common {
         idMaterial shader;
         shaderStage_t pStage;
         final float[] regs;
-        final FloatBuffer color = BufferUtils.createFloatBuffer(4);
+        final FloatBuffer color = Nio.newFloatBuffer(4);
         srfTriangles_s tri;
 
         tri = surf.geo;
@@ -902,7 +866,7 @@ public class draw_common {
 
         // change the matrix if needed
         if (surf.space != backEnd.currentSpace) {
-            qglLoadMatrixf(surf.space.modelViewMatrix);
+            qglLoadMatrixf(Nio.wrap(surf.space.modelViewMatrix));
             backEnd.currentSpace = surf.space;
             RB_SetProgramEnvironmentSpace();
         }
@@ -1014,7 +978,7 @@ public class draw_common {
                 }
 
                 for (int i = 0; i < newStage.numVertexParms; i++) {
-                    final FloatBuffer parm = BufferUtils.createFloatBuffer(4);
+                    final FloatBuffer parm = Nio.newFloatBuffer(4);
                     parm.put(0, regs[ newStage.vertexParms[i][0]]);
                     parm.put(1, regs[ newStage.vertexParms[i][1]]);
                     parm.put(2, regs[ newStage.vertexParms[i][2]]);
@@ -1262,10 +1226,10 @@ public class draw_common {
             if (tr.backEndRendererHasVertexPrograms && r_useShadowVertexProgram.GetBool()
                     && (surf.space != backEnd.currentSpace)) {
                 final idVec4 localLight = new idVec4();
-                final FloatBuffer lightBuffer = BufferUtils.createFloatBuffer(4);
+                final FloatBuffer lightBuffer = Nio.newFloatBuffer(4);
 
                 R_GlobalPointToLocal(surf.space.modelMatrix, backEnd.vLight.globalLightOrigin, localLight);
-                lightBuffer.put(localLight.ToFloatPtr()).rewind();//localLight.w = 0.0f;
+                lightBuffer.put(localLight.toFloatBuffer()).rewind();//localLight.w = 0.0f;
                 qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_ORIGIN, lightBuffer);
             }
 
@@ -1474,12 +1438,12 @@ public class draw_common {
                 }
 
                 GL_SelectTexture(0);
-                qglTexGenfv(GL_S, GL_OBJECT_PLANE, lightProject[0].ToFloatPtr());
-                qglTexGenfv(GL_T, GL_OBJECT_PLANE, lightProject[1].ToFloatPtr());
-                qglTexGenfv(GL_Q, GL_OBJECT_PLANE, lightProject[2].ToFloatPtr());
+                qglTexGenfv(GL_S, GL_OBJECT_PLANE, lightProject[0].toFloatBuffer());
+                qglTexGenfv(GL_T, GL_OBJECT_PLANE, lightProject[1].toFloatBuffer());
+                qglTexGenfv(GL_Q, GL_OBJECT_PLANE, lightProject[2].toFloatBuffer());
 
                 GL_SelectTexture(1);
-                qglTexGenfv(GL_S, GL_OBJECT_PLANE, lightProject[3].ToFloatPtr());
+                qglTexGenfv(GL_S, GL_OBJECT_PLANE, lightProject[3].toFloatBuffer());
             }
 
             // this gets used for both blend lights and shadow draws
@@ -1488,7 +1452,7 @@ public class draw_common {
                 qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
             } else if (tri.shadowCache != null) {
                 final shadowCache_s sc = new shadowCache_s(vertexCache.Position(tri.shadowCache));//TODO:figure out how to work these damn casts.
-                qglVertexPointer(3, GL_FLOAT, shadowCache_s.BYTES, sc.xyz.ToFloatPtr());
+                qglVertexPointer(3, GL_FLOAT, shadowCache_s.BYTES, sc.xyz.toFloatBuffer());
             }
 
             RB_DrawElementsWithCounters(tri);
@@ -1556,7 +1520,7 @@ public class draw_common {
             backEnd.lightColor[1] = regs[ stage.color.registers[1]];
             backEnd.lightColor[2] = regs[ stage.color.registers[2]];
             backEnd.lightColor[3] = regs[ stage.color.registers[3]];
-            qglColor4fv(backEnd.lightColor);
+            qglColor4fv(Nio.wrap(backEnd.lightColor));
 
             RB_RenderDrawSurfChainWithFunction(drawSurfs, RB_T_BlendLight.INSTANCE);
             RB_RenderDrawSurfChainWithFunction(drawSurfs2, RB_T_BlendLight.INSTANCE);
@@ -1603,22 +1567,22 @@ public class draw_common {
 
                 R_GlobalPlaneToLocal(surf.space.modelMatrix, fogPlanes[0], local);
                 local.oPluSet(3, 0.5f);
-                qglTexGenfv(GL_S, GL_OBJECT_PLANE, local.ToFloatPtr());
+                qglTexGenfv(GL_S, GL_OBJECT_PLANE, local.toFloatBuffer());
 
 //		R_GlobalPlaneToLocal( surf.space.modelMatrix, fogPlanes[1], local );
 //		local[3] += 0.5;
                 local.oSet(0, local.oSet(1, local.oSet(2, local.oSet(3, 0.5f))));
-                qglTexGenfv(GL_T, GL_OBJECT_PLANE, local.ToFloatPtr());
+                qglTexGenfv(GL_T, GL_OBJECT_PLANE, local.toFloatBuffer());
 
                 GL_SelectTexture(1);
 
                 // GL_S is constant per viewer
                 R_GlobalPlaneToLocal(surf.space.modelMatrix, fogPlanes[2], local);
                 local.oPluSet(3, FOG_ENTER);
-                qglTexGenfv(GL_T, GL_OBJECT_PLANE, local.ToFloatPtr());
+                qglTexGenfv(GL_T, GL_OBJECT_PLANE, local.toFloatBuffer());
 
                 R_GlobalPlaneToLocal(surf.space.modelMatrix, fogPlanes[3], local);
-                qglTexGenfv(GL_S, GL_OBJECT_PLANE, local.ToFloatPtr());
+                qglTexGenfv(GL_S, GL_OBJECT_PLANE, local.toFloatBuffer());
             }
 
             RB_T_RenderTriangleSurface.INSTANCE.run(surf);
@@ -1661,7 +1625,7 @@ public class draw_common {
         backEnd.lightColor[2] = regs[ stage.color.registers[2]];
         backEnd.lightColor[3] = regs[ stage.color.registers[3]];
 
-        qglColor3fv(backEnd.lightColor);
+        qglColor3fv(Nio.wrap(backEnd.lightColor));
 
         // calculate the falloff planes
         float a;

@@ -129,12 +129,10 @@ import static neo.sys.win_shared.Sys_Milliseconds;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import org.lwjgl.BufferUtils;
-
 import neo.TempDump.CPP_class;
-import neo.TempDump.NeoFixStrings;
 import neo.TempDump.CPP_class.Bool;
 import neo.TempDump.CPP_class.Pointer;
+import neo.TempDump.NeoFixStrings;
 import neo.TempDump.SERiAL;
 import neo.Renderer.Image_init.R_AlphaNotchImage;
 import neo.Renderer.Image_init.R_AmbientNormalImage;
@@ -172,6 +170,7 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrList.idStrList;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
+import neo.opengl.Nio;
 
 /**
  *
@@ -636,13 +635,13 @@ public class Image {
                     qglBindTexture(GL_TEXTURE_2D, this.texNum);
                     if (this.texNum == 25){
                     	System.out.println(NeoFixStrings.BLAAAAAAASPHEMY);
-            }
-        }
-    } else if (this.type == TT_CUBIC) {
-        if (tmu.currentCubeMap != this.texNum) {
-            tmu.currentCubeMap = this.texNum;
-            qglBindTexture(GL_TEXTURE_CUBE_MAP/*_EXT*/, this.texNum);
-        }
+                    }
+                }
+            } else if (this.type == TT_CUBIC) {
+                if (tmu.currentCubeMap != this.texNum) {
+                    tmu.currentCubeMap = this.texNum;
+                    qglBindTexture(GL_TEXTURE_CUBE_MAP/*_EXT*/, this.texNum);
+                }
             } else if (this.type == TT_3D) {
                 if (tmu.current3DMap != this.texNum) {
                     tmu.current3DMap = this.texNum;
@@ -652,7 +651,7 @@ public class Image {
 
             if (com_purgeAll.GetBool()) {
                 final float/*GLclampf*/ priority = 1.0f;
-                qglPrioritizeTextures(1, this.texNum, priority);
+                qglPrioritizeTextures(Nio.wrap(new int[] {this.texNum}), Nio.wrap(new float[] {priority}));
             }
         }
         private static int DBG_Bind = 0;
@@ -830,7 +829,7 @@ public class Image {
             if ((scaled_width[0] == width) && (scaled_height[0] == height)) {
                 // we must copy even if unchanged, because the border zeroing
                 // would otherwise modify const data
-                scaledBuffer = BufferUtils.createByteBuffer(width * height * 4);// R_StaticAlloc(scaled_width[0] * scaled_height[0]);
+                scaledBuffer = Nio.newByteBuffer(width * height * 4);// R_StaticAlloc(scaled_width[0] * scaled_height[0]);
                 final byte[] temp = new byte[width * height * 4];
 //		memcpy (scaledBuffer, pic, width*height*4);
                 pic.rewind();
@@ -1069,7 +1068,7 @@ public class Image {
             ByteBuffer scaledBuffer;
             ByteBuffer shrunk;
 
-            scaledBuffer = BufferUtils.createByteBuffer(scaled_width * scaled_height * scaled_depth * 4);
+            scaledBuffer = Nio.newByteBuffer(scaled_width * scaled_height * scaled_depth * 4);
             scaledBuffer.put(pic);// memcpy( scaledBuffer, pic, scaled_width * scaled_height * scaled_depth * 4 );
             miplevel = 0;
             while ((scaled_width > 1) || (scaled_height > 1) || (scaled_depth > 1)) {
@@ -1293,7 +1292,7 @@ public class Image {
                     // we need to create a dummy image with power of two dimensions,
                     // then do a qglCopyTexSubImage2D of the data we want
                     // this might be a 16+ meg allocation, which could fail on _alloca
-                    junk = BufferUtils.createByteBuffer(potWidth[0] * potHeight[0] * 4);// Mem_Alloc(potWidth[0] * potHeight[0] * 4);
+                    junk = Nio.newByteBuffer(potWidth[0] * potHeight[0] * 4);// Mem_Alloc(potWidth[0] * potHeight[0] * 4);
 //			memset( junk, 0, potWidth * potHeight * 4 );		//!@#
 //                    if (false) { // Disabling because it's unnecessary and introduces a green strip on edge of _currentRender
 //			for ( int i = 0 ; i < potWidth * potHeight * 4 ; i+=4 ) {
@@ -1354,7 +1353,7 @@ public class Image {
                 } else {
                     // we need to create a dummy image with power of two dimensions,
                     // then do a qglCopyTexSubImage2D of the data we want
-                    qglTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, potWidth, potHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, (byte[]) null);
+                    qglTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, potWidth, potHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, (ByteBuffer) null);
                     qglCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, x, y, imageWidth, imageHeight);
                 }
             } else {
@@ -2386,7 +2385,7 @@ public class Image {
                 if ((uw > this.uploadWidth) || (uh > this.uploadHeight)) {
                     skipMip++;
                 } else {
-                    final ByteBuffer imageData = BufferUtils.createByteBuffer(size);
+                    final ByteBuffer imageData = Nio.newByteBuffer(size);
                     imageData.put(data.array(), offset, size);
                     imageData.order(ByteOrder.BIG_ENDIAN);//TODO: should ByteOrder be reverted? <data> uses LITTLE_ENDIAN.
                     imageData.flip();//FUCKME: the lwjgl version of <glCompressedTexImage2DARB> uses bytebuffer.remaining() as size.
@@ -2643,7 +2642,7 @@ public class Image {
          ==================
          */
         public void UploadCompressedNormalMap(int width, int height, final byte[] rgba, int mipLevel) {
-            byte[] normals;
+            ByteBuffer normals;
             int in;
             int out;
             int i, j;
@@ -2653,7 +2652,7 @@ public class Image {
             // OpenGL's pixel packing rule
             row = Math.max(width, 4);
 
-            normals = new byte[row * height];
+            normals = Nio.newByteBuffer(row * height);
             if (NOT(normals)) {
                 common.Error("R_UploadCompressedNormalMap: _alloca failed");
             }
@@ -2676,7 +2675,7 @@ public class Image {
                             c = 254;	// don't use the nullnormal color
                         }
                     }
-                    normals[out + j] = (byte) c;
+                    normals.put((byte) c);
                 }
             }
 
@@ -3780,7 +3779,7 @@ public class Image {
                     256,
                     GL_RGB,
                     GL_UNSIGNED_BYTE,
-                    temptable);
+                    (ByteBuffer) Nio.newByteBuffer(temptable.length).put(temptable).flip());
 
             qglEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
         }

@@ -22,26 +22,24 @@ import static neo.framework.Common.common;
 import static neo.framework.DemoFile.demoSystem_t.DS_SOUND;
 import static neo.framework.Session.session;
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
-import static neo.sys.win_main.Sys_EnterCriticalSection;
-import static neo.sys.win_main.Sys_LeaveCriticalSection;
-import static neo.sys.win_shared.Sys_Milliseconds;
-import static neo.openal.QALConstantsIfc.AL_BUFFER;
-import static neo.openal.QALConstantsIfc.AL_NO_ERROR;
-import static neo.openal.QALConstantsIfc.AL_PLAYING;
-import static neo.openal.QALConstantsIfc.AL_SOURCE_STATE;
-import static neo.openal.QALConstantsIfc.AL_STOPPED;
 import static neo.openal.QAL.alDeleteBuffers;
 import static neo.openal.QAL.alGetError;
 import static neo.openal.QAL.alGetSourcei;
 import static neo.openal.QAL.alIsSource;
 import static neo.openal.QAL.alSourceStop;
 import static neo.openal.QAL.alSourcei;
+import static neo.openal.QALConstantsIfc.AL_BUFFER;
+import static neo.openal.QALConstantsIfc.AL_NO_ERROR;
+import static neo.openal.QALConstantsIfc.AL_PLAYING;
+import static neo.openal.QALConstantsIfc.AL_SOURCE_STATE;
+import static neo.openal.QALConstantsIfc.AL_STOPPED;
+import static neo.sys.win_main.Sys_EnterCriticalSection;
+import static neo.sys.win_main.Sys_LeaveCriticalSection;
+import static neo.sys.win_shared.Sys_Milliseconds;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-
-import org.lwjgl.BufferUtils;
 
 import neo.Renderer.RenderWorld.idRenderWorld;
 import neo.Sound.snd_cache.idSoundSample;
@@ -53,6 +51,7 @@ import neo.Sound.snd_world.idSoundWorldLocal;
 import neo.Sound.sound.idSoundEmitter;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
+import neo.opengl.Nio;
 
 /**
  *
@@ -471,8 +470,8 @@ public class snd_emitter {
         public idSoundChannel() {
             this.decoder = null;
             this.channelFade = new idSoundFade();
-            this.openalStreamingBuffer = BufferUtils.createIntBuffer(3);
-            this.lastopenalStreamingBuffer = BufferUtils.createIntBuffer(3);
+            this.openalStreamingBuffer = Nio.newIntBuffer(3);
+            this.lastopenalStreamingBuffer = Nio.newIntBuffer(3);
             Clear();
         }
 //						~idSoundChannel( void );

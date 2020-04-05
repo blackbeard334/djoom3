@@ -27,8 +27,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
-import org.lwjgl.BufferUtils;
-
 import com.rits.cloning.Cloner;
 
 import neo.Game.Entity.idEntity;
@@ -47,6 +45,7 @@ import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.math.Curve;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Matrix.idMat3;
+import neo.opengl.Nio;
 import neo.ui.UserInterface.idUserInterface;
 
 /**
@@ -480,7 +479,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             return null;
         }
 
-        return (ByteBuffer) BufferUtils.createByteBuffer(bytes.length).put(bytes).flip();
+        return (ByteBuffer) Nio.newByteBuffer(bytes.length).put(bytes).flip();
     }
 
     /**

@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.lwjgl.BufferUtils;
-
 import neo.TempDump.Deprecation_Exception;
 import neo.Renderer.Model.lightingCache_s;
 import neo.Renderer.Model.shadowCache_s;
@@ -40,6 +38,7 @@ import neo.idlib.geometry.DrawVert;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.opengl.Nio;
 
 /**
  *
@@ -217,7 +216,7 @@ public class VertexCache {
             this.frameBytes = FRAME_MEMORY_BYTES;
             this.staticAllocTotal = 0;
 
-            ByteBuffer junk = BufferUtils.createByteBuffer(this.frameBytes);// Mem_Alloc(frameBytes);
+            ByteBuffer junk = Nio.newByteBuffer(this.frameBytes);// Mem_Alloc(frameBytes);
             for (int i = 0; i < NUM_VERTEX_FRAMES; i++) {
                 this.allocatingTempBuffer = true;    // force the alloc to use GL_STREAM_DRAW_ARB
                 this.tempBuffers[i] = Alloc(junk, this.frameBytes);
@@ -363,7 +362,7 @@ public class VertexCache {
         }
 
         public vertCache_s Alloc(int[] data, int size, boolean indexBuffer) {
-            final ByteBuffer byteData = BufferUtils.createByteBuffer(size);
+            final ByteBuffer byteData = Nio.newByteBuffer(size);
             byteData.asIntBuffer().put(data);
 
             return Alloc(byteData, size, indexBuffer);

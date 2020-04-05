@@ -18,7 +18,6 @@ import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Material.shaderStage_t;
 import neo.Renderer.Material.textureStage_t;
 import neo.Renderer.Model.srfTriangles_s;
-import neo.Renderer.RenderWorld.renderView_s;
 import neo.Renderer.tr_local.drawSurf_s;
 import neo.Renderer.tr_local.idScreenRect;
 import neo.Renderer.tr_local.viewDef_s;

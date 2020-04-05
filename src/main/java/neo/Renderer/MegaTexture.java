@@ -28,8 +28,6 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
-import org.lwjgl.BufferUtils;
-
 import neo.TempDump.CPP_class.Pointer;
 import neo.Renderer.Image.GeneratorFunction;
 import neo.Renderer.Image.idImage;
@@ -41,6 +39,7 @@ import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Vector.idVec3;
+import neo.opengl.Nio;
 
 /**
  *
@@ -81,7 +80,7 @@ public class MegaTexture {
         public idImage image;
         public idTextureTile[][] tileMap = new idTextureTile[TILE_PER_LEVEL][TILE_PER_LEVEL];
 //
-        private final FloatBuffer parms = BufferUtils.createFloatBuffer(4);
+        private final FloatBuffer parms = Nio.newFloatBuffer(4);
 //
 
         /*
@@ -431,7 +430,7 @@ public class MegaTexture {
                 this.localViewToTextureCenter[i][3] = -c;
             }
         }
-        private static final FloatBuffer parms/*[4]*/ = BufferUtils.createFloatBuffer(4); // no contribution
+        private static final FloatBuffer parms/*[4]*/ = Nio.newFloatBuffer(4); // no contribution
 
         static {
             parms.put(new float[]{-2, -2, 0, 1}).rewind();
@@ -469,7 +468,7 @@ public class MegaTexture {
                 }
             }
 
-            final FloatBuffer parms = BufferUtils.createFloatBuffer(4);
+            final FloatBuffer parms = Nio.newFloatBuffer(4);
             parms.put(0, 0);
             parms.put(1, 0);
             parms.put(2, 0);

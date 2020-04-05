@@ -12,20 +12,18 @@ import static neo.framework.FileSystem_h.FILE_NOT_FOUND_TIMESTAMP;
 import static neo.framework.FileSystem_h.fileSystem;
 import static neo.idlib.Lib.Min;
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
-import static neo.openal.QALConstantsIfc.AL_FORMAT_MONO16;
-import static neo.openal.QALConstantsIfc.AL_FORMAT_STEREO16;
-import static neo.openal.QALConstantsIfc.AL_NO_ERROR;
 import static neo.openal.QAL.alBufferData;
 import static neo.openal.QAL.alDeleteBuffers;
 import static neo.openal.QAL.alGenBuffers;
 import static neo.openal.QAL.alGetError;
 import static neo.openal.QAL.alIsBuffer;
 import static neo.openal.QAL.alIsExtensionPresent;
+import static neo.openal.QALConstantsIfc.AL_FORMAT_MONO16;
+import static neo.openal.QALConstantsIfc.AL_FORMAT_STEREO16;
+import static neo.openal.QALConstantsIfc.AL_NO_ERROR;
 
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
-
-import org.lwjgl.BufferUtils;
 
 import neo.Sound.snd_local.idSampleDecoder;
 import neo.Sound.snd_local.waveformatex_s;
@@ -36,6 +34,7 @@ import neo.framework.File_h.idFile;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
+import neo.opengl.Nio;
 
 /**
  *
@@ -136,7 +135,7 @@ public class snd_cache {
             this.objectSize = MIXBUFFER_SAMPLES * 2;
             this.objectMemSize = this.objectSize * 2;//* sizeof(short);
 
-            this.nonCacheData = BufferUtils.createByteBuffer(this.objectMemSize);//soundCacheAllocator.Alloc(objectMemSize);
+            this.nonCacheData = Nio.newByteBuffer(this.objectMemSize);//soundCacheAllocator.Alloc(objectMemSize);
 
             final ShortBuffer ncd = this.nonCacheData.asShortBuffer();
 
@@ -224,7 +223,7 @@ public class snd_cache {
             this.objectSize = fh.GetOutputSize();
             this.objectMemSize = fh.GetMemorySize();
 
-            this.nonCacheData = BufferUtils.createByteBuffer(this.objectMemSize);//soundCacheAllocator.Alloc( objectMemSize );
+            this.nonCacheData = Nio.newByteBuffer(this.objectMemSize);//soundCacheAllocator.Alloc( objectMemSize );
             final ByteBuffer temp = ByteBuffer.allocate(this.objectMemSize);
             fh.Read(temp, this.objectMemSize, null);
             this.nonCacheData.put(temp).rewind();
@@ -254,7 +253,7 @@ public class snd_cache {
                             final int blockSize = (512 * this.objectInfo.nSamplesPerSec) / 44100;
 
                             // Allocate amplitude data array
-                            this.amplitudeData = BufferUtils.createByteBuffer(((this.objectSize / blockSize) + 1) * 2 * Short.BYTES);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short) );
+                            this.amplitudeData = Nio.newByteBuffer(((this.objectSize / blockSize) + 1) * 2 * Short.BYTES);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short) );
 
                             // Creating array of min/max amplitude pairs per blockSize samples
                             final ShortBuffer ncd = this.nonCacheData.asShortBuffer();
@@ -289,7 +288,7 @@ public class snd_cache {
                         }
                         if (alIsBuffer(this.openalBuffer)) {
                             final idSampleDecoder decoder = idSampleDecoder.Alloc();
-                            ByteBuffer destData = BufferUtils.createByteBuffer((LengthIn44kHzSamples() + 1) * Float.BYTES);//soundCacheAllocator.Alloc( ( LengthIn44kHzSamples() + 1 ) * sizeof( float ) );
+                            ByteBuffer destData = Nio.newByteBuffer((LengthIn44kHzSamples() + 1) * Float.BYTES);//soundCacheAllocator.Alloc( ( LengthIn44kHzSamples() + 1 ) * sizeof( float ) );
 
                             // Decoder *always* outputs 44 kHz data
                             decoder.Decode(this, 0, LengthIn44kHzSamples(), destData.asFloatBuffer());
@@ -337,7 +336,7 @@ public class snd_cache {
                                 final int blockSize = (512 * this.objectInfo.nSamplesPerSec) / 44100;
 
                                 // Allocate amplitude data array
-                                this.amplitudeData = BufferUtils.createByteBuffer(((this.objectSize / blockSize) + 1) * 2 * Short.BYTES);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short ) );
+                                this.amplitudeData = Nio.newByteBuffer(((this.objectSize / blockSize) + 1) * 2 * Short.BYTES);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short ) );
 
                                 // Creating array of min/max amplitude pairs per blockSize samples
                                 int i;
@@ -434,7 +433,7 @@ public class snd_cache {
                 return;
             }
             final int shortSamples = this.objectSize >> 1;
-            final ByteBuffer converted = BufferUtils.createByteBuffer(shortSamples * 2);// soundCacheAllocator.Alloc(shortSamples);
+            final ByteBuffer converted = Nio.newByteBuffer(shortSamples * 2);// soundCacheAllocator.Alloc(shortSamples);
 
             if (this.objectInfo.nChannels == 1) {
                 for (int i = 0; i < shortSamples; i++) {

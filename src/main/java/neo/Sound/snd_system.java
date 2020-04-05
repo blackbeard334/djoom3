@@ -24,17 +24,6 @@ import static neo.framework.CmdSystem.cmdSystem;
 import static neo.framework.Common.common;
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
 import static neo.idlib.math.Simd.SIMDProcessor;
-import static neo.sys.win_main.Sys_EnterCriticalSection;
-import static neo.sys.win_main.Sys_LeaveCriticalSection;
-import static neo.sys.win_main.Sys_Printf;
-import static neo.sys.win_main.Sys_Sleep;
-import static neo.sys.win_shared.Sys_Milliseconds;
-import static neo.sys.win_snd.Sys_FreeOpenAL;
-import static neo.sys.win_snd.Sys_LoadOpenAL;
-import static neo.openal.QALConstantsIfc.AL_BUFFER;
-import static neo.openal.QALConstantsIfc.AL_NO_ERROR;
-import static neo.openal.QALConstantsIfc.AL_ROLLOFF_FACTOR;
-import static neo.openal.QALConstantsIfc.ALC_DEVICE_SPECIFIER;
 import static neo.openal.QAL.alDeleteSources;
 import static neo.openal.QAL.alGenSources;
 import static neo.openal.QAL.alGetError;
@@ -50,12 +39,21 @@ import static neo.openal.QAL.alcMakeContextCurrent;
 import static neo.openal.QAL.alcOpenDevice;
 import static neo.openal.QAL.alcProcessContext;
 import static neo.openal.QAL.alcSuspendContext;
+import static neo.openal.QALConstantsIfc.ALC_DEVICE_SPECIFIER;
+import static neo.openal.QALConstantsIfc.AL_BUFFER;
+import static neo.openal.QALConstantsIfc.AL_NO_ERROR;
+import static neo.openal.QALConstantsIfc.AL_ROLLOFF_FACTOR;
+import static neo.sys.win_main.Sys_EnterCriticalSection;
+import static neo.sys.win_main.Sys_LeaveCriticalSection;
+import static neo.sys.win_main.Sys_Printf;
+import static neo.sys.win_main.Sys_Sleep;
+import static neo.sys.win_shared.Sys_Milliseconds;
+import static neo.sys.win_snd.Sys_FreeOpenAL;
+import static neo.sys.win_snd.Sys_LoadOpenAL;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
-
-import org.lwjgl.BufferUtils;
 
 import neo.Renderer.Cinematic.cinData_t;
 import neo.Renderer.RenderWorld.idRenderWorld;
@@ -84,6 +82,7 @@ import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
 import neo.openal.QAL;
+import neo.opengl.Nio;
 
 /**
  *
@@ -896,7 +895,7 @@ public class snd_system {
             ret.imageHeight = 128;
             ret.imageWidth = 256;
 
-            final ByteBuffer image = BufferUtils.createByteBuffer(this.graph.length * 4);
+            final ByteBuffer image = Nio.newByteBuffer(this.graph.length * 4);
             image.asIntBuffer().put(this.graph);
             ret.image = image;
 

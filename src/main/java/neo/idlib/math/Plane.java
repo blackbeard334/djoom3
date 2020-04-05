@@ -1,5 +1,6 @@
 package neo.idlib.math;
 
+import java.nio.FloatBuffer;
 import java.util.stream.Stream;
 
 import neo.idlib.math.Math_h.idMath;
@@ -7,6 +8,7 @@ import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat2;
 import neo.idlib.math.Matrix.idMat3;
+import neo.opengl.Nio;
 
 /**
  *
@@ -605,6 +607,13 @@ public class Plane {
 
         public void ToVec4_ToVec3_Normalize() {
             this.abc.Normalize();
+        }
+
+        public FloatBuffer toFloatBuffer() {
+            return (FloatBuffer) Nio.newFloatBuffer(4).put(this.abc.x)
+                	.put(this.abc.y)
+                	.put(this.abc.z)
+                	.put(this.d).flip();
         }
 
         public float[] ToFloatPtr() {

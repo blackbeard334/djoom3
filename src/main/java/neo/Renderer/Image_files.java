@@ -27,12 +27,11 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
-import org.lwjgl.BufferUtils;
-
 import neo.TempDump.TODO_Exception;
 import neo.Renderer.Image.cubeFiles_t;
 import neo.framework.File_h.idFile;
 import neo.idlib.Text.Str.idStr;
+import neo.opengl.Nio;
 
 /**
  *
@@ -110,7 +109,7 @@ public class Image_files {
      ================
      */
     // data is an 8 bit index into palette, which is RGB (no A)
-    static void R_WritePalTGA(final String filename, final byte[] data, final byte[] palette, int width, int height, boolean flipVertical) {
+    static void R_WritePalTGA(final String filename, final ByteBuffer data, final byte[] palette, int width, int height, boolean flipVertical) {
         throw new TODO_Exception();
 //	byte	*buffer;
 //	int		i;
@@ -151,7 +150,7 @@ public class Image_files {
 //	Mem_Free (buffer);
     }
 
-    static void R_WritePalTGA(final String filename, final byte[] data, final byte[] palette, int width, int height) {
+    static void R_WritePalTGA(final String filename, final ByteBuffer data, final byte[] palette, int width, int height) {
         R_WritePalTGA(filename, data, palette, width, height, false);
     }
 
@@ -290,7 +289,7 @@ public class Image_files {
             height[0] = rows;
         }
 
-        bmpRGBA = BufferUtils.createByteBuffer(numPixels * 4);//byte *)R_StaticAlloc( numPixels * 4 );
+        bmpRGBA = Nio.newByteBuffer(numPixels * 4);//byte *)R_StaticAlloc( numPixels * 4 );
 
         for (row = rows - 1; row >= 0; row--) {
             pixbuf = bmpRGBA.duplicate();
@@ -473,7 +472,7 @@ public class Image_files {
         }
 
         c = width[0] * height[0];
-        pic = BufferUtils.createByteBuffer(4 * c);//(byte *)R_StaticAlloc(4 * c );
+        pic = Nio.newByteBuffer(4 * c);//(byte *)R_StaticAlloc(4 * c );
         for (i = 0; i < c; i++) {
             p = pic8[0].get(i);
             pic.put(0, palette[0].get(p * 3));
@@ -570,7 +569,7 @@ public class Image_files {
             height[0] = rows;
         }
 
-        targa_rgba = BufferUtils.createByteBuffer(numPixels * 4);// (byte *)R_StaticAlloc(numPixels*4);
+        targa_rgba = Nio.newByteBuffer(numPixels * 4);// (byte *)R_StaticAlloc(numPixels*4);
 
         if (targa_header.id_length != 0) {
             buf_p.position(buf_p.position() + targa_header.id_length);  // skip TARGA image comment
@@ -791,7 +790,7 @@ public class Image_files {
                 fileSystem.CloseFile(f);
                 return null;    // just getting timestamp
             }
-            fbuffer = BufferUtils.createByteBuffer(len + 4096);//(byte *)Mem_ClearedAlloc( len + 4096 );
+            fbuffer = Nio.newByteBuffer(len + 4096);//(byte *)Mem_ClearedAlloc( len + 4096 );
             f.Read(fbuffer/*, len*/);
             fileSystem.CloseFile(f);
         }

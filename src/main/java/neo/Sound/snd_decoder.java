@@ -3,31 +3,10 @@ package neo.Sound;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_OGG;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_PCM;
 import static neo.Sound.snd_system.soundSystemLocal;
-import static neo.idlib.math.Simd.SIMDProcessor;
+import static neo.openal.Vorbis.getErrorMessage;
 import static neo.sys.sys_public.CRITICAL_SECTION_ONE;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
-import static org.lwjgl.stb.STBVorbis.VORBIS__no_error;
-import static org.lwjgl.stb.STBVorbis.VORBIS_bad_packet_type;
-import static org.lwjgl.stb.STBVorbis.VORBIS_cant_find_last_page;
-import static org.lwjgl.stb.STBVorbis.VORBIS_continued_packet_flag_invalid;
-import static org.lwjgl.stb.STBVorbis.VORBIS_feature_not_supported;
-import static org.lwjgl.stb.STBVorbis.VORBIS_file_open_failure;
-import static org.lwjgl.stb.STBVorbis.VORBIS_incorrect_stream_serial_number;
-import static org.lwjgl.stb.STBVorbis.VORBIS_invalid_api_mixing;
-import static org.lwjgl.stb.STBVorbis.VORBIS_invalid_first_page;
-import static org.lwjgl.stb.STBVorbis.VORBIS_invalid_setup;
-import static org.lwjgl.stb.STBVorbis.VORBIS_invalid_stream;
-import static org.lwjgl.stb.STBVorbis.VORBIS_invalid_stream_structure_version;
-import static org.lwjgl.stb.STBVorbis.VORBIS_missing_capture_pattern;
-import static org.lwjgl.stb.STBVorbis.VORBIS_need_more_data;
-import static org.lwjgl.stb.STBVorbis.VORBIS_ogg_skeleton_not_supported;
-import static org.lwjgl.stb.STBVorbis.VORBIS_outofmem;
-import static org.lwjgl.stb.STBVorbis.VORBIS_seek_failed;
-import static org.lwjgl.stb.STBVorbis.VORBIS_seek_invalid;
-import static org.lwjgl.stb.STBVorbis.VORBIS_seek_without_length;
-import static org.lwjgl.stb.STBVorbis.VORBIS_too_many_channels;
-import static org.lwjgl.stb.STBVorbis.VORBIS_unexpected_eof;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -35,14 +14,11 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.stb.STBVorbis;
-
 import neo.TempDump.TODO_Exception;
 import neo.Sound.snd_cache.idSoundSample;
 import neo.Sound.snd_local.idSampleDecoder;
 import neo.framework.File_h.idFile_Memory;
+import neo.openal.Vorbis;
 
 /**
  *
@@ -153,7 +129,7 @@ public class snd_decoder {
      ====================
      */
     static long ov_openFile(final idFile_Memory f, int[] error) {
-        return STBVorbis.stb_vorbis_open_memory(f.GetDataPtr(), error, null);
+        return Vorbis.openMemory(f.GetDataPtr(), error);
     }
 
     /*
@@ -337,7 +313,7 @@ public class snd_decoder {
 
             // seek to the right offset if necessary
             if (sampleOffset != this.lastSampleOffset) {
-                if (!STBVorbis.stb_vorbis_seek(this.ogg, (sampleOffset / sample.objectInfo.nChannels))) {
+                if (!Vorbis.seek(this.ogg, (sampleOffset / sample.objectInfo.nChannels))) {
                     this.failed = true;
                     return 0;
                 }
@@ -349,12 +325,7 @@ public class snd_decoder {
             totalSamples = sampleCount;
             readSamples = 0;
             do {
-                final PointerBuffer samples = PointerBuffer.allocateDirect(sample.objectInfo.nChannels);
-                final int num_samples = totalSamples / sample.objectInfo.nChannels;
-                for (int i = 0; i < sample.objectInfo.nChannels; i++) {
-                    samples.put(i, BufferUtils.createFloatBuffer(num_samples));
-                }
-                int ret = STBVorbis.stb_vorbis_get_samples_float(this.ogg, samples, num_samples);
+                int ret = Vorbis.getSample(sample.objectInfo.nChannels, totalSamples, this.ogg);
                 if (ret == 0) {
                     this.failed = true;
                     break;
@@ -366,11 +337,6 @@ public class snd_decoder {
 
                 ret *= sample.objectInfo.nChannels;
 
-                final float[][] samplesArray = new float[sample.objectInfo.nChannels][num_samples];
-                for (int i = 0; i < sample.objectInfo.nChannels; i++) {
-                    samples.getFloatBuffer(i, num_samples).get(samplesArray[i]);
-                }
-                SIMDProcessor.UpSampleOGGTo44kHz(dest, (readSamples << shift), samplesArray, ret, sample.objectInfo.nSamplesPerSec, sample.objectInfo.nChannels);
                 readSamples += ret;
                 totalSamples -= ret;
             } while (totalSamples > 0);
@@ -383,51 +349,4 @@ public class snd_decoder {
 
 //    static final idBlockAlloc<idSampleDecoderLocal> sampleDecoderAllocator = new idBlockAlloc<>(64);
 
-    private static String getErrorMessage(final int errorCode) {
-        switch (errorCode) {
-            case VORBIS__no_error:
-                return "VORBIS__no_error";
-            case VORBIS_need_more_data:
-                return "VORBIS_need_more_data";
-            case VORBIS_invalid_api_mixing:
-                return "VORBIS_invalid_api_mixing";
-            case VORBIS_outofmem:
-                return "VORBIS_outofmem";
-            case VORBIS_feature_not_supported:
-                return "VORBIS_feature_not_supported";
-            case VORBIS_too_many_channels:
-                return "VORBIS_too_many_channels";
-            case VORBIS_file_open_failure:
-                return "VORBIS_file_open_failure";
-            case VORBIS_seek_without_length:
-                return "VORBIS_seek_without_length";
-            case VORBIS_unexpected_eof:
-                return "VORBIS_unexpected_eof";
-            case VORBIS_seek_invalid:
-                return "VORBIS_seek_invalid";
-            case VORBIS_invalid_setup:
-                return "VORBIS_invalid_setup";
-            case VORBIS_invalid_stream:
-                return "VORBIS_invalid_stream";
-            case VORBIS_missing_capture_pattern:
-                return "VORBIS_missing_capture_pattern";
-            case VORBIS_invalid_stream_structure_version:
-                return "VORBIS_invalid_stream_structure_version";
-            case VORBIS_continued_packet_flag_invalid:
-                return "VORBIS_continued_packet_flag_invalid";
-            case VORBIS_incorrect_stream_serial_number:
-                return "VORBIS_incorrect_stream_serial_number";
-            case VORBIS_invalid_first_page:
-                return "VORBIS_invalid_first_page";
-            case VORBIS_bad_packet_type:
-                return "VORBIS_bad_packet_type";
-            case VORBIS_cant_find_last_page:
-                return "VORBIS_cant_find_last_page";
-            case VORBIS_seek_failed:
-                return "VORBIS_seek_failed";
-            case VORBIS_ogg_skeleton_not_supported:
-                return "VORBIS_ogg_skeleton_not_supported";
-        }
-        return "Unknown error";
-    }
 }

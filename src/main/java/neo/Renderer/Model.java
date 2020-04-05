@@ -5,8 +5,6 @@ import static neo.opengl.QGLConstantsIfc.GL_UNSIGNED_INT;
 import java.nio.ByteBuffer;
 import java.util.stream.Stream;
 
-import org.lwjgl.BufferUtils;
-
 import neo.TempDump.SERiAL;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.RenderWorld.renderEntity_s;
@@ -22,6 +20,7 @@ import neo.idlib.geometry.JointTransform.idJointQuat;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.opengl.Nio;
 
 /**
  *
@@ -89,7 +88,7 @@ public class Model {
         }
 
         public static ByteBuffer toByteBuffer(lightingCache_s[] cache) {
-            final ByteBuffer data = BufferUtils.createByteBuffer(lightingCache_s.BYTES * cache.length);
+            final ByteBuffer data = Nio.newByteBuffer(lightingCache_s.BYTES * cache.length);
 
             for (final lightingCache_s c : cache) {
                 data.put(c.localLightVector.Write());
@@ -114,7 +113,7 @@ public class Model {
         }
 
         public static ByteBuffer toByteBuffer(shadowCache_s[] cache) {
-            final ByteBuffer data = BufferUtils.createByteBuffer(shadowCache_s.BYTES * cache.length);
+            final ByteBuffer data = Nio.newByteBuffer(shadowCache_s.BYTES * cache.length);
 
             for (final shadowCache_s c : cache) {
                 data.put(c.xyz.Write());

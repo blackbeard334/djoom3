@@ -91,9 +91,8 @@ import static neo.opengl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
 import static neo.opengl.QGLConstantsIfc.GL_VERTEX_PROGRAM_ARB;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-
-import org.lwjgl.BufferUtils;
 
 import neo.TempDump.TODO_Exception;
 import neo.Renderer.Material.idMaterial;
@@ -106,6 +105,7 @@ import neo.framework.CmdSystem.cmdFunction_t;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.geometry.DrawVert.idDrawVert;
+import neo.opengl.Nio;
 
 /**
  *
@@ -136,10 +136,6 @@ public class draw_arb2 {
         qglActiveTextureARB(GL_TEXTURE0_ARB + unit);
         RB_LogComment("glActiveTextureARB( %d )\n", unit);
     }
-//
-    private static final float[] ZERO = {0, 0, 0, 0};
-    private static final float[] ONE = {1, 1, 1, 1};
-    private static final float[] NEG_ONE = {-1, -1, -1, -1};
 //        
 
     /*
@@ -147,6 +143,15 @@ public class draw_arb2 {
      RB_ARB2_DrawInteraction
      ==================
      */
+    //
+    private static final FloatBuffer ZERO = createFloatBuffer(0);
+    private static final FloatBuffer ONE = createFloatBuffer(1);
+    private static final FloatBuffer NEG_ONE = createFloatBuffer(-1);
+
+    static FloatBuffer createFloatBuffer(int n) {
+    	return (FloatBuffer) Nio.newFloatBuffer(4).put(n).put(n).put(n).put(n).flip();
+    }
+
     static class RB_ARB2_DrawInteraction extends DrawInteraction {
 
         static final DrawInteraction INSTANCE = new RB_ARB2_DrawInteraction();
@@ -159,23 +164,23 @@ public class draw_arb2 {
         void run(tr_local.drawInteraction_t din) {
             DBG_RB_ARB2_DrawInteraction++;
             // load all the vertex program parameters
-            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_ORIGIN, din.localLightOrigin.ToFloatPtr());
-            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_VIEW_ORIGIN, din.localViewOrigin.ToFloatPtr());
-            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_PROJECT_S, din.lightProjection[0].ToFloatPtr());
-            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_PROJECT_T, din.lightProjection[1].ToFloatPtr());
-            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_PROJECT_Q, din.lightProjection[2].ToFloatPtr());
-            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_FALLOFF_S, din.lightProjection[3].ToFloatPtr());
-            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_BUMP_MATRIX_S, din.bumpMatrix[0].ToFloatPtr());
-            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_BUMP_MATRIX_T, din.bumpMatrix[1].ToFloatPtr());
-            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_DIFFUSE_MATRIX_S, din.diffuseMatrix[0].ToFloatPtr());
-            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_DIFFUSE_MATRIX_T, din.diffuseMatrix[1].ToFloatPtr());
-            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_SPECULAR_MATRIX_S, din.specularMatrix[0].ToFloatPtr());
-            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_SPECULAR_MATRIX_T, din.specularMatrix[1].ToFloatPtr());
+            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_ORIGIN, din.localLightOrigin.toFloatBuffer());
+            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_VIEW_ORIGIN, din.localViewOrigin.toFloatBuffer());
+            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_PROJECT_S, din.lightProjection[0].toFloatBuffer());
+            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_PROJECT_T, din.lightProjection[1].toFloatBuffer());
+            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_PROJECT_Q, din.lightProjection[2].toFloatBuffer());
+            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_FALLOFF_S, din.lightProjection[3].toFloatBuffer());
+            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_BUMP_MATRIX_S, din.bumpMatrix[0].toFloatBuffer());
+            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_BUMP_MATRIX_T, din.bumpMatrix[1].toFloatBuffer());
+            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_DIFFUSE_MATRIX_S, din.diffuseMatrix[0].toFloatBuffer());
+            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_DIFFUSE_MATRIX_T, din.diffuseMatrix[1].toFloatBuffer());
+            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_SPECULAR_MATRIX_S, din.specularMatrix[0].toFloatBuffer());
+            qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_SPECULAR_MATRIX_T, din.specularMatrix[1].toFloatBuffer());
 
             // testing fragment based normal mapping
             if (r_testARBProgram.GetBool()) {
-                qglProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 2, din.localLightOrigin.ToFloatPtr());
-                qglProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 3, din.localViewOrigin.ToFloatPtr());
+                qglProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 2, din.localLightOrigin.toFloatBuffer());
+                qglProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 3, din.localViewOrigin.toFloatBuffer());
             }
 
             switch (din.vertexColor) {
@@ -194,8 +199,8 @@ public class draw_arb2 {
             }
 
             // set the constant colors
-            qglProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, din.diffuseColor.ToFloatPtr());
-            qglProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, din.specularColor.ToFloatPtr());
+            qglProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, din.diffuseColor.toFloatBuffer());
+            qglProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, din.specularColor.toFloatBuffer());
 
             // set the textures
             // texture 1 will be the per-surface bump map
@@ -468,7 +473,7 @@ public class draw_arb2 {
      =================
      */
     public static void R_LoadARBProgram(int progIndex) {
-        final IntBuffer ofs = BufferUtils.createIntBuffer(16);
+        final IntBuffer ofs = Nio.newIntBuffer(16);
         int err;
         final idStr fullPath = new idStr("glprogs/" + progs[progIndex].name);
         final ByteBuffer[] fileBuffer = {null};
@@ -529,7 +534,7 @@ public class draw_arb2 {
             return;
         }
         buffer = buffer.substring(start, end + 3);//end[3] = 0;
-        final ByteBuffer substring = BufferUtils.createByteBuffer(buffer.length());
+        final ByteBuffer substring = Nio.newByteBuffer(buffer.length());
         substring.put(buffer.getBytes()).flip();
 
         qglBindProgramARB(progs[progIndex].target, progs[progIndex].ident);
