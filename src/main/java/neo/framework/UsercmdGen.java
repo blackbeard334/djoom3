@@ -1215,7 +1215,6 @@ public class UsercmdGen {
             }
         }
 
-        // TODO: GLFWTEst
 //        private class MouseCursorCallback extends GLFWCursorPosCallback {
 //            private double prevX, prevY;
 //
