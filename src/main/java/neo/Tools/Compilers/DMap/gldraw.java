@@ -208,8 +208,8 @@ public class gldraw {
 
         qglBegin(GL_LINES);
 
-        qglVertex3fv(v1.ToFloatPtr());
-        qglVertex3fv(v2.ToFloatPtr());
+        qglVertex3fv(v1.toFloatBuffer());
+        qglVertex3fv(v2.toFloatBuffer());
 
         qglEnd();
         qglFlush();

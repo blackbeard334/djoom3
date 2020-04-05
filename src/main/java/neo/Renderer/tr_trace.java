@@ -32,6 +32,7 @@ import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Math_h;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
+import neo.opengl.Nio;
 
 /**
  *
@@ -411,7 +412,7 @@ public class tr_trace {
                 continue;
             }
 
-            qglLoadMatrixf(surf.space.modelViewMatrix);
+            qglLoadMatrixf(Nio.wrap(surf.space.modelViewMatrix));
 
             // highlight the surface
             GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);

@@ -3,10 +3,9 @@ package neo.idlib.math;
 import static neo.idlib.math.Simd.SIMDProcessor;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
-
-import org.lwjgl.BufferUtils;
 
 import neo.TempDump;
 import neo.TempDump.SERiAL;
@@ -19,6 +18,7 @@ import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Matrix.idMat4;
 import neo.idlib.math.Matrix.idMatX;
+import neo.opengl.Nio;
 
 /**
  *
@@ -80,7 +80,7 @@ public class Vector {
         return new idVec6(vec6_infinity.p);
     }
 
-    public interface idVec<type extends Vector.idVec> {
+    public interface idVec<type extends Vector.idVec<?>> {
         //reflection was too slow. 
         //never thought I would say this, but thank God for type erasure.
 
@@ -361,7 +361,12 @@ public class Vector {
             return 2;
         }
 
-        public float[] ToFloatPtr() {
+        public FloatBuffer toFloatBuffer() {
+            return (FloatBuffer) Nio.newFloatBuffer(2).put(this.x)
+                	.put(this.y).flip();
+        }
+
+       public float[] ToFloatPtr() {
             return new float[]{this.x, this.y};
         }
 //public	float *			ToFloatPtr( void );
@@ -935,6 +940,12 @@ public class Vector {
         }
 //public	idVec2 &		ToVec2( void );
 
+        public FloatBuffer toFloatBuffer() {
+            return (FloatBuffer) Nio.newFloatBuffer(3).put(this.x)
+                	.put(this.y)
+                	.put(this.z).flip();
+        }
+
         public float[] ToFloatPtr() {
             return new float[]{this.x, this.y, this.z};
         }
@@ -1236,7 +1247,7 @@ public class Vector {
         }
 
         public static ByteBuffer toByteBuffer(idVec3[] vecs) {
-            final ByteBuffer data = BufferUtils.createByteBuffer(idVec3.BYTES * vecs.length);
+            final ByteBuffer data = Nio.newByteBuffer(idVec3.BYTES * vecs.length);
 
             for (final idVec3 vec : vecs) {
                 data.put((ByteBuffer) vec.Write().rewind());
@@ -1457,7 +1468,14 @@ public class Vector {
         }
 //public	idVec3 &		ToVec3( void );
 
-        public final float[] ToFloatPtr() {
+        public FloatBuffer toFloatBuffer() {
+            return (FloatBuffer) Nio.newFloatBuffer(4).put(this.x)
+                	.put(this.y)
+                	.put(this.z)
+                	.put(this.w).flip();
+        }
+
+       public final float[] ToFloatPtr() {
             return new float[]{this.x, this.y, this.z, this.w};//TODO:put shit in array si we can referef it
         }
 //public	float *			ToFloatPtr( void );
@@ -1596,7 +1614,7 @@ public class Vector {
         }
 
         public static ByteBuffer toByteBuffer(idVec4[] vecs) {
-            final ByteBuffer data = BufferUtils.createByteBuffer(idVec4.BYTES * vecs.length);
+            final ByteBuffer data = Nio.newByteBuffer(idVec4.BYTES * vecs.length);
 
             for (final idVec4 vec : vecs) {
                 data.put((ByteBuffer) vec.Write().rewind());
@@ -1722,6 +1740,12 @@ public class Vector {
         public final idVec3 ToVec3() {
 //	return *reinterpret_cast<const idVec3 *>(this);
             return new idVec3(this.x, this.y, this.z);
+        }
+
+        public FloatBuffer toFloatBuffer() {
+            return (FloatBuffer) Nio.newFloatBuffer(3).put(this.x)
+                	.put(this.y)
+                	.put(this.z).flip();
         }
 
         //public	idVec3 &		ToVec3( void );
@@ -1986,7 +2010,11 @@ public class Vector {
         }
 //public 	idVec3 &		SubVec3( int index );
 
-        public final float[] ToFloatPtr() {
+        public FloatBuffer toFloatBuffer() {
+            return Nio.wrap(this.p);
+        }
+
+       public final float[] ToFloatPtr() {
             return this.p;
         }
 //public 	float *			ToFloatPtr( void );
@@ -2522,7 +2550,11 @@ public class Vector {
         }
 //public	idVec6 &		SubVec6( int index );
 
-        public float[] ToFloatPtr() {
+        public FloatBuffer toFloatBuffer() {
+            return Nio.wrap(this.p);
+        }
+
+       public float[] ToFloatPtr() {
             return this.p;
         }
 //public	float *			ToFloatPtr( void );

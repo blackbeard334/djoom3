@@ -79,6 +79,8 @@ import static neo.opengl.QGLConstantsIfc.GL_TRIANGLES;
 import static neo.sys.win_glimp.GLimp_ActivateContext;
 import static neo.sys.win_glimp.GLimp_DeactivateContext;
 
+import java.nio.FloatBuffer;
+
 import neo.Renderer.Cinematic.cinData_t;
 import neo.Renderer.Image.idImage;
 import neo.Renderer.Material.idMaterial;
@@ -93,6 +95,7 @@ import neo.Renderer.tr_local.viewLight_s;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec4;
+import neo.opengl.Nio;
 
 /**
  *
@@ -144,8 +147,8 @@ public class tr_render {
 
         qglBegin(GL_TRIANGLES);
         for (int i = 0; i < tri.numIndexes; i++) {
-            qglTexCoord2fv(tri.verts[tri.indexes[i]].st.ToFloatPtr());
-            qglVertex3fv(tri.verts[tri.indexes[i]].xyz.ToFloatPtr());
+            qglTexCoord2fv(tri.verts[tri.indexes[i]].st.toFloatBuffer());
+            qglVertex3fv(tri.verts[tri.indexes[i]].xyz.toFloatBuffer());
         }
         qglEnd();
     }
@@ -182,7 +185,7 @@ public class tr_render {
                 vertexCache.UnbindIndex();
             }
 //            if(tri.DBG_count!=11)
-            qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE/*GL_UNSIGNED_INT*/, tri.indexes);
+            qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE/*GL_UNSIGNED_INT*/, Nio.wrap(tri.indexes));
         }
     }
 
@@ -211,7 +214,7 @@ public class tr_render {
             qglDrawElements(GL_TRIANGLES,
                     r_singleTriangle.GetBool() ? 3 : numIndexes,
                     GL_INDEX_TYPE,
-                    tri.indexes);
+                    Nio.wrap(tri.indexes));
         }
     }
 
@@ -263,13 +266,16 @@ public class tr_render {
     public static void RB_EnterWeaponDepthHack() {
         qglDepthRange(0, 0.5);
 
-        final float[] matrix = new float[16];
+        //final float[] matrix = new float[16];
 
 //	memcpy( matrix, backEnd.viewDef.projectionMatrix, sizeof( matrix ) );
-        System.arraycopy(backEnd.viewDef.projectionMatrix, 0, matrix, 0, matrix.length);
+        //System.arraycopy(backEnd.viewDef.projectionMatrix, 0, matrix, 0, matrix.length);
 
         qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(matrix);
+        if (backEnd.viewDef.projectionMatrix.length != 16) {
+        	System.err.println("tr_render.RB_EnterWeaponDepthHack length != 16 "+backEnd.viewDef.projectionMatrix.length);
+        }
+        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.projectionMatrix, 16));
         qglMatrixMode(GL_MODELVIEW);
     }
 
@@ -281,12 +287,15 @@ public class tr_render {
     public static void RB_EnterModelDepthHack(float depth) {
         qglDepthRange(0.0f, 1.0f);
 
-        final float[] matrix = new float[16];
+        //final float[] matrix = new float[16];
 
 //	memcpy( matrix, backEnd.viewDef.projectionMatrix, sizeof( matrix ) );
-        System.arraycopy(backEnd.viewDef.projectionMatrix, 0, matrix, 0, matrix.length);
+        //System.arraycopy(backEnd.viewDef.projectionMatrix, 0, matrix, 0, matrix.length);
 
-        matrix[14] -= depth;
+        //matrix[14] -= depth;
+
+        FloatBuffer matrix = Nio.wrap(backEnd.viewDef.projectionMatrix, 16);
+        matrix.put(14, matrix.get(14)- depth);
 
         qglMatrixMode(GL_PROJECTION);
         qglLoadMatrixf(matrix);
@@ -302,7 +311,7 @@ public class tr_render {
         qglDepthRange(0, 1);
 
         qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(backEnd.viewDef.projectionMatrix);
+        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.projectionMatrix));
         qglMatrixMode(GL_MODELVIEW);
     }
 
@@ -327,7 +336,7 @@ public class tr_render {
 
             // change the matrix if needed
             if (drawSurf.space != backEnd.currentSpace) {
-                qglLoadMatrixf(drawSurf.space.modelViewMatrix);
+                qglLoadMatrixf(Nio.wrap(drawSurf.space.modelViewMatrix));
             }
 
             if (drawSurf.space.weaponDepthHack) {
@@ -371,7 +380,7 @@ public class tr_render {
         for (drawSurf = drawSurfs; drawSurf != null; drawSurf = drawSurf.nextOnLight) {
             // change the matrix if needed
             if (drawSurf.space != backEnd.currentSpace) {
-                qglLoadMatrixf(drawSurf.space.modelViewMatrix);
+                qglLoadMatrixf(Nio.wrap(drawSurf.space.modelViewMatrix));
             }
 
             if (drawSurf.space.weaponDepthHack) {
@@ -460,7 +469,7 @@ public class tr_render {
         
 //        TempDump.printCallStack("------->" + (DBG_RB_LoadShaderTextureMatrix++));
         qglMatrixMode(GL_TEXTURE);
-        qglLoadMatrixf(matrix);
+        qglLoadMatrixf(Nio.wrap(matrix));
         qglMatrixMode(GL_MODELVIEW);
     }
     
@@ -522,7 +531,7 @@ public class tr_render {
         // texgens
         if (texture.texgen == TG_DIFFUSE_CUBE) {
             final idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));//TODO:figure out how to work these damn casts.
-            qglTexCoordPointer(3, GL_FLOAT, idDrawVert.BYTES, vert.normal.ToFloatPtr());
+            qglTexCoordPointer(3, GL_FLOAT, idDrawVert.BYTES, vert.normal.toFloatBuffer());
 
         }
         if ((texture.texgen == TG_SKYBOX_CUBE) || (texture.texgen == TG_WOBBLESKY_CUBE)) {
@@ -540,11 +549,8 @@ public class tr_render {
             qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, vert.normalOffset());
 
             qglMatrixMode(GL_TEXTURE);
-            final float[] mat = new float[16];
 
-            R_TransposeGLMatrix(backEnd.viewDef.worldSpace.modelViewMatrix, mat);
-
-            qglLoadMatrixf(mat);
+            qglLoadMatrixf(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.modelViewMatrix));
             qglMatrixMode(GL_MODELVIEW);
         }
 
@@ -565,7 +571,7 @@ public class tr_render {
             final idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));// {//TODO:figure out how to work these damn casts.
             qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES,
                     //			(void *)&(((idDrawVert *)vertexCache.Position( surf.geo.ambientCache )).st) );
-                    vert.st.ToFloatPtr());//TODO:WDF?
+                    vert.st.toFloatBuffer());//TODO:WDF?
         }
 
         if (texture.texgen == TG_REFLECT_CUBE) {
@@ -663,7 +669,7 @@ public class tr_render {
     public static void RB_BeginDrawingView() {
         // set the modelview matrix for the viewer
         qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(backEnd.viewDef.projectionMatrix);
+        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.projectionMatrix));
         qglMatrixMode(GL_MODELVIEW);
 
         // set the window clipping
@@ -811,7 +817,7 @@ public class tr_render {
         // change the matrix and light projection vectors if needed
         if (surf.space != backEnd.currentSpace) {
             backEnd.currentSpace = surf.space;
-            qglLoadMatrixf(surf.space.modelViewMatrix);
+            qglLoadMatrixf(Nio.wrap(surf.space.modelViewMatrix));
         }
 
         // change the scissor if needed

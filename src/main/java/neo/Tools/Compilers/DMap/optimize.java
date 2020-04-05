@@ -320,9 +320,9 @@ public class optimize {
                 continue;
             }
             qglColor3f(1, 0, 0);
-            qglVertex3fv(optEdges[i].v1.pv.ToFloatPtr());
+            qglVertex3fv(optEdges[i].v1.pv.toFloatBuffer());
             qglColor3f(0, 0, 0);
-            qglVertex3fv(optEdges[i].v2.pv.ToFloatPtr());
+            qglVertex3fv(optEdges[i].v2.pv.toFloatBuffer());
         }
         qglEnd();
         qglFlush();
@@ -348,7 +348,7 @@ public class optimize {
         qglPointSize(3);
         qglBegin(GL_POINTS);
         for (vert = island.verts; vert != null; vert = vert.islandLink) {
-            qglVertex3fv(vert.pv.ToFloatPtr());
+            qglVertex3fv(vert.pv.toFloatBuffer());
         }
         qglEnd();
         qglDisable(GL_BLEND);
@@ -375,9 +375,9 @@ public class optimize {
                 continue;
             }
             qglColor3f(1, 0, 0);
-            qglVertex3fv(edge.v1.pv.ToFloatPtr());
+            qglVertex3fv(edge.v1.pv.toFloatBuffer());
             qglColor3f(0, 0, 0);
-            qglVertex3fv(edge.v2.pv.ToFloatPtr());
+            qglVertex3fv(edge.v2.pv.toFloatBuffer());
         }
         qglEnd();
         qglFlush();
@@ -556,8 +556,8 @@ public class optimize {
         if (dmapGlobals.drawflag) {
             qglBegin(GL_LINES);
             qglColor3f(0, (128 + orandom.RandomInt(127)) / 255.0f, 0);
-            qglVertex3fv(v1.pv.ToFloatPtr());
-            qglVertex3fv(v2.pv.ToFloatPtr());
+            qglVertex3fv(v1.pv.toFloatBuffer());
+            qglVertex3fv(v2.pv.toFloatBuffer());
             qglEnd();
             qglFlush();
         }
@@ -751,14 +751,14 @@ public class optimize {
         if (dmapGlobals.drawflag) {
             qglBegin(GL_LINES);
             qglColor3f(1, 1, 0);
-            qglVertex3fv(v1.pv.ToFloatPtr());
-            qglVertex3fv(v2.pv.ToFloatPtr());
+            qglVertex3fv(v1.pv.toFloatBuffer());
+            qglVertex3fv(v2.pv.toFloatBuffer());
             qglEnd();
             qglFlush();
             qglBegin(GL_LINES);
             qglColor3f(0, 1, 1);
-            qglVertex3fv(v2.pv.ToFloatPtr());
-            qglVertex3fv(v3.pv.ToFloatPtr());
+            qglVertex3fv(v2.pv.toFloatBuffer());
+            qglVertex3fv(v3.pv.toFloatBuffer());
             qglEnd();
             qglFlush();
         }
@@ -1021,14 +1021,14 @@ public class optimize {
         if (dmapGlobals.drawflag) {
             qglColor3f(1, 1, 0);
             qglBegin(GL_LINES);
-            qglVertex3fv(e1.v1.pv.ToFloatPtr());
-            qglVertex3fv(e1.v2.pv.ToFloatPtr());
+            qglVertex3fv(e1.v1.pv.toFloatBuffer());
+            qglVertex3fv(e1.v2.pv.toFloatBuffer());
             qglEnd();
             qglFlush();
             qglColor3f(0, 1, 1);
             qglBegin(GL_LINES);
-            qglVertex3fv(e2.v1.pv.ToFloatPtr());
-            qglVertex3fv(e2.v2.pv.ToFloatPtr());
+            qglVertex3fv(e2.v1.pv.toFloatBuffer());
+            qglVertex3fv(e2.v2.pv.toFloatBuffer());
             qglEnd();
             qglFlush();
         }
@@ -1054,8 +1054,8 @@ public class optimize {
         if (dmapGlobals.drawflag) {
             qglColor3f(1, 0, 1);
             qglBegin(GL_LINES);
-            qglVertex3fv(opposite.v1.pv.ToFloatPtr());
-            qglVertex3fv(opposite.v2.pv.ToFloatPtr());
+            qglVertex3fv(opposite.v1.pv.toFloatBuffer());
+            qglVertex3fv(opposite.v2.pv.toFloatBuffer());
             qglEnd();
             qglFlush();
         }
@@ -1073,7 +1073,7 @@ public class optimize {
             qglColor3f(1, 1, 1);
             qglPointSize(4);
             qglBegin(GL_POINTS);
-            qglVertex3fv(optTri.midpoint.ToFloatPtr());
+            qglVertex3fv(optTri.midpoint.toFloatBuffer());
             qglEnd();
             qglFlush();
         }
@@ -1097,15 +1097,15 @@ public class optimize {
                 qglColor3f(0, (128 + orandom.RandomInt(127)) / 255.0f, 0);
             }
             qglBegin(GL_TRIANGLES);
-            qglVertex3fv(optTri.v[0].pv.ToFloatPtr());
-            qglVertex3fv(optTri.v[1].pv.ToFloatPtr());
-            qglVertex3fv(optTri.v[2].pv.ToFloatPtr());
+            qglVertex3fv(optTri.v[0].pv.toFloatBuffer());
+            qglVertex3fv(optTri.v[1].pv.toFloatBuffer());
+            qglVertex3fv(optTri.v[2].pv.toFloatBuffer());
             qglEnd();
             qglColor3f(1, 1, 1);
             qglBegin(GL_LINE_LOOP);
-            qglVertex3fv(optTri.v[0].pv.ToFloatPtr());
-            qglVertex3fv(optTri.v[1].pv.ToFloatPtr());
-            qglVertex3fv(optTri.v[2].pv.ToFloatPtr());
+            qglVertex3fv(optTri.v[0].pv.toFloatBuffer());
+            qglVertex3fv(optTri.v[1].pv.toFloatBuffer());
+            qglVertex3fv(optTri.v[2].pv.toFloatBuffer());
             qglEnd();
             qglFlush();
         }
@@ -1415,9 +1415,9 @@ public class optimize {
         qglBegin(GL_LINES);
         for (i = 0; i < numOriginalEdges; i++) {
             qglColor3f(1, 0, 0);
-            qglVertex3fv(originalEdges[i].v1.pv.ToFloatPtr());
+            qglVertex3fv(originalEdges[i].v1.pv.toFloatBuffer());
             qglColor3f(0, 0, 0);
-            qglVertex3fv(originalEdges[i].v2.pv.ToFloatPtr());
+            qglVertex3fv(originalEdges[i].v2.pv.toFloatBuffer());
         }
         qglEnd();
         qglFlush();
@@ -1533,9 +1533,9 @@ public class optimize {
                 DrawOriginalEdges(numOriginalEdges, originalEdges);
                 qglBegin(GL_LINES);
                 qglColor3f(0, 1, 0);
-                qglVertex3fv(originalEdges[i].v1.pv.ToFloatPtr());
+                qglVertex3fv(originalEdges[i].v1.pv.toFloatBuffer());
                 qglColor3f(0, 0, 1);
-                qglVertex3fv(originalEdges[i].v2.pv.ToFloatPtr());
+                qglVertex3fv(originalEdges[i].v2.pv.toFloatBuffer());
                 qglEnd();
                 qglFlush();
             }

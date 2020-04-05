@@ -132,8 +132,6 @@ import static neo.ui.DeviceContext.idDeviceContext.colorWhite;
 
 import java.nio.ByteBuffer;
 
-import org.lwjgl.BufferUtils;
-
 import neo.TempDump;
 import neo.Renderer.Cinematic.cinData_t;
 import neo.Renderer.Image.idImage;
@@ -157,6 +155,7 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
+import neo.opengl.Nio;
 
 /**
  *
@@ -279,7 +278,7 @@ public class tr_rendertools {
     public static void RB_SimpleSurfaceSetup(final drawSurf_s drawSurf) {
         // change the matrix if needed
         if (drawSurf.space != backEnd.currentSpace) {
-            qglLoadMatrixf(drawSurf.space.modelViewMatrix);
+            qglLoadMatrixf(Nio.wrap(drawSurf.space.modelViewMatrix));
             backEnd.currentSpace = drawSurf.space;
         }
 
@@ -300,7 +299,7 @@ public class tr_rendertools {
      */
     public static void RB_SimpleWorldSetup() {
         backEnd.currentSpace = backEnd.viewDef.worldSpace;
-        qglLoadMatrixf(backEnd.viewDef.worldSpace.modelViewMatrix);
+        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.worldSpace.modelViewMatrix));
 
         backEnd.currentScissor = backEnd.viewDef.scissor;
         qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
@@ -392,7 +391,7 @@ public class tr_rendertools {
         int i;
         ByteBuffer stencilReadback;
 
-        stencilReadback = BufferUtils.createByteBuffer(glConfig.vidWidth * glConfig.vidHeight);// R_StaticAlloc(glConfig.vidWidth * glConfig.vidHeight);
+        stencilReadback = Nio.newByteBuffer(glConfig.vidWidth * glConfig.vidHeight);// R_StaticAlloc(glConfig.vidWidth * glConfig.vidHeight);
         qglReadPixels(0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, stencilReadback);
 
         count = 0;
@@ -437,7 +436,7 @@ public class tr_rendertools {
         // now draw color for each stencil value
         qglStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
         for (i = 0; i < 6; i++) {
-            qglColor3fv(colors[i]);
+            qglColor3fv(Nio.wrap(colors[i]));
             qglStencilFunc(GL_EQUAL, i, 255);
             RB_PolygonClear();
         }
@@ -609,7 +608,7 @@ public class tr_rendertools {
         qglColor3f(1, 1, 1);
         globalImages.BindNull();
 
-        depthReadback = BufferUtils.createByteBuffer(glConfig.vidWidth * glConfig.vidHeight * 4);// R_StaticAlloc(glConfig.vidWidth * glConfig.vidHeight * 4);
+        depthReadback = Nio.newByteBuffer(glConfig.vidWidth * glConfig.vidHeight * 4);// R_StaticAlloc(glConfig.vidWidth * glConfig.vidHeight * 4);
 //	memset( depthReadback, 0, glConfig.vidWidth * glConfig.vidHeight*4 );
 
         qglReadPixels(0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_DEPTH_COMPONENT, GL_FLOAT, depthReadback);
@@ -867,8 +866,8 @@ public class tr_rendertools {
         for (int i = 0; i < tri.numIndexes; i += 3) {
             for (int j = 0; j < 3; j++) {
                 final int k = (j + 1) % 3;
-                qglVertex3fv(tri.verts[ tri.silIndexes[i + j]].xyz.ToFloatPtr());
-                qglVertex3fv(tri.verts[ tri.silIndexes[i + k]].xyz.ToFloatPtr());
+                qglVertex3fv(tri.verts[ tri.silIndexes[i + j]].xyz.toFloatBuffer());
+                qglVertex3fv(tri.verts[ tri.silIndexes[i + k]].xyz.toFloatBuffer());
             }
         }
         qglEnd();
@@ -1017,7 +1016,7 @@ public class tr_rendertools {
         for (; vModels != null; vModels = vModels.next) {
             idBounds b;
 
-            qglLoadMatrixf(vModels.modelViewMatrix);
+            qglLoadMatrixf(Nio.wrap(vModels.modelViewMatrix));
 //            System.out.println("vModels.modelViewMatrix="+vModels.modelViewMatrix[0]);
 
             if (null == vModels.entityDef) {
@@ -1106,9 +1105,9 @@ public class tr_rendertools {
                 } else {
                     qglColor4f(0, 1, 0, 0.5f);
                 }
-                qglVertex3fv(a.xyz.ToFloatPtr());
-                qglVertex3fv(b.xyz.ToFloatPtr());
-                qglVertex3fv(c.xyz.ToFloatPtr());
+                qglVertex3fv(a.xyz.toFloatBuffer());
+                qglVertex3fv(b.xyz.toFloatBuffer());
+                qglVertex3fv(c.xyz.toFloatBuffer());
             }
             qglEnd();
         }
@@ -1158,9 +1157,9 @@ public class tr_rendertools {
                 b = tri.verts[tri.indexes[j + 1]];
                 c = tri.verts[tri.indexes[j + 2]];
 
-                qglVertex3fv(a.xyz.ToFloatPtr());
-                qglVertex3fv(b.xyz.ToFloatPtr());
-                qglVertex3fv(c.xyz.ToFloatPtr());
+                qglVertex3fv(a.xyz.toFloatBuffer());
+                qglVertex3fv(b.xyz.toFloatBuffer());
+                qglVertex3fv(c.xyz.toFloatBuffer());
             }
             qglEnd();
         }
@@ -1224,7 +1223,7 @@ public class tr_rendertools {
                             0.5f + (0.5f * v.normal.oGet(2)),
                             0.5f);
                 }
-                qglVertex3fv(v.xyz.ToFloatPtr());
+                qglVertex3fv(v.xyz.toFloatBuffer());
             }
             qglEnd();
         }
@@ -1267,8 +1266,8 @@ public class tr_rendertools {
                 final idDrawVert v;
 
                 v = tri.verts[tri.indexes[j]];
-                qglColor4ubv(v.color);
-                qglVertex3fv(v.xyz.ToFloatPtr());
+                qglColor4ubv(Nio.wrap(v.color));
+                qglVertex3fv(v.xyz.toFloatBuffer());
             }
             qglEnd();
         }
@@ -1329,19 +1328,19 @@ public class tr_rendertools {
             qglBegin(GL_LINES);
             for (j = 0; j < tri.numVerts; j++) {
                 qglColor3f(0, 0, 1);
-                qglVertex3fv(tri.verts[j].xyz.ToFloatPtr());
+                qglVertex3fv(tri.verts[j].xyz.toFloatBuffer());
                 VectorMA(tri.verts[j].xyz, size, tri.verts[j].normal, end);
-                qglVertex3fv(end.ToFloatPtr());
+                qglVertex3fv(end.toFloatBuffer());
 
                 qglColor3f(1, 0, 0);
-                qglVertex3fv(tri.verts[j].xyz.ToFloatPtr());
+                qglVertex3fv(tri.verts[j].xyz.toFloatBuffer());
                 VectorMA(tri.verts[j].xyz, size, tri.verts[j].tangents[0], end);
-                qglVertex3fv(end.ToFloatPtr());
+                qglVertex3fv(end.toFloatBuffer());
 
                 qglColor3f(0, 1, 0);
-                qglVertex3fv(tri.verts[j].xyz.ToFloatPtr());
+                qglVertex3fv(tri.verts[j].xyz.toFloatBuffer());
                 VectorMA(tri.verts[j].xyz, size, tri.verts[j].tangents[1], end);
-                qglVertex3fv(end.ToFloatPtr());
+                qglVertex3fv(end.toFloatBuffer());
             }
             qglEnd();
         }
@@ -1420,23 +1419,23 @@ public class tr_rendertools {
                     pos = (mid.oPlus(v[k].xyz.oMultiply(3f))).oMultiply(0.25f);
 
                     qglColor3f(0, 0, 1);
-                    qglVertex3fv(pos.ToFloatPtr());
+                    qglVertex3fv(pos.toFloatBuffer());
                     VectorMA(pos, r_showNormals.GetFloat(), v[k].normal, end);
-                    qglVertex3fv(end.ToFloatPtr());
+                    qglVertex3fv(end.toFloatBuffer());
 
                     qglColor3f(1, 0, 0);
-                    qglVertex3fv(pos.ToFloatPtr());
+                    qglVertex3fv(pos.toFloatBuffer());
                     VectorMA(pos, r_showNormals.GetFloat(), v[k].tangents[0], end);
-                    qglVertex3fv(end.ToFloatPtr());
+                    qglVertex3fv(end.toFloatBuffer());
 
                     qglColor3f(0, 1, 0);
-                    qglVertex3fv(pos.ToFloatPtr());
+                    qglVertex3fv(pos.toFloatBuffer());
                     VectorMA(pos, r_showNormals.GetFloat(), v[k].tangents[1], end);
-                    qglVertex3fv(end.ToFloatPtr());
+                    qglVertex3fv(end.toFloatBuffer());
 
                     qglColor3f(1, 1, 1);
-                    qglVertex3fv(pos.ToFloatPtr());
-                    qglVertex3fv(v[k].xyz.ToFloatPtr());
+                    qglVertex3fv(pos.toFloatBuffer());
+                    qglVertex3fv(v[k].xyz.toFloatBuffer());
                 }
             }
             qglEnd();
@@ -1532,12 +1531,12 @@ public class tr_rendertools {
                 tangents[1] = mid.oPlus(tangents[1].oMultiply(r_showTextureVectors.GetFloat()));
 
                 qglColor3f(1, 0, 0);
-                qglVertex3fv(mid.ToFloatPtr());
-                qglVertex3fv(tangents[0].ToFloatPtr());
+                qglVertex3fv(mid.toFloatBuffer());
+                qglVertex3fv(tangents[0].toFloatBuffer());
 
                 qglColor3f(0, 1, 0);
-                qglVertex3fv(mid.ToFloatPtr());
-                qglVertex3fv(tangents[1].ToFloatPtr());
+                qglVertex3fv(mid.toFloatBuffer());
+                qglVertex3fv(tangents[1].toFloatBuffer());
             }
 
             qglEnd();
@@ -1595,8 +1594,8 @@ public class tr_rendertools {
 
                 mid = (a.xyz.oPlus(b.xyz.oPlus(c.xyz))).oMultiply(1.0f / 3.0f);
 
-                qglVertex3fv(mid.ToFloatPtr());
-                qglVertex3fv(a.xyz.ToFloatPtr());
+                qglVertex3fv(mid.toFloatBuffer());
+                qglVertex3fv(a.xyz.toFloatBuffer());
             }
 
             qglEnd();
@@ -1666,8 +1665,8 @@ public class tr_rendertools {
 
                     // if we didn't find a backwards listing, draw it in yellow
                     if (m == tri.numIndexes) {
-                        qglVertex3fv(ac[ i1].xyz.ToFloatPtr());
-                        qglVertex3fv(ac[ i2].xyz.ToFloatPtr());
+                        qglVertex3fv(ac[ i1].xyz.toFloatBuffer());
+                        qglVertex3fv(ac[ i2].xyz.toFloatBuffer());
                     }
 
                 }
@@ -1694,8 +1693,8 @@ public class tr_rendertools {
                     continue;
                 }
 
-                qglVertex3fv(ac[ edge.v1].xyz.ToFloatPtr());
-                qglVertex3fv(ac[ edge.v2].xyz.ToFloatPtr());
+                qglVertex3fv(ac[ edge.v1].xyz.toFloatBuffer());
+                qglVertex3fv(ac[ edge.v2].xyz.toFloatBuffer());
             }
             qglEnd();
         }
@@ -1913,7 +1912,7 @@ public class tr_rendertools {
 
         if ((text != null) && !text.isEmpty()) {
             qglBegin(GL_LINES);
-            qglColor3fv(color.ToFloatPtr());
+            qglColor3fv(color.toFloatBuffer());
 
             if (text.charAt(0) == '\n') {
                 line = 1;
@@ -1966,8 +1965,8 @@ public class tr_rendertools {
 //				p2 = org + scale * simplex[charIndex][index] * -viewAxis[1] + scale * simplex[charIndex][index+1] * viewAxis[2];
                     p2 = org.oPlus(viewAxis.oGet(1).oNegative().oMultiply(scale * simplex[charIndex][index])).oPlus(viewAxis.oGet(2).oMultiply(scale * simplex[charIndex][index + 1]));
 
-                    qglVertex3fv(p1.ToFloatPtr());
-                    qglVertex3fv(p2.ToFloatPtr());
+                    qglVertex3fv(p1.toFloatBuffer());
+                    qglVertex3fv(p2.toFloatBuffer());
                 }
                 org.oMinSet(viewAxis.oGet(1).oMultiply(spacing * scale));
             }
@@ -2123,9 +2122,9 @@ public class tr_rendertools {
         line = rb_debugLines[line_index = 0];
         for (i = 0; i < rb_numDebugLines; i++, line = rb_debugLines[++line_index]) {
             if (!line.depthTest) {
-                qglColor3fv(line.rgb.ToFloatPtr());
-                qglVertex3fv(line.start.ToFloatPtr());
-                qglVertex3fv(line.end.ToFloatPtr());
+                qglColor3fv(line.rgb.toFloatBuffer());
+                qglVertex3fv(line.start.toFloatBuffer());
+                qglVertex3fv(line.end.toFloatBuffer());
             }
         }
         qglEnd();
@@ -2139,9 +2138,9 @@ public class tr_rendertools {
         line = rb_debugLines[line_index = 0];
         for (i = 0; i < rb_numDebugLines; i++, line = rb_debugLines[++line_index]) {
             if (line.depthTest) {
-                qglColor4fv(line.rgb.ToFloatPtr());
-                qglVertex3fv(line.start.ToFloatPtr());
-                qglVertex3fv(line.end.ToFloatPtr());
+                qglColor4fv(line.rgb.toFloatBuffer());
+                qglVertex3fv(line.start.toFloatBuffer());
+                qglVertex3fv(line.end.toFloatBuffer());
             }
         }
 
@@ -2239,12 +2238,12 @@ public class tr_rendertools {
         for (i = 0; i < rb_numDebugPolygons; i++, poly = rb_debugPolygons[++poly_index]) {
 //		if ( !poly.depthTest ) {
 
-            qglColor4fv(poly.rgb.ToFloatPtr());
+            qglColor4fv(poly.rgb.toFloatBuffer());
 
             qglBegin(GL_POLYGON);
 
             for (j = 0; j < poly.winding.GetNumPoints(); j++) {
-                qglVertex3fv(poly.winding.oGet(j).ToFloatPtr());
+                qglVertex3fv(poly.winding.oGet(j).toFloatBuffer());
             }
 
             qglEnd();

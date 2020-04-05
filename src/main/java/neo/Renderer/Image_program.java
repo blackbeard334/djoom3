@@ -12,13 +12,12 @@ import static neo.idlib.math.Vector.getVec3_origin;
 
 import java.nio.ByteBuffer;
 
-import org.lwjgl.BufferUtils;
-
 import neo.Renderer.Image.textureDepth_t;
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
+import neo.opengl.Nio;
 
 /**
  *
@@ -550,7 +549,7 @@ public class Image_program {
         // resample pic2 to the same size as pic1
         if ((width2 != width1) || (height2 != height1)) {
             newMap = R_Dropsample(data2, width2, height2, width1, height1);
-            data2 = (ByteBuffer) BufferUtils.createByteBuffer(newMap.length).put(newMap).flip();
+            data2 = (ByteBuffer) Nio.newByteBuffer(newMap.length).put(newMap).flip();
         } else {
             newMap = null;
         }

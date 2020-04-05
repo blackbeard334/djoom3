@@ -1,11 +1,9 @@
 package neo.opengl;
 
 import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBImaging;
 import org.lwjgl.opengl.ARBMultitexture;
 import org.lwjgl.opengl.ARBTextureCompression;
@@ -36,11 +34,11 @@ public class QGL {
 
 	public static final boolean qGL_FALSE = false;
 
-	public static final boolean qGL_TRUE  = true;
+	public static final boolean qGL_TRUE = true;
 
 	public static void checkGLError() {
 		if (GL_DEBUG) {
-			final ByteBuffer messageLog = BufferUtils.createByteBuffer(1000);
+			final ByteBuffer messageLog = Nio.newByteBuffer(1000);
 //            while (GL43.glGetDebugMessageLog(1, null, null, null, null, null, messageLog) > 0) {
 //                System.out.println(TempDump.bbtoa(messageLog));
 //                messageLog.clear();
@@ -96,20 +94,24 @@ public class QGL {
 
 	public static void qglBindTexture(int target, int texture) {
 		DEBUG_printName("glBindTexture");
+//        System.out.printf("qglBindTexture(%d, %d)\n", target, texture);
 		GL11.glBindTexture(target, texture);
 	}
 
 	public static void qglBlendFunc(int sFactor, int dFactor) {
 		DEBUG_printName("glBlendFunc");
+//        System.out.printf("--%d, %d\n", sFactor, dFactor);
 		GL11.glBlendFunc(sFactor, dFactor);
 	}
 
 	public static void qglBufferDataARB(int target, int size, ByteBuffer data, int usage) {
 		DEBUG_printName("glBufferDataARB");
+//        GL15.glBufferData(target, data, usage);//TODO:!!!!!!!!!!!!!!!!!!!!!!!!!
 		ARBVertexBufferObject.glBufferDataARB(target, data, usage);
 	}
 
-	public static /* PFNGLBUFFERSUBDATAARBPROC */void qglBufferSubDataARB(int target, long offset, long size, ByteBuffer data) {
+	public static /* PFNGLBUFFERSUBDATAARBPROC */void qglBufferSubDataARB(int target, long offset, long size,
+			ByteBuffer data) {
 		DEBUG_printName("glBufferSubDataARB");
 		ARBVertexBufferObject.glBufferSubDataARB(target, offset, data);
 	}
@@ -144,14 +146,14 @@ public class QGL {
 		GL11.glColor3f(red, green, blue);
 	}
 
-	public static void qglColor3fv(float[] v) {
+	public static void qglColor3fv(FloatBuffer v) {
 		DEBUG_printName("glColor3fv");
-		qglColor3f(v[0], v[1], v[2]);
+		GL11.glColor3fv(v);
 	}
 
-	public static void qglColor3ubv(byte[] v) {
+	public static void qglColor3ubv(ByteBuffer v) {
 		DEBUG_printName("glColor3ubv");
-		throw new UnsupportedOperationException("Not supported yet.");
+		GL11.glColor3ubv(v);
 	}
 
 	public static void qglColor4f(float red, float green, float blue, float alpha) {
@@ -159,14 +161,14 @@ public class QGL {
 		GL11.glColor4f(red, green, blue, alpha);
 	}
 
-	public static void qglColor4fv(float[] v) {
+	public static void qglColor4fv(FloatBuffer v) {
 		DEBUG_printName("glColor4fv");
-		qglColor4f(v[0], v[1], v[2], v[3]);
+		GL11.glColor4fv(v);
 	}
 
-	public static void qglColor4ubv(byte[] v) {
+	public static void qglColor4ubv(ByteBuffer v) {
 		DEBUG_printName("glColor4ubv");
-		GL11.glColor4ub(v[0], v[1], v[2], v[3]);
+		GL11.glColor4ubv(v);
 	}
 
 	public static void qglColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
@@ -178,10 +180,9 @@ public class QGL {
 		qglColorMask(red != 0, green != 0, blue != 0, alpha != 0);
 	}
 
-	@Deprecated
-	public static void qglColorPointer(int size, int type, int stride, byte[] pointer) {
+	public static void qglColorPointer(int size, int type, int stride, ByteBuffer pointer) {
 		DEBUG_printName("glColorPointer");
-		GL11.glColorPointer(size, type, stride, ByteBuffer.wrap(pointer));
+		GL11.glColorPointer(size, type, stride, pointer);
 	}
 
 	public static void qglColorPointer(int size, int type, int stride, long pointer) {
@@ -189,14 +190,16 @@ public class QGL {
 		GL11.glColorPointer(size, type, stride, pointer);
 	}
 
-	public static void qglColorTableEXT(int target, int internalFormat, int width, int format, int type, byte[] data) {
+	public static void qglColorTableEXT(int target, int internalformat, int width, int format, int type,
+			ByteBuffer table) {
 		DEBUG_printName("glColorTableEXT");
-		ARBImaging.glColorTable(target, internalFormat, width, format, type, ByteBuffer.wrap(data));
+		ARBImaging.glColorTable(target, internalformat, width, format, type, table);
 	}
 
 	public static void /* PFNGLCOMPRESSEDTEXIMAGE2DARBPROC */ qglCompressedTexImage2DARB(int target, int level,
 			int internalformat, int width, int height, int border, int imageSize, final ByteBuffer data) {
 		DEBUG_printName("glCompressedTexImage2DARB");
+//        ARBTextureCompression.glCompressedTexImage2DARB(target, level, internalformat, width, height, border, data);
 		GL13.glCompressedTexImage2D(target, level, internalformat, width, height, border, data);
 	}
 
@@ -267,13 +270,14 @@ public class QGL {
 		GL11.glDrawElements(mode, type, indices);
 	}
 
-	public static void qglDrawElements(int mode, int count, int type, int[] indices) {
+	public static void qglDrawElements(int mode, int count, int type, IntBuffer indices) {
 		DEBUG_printName("glDrawElements2");
-		GL11.glDrawElements(mode, (IntBuffer) wrap(indices).position(count).flip());
+		GL11.glDrawElements(mode, indices);
 	}
 
 	public static void qglDrawPixels(int width, int height, int format, int type, byte[][][] pixels) {
 		DEBUG_printName("glDrawPixels");
+		//GL11.glDrawPixels(width, height, format, type, (ByteBuffer) (Object) pixels);
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
@@ -284,6 +288,7 @@ public class QGL {
 
 	public static void qglEnable(int cap) {
 		DEBUG_printName("glEnable");
+//        System.out.println("--"+cap);
 		GL11.glEnable(cap);
 	}
 
@@ -329,7 +334,7 @@ public class QGL {
 		ARBTextureCompression.glGetCompressedTexImageARB(target, index, img);
 	}
 
-	public static int qglGetError() {
+	public static int qglGetError() {// DEBUG_printName("glGetError");
 		checkGLError();
 		return GL11.glGetError();
 	}
@@ -374,7 +379,7 @@ public class QGL {
 		GL11.glLoadIdentity();
 	}
 
-	public static void qglLoadMatrixf(float[] m) {
+	public static void qglLoadMatrixf(FloatBuffer m) {
 		DEBUG_printName("glLoadMatrixf");
 		GL11.glLoadMatrixf(m);
 	}
@@ -424,27 +429,15 @@ public class QGL {
 		GL11.glPopMatrix();
 	}
 
-	public static void qglPrioritizeTextures(int n, int textures, float priorities) {
+	public static void qglPrioritizeTextures(IntBuffer textures, FloatBuffer priorities) {
 		DEBUG_printName("glPrioritizeTextures");
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	public static /* PFNGLPROGRAMENVPARAMETER4FVARBPROC */ void qglProgramEnvParameter4fvARB(int target, Enum<?> index,
-			final float[] params) {
-		DEBUG_printName("glProgramEnvParameter4fvARB");
-		qglProgramEnvParameter4fvARB(target, index.ordinal(), params);
+		GL11.glPrioritizeTextures(textures, priorities);
 	}
 
 	public static /* PFNGLPROGRAMENVPARAMETER4FVARBPROC */ void qglProgramEnvParameter4fvARB(int target, Enum<?> index,
 			final FloatBuffer params) {
 		DEBUG_printName("glProgramEnvParameter4fvARB");
 		ARBVertexProgram.glProgramEnvParameter4fvARB(target, index.ordinal(), params);
-	}
-
-	public static /* PFNGLPROGRAMENVPARAMETER4FVARBPROC */ void qglProgramEnvParameter4fvARB(int target, int index,
-			final float[] params) {
-		DEBUG_printName("glProgramEnvParameter4fvARB");
-		ARBVertexProgram.glProgramEnvParameter4fvARB(target, index, params);
 	}
 
 	public static /* PFNGLPROGRAMENVPARAMETER4FVARBPROC */ void qglProgramEnvParameter4fvARB(int target, int index,
@@ -520,9 +513,9 @@ public class QGL {
 		GL11.glTexCoord2f(s, t);
 	}
 
-	public static void qglTexCoord2fv(float[] v) {
+	public static void qglTexCoord2fv(FloatBuffer v) {
 		DEBUG_printName("glTexCoord2fv");
-		qglTexCoord2f(v[0], v[1]);
+		GL11.glTexCoord2fv(v);
 	}
 
 	public static void qglTexCoordPointer(int size, int type, int stride, ByteBuffer pointer) {
@@ -530,10 +523,9 @@ public class QGL {
 		GL11.glTexCoordPointer(size, type, stride, pointer);
 	}
 
-	@Deprecated
-	public static void qglTexCoordPointer(int size, int type, int stride, float[] pointer) {
+	public static void qglTexCoordPointer(int size, int type, int stride, FloatBuffer pointer) {
 		DEBUG_printName("glTexCoordPointer");
-		throw new UnsupportedOperationException("Not supported yet.");
+		GL11.glTexCoordPointer(size, type, stride, pointer);
 	}
 
 	public static void qglTexCoordPointer(int size, int type, int stride, long pointer) {
@@ -547,7 +539,7 @@ public class QGL {
 	}
 
 	public static void qglTexEnvi(int target, int pName, int param) {
-		DEBUG_printName("glTexEnvi");
+		DEBUG_printName("glTexEnvi");// ENVY!!
 		GL11.glTexEnvi(target, pName, param);
 	}
 
@@ -556,27 +548,19 @@ public class QGL {
 		GL11.glTexGenf(coord, pName, param);
 	}
 
-	public static void qglTexGenfv(int coord, int pName, float[] params) {
+	public static void qglTexGenfv(int coord, int pname, FloatBuffer params) {
 		DEBUG_printName("glTexGenfv");
-		GL11.glTexGenfv(coord, pName, params);
+		GL11.glTexGenfv(coord, pname, params);
 	}
 
-	@Deprecated
-	public static void qglTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format,
-			int type, byte[] pixels) {
-		DEBUG_printName("glTexImage2D");
-		qglTexImage2D(target, level, internalformat, width, height, border, format, type, wrap(pixels));
-		throw new UnsupportedOperationException();
-	}
-
-	public static void qglTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format,
-			int type, ByteBuffer pixels) {
+	public static void qglTexImage2D(int target, int level, int internalformat, int width, int height, int border,
+			int format, int type, ByteBuffer pixels) {
 		DEBUG_printName("glTexImage2D");
 		GL11.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
 	}
 
-	public static void qglTexImage3D(int GLenum1, int GLint1, int GLint2, int GLsizei1, int GLsizei2, int GLsizei3, int GLint4,
-			int GLenum2, int GLenum3, ByteBuffer GLvoid) {
+	public static void qglTexImage3D(int GLenum1, int GLint1, int GLint2, int GLsizei1, int GLsizei2, int GLsizei3,
+			int GLint4, int GLenum2, int GLenum3, ByteBuffer GLvoid) {
 		DEBUG_printName("glTexImage3D");
 		GL12.glTexImage3D(GLenum1, GLint1, GLint2, GLsizei1, GLsizei2, GLsizei3, GLint4, GLenum2, GLenum3, GLvoid);
 	}
@@ -596,8 +580,8 @@ public class QGL {
 		GL11.glTexParameteri(target, pName, param);
 	}
 
-	public static void qglTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format,
-			int type, ByteBuffer pixels) {
+	public static void qglTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height,
+			int format, int type, ByteBuffer pixels) {
 		DEBUG_printName("glTexSubImage2D");
 		GL11.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
 	}
@@ -612,12 +596,13 @@ public class QGL {
 		GL11.glVertex3f(x, y, z);
 	}
 
-	public static void qglVertex3fv(float[] v) {
+	public static void qglVertex3fv(FloatBuffer coords) {
 		DEBUG_printName("glVertex3fv");
-		qglVertex3f(v[0], v[1], v[2]);
+		GL11.glVertex3fv(coords);
 	}
 
-	public static void qglVertexAttribPointerARB(int index, int size, int type, boolean normalized, int stride, long pointer) {
+	public static void qglVertexAttribPointerARB(int index, int size, int type, boolean normalized, int stride,
+			long pointer) {
 		DEBUG_printName("glVertexAttribPointerARB");
 		ARBVertexShader.glVertexAttribPointerARB(index, size, type, normalized, stride, pointer);
 	}
@@ -627,9 +612,9 @@ public class QGL {
 		GL11.glVertexPointer(size, type, stride, pointer);
 	}
 
-	@Deprecated
-	public static void qglVertexPointer(int size, int type, int stride, float[] pointer) {
-		throw new UnsupportedOperationException("Not supported yet.");
+	public static void qglVertexPointer(int size, int type, int stride, FloatBuffer pointer) {
+		DEBUG_printName("qglVertexPointer");
+		GL11.glVertexPointer(size, type, stride, pointer);
 	}
 
 	public static void qglVertexPointer(int size, int type, int stride, long pointer) {
@@ -641,41 +626,5 @@ public class QGL {
 		DEBUG_printName("glViewport");
 		GL11.glViewport(x, y, width, height);
 	}
-
-    /**
-     * @deprecated the calling functions should send ByteBuffers instead.
-     */
-    @Deprecated
-    private static ByteBuffer wrap(final byte[] byteArray) {
-
-        return (ByteBuffer) BufferUtils.
-                createByteBuffer(byteArray.length | 16).
-                put(byteArray).
-                flip();
-    }
-
-    /**
-     * @deprecated the calling functions should send FloatBuffers instead.
-     */
-    @Deprecated
-    private static FloatBuffer wrap(final float[] floatArray) {
-
-        return (FloatBuffer) BufferUtils.
-                createFloatBuffer(floatArray.length | 16).
-                put(floatArray).
-                flip();
-    }
-
-    /**
-     * @deprecated the calling functions should send IntBuffers instead.
-     */
-    @Deprecated
-    private static IntBuffer wrap(final int[] intArray) {
-
-        return (IntBuffer) BufferUtils.
-                createIntBuffer(intArray.length).
-                put(intArray).
-                flip();
-    }
 
 }

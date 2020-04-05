@@ -61,8 +61,6 @@ import static neo.sys.win_shared.Sys_Milliseconds;
 
 import java.nio.ByteBuffer;
 
-import org.lwjgl.BufferUtils;
-
 import neo.TempDump.TODO_Exception;
 import neo.Renderer.Model.idRenderModel;
 import neo.Renderer.Model.modelSurface_s;
@@ -78,6 +76,7 @@ import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Matrix.idMat3;
+import neo.opengl.Nio;
 
 /**
  *
@@ -1524,7 +1523,7 @@ public class renderbump {
 
             sumBuffer = new int[width * height * 4 * 4];// Mem_Alloc(width * height * 4 * 4);
 //	memset( sumBuffer, 0, width * height * 4 * 4 );
-            buffer = BufferUtils.createByteBuffer(width * height * 4);// Mem_Alloc(width * height * 4);
+            buffer = Nio.newByteBuffer(width * height * 4);// Mem_Alloc(width * height * 4);
 
             colorSumBuffer = new int[width * height * 4 * 4];// Mem_Alloc(width * height * 4 * 4);
 //	memset( sumBuffer, 0, width * height * 4 * 4 );
@@ -1556,7 +1555,7 @@ public class renderbump {
                                     float[] a;
 
                                     v = mesh.indexes[j + k];
-                                    qglColor3ubv(mesh.verts[v].color);
+                                    qglColor3ubv(Nio.wrap(mesh.verts[v].color));
                                     a = mesh.verts[v].xyz.ToFloatPtr();
                                     qglVertex3f(a[0] + xOff, a[2] + yOff, a[1]);
                                 }

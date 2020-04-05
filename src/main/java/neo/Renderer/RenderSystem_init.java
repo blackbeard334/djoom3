@@ -98,8 +98,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
-import org.lwjgl.BufferUtils;
-
 import neo.Renderer.Cinematic.cinData_t;
 import neo.Renderer.Cinematic.idCinematic;
 import neo.Renderer.Image.idImage;
@@ -127,6 +125,7 @@ import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.cmp_t;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Matrix.idMat3;
+import neo.opengl.Nio;
 import neo.sys.win_glimp.glimpParms_t;
 
 /**
@@ -770,7 +769,7 @@ public class RenderSystem_init {
         // GL_EXT_texture_filter_anisotropic
         glConfig.anisotropicAvailable = R_CheckExtension("GL_EXT_texture_filter_anisotropic");
         if (glConfig.anisotropicAvailable) {
-            final FloatBuffer maxTextureAnisotropy = BufferUtils.createFloatBuffer(16);
+            final FloatBuffer maxTextureAnisotropy = Nio.newFloatBuffer(16);
             qglGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, maxTextureAnisotropy);
             common.Printf("   maxTextureAnisotropy: %f\n", (glConfig.maxTextureAnisotropy = maxTextureAnisotropy.get()));
         } else {
@@ -1996,7 +1995,7 @@ public class RenderSystem_init {
 
     public static void R_InitOpenGL() {
 //	GLint			temp;
-        final IntBuffer temp = BufferUtils.createIntBuffer(16);
+        final IntBuffer temp = Nio.newIntBuffer(16);
         final glimpParms_t parms = new glimpParms_t();
         int i;
 

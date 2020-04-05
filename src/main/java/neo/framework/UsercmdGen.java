@@ -10,9 +10,6 @@ import static neo.framework.CVarSystem.CVAR_SYSTEM;
 import static neo.framework.Common.com_ticNumber;
 import static neo.framework.Common.common;
 import static neo.framework.KeyInput.K_LAST_KEY;
-import static neo.framework.KeyInput.K_MOUSE1;
-import static neo.framework.KeyInput.K_MWHEELDOWN;
-import static neo.framework.KeyInput.K_MWHEELUP;
 import static neo.framework.UsercmdGen.usercmdButton_t.UB_ATTACK;
 import static neo.framework.UsercmdGen.usercmdButton_t.UB_BACK;
 import static neo.framework.UsercmdGen.usercmdButton_t.UB_BUTTON0;
@@ -113,22 +110,10 @@ import static neo.sys.sys_public.joystickAxis_t.AXIS_FORWARD;
 import static neo.sys.sys_public.joystickAxis_t.AXIS_SIDE;
 import static neo.sys.sys_public.joystickAxis_t.AXIS_UP;
 import static neo.sys.sys_public.joystickAxis_t.MAX_JOYSTICK_AXIS;
-import static neo.sys.sys_public.sysEventType_t.SE_KEY;
-import static neo.sys.sys_public.sysEventType_t.SE_MOUSE;
-import static neo.sys.win_input.Sys_EndKeyboardInputEvents;
-import static neo.sys.win_input.Sys_EndMouseInputEvents;
-import static neo.sys.win_input.Sys_ReturnKeyboardInputEvent;
 import static neo.sys.win_main.Sys_DebugPrintf;
-import static neo.sys.win_main.Sys_QueEvent;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-
-import org.lwjgl.glfw.GLFWCursorPosCallback;
-import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.glfw.GLFWMouseButtonCallback;
-import org.lwjgl.glfw.GLFWScrollCallback;
 
 import neo.TempDump.SERiAL;
 import neo.TempDump.TODO_Exception;
@@ -140,6 +125,10 @@ import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
+import neo.opengl.GLFWtest.KeyboardCallback;
+import neo.opengl.GLFWtest.MouseButtonCallback;
+import neo.opengl.GLFWtest.MouseCursorCallback;
+import neo.opengl.GLFWtest.MouseScrollCallback;
 
 /**
  *
@@ -362,10 +351,10 @@ public class UsercmdGen {
         // Directly sample a usercmd.
         public abstract usercmd_t GetDirectUsercmd();
 
-        public idUsercmdGenLocal.KeyboardCallback    keyboardCallback;
-        public idUsercmdGenLocal.MouseCursorCallback mouseCursorCallback;
-        public idUsercmdGenLocal.MouseScrollCallback mouseScrollCallback;
-        public idUsercmdGenLocal.MouseButtonCallback mouseButtonCallback;
+        public KeyboardCallback    keyboardCallback;
+        public MouseCursorCallback mouseCursorCallback;
+        public MouseScrollCallback mouseScrollCallback;
+        public MouseButtonCallback mouseButtonCallback;
     }
 //
     static final int KEY_MOVESPEED = 127;
@@ -610,9 +599,59 @@ public class UsercmdGen {
     //    
     //   
 
-    static class idUsercmdGenLocal extends idUsercmdGen {
+    public static class idUsercmdGenLocal extends idUsercmdGen {
 
-        private final idVec3        viewangles;
+        public static class idUsercmdGenLocalData {
+        	idUsercmdGenLocal me = null;
+        	
+        	public double continuousMouseX;
+			public double continuousMouseY;
+			public int mouseButton;
+			public boolean mouseDown;
+			public double mouseDx;
+			public double mouseDy;
+
+			private idUsercmdGenLocalData(idUsercmdGenLocal me) {
+				this.me = me;
+			}
+	        /*
+	         ===================
+	         idUsercmdGenLocal::Key
+
+	         Handles async mouse/keyboard button actions
+	         ===================
+	         */
+			public void Key(int keyNum, boolean down) {
+
+	            // Sanity check, sometimes we get double message :(
+	            if (me.keyState[keyNum] == down) {
+	                return;
+	            }
+	            me.keyState[keyNum] = down;
+
+	            final int action = idKeyInput.GetUsercmdAction(keyNum);
+
+	            if (down) {
+
+	            	me.buttonState[action]++;
+
+	                if (!me.Inhibited()) {
+	                    if ((action >= UB_IMPULSE0.ordinal()) && (action <= UB_IMPULSE61.ordinal())) {
+	                    	me.impulse = me.cmd.impulse = (byte) (action - UB_IMPULSE0.ordinal());
+	                    	me.flags = me.cmd.flags ^= UCF_IMPULSE_SEQUENCE;
+	                    }
+	                }
+	            } else {
+	            	me.buttonState[action]--;
+	                // we might have one held down across an app active transition
+	                if (me.buttonState[action] < 0) {
+	                	me.buttonState[action] = 0;
+	                }
+	            }
+	        }
+		}
+
+		private final idVec3        viewangles;
         private int           flags;
         private int           impulse;
         //
@@ -629,13 +668,8 @@ public class UsercmdGen {
         //
         private usercmd_t cmd;                                  // the current cmd being built
         private final usercmd_t[] buffered = new usercmd_t[MAX_BUFFERED_USERCMD];
-        //
-        private double continuousMouseX, continuousMouseY;      // for gui event generatioin, never zerod
-        private int     mouseButton;                            // for gui event generatioin
-        private boolean mouseDown;
-        //
-        private double  mouseDx, mouseDy;                       // added to by mouse events
-        private final int[]   joystickAxis = new int[etoi(MAX_JOYSTICK_AXIS)];// set by joystick events
+        private idUsercmdGenLocalData data = new idUsercmdGenLocalData(this);
+		private final int[]   joystickAxis = new int[etoi(MAX_JOYSTICK_AXIS)];// set by joystick events
         //
         private static final idCVar in_yawSpeed      = new idCVar("in_yawspeed", "140", CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_FLOAT, "yaw change speed when holding down _left or _right button");
         private static final idCVar in_pitchSpeed    = new idCVar("in_pitchspeed", "140", CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_FLOAT, "pitch change speed when holding down look _lookUp or _lookDown button");
@@ -671,10 +705,10 @@ public class UsercmdGen {
             this.cmd = new usercmd_t();
             Clear();
 
-            this.keyboardCallback = new KeyboardCallback();
-            this.mouseCursorCallback = new MouseCursorCallback();
-            this.mouseScrollCallback = new MouseScrollCallback();
-            this.mouseButtonCallback = new MouseButtonCallback();
+            this.keyboardCallback = new KeyboardCallback(data);
+            this.mouseCursorCallback = new MouseCursorCallback(data);
+            this.mouseScrollCallback = new MouseScrollCallback(data);
+            this.mouseButtonCallback = new MouseButtonCallback(data);
         }
 
         @Override
@@ -709,9 +743,9 @@ public class UsercmdGen {
 
             this.inhibitCommands = 0;//false;
 
-            this.mouseDx = this.mouseDy = 0;
-            this.mouseButton = 0;
-            this.mouseDown = false;
+            this.data.mouseDx = this.data.mouseDy = 0;
+            this.data.mouseButton = 0;
+            this.data.mouseDown = false;
         }
 
         @Override
@@ -825,8 +859,8 @@ public class UsercmdGen {
         public void MouseState(int[] x, int[] y, int[] button, boolean[] down) {
 //            x[0] = continuousMouseX;
 //            y[0] = continuousMouseY;
-            button[0] = this.mouseButton;
-            down[0] = this.mouseDown;
+            button[0] = this.data.mouseButton;
+            down[0] = this.data.mouseDown;
         }
 
 
@@ -931,16 +965,16 @@ public class UsercmdGen {
                     this.viewangles.oSet(PITCH, oldAngles.oGet(PITCH) - 90);
                 }
             } else {
-                this.mouseDx = 0;
-                this.mouseDy = 0;
+                this.data.mouseDx = 0;
+                this.data.mouseDy = 0;
             }
 
             for (i = 0; i < 3; i++) {
                 this.cmd.angles[i] = (short) ANGLE2SHORT(this.viewangles.oGet(i));
             }
 
-            this.cmd.mx = (short) this.continuousMouseX;
-            this.cmd.my = (short) this.continuousMouseY;
+            this.cmd.mx = (short) this.data.continuousMouseX;
+            this.cmd.my = (short) this.data.continuousMouseY;
 
             this.flags = this.cmd.flags;
             this.impulse = this.cmd.impulse;
@@ -1059,8 +1093,8 @@ public class UsercmdGen {
             float mx, my, strafeMx, strafeMy;
             int i;
 
-            history[historyCounter & 7][0] = this.mouseDx;
-            history[historyCounter & 7][1] = this.mouseDy;
+            history[historyCounter & 7][0] = this.data.mouseDx;
+            history[historyCounter & 7][1] = this.data.mouseDy;
 
             // allow mouse movement to be smoothed together
             int smooth = m_smooth.GetInteger();
@@ -1107,11 +1141,11 @@ public class UsercmdGen {
             my *= sensitivity.GetFloat();
 
             if (m_showMouseRate.GetBool()) {
-                Sys_DebugPrintf("[%3d %3d  = %5.1f %5.1f = %5.1f %5.1f] ", this.mouseDx, this.mouseDy, mx, my, strafeMx, strafeMy);
+                Sys_DebugPrintf("[%3d %3d  = %5.1f %5.1f = %5.1f %5.1f] ", this.data.mouseDx, this.data.mouseDy, mx, my, strafeMx, strafeMy);
             }
 
-            this.mouseDx = 0;
-            this.mouseDy = 0;
+            this.data.mouseDx = 0;
+            this.data.mouseDy = 0;
 
             if ((0.0f == strafeMx) && (0.0f == strafeMy)) {
                 return;
@@ -1181,126 +1215,91 @@ public class UsercmdGen {
             }
         }
 
-        private class MouseCursorCallback extends GLFWCursorPosCallback {
-            private double prevX, prevY;
-
-            @Override
-            public void invoke(long window, double xpos, double ypos) {
-                final long dwTimeStamp = System.nanoTime();
-                final double dx = xpos - this.prevX;
-                final double dy = ypos - this.prevY;
-
-                if ((dx != 0) || (dy != 0)) {
-                    idUsercmdGenLocal.this.mouseDx += dx;
-                    idUsercmdGenLocal.this.continuousMouseX += dx;
-                    this.prevX = xpos;
-
-                    idUsercmdGenLocal.this.mouseDy += dy;
-                    idUsercmdGenLocal.this.continuousMouseY += dy;
-                    this.prevY = ypos;
-                    Sys_QueEvent(dwTimeStamp, SE_MOUSE, (int) dx, (int) dy, 0, null);
-                }
-
-                Sys_EndMouseInputEvents();
-
-            }
-        }
-
-        private class MouseScrollCallback extends GLFWScrollCallback {
-            @Override
-            public void invoke(long window, double xoffset, double yoffset) {
-                final long dwTimeStamp = System.nanoTime();
-
-                // mouse wheel actions are impulses, without a specific up / down
-                int wheelValue = (int) yoffset;//(int) polled_didod[n].dwData ) / WHEEL_DELTA;
-                final int key = yoffset < 0 ? K_MWHEELDOWN : K_MWHEELUP;
-
-                while (wheelValue-- > 0) {
-                    Key(key, true);
-                    Key(key, false);
-                    idUsercmdGenLocal.this.mouseButton = key;
-                    idUsercmdGenLocal.this.mouseDown = true;
-                    Sys_QueEvent(dwTimeStamp, SE_KEY, key, btoi(true), 0, null);
-                    Sys_QueEvent(dwTimeStamp, SE_KEY, key, btoi(false), 0, null);
-                }
-            }
-        }
-
-        private class MouseButtonCallback extends GLFWMouseButtonCallback {
-            @Override
-            public void invoke(long window, int button, int action, int mods) {
-                final long dwTimeStamp = System.nanoTime();
-                //
-                // Study each of the buffer elements and process them.
-                //
-
-                final int diaction = button;
-                if (diaction != -1) {
-                    final int buton = action != GLFW_RELEASE ? 0x80 : 0;// (polled_didod[n].dwData & 0x80) == 0x80;
-                    idUsercmdGenLocal.this.mouseButton = K_MOUSE1 + diaction;
-                    idUsercmdGenLocal.this.mouseDown = (buton != 0);
-                    Key(idUsercmdGenLocal.this.mouseButton, idUsercmdGenLocal.this.mouseDown);
-                    Sys_QueEvent(dwTimeStamp, SE_KEY, idUsercmdGenLocal.this.mouseButton, buton, 0, null);
-                }
-
-                Sys_EndMouseInputEvents();
-            }
-        }
-
-         private class KeyboardCallback extends GLFWKeyCallback {
-            @Override
-            public void invoke(long window, int key, int scancode, int action, int mods) {
-                final int[] ch = {0};
-                //                        //-+
-                // Study each of the buffer elements and process them.
-                //
-                if (Sys_ReturnKeyboardInputEvent(ch, action, key, scancode, mods) != 0) {
-                    Key(ch[0], action != GLFW_RELEASE);
-                }
-
-                Sys_EndKeyboardInputEvents();
-            }
-        }
+//        private class MouseCursorCallback extends GLFWCursorPosCallback {
+//            private double prevX, prevY;
+//
+//            @Override
+//            public void invoke(long window, double xpos, double ypos) {
+//                final long dwTimeStamp = System.nanoTime();
+//                final double dx = xpos - this.prevX;
+//                final double dy = ypos - this.prevY;
+//
+//                if ((dx != 0) || (dy != 0)) {
+//                    idUsercmdGenLocal.this.mouseDx += dx;
+//                    idUsercmdGenLocal.this.continuousMouseX += dx;
+//                    this.prevX = xpos;
+//
+//                    idUsercmdGenLocal.this.mouseDy += dy;
+//                    idUsercmdGenLocal.this.continuousMouseY += dy;
+//                    this.prevY = ypos;
+//                    Sys_QueEvent(dwTimeStamp, SE_MOUSE, (int) dx, (int) dy, 0, null);
+//                }
+//
+//                Sys_EndMouseInputEvents();
+//
+//            }
+//        }
+//
+//        private class MouseScrollCallback extends GLFWScrollCallback {
+//            @Override
+//            public void invoke(long window, double xoffset, double yoffset) {
+//                final long dwTimeStamp = System.nanoTime();
+//
+//                // mouse wheel actions are impulses, without a specific up / down
+//                int wheelValue = (int) yoffset;//(int) polled_didod[n].dwData ) / WHEEL_DELTA;
+//                final int key = yoffset < 0 ? K_MWHEELDOWN : K_MWHEELUP;
+//
+//                while (wheelValue-- > 0) {
+//                    Key(key, true);
+//                    Key(key, false);
+//                    idUsercmdGenLocal.this.mouseButton = key;
+//                    idUsercmdGenLocal.this.mouseDown = true;
+//                    Sys_QueEvent(dwTimeStamp, SE_KEY, key, btoi(true), 0, null);
+//                    Sys_QueEvent(dwTimeStamp, SE_KEY, key, btoi(false), 0, null);
+//                }
+//            }
+//        }
+//
+//        private class MouseButtonCallback extends GLFWMouseButtonCallback {
+//            @Override
+//            public void invoke(long window, int button, int action, int mods) {
+//                final long dwTimeStamp = System.nanoTime();
+//                //
+//                // Study each of the buffer elements and process them.
+//                //
+//
+//                final int diaction = button;
+//                if (diaction != -1) {
+//                    final int buton = action != GLFW_RELEASE ? 0x80 : 0;// (polled_didod[n].dwData & 0x80) == 0x80;
+//                    idUsercmdGenLocal.this.mouseButton = K_MOUSE1 + diaction;
+//                    idUsercmdGenLocal.this.mouseDown = (buton != 0);
+//                    Key(idUsercmdGenLocal.this.mouseButton, idUsercmdGenLocal.this.mouseDown);
+//                    Sys_QueEvent(dwTimeStamp, SE_KEY, idUsercmdGenLocal.this.mouseButton, buton, 0, null);
+//                }
+//
+//                Sys_EndMouseInputEvents();
+//            }
+//        }
+//
+//         private class KeyboardCallback extends GLFWKeyCallback {
+//            @Override
+//            public void invoke(long window, int key, int scancode, int action, int mods) {
+//                final int[] ch = {0};
+//                //                        //-+
+//                // Study each of the buffer elements and process them.
+//                //
+//                if (Sys_ReturnKeyboardInputEvent(ch, action, key, scancode, mods) != 0) {
+//                    Key(ch[0], action != GLFW_RELEASE);
+//                }
+//
+//                Sys_EndKeyboardInputEvents();
+//            }
+//        }
 
         private void Joystick() {
             Arrays.fill(this.joystickAxis, 0);//	memset( joystickAxis, 0, sizeof( joystickAxis ) );
         }
 
-        /*
-         ===================
-         idUsercmdGenLocal::Key
-
-         Handles async mouse/keyboard button actions
-         ===================
-         */
-        private void Key(int keyNum, boolean down) {
-
-            // Sanity check, sometimes we get double message :(
-            if (this.keyState[keyNum] == down) {
-                return;
-            }
-            this.keyState[keyNum] = down;
-
-            final int action = idKeyInput.GetUsercmdAction(keyNum);
-
-            if (down) {
-
-                this.buttonState[action]++;
-
-                if (!Inhibited()) {
-                    if ((action >= UB_IMPULSE0.ordinal()) && (action <= UB_IMPULSE61.ordinal())) {
-                        this.impulse = this.cmd.impulse = (byte) (action - UB_IMPULSE0.ordinal());
-                        this.flags = this.cmd.flags ^= UCF_IMPULSE_SEQUENCE;
-                    }
-                }
-            } else {
-                this.buttonState[action]--;
-                // we might have one held down across an app active transition
-                if (this.buttonState[action] < 0) {
-                    this.buttonState[action] = 0;
-                }
-            }
-        }
     }
 
     public static void setUsercmdGen(idUsercmdGen usercmdGen) {

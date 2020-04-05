@@ -3275,7 +3275,7 @@ public class RenderWorld_local {
 
                     qglBegin(GL_LINE_LOOP);
                     for (j = 0; j < w.GetNumPoints(); j++) {
-                        qglVertex3fv(w.oGet(j).ToFloatPtr());
+                        qglVertex3fv(w.oGet(j).toFloatBuffer());
                     }
                     qglEnd();
                 }

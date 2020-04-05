@@ -79,6 +79,7 @@ import neo.Renderer.tr_local.viewLight_s;
 import neo.Renderer.tr_render.DrawInteraction;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Vector.idVec4;
+import neo.opengl.Nio;
 
 /**
  *
@@ -147,9 +148,9 @@ public class draw_arb {
 
             // set the vertex arrays, which may not all be enabled on a given pass
             final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
-            qglVertexPointer(3, GL_FLOAT, 0/*sizeof(idDrawVert)*/, ac.xyz.ToFloatPtr());
+            qglVertexPointer(3, GL_FLOAT, 0/*sizeof(idDrawVert)*/, ac.xyz.toFloatBuffer());
             GL_SelectTexture(0);
-            qglTexCoordPointer(2, GL_FLOAT, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.st.ToFloatPtr());
+            qglTexCoordPointer(2, GL_FLOAT, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.st.toFloatBuffer());
 
             //-----------------------------------------------------
             //
@@ -165,7 +166,7 @@ public class draw_arb {
             qglColor3f(1, 1, 1);
             qglDisableClientState(GL_TEXTURE_COORD_ARRAY);
             qglEnable(GL_TEXTURE_GEN_S);
-            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[3].ToFloatPtr());
+            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[3].toFloatBuffer());
             qglTexCoord2f(0, 0.5f);
 
 // ATI R100 can't do partial texgens
@@ -178,14 +179,14 @@ public class draw_arb {
 //plane[2] = 0;
 //plane[3] = 0.5;
                 qglEnable(GL_TEXTURE_GEN_T);
-                qglTexGenfv(GL_T, GL_OBJECT_PLANE, plane.ToFloatPtr());
+                qglTexGenfv(GL_T, GL_OBJECT_PLANE, plane.toFloatBuffer());
 
                 plane.oSet(0, 0f);
                 plane.oSet(1, 0f);
                 plane.oSet(2, 0f);
                 plane.oSet(3, 1f);
                 qglEnable(GL_TEXTURE_GEN_Q);
-                qglTexGenfv(GL_Q, GL_OBJECT_PLANE, plane.ToFloatPtr());
+                qglTexGenfv(GL_Q, GL_OBJECT_PLANE, plane.toFloatBuffer());
 
             }
 
@@ -237,7 +238,7 @@ public class draw_arb {
                 qglEnableClientState(GL_TEXTURE_COORD_ARRAY);
                 //TODO:figure out how to work these damn casts.
                 final lightingCache_s c = new lightingCache_s(vertexCache.Position(tri.lightingCache));
-                qglTexCoordPointer(3, GL_FLOAT, 0/*sizeof(lightingCache_s)*/, c.localLightVector.ToFloatPtr());
+                qglTexCoordPointer(3, GL_FLOAT, 0/*sizeof(lightingCache_s)*/, c.localLightVector.toFloatBuffer());
 
                 // I just want alpha = Dot( texture0, texture1 )
                 GL_TexEnv(GL_COMBINE_ARB);
@@ -276,10 +277,10 @@ public class draw_arb {
 
             // select the vertex color source
             if (din.vertexColor == SVC_IGNORE) {
-                qglColor4fv(din.diffuseColor.ToFloatPtr());
+                qglColor4fv(din.diffuseColor.toFloatBuffer());
             } else {
                 // FIXME: does this not get diffuseColor blended in?
-                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.color);
+                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ Nio.wrap(ac.color));
                 qglEnableClientState(GL_COLOR_ARRAY);
 
                 if (din.vertexColor == SVC_INVERSE_MODULATE) {
@@ -304,9 +305,9 @@ public class draw_arb {
             qglEnable(GL_TEXTURE_GEN_S);
             qglEnable(GL_TEXTURE_GEN_T);
             qglEnable(GL_TEXTURE_GEN_Q);
-            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[0].ToFloatPtr());
-            qglTexGenfv(GL_T, GL_OBJECT_PLANE, din.lightProjection[1].ToFloatPtr());
-            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, din.lightProjection[2].ToFloatPtr());
+            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[0].toFloatBuffer());
+            qglTexGenfv(GL_T, GL_OBJECT_PLANE, din.lightProjection[1].toFloatBuffer());
+            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, din.lightProjection[2].toFloatBuffer());
 
             din.lightImage.Bind();
 
@@ -383,7 +384,7 @@ public class draw_arb {
             }
             qglEnableClientState(GL_TEXTURE_COORD_ARRAY);
             final lightingCache_s c = new lightingCache_s(vertexCache.Position(tri.lightingCache));//{//TODO:figure out how to work these damn casts.
-            qglTexCoordPointer(3, GL_FLOAT, 0/*sizeof(lightingCache_s)*/, c.localLightVector.ToFloatPtr());
+            qglTexCoordPointer(3, GL_FLOAT, 0/*sizeof(lightingCache_s)*/, c.localLightVector.toFloatBuffer());
 
             // I just want alpha = Dot( texture0, texture1 )
             GL_TexEnv(GL_COMBINE_ARB);
@@ -421,10 +422,10 @@ public class draw_arb {
 
             // select the vertex color source
             if (din.vertexColor == SVC_IGNORE) {
-                qglColor4fv(din.diffuseColor.ToFloatPtr());
+                qglColor4fv(din.diffuseColor.toFloatBuffer());
             } else {
                 // FIXME: does this not get diffuseColor blended in?
-                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.color);
+                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ Nio.wrap(ac.color));
                 qglEnableClientState(GL_COLOR_ARRAY);
 
                 if (din.vertexColor == SVC_INVERSE_MODULATE) {
@@ -449,9 +450,9 @@ public class draw_arb {
             qglEnable(GL_TEXTURE_GEN_S);
             qglEnable(GL_TEXTURE_GEN_T);
             qglEnable(GL_TEXTURE_GEN_Q);
-            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[0].ToFloatPtr());
-            qglTexGenfv(GL_T, GL_OBJECT_PLANE, din.lightProjection[1].ToFloatPtr());
-            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, din.lightProjection[2].ToFloatPtr());
+            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[0].toFloatBuffer());
+            qglTexGenfv(GL_T, GL_OBJECT_PLANE, din.lightProjection[1].toFloatBuffer());
+            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, din.lightProjection[2].toFloatBuffer());
             din.lightImage.Bind();
 
             // texture 2 will get the light falloff texture
@@ -461,20 +462,20 @@ public class draw_arb {
             qglEnable(GL_TEXTURE_GEN_T);
             qglEnable(GL_TEXTURE_GEN_Q);
 
-            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[3].ToFloatPtr());
+            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[3].toFloatBuffer());
 
             final idVec4 plane = new idVec4();
             plane.oSet(0, 0f);
             plane.oSet(1, 0f);
             plane.oSet(2, 0f);
             plane.oSet(3, 0.5f);
-            qglTexGenfv(GL_T, GL_OBJECT_PLANE, plane.ToFloatPtr());
+            qglTexGenfv(GL_T, GL_OBJECT_PLANE, plane.toFloatBuffer());
 
             plane.oSet(0, 0f);
             plane.oSet(1, 0f);
             plane.oSet(2, 0f);
             plane.oSet(3, 1f);
-            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, plane.ToFloatPtr());
+            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, plane.toFloatBuffer());
 
             din.lightFalloffImage.Bind();
 

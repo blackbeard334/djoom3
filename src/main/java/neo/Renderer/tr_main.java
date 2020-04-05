@@ -35,7 +35,6 @@ import java.nio.FloatBuffer;
 import java.util.Arrays;
 
 import neo.TempDump.TODO_Exception;
-import neo.Renderer.RenderWorld_local.idRenderWorldLocal;
 import neo.Renderer.tr_local.drawSurf_s;
 import neo.Renderer.tr_local.frameData_t;
 import neo.Renderer.tr_local.frameMemoryBlock_s;
@@ -52,6 +51,7 @@ import neo.idlib.math.Vector.idVec;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
+import neo.opengl.Nio;
 
 /**
  *
@@ -767,14 +767,19 @@ public class tr_main {
      R_TransposeGLMatrix
      ================
      */
-    public static void R_TransposeGLMatrix(final float[] in/*[16]*/, float[] out/*[16]*/) {
+    public static FloatBuffer R_TransposeGLMatrix(final float[] in/*[16]*/) { //, float[] out/*[16]*/) {
         int i, j;
 
+        FloatBuffer out = Nio.newFloatBuffer(16);
+        
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
-                out[(i * 4) + j] = in[(j * 4) + i];
+                //out[(i * 4) + j] = in[(j * 4) + i];
+                out.put(in[(j * 4) + i]);
             }
         }
+        
+        return (FloatBuffer) out.flip();
     }
 
     /*

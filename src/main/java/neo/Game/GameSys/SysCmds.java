@@ -55,7 +55,6 @@ import neo.Game.AFEntity.idAFEntity_WithAttachedHead;
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
 import neo.Game.Light.idLight;
-import neo.Game.Misc.idStaticEntity;
 import neo.Game.Moveable.idMoveable;
 import neo.Game.Player.idPlayer;
 import neo.Game.Projectile.idProjectile;

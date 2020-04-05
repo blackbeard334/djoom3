@@ -90,8 +90,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-import org.lwjgl.BufferUtils;
-
 import neo.Renderer.Cinematic.idCinematic;
 import neo.Renderer.GuiModel.idGuiModel;
 import neo.Renderer.Image.idImage;
@@ -130,6 +128,7 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.opengl.Nio;
 
 /**
  *
@@ -2384,7 +2383,7 @@ public class tr_local {
 
             // include extra space for OpenGL padding to word boundaries
             final int c = (rc.width + 3) * rc.height;
-            ByteBuffer data = BufferUtils.createByteBuffer(c * 3);// R_StaticAlloc(c * 3);
+            ByteBuffer data = Nio.newByteBuffer(c * 3);// R_StaticAlloc(c * 3);
 
             qglReadPixels(rc.x, rc.y, rc.width, rc.height, GL_RGB, GL_UNSIGNED_BYTE, data);
 

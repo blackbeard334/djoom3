@@ -44,8 +44,6 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
-import org.lwjgl.BufferUtils;
-
 import neo.Renderer.Image.GeneratorFunction;
 import neo.Renderer.Image.idImage;
 import neo.framework.CmdSystem.cmdFunction_t;
@@ -54,6 +52,7 @@ import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.cmp_t;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
+import neo.opengl.Nio;
 
 /**
  *
@@ -748,7 +747,7 @@ public class Image_init {
                 return;
             }
             // explicit zero border
-            final FloatBuffer color = BufferUtils.createFloatBuffer(4);
+            final FloatBuffer color = Nio.newFloatBuffer(4);
 //            color[0] = color[1] = color[2] = color[3] = 0.0f;
             qglTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
 //            qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, 0.0f);
@@ -982,7 +981,7 @@ public class Image_init {
 
 //	pixels[0] = (GLubyte[]) Mem_Alloc(size*size*4*6);
             for (i = 0; i < 6; i++) {
-                pixels[i] = BufferUtils.createByteBuffer(size * size * 4);
+                pixels[i] = Nio.newByteBuffer(size * size * 4);
                 for (y = 0; y < size; y++) {
                     for (x = 0; x < size; x++) {
                         getCubeVector(i, size, x, y, vector);

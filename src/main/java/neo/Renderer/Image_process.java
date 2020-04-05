@@ -4,7 +4,7 @@ import static neo.idlib.Lib.idLib.common;
 
 import java.nio.ByteBuffer;
 
-import org.lwjgl.BufferUtils;
+import neo.opengl.Nio;
 
 /**
  *
@@ -253,7 +253,7 @@ public class Image_process {
         if (0 == newHeight) {
             newHeight = 1;
         }
-        out = BufferUtils.createByteBuffer(newWidth * newHeight * 4);// R_StaticAlloc(newWidth * newHeight * 4);
+        out = Nio.newByteBuffer(newWidth * newHeight * 4);// R_StaticAlloc(newWidth * newHeight * 4);
         out_p = 0;//out;
 
         in_p = 0;//in;

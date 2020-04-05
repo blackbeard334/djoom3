@@ -8,65 +8,24 @@ import static neo.TempDump.atobb;
 import static neo.TempDump.fopenOptions;
 import static neo.framework.FileSystem_h.MAX_OSPATH;
 import static neo.framework.FileSystem_h.fileSystem;
-import static neo.framework.UsercmdGen.usercmdGen;
 import static neo.idlib.Lib.idLib.common;
 import static neo.idlib.Lib.idLib.cvarSystem;
-import static neo.opengl.QGL.createCapabilities;
-import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
-import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
-import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
-import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
-import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
-import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
-import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
-import static org.lwjgl.glfw.GLFW.glfwGetVideoModes;
-import static org.lwjgl.glfw.GLFW.glfwInit;
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
-import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
-import static org.lwjgl.glfw.GLFW.glfwShowWindow;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.glfw.GLFW.glfwTerminate;
-import static org.lwjgl.glfw.GLFW.glfwWindowHint;
-import static org.lwjgl.system.MemoryUtil.NULL;
 
-import java.awt.DisplayMode;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWVidMode;
-
-import neo.TempDump.NeoFixStrings;
 import neo.TempDump.TODO_Exception;
 import neo.idlib.Text.Str.idStr;
-
-//import org.lwjgl.LWJGLException;
-//import org.lwjgl.opengl.Display;
-//import org.lwjgl.opengl.DisplayMode;
+import neo.opengl.GLFWtest;
 
 /**
  *
  */
 public class win_glimp {
-
-    static long window;
-    static Long monitor;
-    static GLFWErrorCallback errorCallback;
 
     /*
      ====================================================================
@@ -91,245 +50,7 @@ public class win_glimp {
      ===================
      */
     static boolean GLW_SetFullScreen(glimpParms_t parms) {
-////#if 0
-////	// for some reason, bounds checker claims that windows is
-////	// writing past the bounds of dm in the get display frequency call
-////	union {
-////		DEVMODE dm;
-////		byte	filler[1024];
-////	} hack;
-////#endif
-        DisplayMode dm = null;
-////	int		cdsRet;
-//
-////	DisplayMode		devmode;
-////	int			modeNum;
-        boolean matched;
-//
-        // first make sure the user is not trying to select a mode that his card/monitor can't handle
-        matched = false;
-        DisplayMode[] modes = null;
-        {
-    		if (errorCallback == null) {
-    			// Setup an error callback. The default implementation
-    			// will print the error message in System.err.
-    			errorCallback = GLFWErrorCallback.createPrint(System.err).set();
-
-    			// Initialize GLFW. Most GLFW functions will not work before doing this.
-    			if (!glfwInit()) {
-    				throw new IllegalStateException("Unable to initialize GLFW");
-    			}
-    	        glfwSetErrorCallback(errorCallback);
-    		}
-    		try {
-    			if (monitor == null) {
-    				monitor = glfwGetPrimaryMonitor();
-    			}
-    			GLFWVidMode.Buffer videoModes = glfwGetVideoModes(monitor);
-    			modes = new DisplayMode[videoModes.limit()];
-    			for (int i = 0; i < modes.length; i++) {
-    				GLFWVidMode videoMode = videoModes.get(i);
-    				modes[i] = new DisplayMode(videoMode.width(), videoMode.height(), videoMode.refreshRate(),
-    						videoMode.redBits() + videoMode.greenBits() + videoMode.blueBits());
-    			}
-    		} catch (Throwable e) {
-    			common.Printf(e.getMessage()+"\n");
-    			modes = new DisplayMode[0];
-    		}
-    		LinkedList<DisplayMode> l = new LinkedList<>();
-    		GLFWVidMode videoMode = glfwGetVideoMode(monitor);
-    		DisplayMode oldDisplayMode = new DisplayMode(videoMode.width(), videoMode.height(), videoMode.refreshRate(),
-    				videoMode.redBits() + videoMode.greenBits() + videoMode.blueBits());
-    		l.add(oldDisplayMode);
-
-    		for (DisplayMode m : modes) {
-    			if (m.getBitDepth() != oldDisplayMode.getBitDepth()) {
-    				continue;
-    			}
-    			if (m.getRefreshRate() > oldDisplayMode.getRefreshRate()) {
-    				continue;
-    			}
-    			if ((m.getHeight() < 240) || (m.getWidth() < 320)) {
-    				continue;
-    			}
-
-    			int j = 0;
-    			DisplayMode ml = null;
-    			for (j = 0; j < l.size(); j++) {
-    				ml = l.get(j);
-    				if (ml.getWidth() > m.getWidth()) {
-    					break;
-    				}
-    				if ((ml.getWidth() == m.getWidth()) && (ml.getHeight() >= m.getHeight())) {
-    					break;
-    				}
-    			}
-    			if (j == l.size()) {
-    				l.addLast(m);
-    			} else if ((ml.getWidth() > m.getWidth()) || (ml.getHeight() > m.getHeight())) {
-    				l.add(j, m);
-    			} else if (m.getRefreshRate() > ml.getRefreshRate()) {
-    				l.remove(j);
-    				l.add(j, m);
-    			}
-    		}
-    		modes = new DisplayMode[l.size()];
-    		l.toArray(modes);
-    	}
-        DisplayMode[] displayModes = modes; //Display.getAvailableDisplayModes();
-        Arrays.sort(displayModes, Comparator.comparingInt(DisplayMode::getWidth));
-		// Try to find a best match.
-		DisplayMode best_match = null; // looking for request size/bpp followed by exact or highest freq
-		int match_freq = -1;
-		int match_bpp = -1;
-		int colorDepth = 32;
-		int frequency = parms.displayHz;
-		for (DisplayMode mode : modes) {
-			if (mode.getWidth() != parms.width) {
-				continue;
-			}
-			if (mode.getHeight() != parms.height) {
-				continue;
-			}
-			if (best_match == null) {
-				best_match = mode;
-				match_freq = mode.getRefreshRate();
-				match_bpp = mode.getBitDepth();
-			} else {
-				final int cur_freq = mode.getRefreshRate();
-				final int cur_bpp = mode.getBitDepth();
-				if ((match_bpp != colorDepth) && // Previous is not a perfect match
-						((cur_bpp == colorDepth) || // Current is perfect match
-								(match_bpp < cur_bpp))) // or is better match
-
-				{
-					best_match = mode;
-					match_freq = cur_freq;
-					match_bpp = cur_bpp;
-				} else if ((match_freq != frequency) && // Previous is not a perfect match
-						((cur_freq == frequency) || // Current is perfect match
-								(match_freq < cur_freq))) // or is better match
-				{
-					best_match = mode;
-					match_freq = cur_freq;
-					match_bpp = cur_bpp;
-				}
-			}
-		}
-		if (best_match != null) {
-			matched = true;
-			dm = best_match;
-		}
-
-//        for (DisplayMode devmode : displayModes) {
-////		if ( !EnumDisplaySettings( NULL, modeNum, &devmode ) ) {
-//            if (matched) {
-//                // we got a resolution match, but not a frequency match
-//                // so disable the frequency requirement
-//                common.Printf("...^3%dhz is unsupported at %dx%d^0\n", parms.displayHz, parms.width, parms.height);
-//                parms.displayHz = 0;
-//                break;
-//            }
-////			common.Printf( "...^3%dx%d is unsupported in 32 bit^0\n", parms.width, parms.height );
-////			return false;
-////		}
-//            if (devmode.getWidth() >= parms.width
-//                    && devmode.getHeight() >= parms.height
-//                    && devmode.getBitsPerPixel() == 32) {
-//
-//                matched = true;
-//
-//                if (parms.displayHz == 0 || devmode.getFrequency() == parms.displayHz) {
-//                    dm = devmode;
-//                    break;
-//                }
-//            }
-//        }
-//
-////	memset( &dm, 0, sizeof( dm ) );
-////	dm.dmSize = sizeof( dm );
-////
-////	dm.dmPelsWidth  = parms.width;
-////	dm.dmPelsHeight = parms.height;
-////	dm.dmBitsPerPel = 32;
-////	dm.dmFields     = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
-////
-////	if ( parms.displayHz != 0 ) {
-////		dm.dmDisplayFrequency = parms.displayHz;
-////		dm.dmFields |= DM_DISPLAYFREQUENCY;
-////	}
-////
-//        common.Printf("...calling CDS: ");
-//	
-        // try setting the exact mode requested, because some drivers don't report
-        // the low res modes in EnumDisplaySettings, but still work
-//        if (dm != null) {
-//            Display.setDisplayModeAndFullscreen(dm);
-//            Display.setDisplayModeAndFullscreen(dm);
-//            Display.setDisplayMode(dm);
-//            Display.setVSyncEnabled(true);
-//            Display.setTitle(NeoFixStrings.BLAAAAAAAAAAAAAAAAAARRRGGGGHH);
-
-        //glfwInit();
-        //glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
-
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-//        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-//        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-//        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-//        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-//        window = GLFW.glfwCreateWindow(parms.width, parms.height, NeoFixStrings.BLAAAAAAAAAAAAAAAAAARRRGGGGHH, glfwGetPrimaryMonitor(), 0);//HACKME::0 change this back to setDisplayModeAndFullscreen.
-        if (!parms.fullScreen) {
-            window = GLFW.glfwCreateWindow(dm.getWidth(), dm.getHeight(), NeoFixStrings.BLAAAAAAAAAAAAAAAAAARRRGGGGHH, NULL, NULL);
-        } else {
-            window = GLFW.glfwCreateWindow(dm.getWidth(), dm.getHeight(), NeoFixStrings.BLAAAAAAAAAAAAAAAAAARRRGGGGHH, monitor, NULL);
-        }
-        final GLFWVidMode currentMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        glfwSetWindowPos(window, (currentMode.width() / 2) - (parms.width / 2), (currentMode.height() / 2) - (parms.height / 2));
-        if (window != 0) {
-            glfwMakeContextCurrent(window);
-            createCapabilities();
-//                win32.cdsFullscreen = true;
-            glfwShowWindow(window);
-            glfwSetInputMode(window, GLFW.GLFW_LOCK_KEY_MODS, GLFW_TRUE);
-            glfwSetKeyCallback(window, usercmdGen.keyboardCallback);
-            glfwSetCursorPosCallback(window, usercmdGen.mouseCursorCallback);
-            glfwSetScrollCallback(window, usercmdGen.mouseScrollCallback);
-            glfwSetMouseButtonCallback(window, usercmdGen.mouseButtonCallback);
-            common.Printf("ok\n");
-            return true;
-        }
-//        }
-//
-//	//
-//	// the exact mode failed, so scan EnumDisplaySettings for the next largest mode
-//	//
-//	common.Printf( "^3failed^0, " );
-//	
-//	PrintCDSError( cdsRet );
-//
-//	common.Printf( "...trying next higher resolution:" );
-//	
-//	// we could do a better matching job here...
-//	for ( modeNum = 0 ; ; modeNum++ ) {
-//		if ( !EnumDisplaySettings( null, modeNum, &devmode ) ) {
-//			break;
-//		}
-//		if ( (int)devmode.dmPelsWidth >= parms.width
-//			&& (int)devmode.dmPelsHeight >= parms.height
-//			&& devmode.dmBitsPerPel == 32 ) {
-//
-//			if ( ( cdsRet = ChangeDisplaySettings( &devmode, CDS_FULLSCREEN ) ) == DISP_CHANGE_SUCCESSFUL ) {
-//				common.Printf( "ok\n" );
-//				win32.cdsFullscreen = true;
-//
-//				return true;
-//			}
-//			break;
-//		}
-//	}
-//        common.Printf("\n...^3no high res mode found^0\n");
-        return false;
+        return GLFWtest.setFullScreen(parms);
     }
 
     /*
@@ -516,8 +237,7 @@ public class win_glimp {
 ////
 ////        // shutdown QGL subsystem
 ////        QGL_Shutdown();//not necessary.
-        glfwDestroyWindow(window);
-        glfwTerminate();
+        GLFWtest.shutdown();
     }
 
     // Destroys the rendering context, closes the window, resets the resolution,
@@ -535,8 +255,8 @@ public class win_glimp {
 //        }
         }
 //            Display.swapBuffers();//qwglSwapBuffers(win32.hDC);
-        glfwPollEvents();
-        glfwSwapBuffers(window);
+        GLFWtest.update();
+        GLFWtest.endFrame();
 
         //Sys_DebugPrintf( "*** SwapBuffers() ***\n" );
     }

@@ -41,22 +41,6 @@ import static neo.idlib.Text.Str.va;
 import static neo.idlib.math.Math_h.DEG2RAD;
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
 import static neo.idlib.math.Simd.SIMDProcessor;
-import static neo.sys.win_main.Sys_EnterCriticalSection;
-import static neo.sys.win_main.Sys_LeaveCriticalSection;
-import static neo.openal.QALConstantsIfc.AL_BUFFER;
-import static neo.openal.QALConstantsIfc.AL_BUFFERS_PROCESSED;
-import static neo.openal.QALConstantsIfc.AL_FALSE;
-import static neo.openal.QALConstantsIfc.AL_FORMAT_MONO16;
-import static neo.openal.QALConstantsIfc.AL_FORMAT_STEREO16;
-import static neo.openal.QALConstantsIfc.AL_GAIN;
-import static neo.openal.QALConstantsIfc.AL_LOOPING;
-import static neo.openal.QALConstantsIfc.AL_MAX_DISTANCE;
-import static neo.openal.QALConstantsIfc.AL_ORIENTATION;
-import static neo.openal.QALConstantsIfc.AL_PITCH;
-import static neo.openal.QALConstantsIfc.AL_POSITION;
-import static neo.openal.QALConstantsIfc.AL_REFERENCE_DISTANCE;
-import static neo.openal.QALConstantsIfc.AL_SOURCE_RELATIVE;
-import static neo.openal.QALConstantsIfc.AL_TRUE;
 import static neo.openal.QAL.alBufferData;
 import static neo.openal.QAL.alDeleteBuffers;
 import static neo.openal.QAL.alGenBuffers;
@@ -73,13 +57,27 @@ import static neo.openal.QAL.alSourceStop;
 import static neo.openal.QAL.alSourceUnqueueBuffers;
 import static neo.openal.QAL.alSourcef;
 import static neo.openal.QAL.alSourcei;
+import static neo.openal.QALConstantsIfc.AL_BUFFER;
+import static neo.openal.QALConstantsIfc.AL_BUFFERS_PROCESSED;
+import static neo.openal.QALConstantsIfc.AL_FALSE;
+import static neo.openal.QALConstantsIfc.AL_FORMAT_MONO16;
+import static neo.openal.QALConstantsIfc.AL_FORMAT_STEREO16;
+import static neo.openal.QALConstantsIfc.AL_GAIN;
+import static neo.openal.QALConstantsIfc.AL_LOOPING;
+import static neo.openal.QALConstantsIfc.AL_MAX_DISTANCE;
+import static neo.openal.QALConstantsIfc.AL_ORIENTATION;
+import static neo.openal.QALConstantsIfc.AL_PITCH;
+import static neo.openal.QALConstantsIfc.AL_POSITION;
+import static neo.openal.QALConstantsIfc.AL_REFERENCE_DISTANCE;
+import static neo.openal.QALConstantsIfc.AL_SOURCE_RELATIVE;
+import static neo.openal.QALConstantsIfc.AL_TRUE;
+import static neo.sys.win_main.Sys_EnterCriticalSection;
+import static neo.sys.win_main.Sys_LeaveCriticalSection;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-
-import org.lwjgl.BufferUtils;
 
 import neo.TempDump.TODO_Exception;
 import neo.Renderer.Cinematic.idSndWindow;
@@ -112,6 +110,7 @@ import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
+import neo.opengl.Nio;
 
 /**
  *
@@ -1567,7 +1566,7 @@ public class snd_world {
                         }
                     } else {
                         final int/*ALint*/ finishedbuffers;
-                        final IntBuffer buffers = BufferUtils.createIntBuffer(3);
+                        final IntBuffer buffers = Nio.newIntBuffer(3);
 
                         // handle streaming sounds (decode on the fly) both single shot AND looping
                         if (chan.triggered) {
@@ -1600,7 +1599,7 @@ public class snd_world {
                         for (j = 0; j < finishedbuffers; j++) {
                             final FloatBuffer samples = FloatBuffer.wrap(alignedInputSamples);
                             chan.GatherChannelSamples(chan.openalStreamingOffset * sample.objectInfo.nChannels, length, samples);
-                            final ByteBuffer data = BufferUtils.createByteBuffer(length * Short.BYTES);
+                            final ByteBuffer data = Nio.newByteBuffer(length * Short.BYTES);
                             final ShortBuffer dataS = data.asShortBuffer();
                             for (int i = 0; i < length; i++) {
                                 if (alignedInputSamples[i] < -32768.0f) {
@@ -1763,7 +1762,7 @@ public class snd_world {
                 listenerPosition[1] = this.listenerPos.z;
                 listenerPosition[2] = -this.listenerPos.x;
 
-                final FloatBuffer listenerOrientation = BufferUtils.createFloatBuffer(6);
+                final FloatBuffer listenerOrientation = Nio.newFloatBuffer(6);
 
                 listenerOrientation.put(0, -this.listenerAxis.oGet(0).y);
                 listenerOrientation.put(1, +this.listenerAxis.oGet(0).z);

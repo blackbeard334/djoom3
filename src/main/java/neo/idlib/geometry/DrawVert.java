@@ -3,12 +3,11 @@ package neo.idlib.geometry;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import org.lwjgl.BufferUtils;
-
 import neo.TempDump;
 import neo.TempDump.SERiAL;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
+import neo.opengl.Nio;
 
 /**
  *
@@ -279,7 +278,7 @@ public class DrawVert {
     }
 
     public static ByteBuffer toByteBuffer(idDrawVert[] verts) {
-        final ByteBuffer data = BufferUtils.createByteBuffer(idDrawVert.BYTES * verts.length);
+        final ByteBuffer data = Nio.newByteBuffer(idDrawVert.BYTES * verts.length);
 
         for (final idDrawVert vert : verts) {
             data.put((ByteBuffer) vert.Write().rewind());

@@ -16,9 +16,8 @@ import static neo.sys.win_main.Sys_LeaveCriticalSection;
 
 import java.nio.ByteBuffer;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBVorbis;
-import org.lwjgl.stb.STBVorbisInfo;
+//import org.lwjgl.stb.STBVorbis;
+//import org.lwjgl.stb.STBVorbisInfo;
 
 import neo.TempDump.TODO_Exception;
 import neo.Sound.snd_local.mminfo_s;
@@ -27,6 +26,8 @@ import neo.Sound.snd_local.waveformatex_s;
 import neo.Sound.snd_local.waveformatextensible_s;
 import neo.framework.File_h.idFile;
 import neo.idlib.Text.Str.idStr;
+import neo.openal.Vorbis;
+import neo.opengl.Nio;
 
 /**
  *
@@ -393,7 +394,6 @@ public class snd_wavefile {
         private int OpenOGG(final String strFileName, waveformatex_s[] pwfx /*= NULL*/) {
 //            memset(pwfx, 0, sizeof(waveformatex_t));
             final int error[] = {0};
-            STBVorbisInfo vi = null;
             this.mhmmio = fileSystem.OpenFileRead(strFileName);
             if (null == this.mhmmio) {
                 return -1;
@@ -404,20 +404,19 @@ public class snd_wavefile {
             final ByteBuffer buffer = ByteBuffer.allocate(this.mhmmio.Length());
             this.mhmmio.Read(buffer);
             try {
-                final ByteBuffer d_buffer = (ByteBuffer) BufferUtils.createByteBuffer(buffer.capacity()).put(buffer).rewind();
-                final long ov = STBVorbis.stb_vorbis_open_memory(d_buffer, error, null);
-                if (error[0] != 0) {
+                final ByteBuffer d_buffer = (ByteBuffer) Nio.newByteBuffer(buffer.capacity()).put(buffer).rewind();
+                final Vorbis info = Vorbis.getInfo(d_buffer, error);
+                if ((error[0] != 0) || (info == null)) {
                     fileSystem.CloseFile(this.mhmmio);
                     this.mhmmio = null;
                     return -1;
                 }
-                vi = STBVorbis.stb_vorbis_get_info(ov, STBVorbisInfo.create());
                 this.mfileTime = this.mhmmio.Timestamp();
 
-                this.mpwfx.Format.nSamplesPerSec = vi.sample_rate();
-                this.mpwfx.Format.nChannels = vi.channels();
+                this.mpwfx.Format.nSamplesPerSec = info.sampleRate;
+                this.mpwfx.Format.nChannels = info.channels;
                 this.mpwfx.Format.wBitsPerSample = Short.SIZE;
-                this.mdwSize = STBVorbis.stb_vorbis_stream_length_in_samples(ov) * vi.channels();    // pcm samples * num channels
+                this.mdwSize = info.mdwSize;    // pcm samples * num channels
                 this.mbIsReadingFromMemory = false;
 
                 if (s_realTimeDecoding.GetBool()) {
