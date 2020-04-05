@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 
 import neo.TempDump.TODO_Exception;
 import neo.idlib.Text.Str.idStr;
-import neo.opengl.GLFWtest;
+import neo.opengl.QUser;
 
 /**
  *
@@ -50,7 +50,7 @@ public class win_glimp {
      ===================
      */
     static boolean GLW_SetFullScreen(glimpParms_t parms) {
-        return GLFWtest.setFullScreen(parms);
+        return QUser.setFullScreen(parms);
     }
 
     /*
@@ -237,7 +237,7 @@ public class win_glimp {
 ////
 ////        // shutdown QGL subsystem
 ////        QGL_Shutdown();//not necessary.
-        GLFWtest.shutdown();
+        QUser.shutdown();
     }
 
     // Destroys the rendering context, closes the window, resets the resolution,
@@ -255,8 +255,8 @@ public class win_glimp {
 //        }
         }
 //            Display.swapBuffers();//qwglSwapBuffers(win32.hDC);
-        GLFWtest.update();
-        GLFWtest.endFrame();
+        QUser.update();
+        QUser.endFrame();
 
         //Sys_DebugPrintf( "*** SwapBuffers() ***\n" );
     }
