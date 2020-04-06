@@ -16,25 +16,24 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL43;
 
 /**
  * so yeah, it's easier to use this class as an interface. rather than refactor
  * all the qwgl stuff to qgl and such.
  */
-public class QGL {
+public class QGL extends QGLNotTested {
 
 	private final static boolean GL_DEBUG = false;
 
 	{
 		if (GL_DEBUG) {
-			qglEnable(GL43.GL_DEBUG_OUTPUT);
+			qglEnable(QGLConstantsIfc.GL_DEBUG_OUTPUT);
 		}
 	}
 
-	public static final boolean qGL_FALSE = false;
+	public static final boolean QGL_FALSE = false;
 
-	public static final boolean qGL_TRUE = true;
+	public static final boolean QGL_TRUE = true;
 
 	public static void checkGLError() {
 		if (GL_DEBUG) {
@@ -47,13 +46,13 @@ public class QGL {
 		}
 	}
 
-	private static void DEBUG_printName(final String functionName) {
+	static void DEBUG_printName(final String functionName) {
 		if (GL_DEBUG) {
 //            System.out.println(functionName);
 		}
 	}
 
-	public static void createCapabilities() {
+	public static void qcreateCapabilities() {
 		GL.createCapabilities();
 	}
 
