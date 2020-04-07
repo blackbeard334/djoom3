@@ -42,7 +42,7 @@ import static neo.framework.KeyInput.K_RWIN;
 import static neo.framework.KeyInput.K_UPARROW;
 import static neo.framework.UsercmdGen.usercmdGen;
 import static neo.idlib.Lib.idLib.common;
-import static neo.opengl.QGL.createCapabilities;
+import static neo.opengl.QGL.qcreateCapabilities;
 import static neo.sys.sys_public.sysEventType_t.SE_CHAR;
 import static neo.sys.sys_public.sysEventType_t.SE_KEY;
 import static neo.sys.sys_public.sysEventType_t.SE_MOUSE;
@@ -312,7 +312,7 @@ public class QUser {
 				(currentMode.height() / 2) - (parms.height / 2));
 		if (window != 0) {
 			glfwMakeContextCurrent(window);
-			createCapabilities();
+			qcreateCapabilities();
 //                win32.cdsFullscreen = true;
 			glfwShowWindow(window);
 			glfwSetInputMode(window, GLFW.GLFW_LOCK_KEY_MODS, GLFW_TRUE);

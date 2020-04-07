@@ -70,6 +70,8 @@ public interface QGLConstantsIfc {
 
 	int GL_CULL_FACE = 0x0B44;
 
+	int GL_DEBUG_OUTPUT = 0x92E0;
+
 	int GL_DECAL = 0x2101;
 
 	int GL_DECR = 0x1E03;

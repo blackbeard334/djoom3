@@ -53,8 +53,8 @@ import static neo.Renderer.tr_local.renderCommand_t.RC_NOP;
 import static neo.Renderer.tr_render.RB_DrawView;
 import static neo.TempDump.NOT;
 import static neo.framework.Common.common;
-import static neo.opengl.QGL.qGL_FALSE;
-import static neo.opengl.QGL.qGL_TRUE;
+import static neo.opengl.QGL.QGL_FALSE;
+import static neo.opengl.QGL.QGL_TRUE;
 import static neo.opengl.QGL.qglActiveTextureARB;
 import static neo.opengl.QGL.qglAlphaFunc;
 import static neo.opengl.QGL.qglBegin;
@@ -203,7 +203,7 @@ public class tr_backend {
         qglDisable(GL_STENCIL_TEST);
 
         qglPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        qglDepthMask(qGL_TRUE);
+        qglDepthMask(QGL_TRUE);
         qglDepthFunc(GL_ALWAYS);
 
         qglCullFace(GL_FRONT_AND_BACK);
@@ -463,9 +463,9 @@ public class tr_backend {
         //
         if ((diff & GLS_DEPTHMASK) != 0) {
             if ((stateBits & GLS_DEPTHMASK) != 0) {
-                qglDepthMask(qGL_FALSE);
+                qglDepthMask(QGL_FALSE);
             } else {
-                qglDepthMask(qGL_TRUE);
+                qglDepthMask(QGL_TRUE);
             }
         }
 
