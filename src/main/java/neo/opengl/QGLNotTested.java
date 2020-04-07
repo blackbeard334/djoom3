@@ -6,6 +6,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
+import org.lwjgl.opengl.ARBShadowAmbient;
 import org.lwjgl.opengl.ARBTextureCompression;
 import org.lwjgl.opengl.ARBVertexBufferObject;
 import org.lwjgl.opengl.ARBVertexShader;
@@ -195,22 +196,67 @@ class QGLNotTested {
 		GL11.glColorMaterial(face, mode);
 	}
 
+	/**
+	 * 
+	 * @param stage
+	 * @param portion
+	 * @param variable
+	 * @param input
+	 * @param mapping
+	 * @param componentUsage
+	 * 
+	 * @see ARBShadowAmbient.GL_TEXTURE_COMPARE_FAIL_VALUE_ARB
+	 * @see GL11.glTexEnv... 
+	 * @see GL11.glTexGen... 
+	 * @see GL11.glTexPar... 
+	 * @see http://www.paulsprojects.net/tutorials/smt/smt.html
+	 */
 	public static void qglCombinerInputNV(int stage, int portion, int variable, int input, int mapping, int componentUsage) {
-		QGL.DEBUG_printName("qglCombinerInputNV");
-		// TODO Not supported yet.
+		QGL.DEBUG_printName("glCombinerInputNV");
+		// TODO LWJGL 3 not supported.
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	/**
+	 * 
+	 * @param stage
+	 * @param portion
+	 * @param abOutput
+	 * @param cdOutput
+	 * @param sumOutput
+	 * @param scale
+	 * @param bias
+	 * @param abDotProduct
+	 * @param cdDotProduct
+	 * @param muxSum
+	 * 
+	 * @see ARBShadowAmbient.GL_TEXTURE_COMPARE_FAIL_VALUE_ARB
+	 * @see GL11.glTexEnv... 
+	 * @see GL11.glTexGen... 
+	 * @see GL11.glTexPar... 
+	 * @see http://www.paulsprojects.net/tutorials/smt/smt.html
+	 */
 	public static void qglCombinerOutputNV(int stage, int portion, int abOutput, int cdOutput, int sumOutput, int scale,
 			int bias, boolean abDotProduct, boolean cdDotProduct, boolean muxSum) {
-		QGL.DEBUG_printName("qglCombinerOutputNV");
-		// TODO Not supported yet.
+		QGL.DEBUG_printName("glCombinerOutputNV");
+		// TODO LWJGL 3 not supported.
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	/**
+	 * 
+	 * @param pname
+	 * @param param
+	 * 
+	 * @see ARBShadowAmbient.GL_TEXTURE_COMPARE_FAIL_VALUE_ARB
+	 * @see GL11.glTexEnv... 
+	 * @see GL11.glTexGen... 
+	 * @see GL11.glTexPar... 
+	 * @see http://www.paulsprojects.net/tutorials/smt/smt.html
+	 */
 	public static void qglCombinerParameteriNV(int pname, int param) {
-		QGL.DEBUG_printName("qglCombinerParameteriNV");
-		// TODO Not supported yet.
+		QGL.DEBUG_printName("glCombinerParameteriNV");
+		// TODO LWJGL 3 not supported.
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
@@ -335,9 +381,22 @@ class QGLNotTested {
 		GL11.glFeedbackBuffer(type, buffer);
 	}
 
+	/**
+	 * 
+	 * @param variable
+	 * @param input
+	 * @param mapping
+	 * @param componentUsage
+	 * 
+	 * @see ARBShadowAmbient.GL_TEXTURE_COMPARE_FAIL_VALUE_ARB
+	 * @see GL11.glTexEnv... 
+	 * @see GL11.glTexGen... 
+	 * @see GL11.glTexPar... 
+	 * @see http://www.paulsprojects.net/tutorials/smt/smt.html
+	 */
 	public static void qglFinalCombinerInputNV(int variable, int input, int mapping, int componentUsage) {
-		QGL.DEBUG_printName("qglFinalCombinerInputNV");
-		// TODO Not supported yet.
+		QGL.DEBUG_printName("glFinalCombinerInputNV");
+		// TODO LWJGL 3 not supported.
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
