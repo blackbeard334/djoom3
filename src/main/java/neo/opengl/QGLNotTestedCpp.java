@@ -23,7 +23,6 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL46;
 import org.lwjgl.opengl.NVHalfFloat;
 import org.lwjgl.opengl.NVPixelDataRange;
 import org.lwjgl.opengl.NVPrimitiveRestart;
@@ -36,7 +35,7 @@ import org.lwjgl.opengl.NVPrimitiveRestart;
  * 
  * The class is not visible, use QGL instead.
  */
-class QGLNotTestedCpp extends QGLXNotTestedCpp {
+class QGLNotTestedCpp {
 
 	public static void qglActiveTexture(int texture) {
 		QGL.DEBUG_printName("glActiveTexture");
@@ -242,11 +241,6 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		GL12.glDrawRangeElements(mode, start, end, indices);
 	}
 
-	public static void qglEdgeFlagPointer(int stride, ByteBuffer pointer) {
-		QGL.DEBUG_printName("glEdgeFlagPointer");
-		GL46.glEdgeFlagPointer(stride, pointer);
-	}
-
 	public static void qglEndQuery(int target) {
 		QGL.DEBUG_printName("glEndQuery");
 		GL15.glEndQuery(target);
@@ -312,16 +306,7 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		GL15.glGetBufferParameteriv(target, pname, params);
 	}
 
-	/**
-	 * 
-	 * @param target
-	 * @param pname
-	 * @param params
-	 *
-	 * PointerBuffer LWJGL Implementation specific.
-	 * 
-	 * TODO: make method signature LWJGL independent
-	 */
+	// TODO: PointerBuffer
 	public static void qglGetBufferPointerv(int target, int pname, PointerBuffer params) {
 		QGL.DEBUG_printName("glGetBufferPointerv");
 		GL15.glGetBufferPointerv(target, pname, params);
@@ -332,11 +317,6 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		GL15.glGetBufferSubData(target, offset, data);
 	}
 
-	public static void qglGetColorTable(int target, int format, int type, int table) {
-		QGL.DEBUG_printName("glGetColorTable");
-		ARBImaging.glGetColorTable(target, format, type, table);
-	}
-
 	public static void qglGetColorTableParameterfv(int target, int pname, FloatBuffer params) {
 		QGL.DEBUG_printName("glGetColorTableParameterfv");
 		ARBImaging.glGetColorTableParameterfv(target, pname, params);
@@ -345,6 +325,11 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 	public static void qglGetColorTableParameteriv(int target, int pname, IntBuffer params) {
 		QGL.DEBUG_printName("glGetColorTableParameteriv");
 		ARBImaging.glGetColorTableParameteriv(target, pname, params);
+	}
+
+	public static void qglGetColorTable(int target, int format, int type, int table) {
+		QGL.DEBUG_printName("glGetColorTable");
+		ARBImaging.glGetColorTable(target, format, type, table);
 	}
 
 	public static void qglGetCompressedTexImage(int target, int level, int pixels) {
@@ -367,11 +352,6 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBImaging.glGetConvolutionParameteriv(target, pname, params);
 	}
 
-	public static void qglGetHistogram(int target, boolean reset, int format, int type, ByteBuffer values) {
-		QGL.DEBUG_printName("glGetHistogram");
-		ARBImaging.glGetHistogram(target, reset, format, type, values);
-	}
-
 	public static void qglGetHistogramParameterfv(int target, int pname, FloatBuffer params) {
 		QGL.DEBUG_printName("glGetHistogramParameterfv");
 		ARBImaging.glGetHistogramParameterfv(target, pname, params);
@@ -382,9 +362,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBImaging.glGetHistogramParameteriv(target, pname, params);
 	}
 
-	public static void qglGetMinmax(int target, boolean reset, int format, int type, ByteBuffer values) {
-		QGL.DEBUG_printName("glGetMinmax");
-		ARBImaging.glGetMinmax(target, reset, format, type, values);
+	public static void qglGetHistogram(int target, boolean reset, int format, int type, ByteBuffer values) {
+		QGL.DEBUG_printName("glGetHistogram");
+		ARBImaging.glGetHistogram(target, reset, format, type, values);
 	}
 
 	public static void qglGetMinmaxParameterfv(int target, int pname, FloatBuffer params) {
@@ -397,18 +377,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBImaging.glGetMinmaxParameteriv(target, pname, params);
 	}
 
-	/**
-	 * 
-	 * @param pname
-	 * @param params
-	 *
-	 * PointerBuffer LWJGL Implementation specific.
-	 * 
-	 * TODO: make method signature LWJGL independent
-	 */
-	public static void qglGetPointerv(int pname, PointerBuffer params) {
-		QGL.DEBUG_printName("glGetPointerv");
-		GL46.glGetPointerv(pname, params);
+	public static void qglGetMinmax(int target, boolean reset, int format, int type, ByteBuffer values) {
+		QGL.DEBUG_printName("glGetMinmax");
+		ARBImaging.glGetMinmax(target, reset, format, type, values);
 	}
 
 	public static void qglGetProgramEnvParameterdvARB(int target, int index, DoubleBuffer params) {
@@ -477,16 +448,7 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		GL20.glGetVertexAttribiv(index, pname, params);
 	}
 
-	/**
-	 * 
-	 * @param index
-	 * @param pname
-	 * @param pointer
-	 *
-	 * PointerBuffer LWJGL Implementation specific.
-	 * 
-	 * TODO: make method signature LWJGL independent
-	 */
+	// TODO: PointerBuffer
 	public static void qglGetVertexAttribPointerv(int index, int pname, PointerBuffer pointer) {
 		QGL.DEBUG_printName("glGetVertexAttribPointerv");
 		GL20.glGetVertexAttribPointerv(index, pname, pointer);
@@ -495,16 +457,6 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 	public static void qglHistogram(int target, int width, int internalformat, boolean sink) {
 		QGL.DEBUG_printName("glHistogram");
 		ARBImaging.glHistogram(target, width, internalformat, sink);
-	}
-
-	public static void qglIndexf(float index) {
-		QGL.DEBUG_printName("glIndexf");
-		GL46.glIndexf(index);
-	}
-
-	public static void qglIndexs(short index) {
-		QGL.DEBUG_printName("glIndexs");
-		GL46.glIndexs(index);
 	}
 
 	public static void qglIsBuffer(int buffer) {
@@ -537,16 +489,6 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		GL15.glMapBuffer(target, access);
 	}
 
-	public static void qglMaterialf(int face, int pname, float param) {
-		QGL.DEBUG_printName("glMaterialf");
-		GL46.glMaterialf(face, pname, param);
-	}
-
-	public static void qglMateriali(int face, int pname, int param) {
-		QGL.DEBUG_printName("glMateriali");
-		GL46.glMateriali(face, pname, param);
-	}
-
 	public static void qglMatrixIndexPointerARB(int size, int stride, ByteBuffer pointer) {
 		QGL.DEBUG_printName("glMatrixIndexPointerARB");
 		ARBMatrixPalette.glMatrixIndexPointerARB(size, stride, pointer);
@@ -577,25 +519,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		GL14.glMultiDrawArrays(mode, first, count);
 	}
 
-	/**
-	 * 
-	 * @param mode
-	 * @param count
-	 * @param type
-	 * @param indices
-	 *
-	 * PointerBuffer LWJGL Implementation specific.
-	 * 
-	 * TODO: make method signature LWJGL independent
-	 */
 	public static void qglMultiDrawElements(int mode, IntBuffer count, int type, PointerBuffer indices) {
 		QGL.DEBUG_printName("glMultiDrawElements");
 		GL14.glMultiDrawElements(mode, count, type, indices);
-	}
-
-	public static void qglMultiTexCoord1d(int texture, int s) {
-		QGL.DEBUG_printName("glMultiTexCoord1d");
-		GL13.glMultiTexCoord1d(texture, s);
 	}
 
 	public static void qglMultiTexCoord1dARB(int texture, int s) {
@@ -603,9 +529,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord1dARB(texture, s);
 	}
 
-	public static void qglMultiTexCoord1dv(int texture, DoubleBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord1dv");
-		GL13.glMultiTexCoord1dv(texture, v);
+	public static void qglMultiTexCoord1d(int texture, int s) {
+		QGL.DEBUG_printName("glMultiTexCoord1d");
+		GL13.glMultiTexCoord1d(texture, s);
 	}
 
 	public static void qglMultiTexCoord1dvARB(int texture, DoubleBuffer v) {
@@ -613,9 +539,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord1dvARB(texture, v);
 	}
 
-	public static void qglMultiTexCoord1f(int texture, int s) {
-		QGL.DEBUG_printName("glMultiTexCoord1f");
-		GL13.glMultiTexCoord1f(texture, s);
+	public static void qglMultiTexCoord1dv(int texture, DoubleBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord1dv");
+		GL13.glMultiTexCoord1dv(texture, v);
 	}
 
 	public static void qglMultiTexCoord1fARB(int texture, int s) {
@@ -623,14 +549,19 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord1fARB(texture, s);
 	}
 
-	public static void qglMultiTexCoord1fv(int texture, FloatBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord1fv");
-		GL13.glMultiTexCoord1fv(texture, v);
+	public static void qglMultiTexCoord1f(int texture, int s) {
+		QGL.DEBUG_printName("glMultiTexCoord1f");
+		GL13.glMultiTexCoord1f(texture, s);
 	}
 
 	public static void qglMultiTexCoord1fvARB(int texture, FloatBuffer v) {
 		QGL.DEBUG_printName("glMultiTexCoord1fvARB");
 		ARBMultitexture.glMultiTexCoord1fvARB(texture, v);
+	}
+
+	public static void qglMultiTexCoord1fv(int texture, FloatBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord1fv");
+		GL13.glMultiTexCoord1fv(texture, v);
 	}
 
 	public static void qglMultiTexCoord1hNV(int target, short s) {
@@ -643,19 +574,14 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		NVHalfFloat.glMultiTexCoord1hvNV(target, v);
 	}
 
-	public static void qglMultiTexCoord1i(int texture, int s) {
-		QGL.DEBUG_printName("glMultiTexCoord1i");
-		GL13.glMultiTexCoord1i(texture, s);
-	}
-
 	public static void qglMultiTexCoord1iARB(int texture, int s) {
 		QGL.DEBUG_printName("glMultiTexCoord1iARB");
 		ARBMultitexture.glMultiTexCoord1iARB(texture, s);
 	}
 
-	public static void qglMultiTexCoord1iv(int texture, IntBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord1iv");
-		GL13.glMultiTexCoord1iv(texture, v);
+	public static void qglMultiTexCoord1i(int texture, int s) {
+		QGL.DEBUG_printName("glMultiTexCoord1i");
+		GL13.glMultiTexCoord1i(texture, s);
 	}
 
 	public static void qglMultiTexCoord1ivARB(int texture, IntBuffer v) {
@@ -663,9 +589,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord1ivARB(texture, v);
 	}
 
-	public static void qglMultiTexCoord1s(int texture, short s) {
-		QGL.DEBUG_printName("glMultiTexCoord1s");
-		GL13.glMultiTexCoord1s(texture, s);
+	public static void qglMultiTexCoord1iv(int texture, IntBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord1iv");
+		GL13.glMultiTexCoord1iv(texture, v);
 	}
 
 	public static void qglMultiTexCoord1sARB(int texture, short s) {
@@ -673,9 +599,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord1sARB(texture, s);
 	}
 
-	public static void qglMultiTexCoord1sv(int texture, ShortBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord1sv");
-		GL13.glMultiTexCoord1sv(texture, v);
+	public static void qglMultiTexCoord1s(int texture, short s) {
+		QGL.DEBUG_printName("glMultiTexCoord1s");
+		GL13.glMultiTexCoord1s(texture, s);
 	}
 
 	public static void qglMultiTexCoord1svARB(int texture, ShortBuffer v) {
@@ -683,9 +609,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord1svARB(texture, v);
 	}
 
-	public static void qglMultiTexCoord2d(int texture, int s, int t) {
-		QGL.DEBUG_printName("glMultiTexCoord2d");
-		GL13.glMultiTexCoord2d(texture, s, t);
+	public static void qglMultiTexCoord1sv(int texture, ShortBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord1sv");
+		GL13.glMultiTexCoord1sv(texture, v);
 	}
 
 	public static void qglMultiTexCoord2dARB(int texture, int s, int t) {
@@ -693,9 +619,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord2dARB(texture, s, t);
 	}
 
-	public static void qglMultiTexCoord2dv(int texture, DoubleBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord2dv");
-		GL13.glMultiTexCoord2dv(texture, v);
+	public static void qglMultiTexCoord2d(int texture, int s, int t) {
+		QGL.DEBUG_printName("glMultiTexCoord2d");
+		GL13.glMultiTexCoord2d(texture, s, t);
 	}
 
 	public static void qglMultiTexCoord2dvARB(int texture, DoubleBuffer v) {
@@ -703,9 +629,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord2dvARB(texture, v);
 	}
 
-	public static void qglMultiTexCoord2f(int texture, int s, int t) {
-		QGL.DEBUG_printName("glMultiTexCoord2f");
-		GL13.glMultiTexCoord2f(texture, s, t);
+	public static void qglMultiTexCoord2dv(int texture, DoubleBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord2dv");
+		GL13.glMultiTexCoord2dv(texture, v);
 	}
 
 	public static void qglMultiTexCoord2fARB(int texture, int s, int t) {
@@ -713,14 +639,19 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord2fARB(texture, s, t);
 	}
 
-	public static void qglMultiTexCoord2fv(int texture, FloatBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord2fv");
-		GL13.glMultiTexCoord2fv(texture, v);
+	public static void qglMultiTexCoord2f(int texture, int s, int t) {
+		QGL.DEBUG_printName("glMultiTexCoord2f");
+		GL13.glMultiTexCoord2f(texture, s, t);
 	}
 
 	public static void qglMultiTexCoord2fvARB(int texture, FloatBuffer v) {
 		QGL.DEBUG_printName("glMultiTexCoord2fvARB");
 		ARBMultitexture.glMultiTexCoord2fvARB(texture, v);
+	}
+
+	public static void qglMultiTexCoord2fv(int texture, FloatBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord2fv");
+		GL13.glMultiTexCoord2fv(texture, v);
 	}
 
 	public static void qglMultiTexCoord2hNV(int target, short s, short t) {
@@ -733,19 +664,14 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		NVHalfFloat.glMultiTexCoord2hvNV(target, v);
 	}
 
-	public static void qglMultiTexCoord2i(int texture, int s, int t) {
-		QGL.DEBUG_printName("glMultiTexCoord2i");
-		GL13.glMultiTexCoord2i(texture, s, t);
-	}
-
 	public static void qglMultiTexCoord2iARB(int texture, int s, int t) {
 		QGL.DEBUG_printName("glMultiTexCoord2iARB");
 		ARBMultitexture.glMultiTexCoord2iARB(texture, s, t);
 	}
 
-	public static void qglMultiTexCoord2iv(int texture, IntBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord2iv");
-		GL13.glMultiTexCoord2iv(texture, v);
+	public static void qglMultiTexCoord2i(int texture, int s, int t) {
+		QGL.DEBUG_printName("glMultiTexCoord2i");
+		GL13.glMultiTexCoord2i(texture, s, t);
 	}
 
 	public static void qglMultiTexCoord2ivARB(int texture, IntBuffer v) {
@@ -753,9 +679,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord2ivARB(texture, v);
 	}
 
-	public static void qglMultiTexCoord2s(int texture, short s, short t) {
-		QGL.DEBUG_printName("glMultiTexCoord2s");
-		GL13.glMultiTexCoord2s(texture, s, t);
+	public static void qglMultiTexCoord2iv(int texture, IntBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord2iv");
+		GL13.glMultiTexCoord2iv(texture, v);
 	}
 
 	public static void qglMultiTexCoord2sARB(int texture, short s, short t) {
@@ -763,9 +689,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord2sARB(texture, s, t);
 	}
 
-	public static void qglMultiTexCoord2sv(int texture, ShortBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord2sv");
-		GL13.glMultiTexCoord2sv(texture, v);
+	public static void qglMultiTexCoord2s(int texture, short s, short t) {
+		QGL.DEBUG_printName("glMultiTexCoord2s");
+		GL13.glMultiTexCoord2s(texture, s, t);
 	}
 
 	public static void qglMultiTexCoord2svARB(int texture, ShortBuffer v) {
@@ -773,9 +699,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord2svARB(texture, v);
 	}
 
-	public static void qglMultiTexCoord3d(int texture, int s, int t, int r) {
-		QGL.DEBUG_printName("glMultiTexCoord3d");
-		GL13.glMultiTexCoord3d(texture, s, t, r);
+	public static void qglMultiTexCoord2sv(int texture, ShortBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord2sv");
+		GL13.glMultiTexCoord2sv(texture, v);
 	}
 
 	public static void qglMultiTexCoord3dARB(int texture, int s, int t, int r) {
@@ -783,9 +709,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord3dARB(texture, s, t, r);
 	}
 
-	public static void qglMultiTexCoord3dv(int texture, DoubleBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord3dv");
-		GL13.glMultiTexCoord3dv(texture, v);
+	public static void qglMultiTexCoord3d(int texture, int s, int t, int r) {
+		QGL.DEBUG_printName("glMultiTexCoord3d");
+		GL13.glMultiTexCoord3d(texture, s, t, r);
 	}
 
 	public static void qglMultiTexCoord3dvARB(int texture, DoubleBuffer v) {
@@ -793,9 +719,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord3dvARB(texture, v);
 	}
 
-	public static void qglMultiTexCoord3f(int texture, int s, int t, int r) {
-		QGL.DEBUG_printName("glMultiTexCoord3f");
-		GL13.glMultiTexCoord3f(texture, s, t, r);
+	public static void qglMultiTexCoord3dv(int texture, DoubleBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord3dv");
+		GL13.glMultiTexCoord3dv(texture, v);
 	}
 
 	public static void qglMultiTexCoord3fARB(int texture, int s, int t, int r) {
@@ -803,14 +729,19 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord3fARB(texture, s, t, r);
 	}
 
-	public static void qglMultiTexCoord3fv(int texture, FloatBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord3fv");
-		GL13.glMultiTexCoord3fv(texture, v);
+	public static void qglMultiTexCoord3f(int texture, int s, int t, int r) {
+		QGL.DEBUG_printName("glMultiTexCoord3f");
+		GL13.glMultiTexCoord3f(texture, s, t, r);
 	}
 
 	public static void qglMultiTexCoord3fvARB(int texture, FloatBuffer v) {
 		QGL.DEBUG_printName("glMultiTexCoord3fvARB");
 		ARBMultitexture.glMultiTexCoord3fvARB(texture, v);
+	}
+
+	public static void qglMultiTexCoord3fv(int texture, FloatBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord3fv");
+		GL13.glMultiTexCoord3fv(texture, v);
 	}
 
 	public static void qglMultiTexCoord3hNV(int target, short s, short t, short r) {
@@ -823,19 +754,14 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		NVHalfFloat.glMultiTexCoord3hvNV(target, v);
 	}
 
-	public static void qglMultiTexCoord3i(int texture, int s, int t, int r) {
-		QGL.DEBUG_printName("glMultiTexCoord3i");
-		GL13.glMultiTexCoord3i(texture, s, t, r);
-	}
-
 	public static void qglMultiTexCoord3iARB(int texture, int s, int t, int r) {
 		QGL.DEBUG_printName("glMultiTexCoord3iARB");
 		ARBMultitexture.glMultiTexCoord3iARB(texture, s, t, r);
 	}
 
-	public static void qglMultiTexCoord3iv(int texture, IntBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord3iv");
-		GL13.glMultiTexCoord3iv(texture, v);
+	public static void qglMultiTexCoord3i(int texture, int s, int t, int r) {
+		QGL.DEBUG_printName("glMultiTexCoord3i");
+		GL13.glMultiTexCoord3i(texture, s, t, r);
 	}
 
 	public static void qglMultiTexCoord3ivARB(int texture, IntBuffer v) {
@@ -843,9 +769,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord3ivARB(texture, v);
 	}
 
-	public static void qglMultiTexCoord3s(int texture, short s, short t, short r) {
-		QGL.DEBUG_printName("glMultiTexCoord3s");
-		GL13.glMultiTexCoord3s(texture, s, t, r);
+	public static void qglMultiTexCoord3iv(int texture, IntBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord3iv");
+		GL13.glMultiTexCoord3iv(texture, v);
 	}
 
 	public static void qglMultiTexCoord3sARB(int texture, short s, short t, short r) {
@@ -853,9 +779,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord3sARB(texture, s, t, r);
 	}
 
-	public static void qglMultiTexCoord3sv(int texture, ShortBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord3sv");
-		GL13.glMultiTexCoord3sv(texture, v);
+	public static void qglMultiTexCoord3s(int texture, short s, short t, short r) {
+		QGL.DEBUG_printName("glMultiTexCoord3s");
+		GL13.glMultiTexCoord3s(texture, s, t, r);
 	}
 
 	public static void qglMultiTexCoord3svARB(int texture, ShortBuffer v) {
@@ -863,9 +789,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord3svARB(texture, v);
 	}
 
-	public static void qglMultiTexCoord4d(int texture, int s, int t, int r, int q) {
-		QGL.DEBUG_printName("glMultiTexCoord4d");
-		GL13.glMultiTexCoord4d(texture, s, t, r, q);
+	public static void qglMultiTexCoord3sv(int texture, ShortBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord3sv");
+		GL13.glMultiTexCoord3sv(texture, v);
 	}
 
 	public static void qglMultiTexCoord4dARB(int texture, int s, int t, int r, int q) {
@@ -873,9 +799,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord4dARB(texture, s, t, r, q);
 	}
 
-	public static void qglMultiTexCoord4dv(int texture, DoubleBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord4dv");
-		GL13.glMultiTexCoord4dv(texture, v);
+	public static void qglMultiTexCoord4d(int texture, int s, int t, int r, int q) {
+		QGL.DEBUG_printName("glMultiTexCoord4d");
+		GL13.glMultiTexCoord4d(texture, s, t, r, q);
 	}
 
 	public static void qglMultiTexCoord4dvARB(int texture, DoubleBuffer v) {
@@ -883,9 +809,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord4dvARB(texture, v);
 	}
 
-	public static void qglMultiTexCoord4f(int texture, int s, int t, int r, int q) {
-		QGL.DEBUG_printName("glMultiTexCoord4f");
-		GL13.glMultiTexCoord4f(texture, s, t, r, q);
+	public static void qglMultiTexCoord4dv(int texture, DoubleBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord4dv");
+		GL13.glMultiTexCoord4dv(texture, v);
 	}
 
 	public static void qglMultiTexCoord4fARB(int texture, int s, int t, int r, int q) {
@@ -893,14 +819,19 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord4fARB(texture, s, t, r, q);
 	}
 
-	public static void qglMultiTexCoord4fv(int texture, FloatBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord4fv");
-		GL13.glMultiTexCoord4fv(texture, v);
+	public static void qglMultiTexCoord4f(int texture, int s, int t, int r, int q) {
+		QGL.DEBUG_printName("glMultiTexCoord4f");
+		GL13.glMultiTexCoord4f(texture, s, t, r, q);
 	}
 
 	public static void qglMultiTexCoord4fvARB(int texture, FloatBuffer v) {
 		QGL.DEBUG_printName("glMultiTexCoord4fvARB");
 		ARBMultitexture.glMultiTexCoord4fvARB(texture, v);
+	}
+
+	public static void qglMultiTexCoord4fv(int texture, FloatBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord4fv");
+		GL13.glMultiTexCoord4fv(texture, v);
 	}
 
 	public static void qglMultiTexCoord4hNV(int target, short s, short t, short r, short q) {
@@ -913,20 +844,15 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		NVHalfFloat.glMultiTexCoord4hvNV(target, v);
 	}
 
-	public static void qglMultiTexCoord4i(int texture, int s, int t, int r, int q) {
-		QGL.DEBUG_printName("qglMultiTexCoord4i");
-		GL13.glMultiTexCoord4i(texture, s, t, r, q);
-		;
-	}
-
 	public static void qglMultiTexCoord4iARB(int texture, int s, int t, int r, int q) {
 		QGL.DEBUG_printName("glMultiTexCoord4iARB");
 		ARBMultitexture.glMultiTexCoord4iARB(texture, s, t, r, q);
 	}
 
-	public static void qglMultiTexCoord4iv(int texture, IntBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord4iv");
-		GL13.glMultiTexCoord4iv(texture, v);
+	public static void qglMultiTexCoord4i(int texture, int s, int t, int r, int q) {
+		QGL.DEBUG_printName("qglMultiTexCoord4i");
+		GL13.glMultiTexCoord4i(texture, s, t, r, q);
+		;
 	}
 
 	public static void qglMultiTexCoord4ivARB(int texture, IntBuffer v) {
@@ -934,9 +860,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord4ivARB(texture, v);
 	}
 
-	public static void qglMultiTexCoord4s(int texture, short s, short t, short r, short q) {
-		QGL.DEBUG_printName("glMultiTexCoord4s");
-		GL13.glMultiTexCoord4s(texture, s, t, r, q);
+	public static void qglMultiTexCoord4iv(int texture, IntBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord4iv");
+		GL13.glMultiTexCoord4iv(texture, v);
 	}
 
 	public static void qglMultiTexCoord4sARB(int texture, short s, short t, short r, short q) {
@@ -944,9 +870,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord4sARB(texture, s, t, r, q);
 	}
 
-	public static void qglMultiTexCoord4sv(int texture, ShortBuffer v) {
-		QGL.DEBUG_printName("glMultiTexCoord4sv");
-		GL13.glMultiTexCoord4sv(texture, v);
+	public static void qglMultiTexCoord4s(int texture, short s, short t, short r, short q) {
+		QGL.DEBUG_printName("glMultiTexCoord4s");
+		GL13.glMultiTexCoord4s(texture, s, t, r, q);
 	}
 
 	public static void qglMultiTexCoord4svARB(int texture, ShortBuffer v) {
@@ -954,9 +880,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBMultitexture.glMultiTexCoord4svARB(texture, v);
 	}
 
-	public static void qglMultTransposeMatrixd(DoubleBuffer m) {
-		QGL.DEBUG_printName("glMultTransposeMatrixd");
-		GL13.glMultTransposeMatrixd(m);
+	public static void qglMultiTexCoord4sv(int texture, ShortBuffer v) {
+		QGL.DEBUG_printName("glMultiTexCoord4sv");
+		GL13.glMultiTexCoord4sv(texture, v);
 	}
 
 	public static void qglMultTransposeMatrixdARB(DoubleBuffer m) {
@@ -964,14 +890,19 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBTransposeMatrix.glMultTransposeMatrixdARB(m);
 	}
 
-	public static void qglMultTransposeMatrixf(FloatBuffer m) {
-		QGL.DEBUG_printName("glMultTransposeMatrixf");
-		GL13.glMultTransposeMatrixf(m);
+	public static void qglMultTransposeMatrixd(DoubleBuffer m) {
+		QGL.DEBUG_printName("glMultTransposeMatrixd");
+		GL13.glMultTransposeMatrixd(m);
 	}
 
 	public static void qglMultTransposeMatrixfARB(FloatBuffer m) {
 		QGL.DEBUG_printName("glMultTransposeMatrixfARB");
 		ARBTransposeMatrix.glMultTransposeMatrixfARB(m);
+	}
+
+	public static void qglMultTransposeMatrixf(FloatBuffer m) {
+		QGL.DEBUG_printName("glMultTransposeMatrixf");
+		GL13.glMultTransposeMatrixf(m);
 	}
 
 	public static void qglNormal3hNV(short nx, short ny, short nz) {
@@ -989,24 +920,24 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		NVPixelDataRange.glPixelDataRangeNV(target, pointer);
 	}
 
-	public static void qglPointParameterf(int pname, int param) {
-		QGL.DEBUG_printName("glPointParameterf");
-		GL14.glPointParameterf(pname, param);
-	}
-
 	public static void qglPointParameterfARB(int pname, int param) {
 		QGL.DEBUG_printName("glPointParameterfARB");
 		ARBPointParameters.glPointParameterfARB(pname, param);
 	}
 
-	public static void qglPointParameterfv(int pname, FloatBuffer params) {
-		QGL.DEBUG_printName("glPointParameterfv");
-		GL14.glPointParameterfv(pname, params);
+	public static void qglPointParameterf(int pname, int param) {
+		QGL.DEBUG_printName("glPointParameterf");
+		GL14.glPointParameterf(pname, param);
 	}
 
 	public static void qglPointParameterfvARB(int pname, FloatBuffer params) {
 		QGL.DEBUG_printName("glPointParameterfvARB");
 		ARBPointParameters.glPointParameterfvARB(pname, params);
+	}
+
+	public static void qglPointParameterfv(int pname, FloatBuffer params) {
+		QGL.DEBUG_printName("glPointParameterfv");
+		GL14.glPointParameterfv(pname, params);
 	}
 
 	public static void qglPointParameteri(int pname, int param) {
@@ -1069,14 +1000,14 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBImaging.glResetMinmax(target);
 	}
 
-	public static void qglSampleCoverage(float value, boolean invert) {
-		QGL.DEBUG_printName("glSampleCoverageARB");
-		GL13.glSampleCoverage(value, invert);
-	}
-
 	public static void qglSampleCoverageARB(float value, boolean invert) {
 		QGL.DEBUG_printName("glSampleCoverageARB");
 		ARBMultisample.glSampleCoverageARB(value, invert);
+	}
+
+	public static void qglSampleCoverage(float value, boolean invert) {
+		QGL.DEBUG_printName("glSampleCoverageARB");
+		GL13.glSampleCoverage(value, invert);
 	}
 
 	public static void qglSecondaryColor3bEXT(byte red, byte green, byte blue) {
@@ -1271,19 +1202,14 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		NVHalfFloat.glVertex4hvNV(v);
 	}
 
-	public static void qglVertexAttrib1d(int index, int v0) {
-		QGL.DEBUG_printName("glVertexAttrib1d");
-		GL20.glVertexAttrib1d(index, v0);
-	}
-
 	public static void qglVertexAttrib1dARB(int index, int v0) {
 		QGL.DEBUG_printName("glVertexAttrib1dARB");
 		ARBVertexProgram.glVertexAttrib1dARB(index, v0);
 	}
 
-	public static void qglVertexAttrib1dv(int index, DoubleBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib1dv");
-		GL20.glVertexAttrib1dv(index, v);
+	public static void qglVertexAttrib1d(int index, int v0) {
+		QGL.DEBUG_printName("glVertexAttrib1d");
+		GL20.glVertexAttrib1d(index, v0);
 	}
 
 	public static void qglVertexAttrib1dvARB(int index, DoubleBuffer v) {
@@ -1291,9 +1217,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib1dvARB(index, v);
 	}
 
-	public static void qglVertexAttrib1f(int index, int v0) {
-		QGL.DEBUG_printName("glVertexAttrib1f");
-		GL20.glVertexAttrib1f(index, v0);
+	public static void qglVertexAttrib1dv(int index, DoubleBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib1dv");
+		GL20.glVertexAttrib1dv(index, v);
 	}
 
 	public static void qglVertexAttrib1fARB(int index, int v0) {
@@ -1301,14 +1227,19 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib1fARB(index, v0);
 	}
 
-	public static void qglVertexAttrib1fv(int index, FloatBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib1fv");
-		GL20.glVertexAttrib1fv(index, v);
+	public static void qglVertexAttrib1f(int index, int v0) {
+		QGL.DEBUG_printName("glVertexAttrib1f");
+		GL20.glVertexAttrib1f(index, v0);
 	}
 
 	public static void qglVertexAttrib1fvARB(int index, FloatBuffer v) {
 		QGL.DEBUG_printName("glVertexAttrib1fvARB");
 		ARBVertexProgram.glVertexAttrib1fvARB(index, v);
+	}
+
+	public static void qglVertexAttrib1fv(int index, FloatBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib1fv");
+		GL20.glVertexAttrib1fv(index, v);
 	}
 
 	public static void qglVertexAttrib1hNV(int index, short x) {
@@ -1321,19 +1252,14 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		NVHalfFloat.glVertexAttrib1hvNV(index, v);
 	}
 
-	public static void qglVertexAttrib1s(int index, short v0) {
-		QGL.DEBUG_printName("glVertexAttrib1s");
-		GL20.glVertexAttrib1s(index, v0);
-	}
-
 	public static void qglVertexAttrib1sARB(int index, short v0) {
 		QGL.DEBUG_printName("glVertexAttrib1sARB");
 		ARBVertexProgram.glVertexAttrib1sARB(index, v0);
 	}
 
-	public static void qglVertexAttrib1sv(int index, ShortBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib1sv");
-		GL20.glVertexAttrib1sv(index, v);
+	public static void qglVertexAttrib1s(int index, short v0) {
+		QGL.DEBUG_printName("glVertexAttrib1s");
+		GL20.glVertexAttrib1s(index, v0);
 	}
 
 	public static void qglVertexAttrib1svARB(int index, ShortBuffer v) {
@@ -1341,9 +1267,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib1svARB(index, v);
 	}
 
-	public static void qglVertexAttrib2d(int index, int v0, int v1) {
-		QGL.DEBUG_printName("glVertexAttrib2d");
-		GL20.glVertexAttrib2d(index, v0, v1);
+	public static void qglVertexAttrib1sv(int index, ShortBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib1sv");
+		GL20.glVertexAttrib1sv(index, v);
 	}
 
 	public static void qglVertexAttrib2dARB(int index, int v0, int v1) {
@@ -1351,9 +1277,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib2dARB(index, v0, v1);
 	}
 
-	public static void qglVertexAttrib2dv(int index, DoubleBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib2dv");
-		GL20.glVertexAttrib2dv(index, v);
+	public static void qglVertexAttrib2d(int index, int v0, int v1) {
+		QGL.DEBUG_printName("glVertexAttrib2d");
+		GL20.glVertexAttrib2d(index, v0, v1);
 	}
 
 	public static void qglVertexAttrib2dvARB(int index, DoubleBuffer v) {
@@ -1361,9 +1287,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib2dvARB(index, v);
 	}
 
-	public static void qglVertexAttrib2f(int index, int v0, int v1) {
-		QGL.DEBUG_printName("glVertexAttrib2f");
-		GL20.glVertexAttrib2f(index, v0, v1);
+	public static void qglVertexAttrib2dv(int index, DoubleBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib2dv");
+		GL20.glVertexAttrib2dv(index, v);
 	}
 
 	public static void qglVertexAttrib2fARB(int index, int v0, int v1) {
@@ -1371,14 +1297,19 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib2fARB(index, v0, v1);
 	}
 
-	public static void qglVertexAttrib2fv(int index, FloatBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib2fv");
-		GL20.glVertexAttrib2fv(index, v);
+	public static void qglVertexAttrib2f(int index, int v0, int v1) {
+		QGL.DEBUG_printName("glVertexAttrib2f");
+		GL20.glVertexAttrib2f(index, v0, v1);
 	}
 
 	public static void qglVertexAttrib2fvARB(int index, FloatBuffer v) {
 		QGL.DEBUG_printName("glVertexAttrib2fvARB");
 		ARBVertexProgram.glVertexAttrib2fvARB(index, v);
+	}
+
+	public static void qglVertexAttrib2fv(int index, FloatBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib2fv");
+		GL20.glVertexAttrib2fv(index, v);
 	}
 
 	public static void qglVertexAttrib2hNV(int index, short x, short y) {
@@ -1391,19 +1322,14 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		NVHalfFloat.glVertexAttrib2hvNV(index, v);
 	}
 
-	public static void qglVertexAttrib2s(int index, short v0, short v1) {
-		QGL.DEBUG_printName("glVertexAttrib2s");
-		GL20.glVertexAttrib2s(index, v0, v1);
-	}
-
 	public static void qglVertexAttrib2sARB(int index, short v0, short v1) {
 		QGL.DEBUG_printName("glVertexAttrib2sARB");
 		ARBVertexProgram.glVertexAttrib2sARB(index, v0, v1);
 	}
 
-	public static void qglVertexAttrib2sv(int index, ShortBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib2sv");
-		GL20.glVertexAttrib2sv(index, v);
+	public static void qglVertexAttrib2s(int index, short v0, short v1) {
+		QGL.DEBUG_printName("glVertexAttrib2s");
+		GL20.glVertexAttrib2s(index, v0, v1);
 	}
 
 	public static void qglVertexAttrib2svARB(int index, ShortBuffer v) {
@@ -1411,9 +1337,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib2svARB(index, v);
 	}
 
-	public static void qglVertexAttrib3d(int index, int v0, int v1, int v2) {
-		QGL.DEBUG_printName("glVertexAttrib3d");
-		GL20.glVertexAttrib3d(index, v0, v1, v2);
+	public static void qglVertexAttrib2sv(int index, ShortBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib2sv");
+		GL20.glVertexAttrib2sv(index, v);
 	}
 
 	public static void qglVertexAttrib3dARB(int index, int v0, int v1, int v2) {
@@ -1421,9 +1347,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib3dARB(index, v0, v1, v2);
 	}
 
-	public static void qglVertexAttrib3dv(int index, DoubleBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib3dv");
-		GL20.glVertexAttrib3dv(index, v);
+	public static void qglVertexAttrib3d(int index, int v0, int v1, int v2) {
+		QGL.DEBUG_printName("glVertexAttrib3d");
+		GL20.glVertexAttrib3d(index, v0, v1, v2);
 	}
 
 	public static void qglVertexAttrib3dvARB(int index, DoubleBuffer v) {
@@ -1431,9 +1357,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib3dvARB(index, v);
 	}
 
-	public static void qglVertexAttrib3f(int index, int v0, int v1, int v2) {
-		QGL.DEBUG_printName("glVertexAttrib3f");
-		GL20.glVertexAttrib3f(index, v0, v1, v2);
+	public static void qglVertexAttrib3dv(int index, DoubleBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib3dv");
+		GL20.glVertexAttrib3dv(index, v);
 	}
 
 	public static void qglVertexAttrib3fARB(int index, int v0, int v1, int v2) {
@@ -1441,14 +1367,19 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib3fARB(index, v0, v1, v2);
 	}
 
-	public static void qglVertexAttrib3fv(int index, FloatBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib3fv");
-		GL20.glVertexAttrib3fv(index, v);
+	public static void qglVertexAttrib3f(int index, int v0, int v1, int v2) {
+		QGL.DEBUG_printName("glVertexAttrib3f");
+		GL20.glVertexAttrib3f(index, v0, v1, v2);
 	}
 
 	public static void qglVertexAttrib3fvARB(int index, FloatBuffer v) {
 		QGL.DEBUG_printName("glVertexAttrib3fvARB");
 		ARBVertexProgram.glVertexAttrib3fvARB(index, v);
+	}
+
+	public static void qglVertexAttrib3fv(int index, FloatBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib3fv");
+		GL20.glVertexAttrib3fv(index, v);
 	}
 
 	public static void qglVertexAttrib3hNV(int index, short x, short y, short z) {
@@ -1461,19 +1392,14 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		NVHalfFloat.glVertexAttrib3hvNV(index, v);
 	}
 
-	public static void qglVertexAttrib3s(int index, short v0, short v1, short v2) {
-		QGL.DEBUG_printName("glVertexAttrib3s");
-		GL20.glVertexAttrib3s(index, v0, v1, v2);
-	}
-
 	public static void qglVertexAttrib3sARB(int index, short v0, short v1, short v2) {
 		QGL.DEBUG_printName("glVertexAttrib3sARB");
 		ARBVertexProgram.glVertexAttrib3sARB(index, v0, v1, v2);
 	}
 
-	public static void qglVertexAttrib3sv(int index, ShortBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib3sv");
-		GL20.glVertexAttrib3sv(index, v);
+	public static void qglVertexAttrib3s(int index, short v0, short v1, short v2) {
+		QGL.DEBUG_printName("glVertexAttrib3s");
+		GL20.glVertexAttrib3s(index, v0, v1, v2);
 	}
 
 	public static void qglVertexAttrib3svARB(int index, ShortBuffer v) {
@@ -1481,9 +1407,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib3svARB(index, v);
 	}
 
-	public static void qglVertexAttrib4bv(int index, ByteBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib4bv");
-		GL20.glVertexAttrib4bv(index, v);
+	public static void qglVertexAttrib3sv(int index, ShortBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib3sv");
+		GL20.glVertexAttrib3sv(index, v);
 	}
 
 	public static void qglVertexAttrib4bvARB(int index, ByteBuffer v) {
@@ -1491,9 +1417,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib4bvARB(index, v);
 	}
 
-	public static void qglVertexAttrib4d(int index, int v0, int v1, int v2, int v3) {
-		QGL.DEBUG_printName("glVertexAttrib4d");
-		GL20.glVertexAttrib4d(index, v0, v1, v2, v3);
+	public static void qglVertexAttrib4bv(int index, ByteBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib4bv");
+		GL20.glVertexAttrib4bv(index, v);
 	}
 
 	public static void qglVertexAttrib4dARB(int index, int v0, int v1, int v2, int v3) {
@@ -1501,9 +1427,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib4dARB(index, v0, v1, v2, v3);
 	}
 
-	public static void qglVertexAttrib4dv(int index, DoubleBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib4dv");
-		GL20.glVertexAttrib4dv(index, v);
+	public static void qglVertexAttrib4d(int index, int v0, int v1, int v2, int v3) {
+		QGL.DEBUG_printName("glVertexAttrib4d");
+		GL20.glVertexAttrib4d(index, v0, v1, v2, v3);
 	}
 
 	public static void qglVertexAttrib4dvARB(int index, DoubleBuffer v) {
@@ -1511,9 +1437,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib4dvARB(index, v);
 	}
 
-	public static void qglVertexAttrib4f(int index, int v0, int v1, int v2, int v3) {
-		QGL.DEBUG_printName("glVertexAttrib4f");
-		GL20.glVertexAttrib4f(index, v0, v1, v2, v3);
+	public static void qglVertexAttrib4dv(int index, DoubleBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib4dv");
+		GL20.glVertexAttrib4dv(index, v);
 	}
 
 	public static void qglVertexAttrib4fARB(int index, int v0, int v1, int v2, int v3) {
@@ -1521,14 +1447,19 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib4fARB(index, v0, v1, v2, v3);
 	}
 
-	public static void qglVertexAttrib4fv(int index, FloatBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib4fv");
-		GL20.glVertexAttrib4fv(index, v);
+	public static void qglVertexAttrib4f(int index, int v0, int v1, int v2, int v3) {
+		QGL.DEBUG_printName("glVertexAttrib4f");
+		GL20.glVertexAttrib4f(index, v0, v1, v2, v3);
 	}
 
 	public static void qglVertexAttrib4fvARB(int index, FloatBuffer v) {
 		QGL.DEBUG_printName("glVertexAttrib4fvARB");
 		ARBVertexProgram.glVertexAttrib4fvARB(index, v);
+	}
+
+	public static void qglVertexAttrib4fv(int index, FloatBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib4fv");
+		GL20.glVertexAttrib4fv(index, v);
 	}
 
 	public static void qglVertexAttrib4hNV(int index, short x, short y, short z, short w) {
@@ -1541,19 +1472,14 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		NVHalfFloat.glVertexAttrib4hvNV(index, v);
 	}
 
-	public static void qglVertexAttrib4iv(int index, IntBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib4iv");
-		GL20.glVertexAttrib4iv(index, v);
-	}
-
 	public static void qglVertexAttrib4ivARB(int index, IntBuffer v) {
 		QGL.DEBUG_printName("glVertexAttrib4ivARB");
 		ARBVertexProgram.glVertexAttrib4ivARB(index, v);
 	}
 
-	public static void qglVertexAttrib4Nbv(int index, ByteBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib4Nbv");
-		GL20.glVertexAttrib4Nbv(index, v);
+	public static void qglVertexAttrib4iv(int index, IntBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib4iv");
+		GL20.glVertexAttrib4iv(index, v);
 	}
 
 	public static void qglVertexAttrib4NbvARB(int index, ByteBuffer v) {
@@ -1561,9 +1487,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib4NbvARB(index, v);
 	}
 
-	public static void qglVertexAttrib4Niv(int index, IntBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib4Niv");
-		GL20.glVertexAttrib4Niv(index, v);
+	public static void qglVertexAttrib4Nbv(int index, ByteBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib4Nbv");
+		GL20.glVertexAttrib4Nbv(index, v);
 	}
 
 	public static void qglVertexAttrib4NivARB(int index, IntBuffer v) {
@@ -1571,9 +1497,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib4NivARB(index, v);
 	}
 
-	public static void qglVertexAttrib4Nsv(int index, ShortBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib4Nsv");
-		GL20.glVertexAttrib4Nsv(index, v);
+	public static void qglVertexAttrib4Niv(int index, IntBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib4Niv");
+		GL20.glVertexAttrib4Niv(index, v);
 	}
 
 	public static void qglVertexAttrib4NsvARB(int index, ShortBuffer v) {
@@ -1581,9 +1507,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib4NsvARB(index, v);
 	}
 
-	public static void qglVertexAttrib4Nub(int index, byte x, byte y, byte z, byte w) {
-		QGL.DEBUG_printName("glVertexAttrib4Nub");
-		GL20.glVertexAttrib4Nub(index, x, y, z, w);
+	public static void qglVertexAttrib4Nsv(int index, ShortBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib4Nsv");
+		GL20.glVertexAttrib4Nsv(index, v);
 	}
 
 	public static void qglVertexAttrib4NubARB(int index, byte x, byte y, byte z, byte w) {
@@ -1591,9 +1517,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib4NubARB(index, x, y, z, w);
 	}
 
-	public static void qglVertexAttrib4Nubv(int index, ByteBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib4Nubv");
-		GL20.glVertexAttrib4Nubv(index, v);
+	public static void qglVertexAttrib4Nub(int index, byte x, byte y, byte z, byte w) {
+		QGL.DEBUG_printName("glVertexAttrib4Nub");
+		GL20.glVertexAttrib4Nub(index, x, y, z, w);
 	}
 
 	public static void qglVertexAttrib4NubvARB(int index, ByteBuffer v) {
@@ -1601,9 +1527,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib4NubvARB(index, v);
 	}
 
-	public static void qglVertexAttrib4Nuiv(int index, IntBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib4Nuiv");
-		GL20.glVertexAttrib4Nuiv(index, v);
+	public static void qglVertexAttrib4Nubv(int index, ByteBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib4Nubv");
+		GL20.glVertexAttrib4Nubv(index, v);
 	}
 
 	public static void qglVertexAttrib4NuivARB(int index, IntBuffer v) {
@@ -1611,9 +1537,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib4NuivARB(index, v);
 	}
 
-	public static void qglVertexAttrib4Nusv(int index, ShortBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib4Nusv");
-		GL20.glVertexAttrib4Nusv(index, v);
+	public static void qglVertexAttrib4Nuiv(int index, IntBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib4Nuiv");
+		GL20.glVertexAttrib4Nuiv(index, v);
 	}
 
 	public static void qglVertexAttrib4NusvARB(int index, ShortBuffer v) {
@@ -1621,9 +1547,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib4NusvARB(index, v);
 	}
 
-	public static void qglVertexAttrib4s(int index, short v0, short v1, short v2, short v3) {
-		QGL.DEBUG_printName("glVertexAttrib4s");
-		GL20.glVertexAttrib4s(index, v0, v1, v2, v3);
+	public static void qglVertexAttrib4Nusv(int index, ShortBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib4Nusv");
+		GL20.glVertexAttrib4Nusv(index, v);
 	}
 
 	public static void qglVertexAttrib4sARB(int index, short v0, short v1, short v2, short v3) {
@@ -1631,9 +1557,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib4sARB(index, v0, v1, v2, v3);
 	}
 
-	public static void qglVertexAttrib4sv(int index, ShortBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib4sv");
-		GL20.glVertexAttrib4sv(index, v);
+	public static void qglVertexAttrib4s(int index, short v0, short v1, short v2, short v3) {
+		QGL.DEBUG_printName("glVertexAttrib4s");
+		GL20.glVertexAttrib4s(index, v0, v1, v2, v3);
 	}
 
 	public static void qglVertexAttrib4svARB(int index, ShortBuffer v) {
@@ -1641,19 +1567,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib4svARB(index, v);
 	}
 
-	public static void qglVertexAttrib4ubv(int index, ByteBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib4ubv");
-		GL20.glVertexAttrib4ubv(index, v);
-	}
-
-	public static void qglVertexAttrib4ubvARB(int index, ByteBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib4ubvARB");
-		ARBVertexProgram.glVertexAttrib4ubvARB(index, v);
-	}
-
-	public static void qglVertexAttrib4uiv(int index, IntBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib4uiv");
-		GL20.glVertexAttrib4uiv(index, v);
+	public static void qglVertexAttrib4sv(int index, ShortBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib4sv");
+		GL20.glVertexAttrib4sv(index, v);
 	}
 
 	public static void qglVertexAttrib4uivARB(int index, IntBuffer v) {
@@ -1661,14 +1577,29 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexProgram.glVertexAttrib4uivARB(index, v);
 	}
 
-	public static void qglVertexAttrib4usv(int index, ShortBuffer v) {
-		QGL.DEBUG_printName("glVertexAttrib4usv");
-		GL20.glVertexAttrib4usv(index, v);
+	public static void qglVertexAttrib4uiv(int index, IntBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib4uiv");
+		GL20.glVertexAttrib4uiv(index, v);
+	}
+
+	public static void qglVertexAttrib4ubvARB(int index, ByteBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib4ubvARB");
+		ARBVertexProgram.glVertexAttrib4ubvARB(index, v);
+	}
+
+	public static void qglVertexAttrib4ubv(int index, ByteBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib4ubv");
+		GL20.glVertexAttrib4ubv(index, v);
 	}
 
 	public static void qglVertexAttrib4usvARB(int index, ShortBuffer v) {
 		QGL.DEBUG_printName("glVertexAttrib4usvARB");
 		ARBVertexProgram.glVertexAttrib4usvARB(index, v);
+	}
+
+	public static void qglVertexAttrib4usv(int index, ShortBuffer v) {
+		QGL.DEBUG_printName("glVertexAttrib4usv");
+		GL20.glVertexAttrib4usv(index, v);
 	}
 
 	public static void qglVertexAttribs1hvNV(int index, ShortBuffer v) {
@@ -1751,19 +1682,14 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBVertexBlend.glWeightusvARB(weights);
 	}
 
-	public static void qglWindowPos2d(double x, double y) {
-		QGL.DEBUG_printName("glWindowPos2d");
-		GL14.glWindowPos2d(x, y);
-	}
-
-	public static void qglWindowPos2d(int x, int y) {
-		QGL.DEBUG_printName("glWindowPos2d");
-		GL14.glWindowPos2d(x, y);
-	}
-
 	public static void qglWindowPos2dARB(int x, int y) {
 		QGL.DEBUG_printName("glWindowPos2dARB");
 		ARBWindowPos.glWindowPos2dARB(x, y);
+	}
+
+	public static void qglWindowPos2d(double x, double y) {
+		QGL.DEBUG_printName("glWindowPos2d");
+		GL14.glWindowPos2d(x, y);
 	}
 
 	public static void qglWindowPos2dvARB(DoubleBuffer p) {
@@ -1771,14 +1697,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBWindowPos.glWindowPos2dvARB(p);
 	}
 
-	public static void qglWindowPos2f(float x, float y) {
-		QGL.DEBUG_printName("glWindowPos2f");
-		GL14.glWindowPos2f(x, y);
-	}
-
-	public static void qglWindowPos2f(int x, int y) {
-		QGL.DEBUG_printName("glWindowPos2f");
-		GL14.glWindowPos2f(x, y);
+	public static void qglWindowPos2d(int x, int y) {
+		QGL.DEBUG_printName("glWindowPos2d");
+		GL14.glWindowPos2d(x, y);
 	}
 
 	public static void qglWindowPos2fARB(int x, int y) {
@@ -1786,14 +1707,19 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBWindowPos.glWindowPos2fARB(x, y);
 	}
 
+	public static void qglWindowPos2f(float x, float y) {
+		QGL.DEBUG_printName("glWindowPos2f");
+		GL14.glWindowPos2f(x, y);
+	}
+
 	public static void qglWindowPos2fvARB(FloatBuffer p) {
 		QGL.DEBUG_printName("glWindowPos2fvARB");
 		ARBWindowPos.glWindowPos2fvARB(p);
 	}
 
-	public static void qglWindowPos2i(int x, int y) {
-		QGL.DEBUG_printName("glWindowPos2i");
-		GL14.glWindowPos2i(x, y);
+	public static void qglWindowPos2f(int x, int y) {
+		QGL.DEBUG_printName("glWindowPos2f");
+		GL14.glWindowPos2f(x, y);
 	}
 
 	public static void qglWindowPos2iARB(int x, int y) {
@@ -1801,9 +1727,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBWindowPos.glWindowPos2iARB(x, y);
 	}
 
-	public static void qglWindowPos2iv(IntBuffer p) {
-		QGL.DEBUG_printName("glWindowPos2iv");
-		GL14.glWindowPos2iv(p);
+	public static void qglWindowPos2i(int x, int y) {
+		QGL.DEBUG_printName("glWindowPos2i");
+		GL14.glWindowPos2i(x, y);
 	}
 
 	public static void qglWindowPos2ivARB(IntBuffer p) {
@@ -1811,9 +1737,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBWindowPos.glWindowPos2ivARB(p);
 	}
 
-	public static void qglWindowPos2s(short x, short y) {
-		QGL.DEBUG_printName("glWindowPos2s");
-		GL14.glWindowPos2s(x, y);
+	public static void qglWindowPos2iv(IntBuffer p) {
+		QGL.DEBUG_printName("glWindowPos2iv");
+		GL14.glWindowPos2iv(p);
 	}
 
 	public static void qglWindowPos2sARB(short x, short y) {
@@ -1821,9 +1747,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBWindowPos.glWindowPos2sARB(x, y);
 	}
 
-	public static void qglWindowPos2sv(ShortBuffer p) {
-		QGL.DEBUG_printName("glWindowPos2sv");
-		GL14.glWindowPos2sv(p);
+	public static void qglWindowPos2s(short x, short y) {
+		QGL.DEBUG_printName("glWindowPos2s");
+		GL14.glWindowPos2s(x, y);
 	}
 
 	public static void qglWindowPos2svARB(ShortBuffer p) {
@@ -1831,9 +1757,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBWindowPos.glWindowPos2svARB(p);
 	}
 
-	public static void qglWindowPos3d(int x, int y, int z) {
-		QGL.DEBUG_printName("glWindowPos3d");
-		GL14.glWindowPos3d(x, y, z);
+	public static void qglWindowPos2sv(ShortBuffer p) {
+		QGL.DEBUG_printName("glWindowPos2sv");
+		GL14.glWindowPos2sv(p);
 	}
 
 	public static void qglWindowPos3dARB(int x, int y, int z) {
@@ -1841,9 +1767,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBWindowPos.glWindowPos3dARB(x, y, z);
 	}
 
-	public static void qglWindowPos3dv(DoubleBuffer p) {
-		QGL.DEBUG_printName("glWindowPos3dv");
-		GL14.glWindowPos3dv(p);
+	public static void qglWindowPos3d(int x, int y, int z) {
+		QGL.DEBUG_printName("glWindowPos3d");
+		GL14.glWindowPos3d(x, y, z);
 	}
 
 	public static void qglWindowPos3dvARB(DoubleBuffer p) {
@@ -1851,9 +1777,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBWindowPos.glWindowPos3dvARB(p);
 	}
 
-	public static void qglWindowPos3f(int x, int y, int z) {
-		QGL.DEBUG_printName("glWindowPos3f");
-		GL14.glWindowPos3f(x, y, z);
+	public static void qglWindowPos3dv(DoubleBuffer p) {
+		QGL.DEBUG_printName("glWindowPos3dv");
+		GL14.glWindowPos3dv(p);
 	}
 
 	public static void qglWindowPos3fARB(int x, int y, int z) {
@@ -1861,9 +1787,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBWindowPos.glWindowPos3fARB(x, y, z);
 	}
 
-	public static void qglWindowPos3fv(FloatBuffer p) {
-		QGL.DEBUG_printName("glWindowPos3fv");
-		GL14.glWindowPos3fv(p);
+	public static void qglWindowPos3f(int x, int y, int z) {
+		QGL.DEBUG_printName("glWindowPos3f");
+		GL14.glWindowPos3f(x, y, z);
 	}
 
 	public static void qglWindowPos3fvARB(FloatBuffer p) {
@@ -1871,9 +1797,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBWindowPos.glWindowPos3fvARB(p);
 	}
 
-	public static void qglWindowPos3i(int x, int y, int z) {
-		QGL.DEBUG_printName("glWindowPos3i");
-		GL14.glWindowPos3i(x, y, z);
+	public static void qglWindowPos3fv(FloatBuffer p) {
+		QGL.DEBUG_printName("glWindowPos3fv");
+		GL14.glWindowPos3fv(p);
 	}
 
 	public static void qglWindowPos3iARB(int x, int y, int z) {
@@ -1881,9 +1807,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBWindowPos.glWindowPos3iARB(x, y, z);
 	}
 
-	public static void qglWindowPos3iv(IntBuffer p) {
-		QGL.DEBUG_printName("glWindowPos3iv");
-		GL14.glWindowPos3iv(p);
+	public static void qglWindowPos3i(int x, int y, int z) {
+		QGL.DEBUG_printName("glWindowPos3i");
+		GL14.glWindowPos3i(x, y, z);
 	}
 
 	public static void qglWindowPos3ivARB(IntBuffer p) {
@@ -1891,9 +1817,9 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBWindowPos.glWindowPos3ivARB(p);
 	}
 
-	public static void qglWindowPos3s(short x, short y, short z) {
-		QGL.DEBUG_printName("glWindowPos3s");
-		GL14.glWindowPos3s(x, y, z);
+	public static void qglWindowPos3iv(IntBuffer p) {
+		QGL.DEBUG_printName("glWindowPos3iv");
+		GL14.glWindowPos3iv(p);
 	}
 
 	public static void qglWindowPos3sARB(short x, short y, short z) {
@@ -1901,14 +1827,19 @@ class QGLNotTestedCpp extends QGLXNotTestedCpp {
 		ARBWindowPos.glWindowPos3sARB(x, y, z);
 	}
 
-	public static void qglWindowPos3sv(ShortBuffer p) {
-		QGL.DEBUG_printName("glWindowPos3sv");
-		GL14.glWindowPos3sv(p);
+	public static void qglWindowPos3s(short x, short y, short z) {
+		QGL.DEBUG_printName("glWindowPos3s");
+		GL14.glWindowPos3s(x, y, z);
 	}
 
 	public static void qglWindowPos3svARB(ShortBuffer p) {
 		QGL.DEBUG_printName("glWindowPos3svARB");
 		ARBWindowPos.glWindowPos3svARB(p);
+	}
+
+	public static void qglWindowPos3sv(ShortBuffer p) {
+		QGL.DEBUG_printName("glWindowPos3sv");
+		GL14.glWindowPos3sv(p);
 	}
 
 	/*
