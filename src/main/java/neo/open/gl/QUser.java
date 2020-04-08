@@ -1,4 +1,4 @@
-package neo.opengl;
+package neo.open.gl;
 
 import static neo.TempDump.btoi;
 import static neo.framework.KeyInput.K_ALT;
@@ -42,7 +42,7 @@ import static neo.framework.KeyInput.K_RWIN;
 import static neo.framework.KeyInput.K_UPARROW;
 import static neo.framework.UsercmdGen.usercmdGen;
 import static neo.idlib.Lib.idLib.common;
-import static neo.opengl.QGL.qcreateCapabilities;
+import static neo.open.gl.QGL.qcreateCapabilities;
 import static neo.sys.sys_public.sysEventType_t.SE_CHAR;
 import static neo.sys.sys_public.sysEventType_t.SE_KEY;
 import static neo.sys.sys_public.sysEventType_t.SE_MOUSE;

@@ -17,7 +17,7 @@ import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *

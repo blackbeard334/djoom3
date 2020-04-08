@@ -1,4 +1,4 @@
-package neo.opengl;
+package neo.open.gl;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;

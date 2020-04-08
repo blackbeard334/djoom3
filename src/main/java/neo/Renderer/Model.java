@@ -1,6 +1,6 @@
 package neo.Renderer;
 
-import static neo.opengl.QGLConstantsIfc.GL_UNSIGNED_INT;
+import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_INT;
 
 import java.nio.ByteBuffer;
 import java.util.stream.Stream;
@@ -20,7 +20,7 @@ import neo.idlib.geometry.JointTransform.idJointQuat;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *

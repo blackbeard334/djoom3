@@ -1,4 +1,4 @@
-package neo.opengl;
+package neo.open.gl;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -16,6 +16,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
+
+import neo.open.Nio;
 
 /**
  * so yeah, it's easier to use this class as an interface. rather than refactor

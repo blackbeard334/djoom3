@@ -72,14 +72,14 @@ import static neo.framework.Session.session;
 import static neo.idlib.Lib.colorWhite;
 import static neo.idlib.Text.Str.C_COLOR_DEFAULT;
 import static neo.idlib.math.Vector.getVec3_zero;
-import static neo.opengl.QGL.qglGetError;
-import static neo.opengl.QGL.qglReadBuffer;
-import static neo.opengl.QGL.qglReadPixels;
-import static neo.opengl.QGLConstantsIfc.GL_BACK;
-import static neo.opengl.QGLConstantsIfc.GL_FRONT;
-import static neo.opengl.QGLConstantsIfc.GL_NO_ERROR;
-import static neo.opengl.QGLConstantsIfc.GL_RGB;
-import static neo.opengl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
+import static neo.open.gl.QGL.qglGetError;
+import static neo.open.gl.QGL.qglReadBuffer;
+import static neo.open.gl.QGL.qglReadPixels;
+import static neo.open.gl.QGLConstantsIfc.GL_BACK;
+import static neo.open.gl.QGLConstantsIfc.GL_FRONT;
+import static neo.open.gl.QGLConstantsIfc.GL_NO_ERROR;
+import static neo.open.gl.QGLConstantsIfc.GL_RGB;
+import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
 import static neo.sys.win_glimp.GLimp_Shutdown;
 
 import java.io.IOException;
@@ -128,7 +128,7 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *

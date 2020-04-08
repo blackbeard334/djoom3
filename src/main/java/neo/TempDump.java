@@ -1,9 +1,9 @@
 package neo;
 
-import static neo.openal.QAL.alGetError;
 import static neo.Renderer.Material.MAX_ENTITY_SHADER_PARMS;
 import static neo.Renderer.RenderWorld.MAX_GLOBAL_SHADER_PARMS;
 import static neo.Renderer.RenderWorld.MAX_RENDERENTITY_GUI;
+import static neo.open.al.QAL.alGetError;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -44,8 +44,8 @@ import neo.idlib.containers.LinkList.idLinkList;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.math.Curve;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.Nio;
 import neo.idlib.math.Matrix.idMat3;
-import neo.opengl.Nio;
 import neo.ui.UserInterface.idUserInterface;
 
 /**

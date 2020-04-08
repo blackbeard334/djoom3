@@ -14,14 +14,14 @@ import static neo.framework.CmdSystem.CMD_FL_RENDERER;
 import static neo.framework.CmdSystem.cmdSystem;
 import static neo.framework.Common.common;
 import static neo.idlib.math.Simd.SIMDProcessor;
-import static neo.opengl.QGL.qglBindBufferARB;
-import static neo.opengl.QGL.qglBufferDataARB;
-import static neo.opengl.QGL.qglBufferSubDataARB;
-import static neo.opengl.QGL.qglGenBuffersARB;
-import static neo.opengl.QGLConstantsIfc.GL_ARRAY_BUFFER_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_ELEMENT_ARRAY_BUFFER_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_STATIC_DRAW_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_STREAM_DRAW_ARB;
+import static neo.open.gl.QGL.qglBindBufferARB;
+import static neo.open.gl.QGL.qglBufferDataARB;
+import static neo.open.gl.QGL.qglBufferSubDataARB;
+import static neo.open.gl.QGL.qglGenBuffersARB;
+import static neo.open.gl.QGLConstantsIfc.GL_ARRAY_BUFFER_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_ELEMENT_ARRAY_BUFFER_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_STATIC_DRAW_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_STREAM_DRAW_ARB;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import neo.idlib.geometry.DrawVert;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *

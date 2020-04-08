@@ -19,7 +19,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 
 import neo.TempDump;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  * so yeah, it's easier to use this class as an interface. rather than refactor
