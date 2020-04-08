@@ -31,7 +31,7 @@ import neo.TempDump.TODO_Exception;
 import neo.Renderer.Image.cubeFiles_t;
 import neo.framework.File_h.idFile;
 import neo.idlib.Text.Str.idStr;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *

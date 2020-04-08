@@ -155,8 +155,8 @@ import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGESCAPECHARS;
 import static neo.idlib.Text.Token.TT_NUMBER;
 import static neo.idlib.precompiled.MAX_EXPRESSION_OPS;
 import static neo.idlib.precompiled.MAX_EXPRESSION_REGISTERS;
-import static neo.opengl.QGLConstantsIfc.GL_FRAGMENT_PROGRAM_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_VERTEX_PROGRAM_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_FRAGMENT_PROGRAM_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_VERTEX_PROGRAM_ARB;
 import static neo.ui.UserInterface.uiManager;
 
 import java.nio.ByteBuffer;

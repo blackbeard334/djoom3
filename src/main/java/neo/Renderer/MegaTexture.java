@@ -16,12 +16,12 @@ import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_CUR;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_SET;
 import static neo.framework.Session.session;
-import static neo.opengl.QGL.qglProgramLocalParameter4fvARB;
-import static neo.opengl.QGL.qglTexSubImage2D;
-import static neo.opengl.QGLConstantsIfc.GL_RGBA;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_2D;
-import static neo.opengl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
-import static neo.opengl.QGLConstantsIfc.GL_VERTEX_PROGRAM_ARB;
+import static neo.open.gl.QGL.qglProgramLocalParameter4fvARB;
+import static neo.open.gl.QGL.qglTexSubImage2D;
+import static neo.open.gl.QGLConstantsIfc.GL_RGBA;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_2D;
+import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
+import static neo.open.gl.QGLConstantsIfc.GL_VERTEX_PROGRAM_ARB;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -39,7 +39,7 @@ import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Vector.idVec3;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *

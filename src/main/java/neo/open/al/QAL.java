@@ -1,4 +1,4 @@
-package neo.openal;
+package neo.open.al;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;

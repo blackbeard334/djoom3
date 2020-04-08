@@ -7,7 +7,7 @@ import neo.TempDump;
 import neo.TempDump.SERiAL;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *

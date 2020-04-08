@@ -34,11 +34,11 @@ import static neo.TempDump.NOT;
 import static neo.TempDump.flatten;
 import static neo.TempDump.wrapToNativeBuffer;
 import static neo.idlib.Lib.idLib.common;
-import static neo.opengl.QGL.qglTexParameterfv;
-import static neo.opengl.QGLConstantsIfc.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-import static neo.opengl.QGLConstantsIfc.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_2D;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_BORDER_COLOR;
+import static neo.open.gl.QGL.qglTexParameterfv;
+import static neo.open.gl.QGLConstantsIfc.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+import static neo.open.gl.QGLConstantsIfc.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_2D;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_BORDER_COLOR;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -52,7 +52,7 @@ import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.cmp_t;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *

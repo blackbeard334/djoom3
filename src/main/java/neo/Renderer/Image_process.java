@@ -4,7 +4,7 @@ import static neo.idlib.Lib.idLib.common;
 
 import java.nio.ByteBuffer;
 
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *

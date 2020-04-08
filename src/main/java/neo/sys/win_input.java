@@ -40,14 +40,14 @@ import static neo.framework.KeyInput.K_SCROLL;
 import static neo.framework.KeyInput.K_SHIFT;
 import static neo.framework.KeyInput.K_UPARROW;
 import static neo.idlib.Lib.idLib.cvarSystem;
-import static neo.opengl.QUser.getShiftedScancode;
+import static neo.open.gl.QUser.getShiftedScancode;
 import static neo.sys.win_local.win32;
 
 import java.awt.event.InputEvent;
 
 import neo.TempDump.TODO_Exception;
 import neo.idlib.Text.Str.idStr;
-import neo.opengl.QUser;
+import neo.open.gl.QUser;
 
 /**
  *

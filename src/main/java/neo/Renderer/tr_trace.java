@@ -14,15 +14,15 @@ import static neo.Renderer.tr_rendertools.RB_DrawBounds;
 import static neo.Renderer.tr_trisurf.R_DeriveFacePlanes;
 import static neo.framework.Common.common;
 import static neo.idlib.math.Simd.SIMDProcessor;
-import static neo.opengl.QGL.qglBegin;
-import static neo.opengl.QGL.qglColor4f;
-import static neo.opengl.QGL.qglDisableClientState;
-import static neo.opengl.QGL.qglEnd;
-import static neo.opengl.QGL.qglLoadMatrixf;
-import static neo.opengl.QGL.qglVertex3f;
-import static neo.opengl.QGLConstantsIfc.GL_LINE_LOOP;
-import static neo.opengl.QGLConstantsIfc.GL_MODULATE;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_COORD_ARRAY;
+import static neo.open.gl.QGL.qglBegin;
+import static neo.open.gl.QGL.qglColor4f;
+import static neo.open.gl.QGL.qglDisableClientState;
+import static neo.open.gl.QGL.qglEnd;
+import static neo.open.gl.QGL.qglLoadMatrixf;
+import static neo.open.gl.QGL.qglVertex3f;
+import static neo.open.gl.QGLConstantsIfc.GL_LINE_LOOP;
+import static neo.open.gl.QGLConstantsIfc.GL_MODULATE;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_COORD_ARRAY;
 
 import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.tr_local.drawSurf_s;
@@ -32,7 +32,7 @@ import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Math_h;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *

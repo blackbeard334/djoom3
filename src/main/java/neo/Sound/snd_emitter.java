@@ -22,17 +22,17 @@ import static neo.framework.Common.common;
 import static neo.framework.DemoFile.demoSystem_t.DS_SOUND;
 import static neo.framework.Session.session;
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
-import static neo.openal.QAL.alDeleteBuffers;
-import static neo.openal.QAL.alGetError;
-import static neo.openal.QAL.alGetSourcei;
-import static neo.openal.QAL.alIsSource;
-import static neo.openal.QAL.alSourceStop;
-import static neo.openal.QAL.alSourcei;
-import static neo.openal.QALConstantsIfc.AL_BUFFER;
-import static neo.openal.QALConstantsIfc.AL_NO_ERROR;
-import static neo.openal.QALConstantsIfc.AL_PLAYING;
-import static neo.openal.QALConstantsIfc.AL_SOURCE_STATE;
-import static neo.openal.QALConstantsIfc.AL_STOPPED;
+import static neo.open.al.QAL.alDeleteBuffers;
+import static neo.open.al.QAL.alGetError;
+import static neo.open.al.QAL.alGetSourcei;
+import static neo.open.al.QAL.alIsSource;
+import static neo.open.al.QAL.alSourceStop;
+import static neo.open.al.QAL.alSourcei;
+import static neo.open.al.QALConstantsIfc.AL_BUFFER;
+import static neo.open.al.QALConstantsIfc.AL_NO_ERROR;
+import static neo.open.al.QALConstantsIfc.AL_PLAYING;
+import static neo.open.al.QALConstantsIfc.AL_SOURCE_STATE;
+import static neo.open.al.QALConstantsIfc.AL_STOPPED;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
 import static neo.sys.win_shared.Sys_Milliseconds;
@@ -51,7 +51,7 @@ import neo.Sound.snd_world.idSoundWorldLocal;
 import neo.Sound.sound.idSoundEmitter;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *

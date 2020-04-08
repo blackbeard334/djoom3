@@ -1,4 +1,4 @@
-package neo.opengl;
+package neo.open.gl;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -17,6 +17,8 @@ import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 
+import neo.open.Nio;
+
 /**
  * so yeah, it's easier to use this class as an interface. rather than refactor
  * all the qwgl stuff to qgl and such.
@@ -25,15 +27,15 @@ public class QGL extends QGLNotTested {
 
 	private final static boolean GL_DEBUG = false;
 
+	public static final boolean QGL_FALSE = false;
+
+	public static final boolean QGL_TRUE = true;
+
 	{
 		if (GL_DEBUG) {
 			qglEnable(QGLConstantsIfc.GL_DEBUG_OUTPUT);
 		}
 	}
-
-	public static final boolean QGL_FALSE = false;
-
-	public static final boolean QGL_TRUE = true;
 
 	public static void checkGLError() {
 		if (GL_DEBUG) {
