@@ -27,7 +27,7 @@ import neo.Sound.snd_local.waveformatextensible_s;
 import neo.framework.File_h.idFile;
 import neo.idlib.Text.Str.idStr;
 import neo.open.Nio;
-import neo.open.al.Vorbis;
+import neo.open.Vorbis;
 
 /**
  *
