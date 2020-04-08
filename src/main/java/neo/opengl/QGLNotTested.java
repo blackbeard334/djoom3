@@ -17,7 +17,7 @@ import org.lwjgl.opengl.GL11;
  * If successfully tested, move method to QGL!
  * The class is not visible, use QGL instead.
  */
-class QGLNotTested {
+class QGLNotTested extends QGLNotTestedCpp {
 
 	public static void qglAccum(int op, float value) {
 		QGL.DEBUG_printName("glAccum");

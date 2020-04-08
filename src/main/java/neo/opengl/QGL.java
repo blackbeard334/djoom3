@@ -25,15 +25,15 @@ public class QGL extends QGLNotTested {
 
 	private final static boolean GL_DEBUG = false;
 
+	public static final boolean QGL_FALSE = false;
+
+	public static final boolean QGL_TRUE = true;
+
 	{
 		if (GL_DEBUG) {
 			qglEnable(QGLConstantsIfc.GL_DEBUG_OUTPUT);
 		}
 	}
-
-	public static final boolean QGL_FALSE = false;
-
-	public static final boolean QGL_TRUE = true;
 
 	public static void checkGLError() {
 		if (GL_DEBUG) {
