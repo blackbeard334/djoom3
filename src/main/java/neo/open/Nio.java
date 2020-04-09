@@ -5,11 +5,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-/**
- * Util to use openal & opengl and nio Buffers.<br>
- * Reduce dependency on openal & opengl implementation.<br>
- * No need to use {@link org.lwjgl.BufferUtils}
- */
 public class Nio {
 
 	public static final int SIZEOF_FLOAT = 4;
@@ -50,6 +45,7 @@ public class Nio {
 	/**
 	 * @deprecated the calling functions should send ByteBuffers instead.
 	 */
+	@Deprecated
 	public static ByteBuffer wrap(final boolean[] booleanArray) {
 		byte[] byteArray = new byte[booleanArray.length];
 		for (int i = 0; i < byteArray.length; i++) {
@@ -61,6 +57,7 @@ public class Nio {
 	/**
 	 * @deprecated the calling functions should send ByteBuffers instead.
 	 */
+	@Deprecated
 	public static ByteBuffer wrap(final byte[] byteArray) {
 
 		return (ByteBuffer) newByteBuffer(byteArray.length).put(byteArray).flip();
@@ -69,6 +66,7 @@ public class Nio {
 	/**
 	 * @deprecated the calling functions should send FloatBuffers instead.
 	 */
+	@Deprecated
 	public static FloatBuffer wrap(final float[] floatArray) {
 
 		return (FloatBuffer) newFloatBuffer(floatArray.length).put(floatArray).flip();
@@ -77,6 +75,7 @@ public class Nio {
 	/**
 	 * @deprecated the calling functions should send FloatBuffers instead.
 	 */
+	@Deprecated
 	public static FloatBuffer wrap(final float[] floatArray, int length) {
 
 		if (floatArray.length == length) {
@@ -97,6 +96,7 @@ public class Nio {
 	/**
 	 * @deprecated the calling functions should send IntBuffers instead.
 	 */
+	@Deprecated
 	public static IntBuffer wrap(final int[] intArray) {
 
 		return (IntBuffer) newIntBuffer(intArray.length).put(intArray).flip();

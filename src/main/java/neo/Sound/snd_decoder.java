@@ -3,7 +3,7 @@ package neo.Sound;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_OGG;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_PCM;
 import static neo.Sound.snd_system.soundSystemLocal;
-import static neo.open.Vorbis.getErrorMessage;
+import static neo.open.al.Vorbis.getErrorMessage;
 import static neo.sys.sys_public.CRITICAL_SECTION_ONE;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
@@ -18,7 +18,7 @@ import neo.TempDump.TODO_Exception;
 import neo.Sound.snd_cache.idSoundSample;
 import neo.Sound.snd_local.idSampleDecoder;
 import neo.framework.File_h.idFile_Memory;
-import neo.open.Vorbis;
+import neo.open.al.Vorbis;
 
 /**
  *
