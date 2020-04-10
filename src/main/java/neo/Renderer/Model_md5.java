@@ -310,7 +310,7 @@ public class Model_md5 {
             tri.facePlanesCalculated = false;
 
             tri.numIndexes = this.deformInfo.numIndexes;
-            tri.indexes = this.deformInfo.indexes;
+            tri.indexes.createBuffer(this.deformInfo.indexes);
             tri.silIndexes = this.deformInfo.silIndexes;
             tri.numMirroredVerts = this.deformInfo.numMirroredVerts;
             tri.mirroredVerts = this.deformInfo.mirroredVerts;

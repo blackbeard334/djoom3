@@ -238,7 +238,7 @@ public class output {
                     uTri.verts[j].st.oSet(1, dv.st.oGet(1));
                 }
 
-                uTri.indexes[numIndexes++] = j;
+                uTri.indexes.getIntBuffer().put(numIndexes++, j);
             }
         }
 
@@ -310,7 +310,7 @@ public class output {
         // indexes
         col = 0;
         for (i = 0; i < uTris.numIndexes; i++) {
-            procFile.WriteFloatString("%d ", uTris.indexes[i]);
+            procFile.WriteFloatString("%d ", uTris.indexes.getIntBuffer().get(i));
 
             if (++col == 18) {
                 col = 0;
@@ -355,7 +355,7 @@ public class output {
         // indexes
         col = 0;
         for (i = 0; i < tri.numIndexes; i++) {
-            procFile.WriteFloatString("%d ", tri.indexes[i]);
+            procFile.WriteFloatString("%d ", tri.indexes.getIntBuffer().get(i));
 
             if (++col == 18) {
                 col = 0;

@@ -137,7 +137,7 @@ public class tr_render {
         backEnd.pc.c_drawVertexes += tri.numVerts;
 
         if (tri.ambientSurface != null) {
-            if (tri.indexes == tri.ambientSurface.indexes) {
+            if (tri.indexes.getIntBuffer() == tri.ambientSurface.indexes.getIntBuffer()) {
                 backEnd.pc.c_drawRefIndexes += tri.numIndexes;
             }
             if (tri.verts == tri.ambientSurface.verts) {
@@ -147,8 +147,8 @@ public class tr_render {
 
         qglBegin(GL_TRIANGLES);
         for (int i = 0; i < tri.numIndexes; i++) {
-            qglTexCoord2fv(tri.verts[tri.indexes[i]].st.toFloatBuffer());
-            qglVertex3fv(tri.verts[tri.indexes[i]].xyz.toFloatBuffer());
+            qglTexCoord2fv(tri.verts[tri.indexes.getIntBuffer().get(i)].st.toFloatBuffer());
+            qglVertex3fv(tri.verts[tri.indexes.getIntBuffer().get(i)].xyz.toFloatBuffer());
         }
         qglEnd();
     }
@@ -168,7 +168,7 @@ public class tr_render {
 //        TempDump.printCallStack("" + DEBUG_RB_DrawElementsWithCounters);
 
         if (tri.ambientSurface != null) {
-            if (tri.indexes == tri.ambientSurface.indexes) {
+            if (tri.indexes.getIntBuffer() == tri.ambientSurface.indexes.getIntBuffer()) {
                 backEnd.pc.c_drawRefIndexes += tri.numIndexes;
             }
             if (tri.verts == tri.ambientSurface.verts) {
@@ -185,7 +185,7 @@ public class tr_render {
                 vertexCache.UnbindIndex();
             }
 //            if(tri.DBG_count!=11)
-            qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE/*GL_UNSIGNED_INT*/, Nio.wrap(tri.indexes));
+            qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE/*GL_UNSIGNED_INT*/, tri.indexes.getIntBuffer());
         }
     }
 
@@ -214,7 +214,7 @@ public class tr_render {
             qglDrawElements(GL_TRIANGLES,
                     r_singleTriangle.GetBool() ? 3 : numIndexes,
                     GL_INDEX_TYPE,
-                    Nio.wrap(tri.indexes));
+                    tri.indexes.getIntBuffer());
         }
     }
 

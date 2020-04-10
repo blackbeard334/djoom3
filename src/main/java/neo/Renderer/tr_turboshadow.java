@@ -78,7 +78,7 @@ public class tr_turboshadow {
         } else {
 
             // make all triangles that are outside the light frustum "facing", so they won't cast shadows
-            indexes = tri.indexes;
+            indexes = tri.indexes.getAsIntArray();
             final byte[] modifyFacing = cullInfo.facing;
             final byte[] cullBits = cullInfo.cullBits;
             for (j = i = 0; i < tri.numIndexes; i += 3, j++) {
@@ -110,8 +110,8 @@ public class tr_turboshadow {
         int/*glIndex_t */[] shadowIndexes;
         if (USE_TRI_DATA_ALLOCATOR) {
             R_AllocStaticTriSurfIndexes(newTri, (numShadowingFaces + tri.numSilEdges) * 6);
-            tempIndexes = newTri.indexes;
-            shadowIndexes = newTri.indexes;
+            tempIndexes = newTri.indexes.getAsIntArray();
+            shadowIndexes = newTri.indexes.getAsIntArray();
         } else {
             tempIndexes = new int[tri.numSilEdges * 6];
             shadowIndexes = tempIndexes;
@@ -157,16 +157,16 @@ public class tr_turboshadow {
             // allocate memory for the indexes
             R_AllocStaticTriSurfIndexes(newTri, newTri.numIndexes);
             // copy the indexes we created for the sil planes
-            SIMDProcessor.Memcpy(newTri.indexes, tempIndexes, numShadowIndexes /* sizeof( tempIndexes[0] )*/);
+            SIMDProcessor.Memcpy(newTri.indexes.getIntBuffer(), tempIndexes, numShadowIndexes /* sizeof( tempIndexes[0] )*/);
         }
 
         // these have no effect, because they extend to infinity
         newTri.bounds.Clear();
 
         // put some faces on the model and some on the distant projection
-        indexes = tri.indexes;
+        indexes = tri.indexes.getAsIntArray();
         shadowIndex = numShadowIndexes;
-        shadowIndexes = newTri.indexes;
+        shadowIndexes = newTri.indexes.getAsIntArray();
         for (i = 0, j = 0; i < tri.numIndexes; i += 3, j++) {
             if (facing[j] != 0) {
                 continue;
@@ -222,7 +222,7 @@ public class tr_turboshadow {
         } else {
 
             // make all triangles that are outside the light frustum "facing", so they won't cast shadows
-            indexes = tri.indexes;
+            indexes = tri.indexes.getAsIntArray();
             final byte[] modifyFacing = cullInfo.facing;
             final byte[] cullBits = cullInfo.cullBits;
             for (j = i = 0; i < tri.numIndexes; i += 3, j++) {
@@ -295,8 +295,8 @@ public class tr_turboshadow {
         int/*glIndex_t */[] shadowIndexes;
         if (USE_TRI_DATA_ALLOCATOR) {
             R_AllocStaticTriSurfIndexes(newTri, (numShadowingFaces + tri.numSilEdges) * 6);
-            tempIndexes = newTri.indexes;
-            shadowIndexes = newTri.indexes;
+            tempIndexes = newTri.indexes.getAsIntArray();
+            shadowIndexes = newTri.indexes.getAsIntArray();
         } else {
             tempIndexes = new int[tri.numSilEdges * 6];
             shadowIndexes = tempIndexes;
@@ -343,7 +343,7 @@ public class tr_turboshadow {
             // allocate memory for the indexes
             R_AllocStaticTriSurfIndexes(newTri, newTri.numIndexes);
             // copy the indexes we created for the sil planes
-            SIMDProcessor.Memcpy(newTri.indexes, tempIndexes, numShadowIndexes /* sizeof( tempIndexes[0] )*/);
+            SIMDProcessor.Memcpy(newTri.indexes.getIntBuffer(), tempIndexes, numShadowIndexes /* sizeof( tempIndexes[0] )*/);
         }
 
         // these have no effect, because they extend to infinity
@@ -352,7 +352,7 @@ public class tr_turboshadow {
         // put some faces on the model and some on the distant projection
         indexes = tri.silIndexes;
         shadowIndex = numShadowIndexes;
-        shadowIndexes = newTri.indexes;
+        shadowIndexes = newTri.indexes.getAsIntArray();
         for (i = 0, j = 0; i < tri.numIndexes; i += 3, j++) {
             if (facing[j] != 0) {
                 continue;

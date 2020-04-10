@@ -221,7 +221,7 @@ public class Model_prt {
 
                 // build the indexes
                 int numIndexes = 0;
-                /*glIndex_t*/ final int[] indexes = surf.geometry.indexes;
+                /*glIndex_t*/ final int[] indexes = surf.geometry.indexes.getAsIntArray();
                 for (int i = 0; i < numVerts; i += 4) {
                     indexes[numIndexes + 0] = i;
                     indexes[numIndexes + 1] = i + 2;

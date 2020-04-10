@@ -380,8 +380,8 @@ public class Model_local {
                 final srfTriangles_s tri = surf.geometry;
 
                 for (int j = 0; j < tri.numIndexes; j += 3) {
-                    final float area = idWinding.TriangleArea(tri.verts[tri.indexes[j]].xyz,
-                            tri.verts[tri.indexes[j + 1]].xyz, tri.verts[tri.indexes[j + 2]].xyz);
+                    final float area = idWinding.TriangleArea(tri.verts[tri.indexes.getIntBuffer().get(j)].xyz,
+                            tri.verts[tri.indexes.getIntBuffer().get(j + 1)].xyz, tri.verts[tri.indexes.getIntBuffer().get(j + 2)].xyz);
                     surf.shader.AddToSurfaceArea(area);
                 }
             }
@@ -691,7 +691,7 @@ public class Model_local {
                 R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
                 for (j = 0; j < tri.numIndexes; ++j) {
                     f.ReadInt(index);
-                    tri.indexes[j] = index[0];
+                    tri.indexes.getIntBuffer().put(j, index[0]);
                 }
 
                 f.ReadInt(vert);
@@ -744,7 +744,7 @@ public class Model_local {
                 final srfTriangles_s tri = surf.geometry;
                 f.WriteInt(tri.numIndexes);
                 for (j = 0; j < tri.numIndexes; ++j) {
-                    f.WriteInt(tri.indexes[j]);
+                    f.WriteInt(tri.indexes.getIntBuffer().get(j));
                 }
                 f.WriteInt(tri.numVerts);
                 for (j = 0; j < tri.numVerts; ++j) {
@@ -971,12 +971,12 @@ public class Model_local {
 //			tri.indexes[ v + 5 ] = i * width + j + 1;
 //}else
                     {
-                        tri.indexes[ v + 0] = (i * width) + j;
-                        tri.indexes[ v + 1] = (i * width) + j + 1;
-                        tri.indexes[ v + 2] = ((i + 1) * width) + j + 1;
-                        tri.indexes[ v + 3] = (i * width) + j;
-                        tri.indexes[ v + 4] = ((i + 1) * width) + j + 1;
-                        tri.indexes[ v + 5] = ((i + 1) * width) + j;
+                        tri.indexes.getIntBuffer().put( v + 0, (i * width) + j);
+                        tri.indexes.getIntBuffer().put( v + 1, (i * width) + j + 1);
+                        tri.indexes.getIntBuffer().put( v + 2, ((i + 1) * width) + j + 1);
+                        tri.indexes.getIntBuffer().put( v + 3, (i * width) + j);
+                        tri.indexes.getIntBuffer().put( v + 4, ((i + 1) * width) + j + 1);
+                        tri.indexes.getIntBuffer().put( v + 5, ((i + 1) * width) + j);
                     }
                 }
             }
@@ -1315,7 +1315,7 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.indexes[tri.numIndexes] = mv.index;
+                        tri.indexes.getIntBuffer().put(tri.numIndexes, mv.index);
                         tri.numIndexes++;
                     }
                 }
@@ -1685,7 +1685,7 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.indexes[tri.numIndexes] = mv.index;
+                        tri.indexes.getIntBuffer().put(tri.numIndexes, mv.index);
                         tri.numIndexes++;
                     }
                 }
@@ -1987,7 +1987,7 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.indexes[tri.numIndexes] = mv.index;
+                        tri.indexes.getIntBuffer().put(tri.numIndexes, mv.index);
                         tri.numIndexes++;
                     }
                 }
@@ -2296,12 +2296,12 @@ public class Model_local {
         tri.verts[tri.numVerts + 3].st.oSet(0, 0);
         tri.verts[tri.numVerts + 3].st.oSet(1, 1);
 
-        tri.indexes[tri.numIndexes + 0] = tri.numVerts + 0;
-        tri.indexes[tri.numIndexes + 1] = tri.numVerts + 1;
-        tri.indexes[tri.numIndexes + 2] = tri.numVerts + 2;
-        tri.indexes[tri.numIndexes + 3] = tri.numVerts + 0;
-        tri.indexes[tri.numIndexes + 4] = tri.numVerts + 2;
-        tri.indexes[tri.numIndexes + 5] = tri.numVerts + 3;
+        tri.indexes.getIntBuffer().put(tri.numIndexes + 0, tri.numVerts + 0);
+        tri.indexes.getIntBuffer().put(tri.numIndexes + 1, tri.numVerts + 1);
+        tri.indexes.getIntBuffer().put(tri.numIndexes + 2, tri.numVerts + 2);
+        tri.indexes.getIntBuffer().put(tri.numIndexes + 3, tri.numVerts + 0);
+        tri.indexes.getIntBuffer().put(tri.numIndexes + 4, tri.numVerts + 2);
+        tri.indexes.getIntBuffer().put(tri.numIndexes + 5, tri.numVerts + 3);
 
         tri.numVerts += 4;
         tri.numIndexes += 6;

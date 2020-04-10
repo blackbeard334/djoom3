@@ -82,7 +82,7 @@ public class ModelDecal {
         public idRenderModelDecal() {
 //	memset( &tri, 0, sizeof( tri ) );
             this.tri.verts = this.verts;
-            this.tri.indexes = this.indexes;
+            this.tri.indexes.createBuffer(this.indexes);
             this.material = null;
             this.nextDecal = null;
         }
@@ -242,9 +242,9 @@ public class ModelDecal {
 
                 // find triangles inside the projection volume
                 for (int triNum = 0, index = 0; index < stri.numIndexes; index += 3, triNum++) {
-                    final int v1 = stri.indexes[index + 0];
-                    final int v2 = stri.indexes[index + 1];
-                    final int v3 = stri.indexes[index + 2];
+                    final int v1 = stri.indexes.getIntBuffer().get(index + 0);
+                    final int v2 = stri.indexes.getIntBuffer().get(index + 1);
+                    final int v3 = stri.indexes.getIntBuffer().get(index + 2);
 
                     // skip triangles completely off one side
                     if ((cullBits[v1] & cullBits[v2] & cullBits[v3]) != 0) {
@@ -262,7 +262,7 @@ public class ModelDecal {
                     fw.SetNumPoints(3);
                     if (localInfo.parallel) {
                         for (int j = 0; j < 3; j++) {
-                            fw.oGet(j).oSet(stri.verts[stri.indexes[index + j]].xyz);
+                            fw.oGet(j).oSet(stri.verts[stri.indexes.getIntBuffer().get(index + j)].xyz);
                             fw.oGet(j).s = localInfo.textureAxis[0].Distance(fw.oGet(j).ToVec3());
                             fw.oGet(j).t = localInfo.textureAxis[1].Distance(fw.oGet(j).ToVec3());
                         }
@@ -271,7 +271,7 @@ public class ModelDecal {
                             idVec3 dir;
                             final float[] scale = new float[1];
 
-                            fw.oGet(j).oSet(stri.verts[stri.indexes[index + j]].xyz);
+                            fw.oGet(j).oSet(stri.verts[stri.indexes.getIntBuffer().get(index + j)].xyz);
                             dir = fw.oGet(j).ToVec3().oMinus(localInfo.projectionOrigin);
                             localInfo.boundingPlanes[NUM_DECAL_BOUNDING_PLANES - 1].RayIntersection(fw.oGet(j).ToVec3(), dir, scale);
                             dir = fw.oGet(j).ToVec3().oPlus(dir.oMultiply(scale[0]));
@@ -330,7 +330,7 @@ public class ModelDecal {
                     // keep this triangle
                     if (newNumIndexes != i) {
                         for (j = 0; j < 3; j++) {
-                            decals.tri.indexes[newNumIndexes + j] = decals.tri.indexes[i + j];
+                            decals.tri.indexes.getIntBuffer().put(newNumIndexes + j, decals.tri.indexes.getIntBuffer().get(i + j));
                             decals.indexStartTime[newNumIndexes + j] = decals.indexStartTime[i + j];
                         }
                     }
@@ -350,7 +350,7 @@ public class ModelDecal {
 //	memset( inUse, 0, sizeof( inUse ) );
             Arrays.fill(inUse, 0);
             for (i = 0; i < decals.tri.numIndexes; i++) {
-                inUse[decals.tri.indexes[i]] = 1;
+                inUse[decals.tri.indexes.getIntBuffer().get(i)] = 1;
             }
 
             newNumVerts = 0;
@@ -366,7 +366,7 @@ public class ModelDecal {
             decals.tri.numVerts = newNumVerts;
 
             for (i = 0; i < decals.tri.numIndexes; i++) {
-                decals.tri.indexes[i] = inUse[decals.tri.indexes[i]];
+                decals.tri.indexes.getIntBuffer().put(i, inUse[decals.tri.indexes.getIntBuffer().get(i)]);
             }
 
             return decals;
@@ -403,7 +403,7 @@ public class ModelDecal {
                 f = (float) deltaTime / decalInfo.fadeTime;
 
                 for (j = 0; j < 3; j++) {
-                    final int ind = this.tri.indexes[i + j];
+                    final int ind = this.tri.indexes.getIntBuffer().get(i + j);
 
                     for (int k = 0; k < 4; k++) {
                         final float fcolor = decalInfo.start[k] + ((decalInfo.end[k] - decalInfo.start[k]) * f);
@@ -487,9 +487,9 @@ public class ModelDecal {
                     }
                 }
                 for (i = 2; i < w.GetNumPoints(); i++) {
-                    this.tri.indexes[this.tri.numIndexes + 0] = this.tri.numVerts;
-                    this.tri.indexes[this.tri.numIndexes + 1] = (this.tri.numVerts + i) - 1;
-                    this.tri.indexes[this.tri.numIndexes + 2] = this.tri.numVerts + i;
+                    this.tri.indexes.getIntBuffer().put(this.tri.numIndexes + 0, this.tri.numVerts);
+                    this.tri.indexes.getIntBuffer().put(this.tri.numIndexes + 1, (this.tri.numVerts + i) - 1);
+                    this.tri.indexes.getIntBuffer().put(this.tri.numIndexes + 2, this.tri.numVerts + i);
                     this.indexStartTime[this.tri.numIndexes]
                             = this.indexStartTime[this.tri.numIndexes + 1]
                             = this.indexStartTime[this.tri.numIndexes + 2] = startTime;

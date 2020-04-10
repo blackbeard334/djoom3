@@ -566,7 +566,7 @@ public class Interaction {
                             }
 
                             if (NOT(lightTris.indexCache) && r_useIndexBuffers.GetBool()) {
-                                lightTris.indexCache = vertexCache.Alloc(lightTris.indexes, lightTris.numIndexes * Integer.BYTES, true);
+                                lightTris.indexCache = vertexCache.Alloc(lightTris.indexes.getByteBuffer(), lightTris.numIndexes * Integer.BYTES, true);
                             }
                             if (lightTris.indexCache != null) {
                                 vertexCache.Touch(lightTris.indexCache);
@@ -644,7 +644,7 @@ public class Interaction {
                     vertexCache.Touch(shadowTris.shadowCache);
 
                     if (NOT(shadowTris.indexCache) && r_useIndexBuffers.GetBool()) {
-                        shadowTris.indexCache = vertexCache.Alloc(shadowTris.indexes, shadowTris.numIndexes * Integer.BYTES, true);
+                        shadowTris.indexCache = vertexCache.Alloc(shadowTris.indexes.getByteBuffer(), shadowTris.numIndexes * Integer.BYTES, true);
 
                         vertexCache.Touch(shadowTris.indexCache);
                     }
@@ -1261,16 +1261,16 @@ public class Interaction {
                 R_AllocStaticTriSurfIndexes(newTri, tri.numIndexes);
 
                 // back face cull the individual triangles
-                indexes = newTri.indexes;
+                indexes = newTri.indexes.getAsIntArray();
                 final byte[] facing = cullInfo.facing;
                 for (faceNum = i = 0; i < tri.numIndexes; i += 3, faceNum++) {
                     if (0 == facing[ faceNum]) {
                         c_backfaced++;
                         continue;
                     }
-                    indexes[numIndexes + 0] = tri.indexes[i + 0];
-                    indexes[numIndexes + 1] = tri.indexes[i + 1];
-                    indexes[numIndexes + 2] = tri.indexes[i + 2];
+                    indexes[numIndexes + 0] = tri.indexes.getIntBuffer().get(i + 0);
+                    indexes[numIndexes + 1] = tri.indexes.getIntBuffer().get(i + 1);
+                    indexes[numIndexes + 2] = tri.indexes.getIntBuffer().get(i + 2);
                     numIndexes += 3;
                 }
 
@@ -1288,7 +1288,7 @@ public class Interaction {
             R_AllocStaticTriSurfIndexes(newTri, tri.numIndexes);
 
             // cull individual triangles
-            indexes = newTri.indexes;
+            indexes = newTri.indexes.getAsIntArray();
             final byte[] facing = cullInfo.facing;
             final byte[] cullBits = cullInfo.cullBits;
             for (faceNum = i = 0; i < tri.numIndexes; i += 3, faceNum++) {
@@ -1304,9 +1304,9 @@ public class Interaction {
                     }
                 }
 
-                i1 = tri.indexes[i + 0];
-                i2 = tri.indexes[i + 1];
-                i3 = tri.indexes[i + 2];
+                i1 = tri.indexes.getIntBuffer().get(i + 0);
+                i2 = tri.indexes.getIntBuffer().get(i + 1);
+                i3 = tri.indexes.getIntBuffer().get(i + 2);
 
                 // fast cull outside the frustum
                 // if all three points are off one plane side, it definately isn't visible
