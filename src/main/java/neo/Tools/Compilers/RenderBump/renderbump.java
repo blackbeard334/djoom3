@@ -8,6 +8,24 @@ import static neo.Renderer.Image_process.R_MipMap;
 import static neo.Renderer.Image_process.R_VerticalFlip;
 import static neo.Renderer.Material.SURF_NULLNORMAL;
 import static neo.Renderer.ModelManager.renderModelManager;
+import static neo.Renderer.qgl.qglBegin;
+import static neo.Renderer.qgl.qglClear;
+import static neo.Renderer.qgl.qglClearColor;
+import static neo.Renderer.qgl.qglColor3f;
+import static neo.Renderer.qgl.qglColor3ubv;
+import static neo.Renderer.qgl.qglCullFace;
+import static neo.Renderer.qgl.qglDepthFunc;
+import static neo.Renderer.qgl.qglDepthMask;
+import static neo.Renderer.qgl.qglDisable;
+import static neo.Renderer.qgl.qglEnable;
+import static neo.Renderer.qgl.qglEnd;
+import static neo.Renderer.qgl.qglFlush;
+import static neo.Renderer.qgl.qglLoadIdentity;
+import static neo.Renderer.qgl.qglMatrixMode;
+import static neo.Renderer.qgl.qglOrtho;
+import static neo.Renderer.qgl.qglReadPixels;
+import static neo.Renderer.qgl.qglVertex3f;
+import static neo.Renderer.qgl.qglViewport;
 import static neo.Renderer.tr_local.glConfig;
 import static neo.Renderer.tr_local.tr;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurf;
@@ -21,24 +39,6 @@ import static neo.framework.Common.common;
 import static neo.idlib.math.Vector.DotProduct;
 import static neo.idlib.math.Vector.VectorSubtract;
 import static neo.idlib.math.Vector.getVec3_origin;
-import static neo.open.gl.QGL.qglBegin;
-import static neo.open.gl.QGL.qglClear;
-import static neo.open.gl.QGL.qglClearColor;
-import static neo.open.gl.QGL.qglColor3f;
-import static neo.open.gl.QGL.qglColor3ubv;
-import static neo.open.gl.QGL.qglCullFace;
-import static neo.open.gl.QGL.qglDepthFunc;
-import static neo.open.gl.QGL.qglDepthMask;
-import static neo.open.gl.QGL.qglDisable;
-import static neo.open.gl.QGL.qglEnable;
-import static neo.open.gl.QGL.qglEnd;
-import static neo.open.gl.QGL.qglFlush;
-import static neo.open.gl.QGL.qglLoadIdentity;
-import static neo.open.gl.QGL.qglMatrixMode;
-import static neo.open.gl.QGL.qglOrtho;
-import static neo.open.gl.QGL.qglReadPixels;
-import static neo.open.gl.QGL.qglVertex3f;
-import static neo.open.gl.QGL.qglViewport;
 import static neo.open.gl.QGLConstantsIfc.GL_ALPHA_TEST;
 import static neo.open.gl.QGLConstantsIfc.GL_BLEND;
 import static neo.open.gl.QGLConstantsIfc.GL_COLOR_BUFFER_BIT;
@@ -263,7 +263,7 @@ public class renderbump {
                     for (l = -1; l < 2; l++) {
                         int in;
 
-//					in = orig + ( ((j+l)&(height-1))*width + ((i+k)&(width-1)) ) * 4;
+//                        in = orig + ( ((j+l)&(height-1))*width + ((i+k)&(width-1)) ) * 4;
                         in = ((((j + l) & (height - 1)) * width) + ((i + k) & (width - 1))) * 4;
 
                         if ((orig[in + 0] == emptyR) && (orig[in + 1] == emptyG) && (orig[in + 2] == emptyB)) {

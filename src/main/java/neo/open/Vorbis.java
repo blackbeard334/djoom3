@@ -1,4 +1,4 @@
-package neo.open.al;
+package neo.open;
 
 import static org.lwjgl.stb.STBVorbis.VORBIS__no_error;
 import static org.lwjgl.stb.STBVorbis.VORBIS_bad_packet_type;
@@ -27,8 +27,6 @@ import java.nio.ByteBuffer;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.stb.STBVorbis;
 import org.lwjgl.stb.STBVorbisInfo;
-
-import neo.open.Nio;
 
 public class Vorbis {
 
