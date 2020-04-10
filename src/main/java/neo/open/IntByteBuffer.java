@@ -20,8 +20,7 @@ public class IntByteBuffer {
 	@Deprecated
 	public void createBuffer(int[] indexes) {
 		int length = indexes == null ? 0 : indexes.length;
-		this.byteBuffer = Nio.newByteBuffer(length * 4);
-		this.intBuffer = byteBuffer.asIntBuffer();
+		createBuffer(length);
 		if (length > 0) {
 			intBuffer.put(indexes);
 		}
