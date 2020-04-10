@@ -2043,7 +2043,7 @@ public class CollisionModel_local {
                 	// Unlikely argument type CollisionModel_local.cm_vertex_s for indexOf(Object) on a List<CollisionModel_local.cm_trmVertex_s>
                 	// => indexOf returns always -1
                 	// replace analog cpp code
-                	trmFeature = Arrays.asList(tw.vertices).indexOf(v);
+					trmFeature = Arrays.asList(tw.vertices).indexOf(v);
                 	tw.trace.c.trmFeature = trmFeature;
         			// original cpp code: tw->trace.c.trmFeature = trmpoly - tw->polys;
                     // plain cpp2java does not work: tw.trace.c.trmFeature = trmpoly - tw.polys;

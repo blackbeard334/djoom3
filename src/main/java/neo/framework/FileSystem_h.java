@@ -4292,7 +4292,7 @@ public class FileSystem_h {
         private pack_t LoadZipFile(final String zipfile) {
             fileInPack_s[] buildBuffer;
             pack_t pack;
-            ZipFile uf;
+            ZipFile uf=null;
 //            int err;
 //            unz_global_info gi;
             String filename_inzip;//= new char[MAX_ZIPPED_FILE_NAME];
@@ -4411,6 +4411,14 @@ public class FileSystem_h {
 
             } catch (final IOException ex) {
                 Logger.getLogger(FileSystem_h.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+            	if (uf!=null) {
+                	try {
+						uf.close();
+					} catch (IOException e) {
+						// ignore;
+					}
+            	}
             }
 
             return null;

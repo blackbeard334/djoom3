@@ -150,9 +150,9 @@ public class VectorSet {
         //
         //
 
-        private idVectorSubset() {
-            this.dimension = -1;
-        }
+        //private idVectorSubset() {
+        //    this.dimension = -1;
+        //}
 
         public idVectorSubset(int dimension) {
             this.dimension = dimension;

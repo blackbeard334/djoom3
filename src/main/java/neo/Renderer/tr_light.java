@@ -967,6 +967,9 @@ public class tr_light {
                 R_LinkLightSurf(vLight.globalShadows, tri, null, light, null, vLight.scissorRect, true /* FIXME? */);
             }
         }
+        if (z == 0) {
+        	//System.out.println("		ptr "+z+" times");
+        }
     }
     //================================================================================================================================================================================================
 
