@@ -6,8 +6,6 @@ import static neo.idlib.Lib.colorGreen;
 import static neo.idlib.Lib.colorRed;
 import static neo.idlib.Lib.colorYellow;
 
-import java.util.ArrayList;
-
 import neo.Renderer.tr_local.idRenderEntityLocal;
 import neo.Renderer.tr_local.idRenderLightLocal;
 import neo.Renderer.tr_local.idScreenRect;
@@ -28,56 +26,54 @@ public class tr_shadowbounds {
 // --cass
     static class MyArray<T> {
 
-        //private MyArray() {
-        //    this.N = -1;
-        //}
+        private MyArray() {
+            this.N = -1;
+        }
 
         public MyArray(final int N) //: s(0) 
         {
-        	//this.N = N;
-            this.v = new ArrayList<T>();
+            this.N = N;
+            this.v = (T[]) new Object[N];
         }
 
         public MyArray(final int N, final MyArray<T> cpy) //: s(cpy.s)
         {
-            //this.N = N;
-            this.v = new ArrayList<T>();
-            for (int i = 0; i < cpy.size(); i++) {
-            	this.v.add(cpy.v.get(i));
+            this.N = N;
+            this.v = (T[]) new Object[N];
+            for (int i = 0; i < this.s; i++) {
+                this.v[i] = cpy.v[i];
             }
         }
-        
+
         public void push_back(final T i) {
-            //this.v[this.s] = i;
-        	this.v.add(i);
-            //this.s++;
+            this.v[this.s] = i;
+            this.s++;
             //if(s > max_size)
             //	max_size = int(s);
         }
 
         public T oGet(final int index) {
-            return this.v.get(index);
+            return this.v[index];
         }
 
         public T oSet(final int index, final T value) {
-            return this.v.set(index, value);
+            return this.v[index] = value;
         }
 
 //	const T & operator[](int i) const {
 //		return v[i];
 //	}
         int size() {
-            return this.v.size();
+            return this.s;
         }
 
         void empty() {
-            this.v.clear();
+            this.s = 0;
         }
 //
-       // private final int N;
-        ArrayList<T> v;
-        //T[] v;// = (T[]) new Object[N];
-        //int s;
+        private final int N;
+        T[] v;// = (T[]) new Object[N];
+        int s;
 //	static int max_size;
     }
 
@@ -242,7 +238,7 @@ public class tr_shadowbounds {
                     // check all remaining polygons
                     for (int j = i + 1; j < P; j++) {
                         final MyArrayInt vj = this.p.oGet(j).vi;
-                        //final MyArrayInt nj = this.p.oGet(j).ni;
+                        final MyArrayInt nj = this.p.oGet(j).ni;
                         final int Sj = vj.size();
 
                         for (int jj = 0; jj < Sj; jj++) {
