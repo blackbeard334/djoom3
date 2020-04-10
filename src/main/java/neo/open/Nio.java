@@ -2,6 +2,7 @@ package neo.open;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -12,6 +13,7 @@ import java.nio.IntBuffer;
  */
 public class Nio {
 
+	public static final int SIZEOF_DOUBLE = 4;
 	public static final int SIZEOF_FLOAT = 4;
 	public static final int SIZEOF_INT = 4;
 
@@ -25,6 +27,16 @@ public class Nio {
 		ByteBuffer bb = ByteBuffer.allocateDirect(numElements);
 		bb.order(order);
 		return bb;
+	}
+
+	public static DoubleBuffer newDoubleBuffer(int numElements) {
+		ByteBuffer bb = newByteBuffer(numElements * SIZEOF_DOUBLE);
+		return bb.asDoubleBuffer();
+	}
+
+	public static DoubleBuffer newDoubleBuffer(int numElements, ByteOrder order) {
+		ByteBuffer bb = newByteBuffer(numElements * SIZEOF_DOUBLE, order);
+		return bb.asDoubleBuffer();
 	}
 
 	public static FloatBuffer newFloatBuffer(int numElements) {
@@ -50,6 +62,13 @@ public class Nio {
 	/**
 	 * @deprecated the calling functions should send ByteBuffers instead.
 	 */
+	public static ByteBuffer wrap(final boolean booleanValue) {
+		return (ByteBuffer) newByteBuffer(1).put(booleanValue ? (byte) 1 : (byte) 0).flip();
+	}
+
+	/**
+	 * @deprecated the calling functions should send ByteBuffers instead.
+	 */
 	public static ByteBuffer wrap(final boolean[] booleanArray) {
 		byte[] byteArray = new byte[booleanArray.length];
 		for (int i = 0; i < byteArray.length; i++) {
@@ -61,9 +80,41 @@ public class Nio {
 	/**
 	 * @deprecated the calling functions should send ByteBuffers instead.
 	 */
+	public static ByteBuffer wrap(final byte byteValue) {
+
+		return (ByteBuffer) newByteBuffer(1).put(byteValue).flip();
+	}
+
+	/**
+	 * @deprecated the calling functions should send ByteBuffers instead.
+	 */
 	public static ByteBuffer wrap(final byte[] byteArray) {
 
 		return (ByteBuffer) newByteBuffer(byteArray.length).put(byteArray).flip();
+	}
+
+	/**
+	 * @deprecated the calling functions should send DoubleBuffers instead.
+	 */
+	public static DoubleBuffer wrap(final double doubleValue) {
+
+		return (DoubleBuffer) newDoubleBuffer(1).put(doubleValue).flip();
+	}
+
+	/**
+	 * @deprecated the calling functions should send DoubleBuffers instead.
+	 */
+	public static DoubleBuffer wrap(final double[] doubleArray) {
+
+		return (DoubleBuffer) newDoubleBuffer(doubleArray.length).put(doubleArray).flip();
+	}
+
+	/**
+	 * @deprecated the calling functions should send FloatBuffers instead.
+	 */
+	public static FloatBuffer wrap(final float floatValue) {
+
+		return (FloatBuffer) newFloatBuffer(1).put(floatValue).flip();
 	}
 
 	/**
@@ -92,6 +143,14 @@ public class Nio {
 			}
 			return (FloatBuffer) buffer.flip();
 		}
+	}
+
+	/**
+	 * @deprecated the calling functions should send IntBuffers instead.
+	 */
+	public static IntBuffer wrap(final int intValue) {
+
+		return (IntBuffer) newIntBuffer(1).put(intValue).flip();
 	}
 
 	/**
