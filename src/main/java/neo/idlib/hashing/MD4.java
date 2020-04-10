@@ -57,7 +57,8 @@ public class MD4 {
 
         try {
             final int currentPosition = data.position();
-            final MessageDigest messageDigest = MD4 ? sun.security.provider.MD4.getInstance() : MessageDigest.getInstance("MD5");
+            // The type sun.security.provider.MD4 is not accessible in JDK 11, replaced with neo.open.MD4
+            final MessageDigest messageDigest = MD4 ? neo.open.MD4.getInstance() : MessageDigest.getInstance("MD5");
 
             messageDigest.update(data);
 
