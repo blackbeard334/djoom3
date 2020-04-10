@@ -3358,7 +3358,7 @@ public class idMatX {
     public boolean Cholesky_UpdateRowColumn(final idVecX v, int r) {
         int i, j;
         double sum;
-        float[] original, y;
+        float[] original;//, y;
         final idVecX addSub = new idVecX();
 
         assert (this.numRows == this.numColumns);
@@ -3390,7 +3390,7 @@ public class idMatX {
 //		original = (float *) _alloca16( numColumns * sizeof( float ) );
 //		y = (float *) _alloca16( numColumns * sizeof( float ) );
             original = new float[this.numColumns];
-            y = new float[this.numColumns];
+            //y = new float[this.numColumns];
 
             // calculate original row/column of matrix
             for (i = 0; i < this.numRows; i++) {
