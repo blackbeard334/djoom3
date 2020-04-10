@@ -450,8 +450,9 @@ public class tr_backend {
                     common.Error("GL_State: invalid dst blend state bits\n");
                     break;
             }
-//            qglEnable(34336);
-//            qglEnable(34820);
+//            http://legacy.lwjgl.org/javadoc/constant-values.html
+//            qglEnable(34336); //  GL_VERTEX_PROGRAM_ARB
+//            qglEnable(34820); // 	GL_FRAGMENT_PROGRAM_ARB
 //            if (srcFactor == 770) {
                 qglBlendFunc(srcFactor, dstFactor);
 //            }

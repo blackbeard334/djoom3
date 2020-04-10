@@ -263,7 +263,7 @@ public class renderbump {
                     for (l = -1; l < 2; l++) {
                         int in;
 
-//					in = orig + ( ((j+l)&(height-1))*width + ((i+k)&(width-1)) ) * 4;
+//                        in = orig + ( ((j+l)&(height-1))*width + ((i+k)&(width-1)) ) * 4;
                         in = ((((j + l) & (height - 1)) * width) + ((i + k) & (width - 1))) * 4;
 
                         if ((orig[in + 0] == emptyR) && (orig[in + 1] == emptyG) && (orig[in + 2] == emptyB)) {
