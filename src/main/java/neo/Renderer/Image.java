@@ -651,7 +651,7 @@ public class Image {
 
             if (com_purgeAll.GetBool()) {
                 final float/*GLclampf*/ priority = 1.0f;
-                qglPrioritizeTextures(Nio.wrap(new int[] {this.texNum}), Nio.wrap(new float[] {priority}));
+                qglPrioritizeTextures(Nio.wrap(this.texNum), Nio.wrap(priority));
             }
         }
         private static int DBG_Bind = 0;
