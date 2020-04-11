@@ -374,7 +374,7 @@ public class Model_liquid {
             tri.deformedSurface = true;
 
             tri.numIndexes = this.deformInfo.numIndexes;
-            tri.indexes.createBuffer(this.deformInfo.indexes);
+            tri.indexes = this.deformInfo.indexes;
             tri.silIndexes = this.deformInfo.silIndexes;
             tri.numMirroredVerts = this.deformInfo.numMirroredVerts;
             tri.mirroredVerts = this.deformInfo.mirroredVerts;

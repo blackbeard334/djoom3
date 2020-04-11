@@ -89,9 +89,9 @@ public class tr_subview {
     public static void R_PlaneForSurface(final srfTriangles_s tri, idPlane plane) {
         idDrawVert v1, v2, v3;
 
-        v1 = tri.verts[tri.indexes.getIntBuffer().get(0)];
-        v2 = tri.verts[tri.indexes.getIntBuffer().get(1)];
-        v3 = tri.verts[tri.indexes.getIntBuffer().get(2)];
+        v1 = tri.verts[tri.indexes[0]];
+        v2 = tri.verts[tri.indexes[1]];
+        v3 = tri.verts[tri.indexes[2]];
         plane.FromPoints(v1.xyz, v2.xyz, v3.xyz);
     }
 
@@ -161,9 +161,9 @@ public class tr_subview {
             float dot;
             idVec3 d1, d2;
 
-            final idVec3 v1 = tri.verts[tri.indexes.getIntBuffer().get(i)].xyz;
-            final idVec3 v2 = tri.verts[tri.indexes.getIntBuffer().get(i + 1)].xyz;
-            final idVec3 v3 = tri.verts[tri.indexes.getIntBuffer().get(i + 2)].xyz;
+            final idVec3 v1 = tri.verts[tri.indexes[i]].xyz;
+            final idVec3 v2 = tri.verts[tri.indexes[i + 1]].xyz;
+            final idVec3 v3 = tri.verts[tri.indexes[i + 2]].xyz;
 
             // this is a hack, because R_GlobalPointToLocal doesn't work with the non-normalized
             // axis that we get from the gui view transform.  It doesn't hurt anything, because

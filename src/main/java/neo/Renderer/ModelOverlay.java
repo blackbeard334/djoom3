@@ -152,9 +152,9 @@ public class ModelOverlay {
                 int numIndexes = 0;
                 int triNum = 0;
                 for (int index = 0; index < stri.numIndexes; index += 3, triNum++) {
-                    final int v1 = stri.indexes.getIntBuffer().get(index + 0);
-                    final int v2 = stri.indexes.getIntBuffer().get(index + 1);
-                    final int v3 = stri.indexes.getIntBuffer().get(index + 2);
+                    final int v1 = stri.indexes[index + 0];
+                    final int v2 = stri.indexes[index + 1];
+                    final int v3 = stri.indexes[index + 2];
 
                     // skip triangles completely off one side
                     if ((cullBits[v1] & cullBits[v2] & cullBits[v3]) != 0) {
@@ -164,7 +164,7 @@ public class ModelOverlay {
                     // we could do more precise triangle culling, like the light interaction does, if desired
                     // keep this triangle
                     for (int vnum = 0; vnum < 3; vnum++) {
-                        final int ind = stri.indexes.getIntBuffer().get(index + vnum);
+                        final int ind = stri.indexes[index + vnum];
                         if (vertexRemap[ind] == -1) {
                             vertexRemap[ind] = numVerts;
 
@@ -307,7 +307,7 @@ public class ModelOverlay {
 
                     // copy indexes;
                     for (j = 0; j < surf.numIndexes; j++) {
-                        newTri.indexes.getIntBuffer().put(numIndexes + j, numVerts + surf.indexes[j]);
+                        newTri.indexes[numIndexes + j] = numVerts + surf.indexes[j];
                     }
                     numIndexes += surf.numIndexes;
 

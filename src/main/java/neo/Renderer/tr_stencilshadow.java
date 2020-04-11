@@ -1381,27 +1381,27 @@ public class tr_stencilshadow {
             newTri.numShadowIndexesNoCaps = 0;
             for (i = 0; i < indexFrustumNumber; i++) {
                 final int c = indexRef[i].end - indexRef[i].silStart;
-                SIMDProcessor.Memcpy(newTri.indexes.getAsIntArray(), newTri.numShadowIndexesNoCaps, shadowIndexes, indexRef[i].silStart, c);
+                SIMDProcessor.Memcpy(newTri.indexes, newTri.numShadowIndexesNoCaps, shadowIndexes, indexRef[i].silStart, c);
                 newTri.numShadowIndexesNoCaps += c;
             }
             // copy rear cap indexes next
             newTri.numShadowIndexesNoFrontCaps = newTri.numShadowIndexesNoCaps;
             for (i = 0; i < indexFrustumNumber; i++) {
                 final int c = indexRef[i].silStart - indexRef[i].rearCapStart;
-                SIMDProcessor.Memcpy(newTri.indexes.getAsIntArray(), newTri.numShadowIndexesNoFrontCaps, shadowIndexes, indexRef[i].rearCapStart, c);
+                SIMDProcessor.Memcpy(newTri.indexes, newTri.numShadowIndexesNoFrontCaps, shadowIndexes, indexRef[i].rearCapStart, c);
                 newTri.numShadowIndexesNoFrontCaps += c;
             }
             // copy front cap indexes last
             newTri.numIndexes = newTri.numShadowIndexesNoFrontCaps;
             for (i = 0; i < indexFrustumNumber; i++) {
                 final int c = indexRef[i].rearCapStart - indexRef[i].frontCapStart;
-                SIMDProcessor.Memcpy(newTri.indexes.getAsIntArray(), newTri.numIndexes, shadowIndexes, indexRef[i].frontCapStart, c);
+                SIMDProcessor.Memcpy(newTri.indexes, newTri.numIndexes, shadowIndexes, indexRef[i].frontCapStart, c);
                 newTri.numIndexes += c;
             }
 
         } else {
             newTri.shadowCapPlaneBits = 63;	// we don't have optimized index lists
-            SIMDProcessor.Memcpy(newTri.indexes.getAsIntArray(), shadowIndexes, newTri.numIndexes);
+            SIMDProcessor.Memcpy(newTri.indexes, shadowIndexes, newTri.numIndexes);
         }
 
         if (optimize == SG_OFFLINE) {

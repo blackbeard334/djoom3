@@ -144,7 +144,7 @@ public class tr_light {
 
         if (true) {
 
-            SIMDProcessor.CreateTextureSpaceLightVectors(cache[0].localLightVector, localLightOrigin, tri.ambientSurface.verts, tri.ambientSurface.numVerts, tri.indexes.getAsIntArray(), tri.numIndexes);
+            SIMDProcessor.CreateTextureSpaceLightVectors(cache[0].localLightVector, localLightOrigin, tri.ambientSurface.verts, tri.ambientSurface.numVerts, tri.indexes, tri.numIndexes);
 
         } else {
 //	boolean []used = new boolean[tri.ambientSurface.numVerts];
@@ -358,7 +358,7 @@ public class tr_light {
         if (true) {
 
             SIMDProcessor.CreateSpecularTextureCoords(texCoords, localLightOrigin, localViewOrigin,
-                    tri.verts, tri.numVerts, tri.indexes.getAsIntArray(), tri.numIndexes);
+                    tri.verts, tri.numVerts, tri.indexes, tri.numIndexes);
 
         } else {
 //	bool *used = (bool *)_alloca16( tri.numVerts * sizeof( used[0] ) );
@@ -958,7 +958,7 @@ public class tr_light {
                 vertexCache.Touch(tri.shadowCache);
 
                 if (NOT(tri.indexCache) && r_useIndexBuffers.GetBool()) {
-                    tri.indexCache = vertexCache.Alloc(tri.indexes.getByteBuffer(), tri.numIndexes * Integer.BYTES, true);
+                    tri.indexCache = vertexCache.Alloc(tri.indexes, tri.numIndexes * Integer.BYTES, true);
                 }
                 if (tri.indexCache != null) {
                     vertexCache.Touch(tri.indexCache);
@@ -1339,7 +1339,7 @@ public class tr_light {
                 vertexCache.Touch(tri.ambientCache);
 
                 if (r_useIndexBuffers.GetBool() && NOT(tri.indexCache)) {
-                    tri.indexCache = vertexCache.Alloc(tri.indexes.getByteBuffer(), tri.numIndexes * Integer.BYTES, true);
+                    tri.indexCache = vertexCache.Alloc(tri.indexes, tri.numIndexes * Integer.BYTES, true);
                 }
                 if (tri.indexCache != null) {
                     vertexCache.Touch(tri.indexCache);

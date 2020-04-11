@@ -3,7 +3,6 @@ package neo.Renderer;
 import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_INT;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.stream.Stream;
 
 import neo.TempDump.SERiAL;
@@ -21,7 +20,6 @@ import neo.idlib.geometry.JointTransform.idJointQuat;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.open.IntByteBuffer;
 import neo.open.Nio;
 
 /**
@@ -129,7 +127,7 @@ public class Model {
     // our only drawing geometry type
     public static class srfTriangles_s {
 
-		public idBounds bounds;                 // for culling
+        public idBounds bounds;                 // for culling
 
         int     ambientViewCount;               // if == tr.viewCount, it is visible this view
 
@@ -144,10 +142,9 @@ public class Model {
         public idDrawVert[]        verts;       // vertices, allocated with special allocator
 
         public int                 numIndexes;  // for shadows, this has both front and rear end caps and silhouette planes
-        //public int /*glIndex_t*/[] indexes;     // indexes, allocated with special allocator
-        public IntByteBuffer indexes;           // indexes, allocated with special allocator
+        public int /*glIndex_t*/[] indexes;     // indexes, allocated with special allocator
 
-		public int/*glIndex_t*/[]  silIndexes;  // indexes changed to be the first vertex with same XYZ, ignoring normal and texcoords
+        public int/*glIndex_t*/[]  silIndexes;  // indexes changed to be the first vertex with same XYZ, ignoring normal and texcoords
 
         int         numMirroredVerts;           // this many verts at the end of the vert list are tangent mirrors
         int[]       mirroredVerts;              // tri->mirroredVerts[0] is the mirror of tri->numVerts - tri->numMirroredVerts + 0
@@ -198,7 +195,7 @@ public class Model {
             this.numVerts = 0;
             this.verts = null;
             this.numIndexes = 0;
-            this.indexes = new IntByteBuffer();
+            this.indexes = null;
             this.silIndexes = null;
             this.numMirroredVerts = 0;
             this.mirroredVerts = null;
@@ -234,7 +231,7 @@ public class Model {
         public final   int DBG_count   = DBG_counter++;
         
         public modelSurface_s(){
-            //final int a = 1;
+            final int a = 1;
         }
     }
 
