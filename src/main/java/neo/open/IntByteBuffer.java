@@ -7,6 +7,11 @@ public class IntByteBuffer {
 	private ByteBuffer byteBuffer;
 	private IntBuffer intBuffer;
 
+	public void clear() {
+		this.byteBuffer = null;
+		this.intBuffer = null;
+	}
+
 	public void createBuffer(ByteBuffer bb) {
 		this.byteBuffer = bb.duplicate();
 		this.intBuffer = byteBuffer.asIntBuffer();
