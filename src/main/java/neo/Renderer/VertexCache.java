@@ -352,17 +352,24 @@ public class VertexCache {
             return buffer;
         }
 
-        @Deprecated
-        public void Alloc(int[] data, int size, vertCache_s buffer, boolean indexBuffer /*= false*/) {
-            final ByteBuffer byteData = ByteBuffer.allocate(data.length * 4);
-            byteData.asIntBuffer().put(data);
+//        @Deprecated
+//        public void Alloc(int[] data, int size, vertCache_s buffer, boolean indexBuffer /*= false*/) {
+//            final ByteBuffer byteData = ByteBuffer.allocate(data.length * 4);
+//            byteData.asIntBuffer().put(data);
+//
+////            Alloc(byteData, size, buffer, indexBuffer);
+//            throw new Deprecation_Exception();
+//        }
 
-//            Alloc(byteData, size, buffer, indexBuffer);
-            throw new Deprecation_Exception();
-        }
-
+        /**
+         * 
+         * @param data int array
+         * @param size of int array
+         * @param indexBuffer
+         * @return
+         */
         public vertCache_s Alloc(int[] data, int size, boolean indexBuffer) {
-            final ByteBuffer byteData = Nio.newByteBuffer(size);
+            final ByteBuffer byteData = Nio.newByteBuffer(size * Integer.BYTES);
             byteData.asIntBuffer().put(data);
 
             return Alloc(byteData, size, indexBuffer);
