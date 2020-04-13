@@ -958,7 +958,7 @@ public class tr_light {
                 vertexCache.Touch(tri.shadowCache);
 
                 if (NOT(tri.indexCache) && r_useIndexBuffers.GetBool()) {
-                    tri.indexCache = vertexCache.Alloc(tri.indexes, tri.numIndexes * Integer.BYTES, true);
+                    tri.indexCache = vertexCache.Alloc(tri.indexes, tri.numIndexes, true);
                 }
                 if (tri.indexCache != null) {
                     vertexCache.Touch(tri.indexCache);
@@ -1339,7 +1339,7 @@ public class tr_light {
                 vertexCache.Touch(tri.ambientCache);
 
                 if (r_useIndexBuffers.GetBool() && NOT(tri.indexCache)) {
-                    tri.indexCache = vertexCache.Alloc(tri.indexes, tri.numIndexes * Integer.BYTES, true);
+                    tri.indexCache = vertexCache.Alloc(tri.indexes, tri.numIndexes, true);
                 }
                 if (tri.indexCache != null) {
                     vertexCache.Touch(tri.indexCache);

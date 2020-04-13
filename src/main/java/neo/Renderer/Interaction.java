@@ -566,7 +566,7 @@ public class Interaction {
                             }
 
                             if (NOT(lightTris.indexCache) && r_useIndexBuffers.GetBool()) {
-                                lightTris.indexCache = vertexCache.Alloc(lightTris.indexes, lightTris.numIndexes * Integer.BYTES, true);
+                                lightTris.indexCache = vertexCache.Alloc(lightTris.indexes, lightTris.numIndexes, true);
                             }
                             if (lightTris.indexCache != null) {
                                 vertexCache.Touch(lightTris.indexCache);
@@ -644,7 +644,7 @@ public class Interaction {
                     vertexCache.Touch(shadowTris.shadowCache);
 
                     if (NOT(shadowTris.indexCache) && r_useIndexBuffers.GetBool()) {
-                        shadowTris.indexCache = vertexCache.Alloc(shadowTris.indexes, shadowTris.numIndexes * Integer.BYTES, true);
+                        shadowTris.indexCache = vertexCache.Alloc(shadowTris.indexes, shadowTris.numIndexes, true);
 
                         vertexCache.Touch(shadowTris.indexCache);
                     }
