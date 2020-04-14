@@ -889,7 +889,7 @@ public class Image {
                 R_SetBorderTexels(scaledBuffer, width, height, rgba);
             }
 
-            if ((this.generatorFunction == null) && (((this.depth == TD_BUMP) && globalImages.image_writeNormalTGA.GetBool()) || ((this.depth != TD_BUMP) && globalImages.image_writeTGA.GetBool()))) {
+            if ((this.generatorFunction == null) && (((this.depth == TD_BUMP) && idImageManager.image_writeNormalTGA.GetBool()) || ((this.depth != TD_BUMP) && idImageManager.image_writeTGA.GetBool()))) {
                 // Optionally write out the texture to a .tga
 //                String[] filename = {null};
                 final String[] filename = new String[1];
@@ -926,7 +926,7 @@ public class Image {
             // one fragment program
             // if the image is precompressed ( either in palletized mode or true rxgb mode )
             // then it is loaded above and the swap never happens here
-            if ((this.depth == TD_BUMP) && (globalImages.image_useNormalCompression.GetInteger() != 1)) {
+            if ((this.depth == TD_BUMP) && (idImageManager.image_useNormalCompression.GetInteger() != 1)) {
                 for (int i = 0; i < (scaled_width[0] * scaled_height[0] * 4); i += 4) {
                     scaledBuffer.put(i + 3, scaledBuffer.get(i));
                     scaledBuffer.put(i, (byte) 0);
@@ -974,7 +974,7 @@ public class Image {
                 // level with a different color so you can see the
                 // rasterizer's texture level selection algorithm
                 // Changing the color doesn't help with lumminance/alpha/intensity formats...
-                if ((this.depth == TD_DIFFUSE) && globalImages.image_colorMipLevels.GetBool()) {
+                if ((this.depth == TD_DIFFUSE) && idImageManager.image_colorMipLevels.GetBool()) {
                     R_BlendOverTexture(scaledBuffer, scaled_width[0] * scaled_height[0], mipBlendColors[miplevel]);
                 }
 
@@ -1673,18 +1673,18 @@ public class Image {
             int size = 0;
 
             // perform optional picmip operation to save texture memory
-            if ((this.depth == TD_SPECULAR) && (globalImages.image_downSizeSpecular.GetInteger() != 0)) {
-                size = globalImages.image_downSizeSpecularLimit.GetInteger();
+            if ((this.depth == TD_SPECULAR) && (idImageManager.image_downSizeSpecular.GetInteger() != 0)) {
+                size = idImageManager.image_downSizeSpecularLimit.GetInteger();
                 if (size == 0) {
                     size = 64;
                 }
-            } else if ((this.depth == TD_BUMP) && (globalImages.image_downSizeBump.GetInteger() != 0)) {
-                size = globalImages.image_downSizeBumpLimit.GetInteger();
+            } else if ((this.depth == TD_BUMP) && (idImageManager.image_downSizeBump.GetInteger() != 0)) {
+                size = idImageManager.image_downSizeBumpLimit.GetInteger();
                 if (size == 0) {
                     size = 64;
                 }
-            } else if ((this.allowDownSize || globalImages.image_forceDownSize.GetBool()) && (globalImages.image_downSize.GetInteger() != 0)) {
-                size = globalImages.image_downSizeLimit.GetInteger();
+            } else if ((this.allowDownSize || idImageManager.image_forceDownSize.GetBool()) && (idImageManager.image_downSize.GetInteger() != 0)) {
+                size = idImageManager.image_downSizeLimit.GetInteger();
                 if (size == 0) {
                     size = 256;
                 }
@@ -1850,7 +1850,7 @@ public class Image {
                 return false;
             }
 
-            if (!globalImages.image_useCache.GetBool()) {
+            if (!idImageManager.image_useCache.GetBool()) {
                 return false;
             }
 
@@ -1859,7 +1859,7 @@ public class Image {
                 return false;
             }
 
-            if (globalImages.image_cacheMinK.GetInteger() <= 0) {
+            if (idImageManager.image_cacheMinK.GetInteger() <= 0) {
                 return false;
             }
 
@@ -1891,7 +1891,7 @@ public class Image {
             final int len = f.Length();
             fileSystem.CloseFile(f);
 
-            if (len <= (globalImages.image_cacheMinK.GetInteger() * 1024)) {
+            if (len <= (idImageManager.image_cacheMinK.GetInteger() * 1024)) {
                 return false;
             }
 
@@ -1911,7 +1911,7 @@ public class Image {
 
             // Always write the precompressed image if we're making a build
             if (!com_makingBuild.GetBool()) {
-                if (!globalImages.image_writePrecompressedTextures.GetBool() || !globalImages.image_usePrecompressedTextures.GetBool()) {
+                if (!idImageManager.image_writePrecompressedTextures.GetBool() || !idImageManager.image_usePrecompressedTextures.GetBool()) {
                     return;
                 }
             }
@@ -1969,7 +1969,7 @@ public class Image {
                     }
             }
 
-            if (globalImages.image_useOffLineCompression.GetBool() && FormatIsDXT(altInternalFormat)) {
+            if (idImageManager.image_useOffLineCompression.GetBool() && FormatIsDXT(altInternalFormat)) {
                 final String outFile = fileSystem.RelativePathToOSPath(filename, "fs_basepath");
                 final idStr inFile = new idStr(outFile);
                 inFile.StripFileExtension();
@@ -2153,7 +2153,7 @@ public class Image {
                 }
             }
 
-            if ((this.depth == TD_BUMP) && (globalImages.image_useNormalCompression.GetInteger() != 2)) {
+            if ((this.depth == TD_BUMP) && (idImageManager.image_useNormalCompression.GetInteger() != 2)) {
                 return false;
             }
 
@@ -2206,8 +2206,8 @@ public class Image {
                 return false;
             }
 
-            if (!fullLoad && (len > (globalImages.image_cacheMinK.GetInteger() * 1024))) {
-                len = globalImages.image_cacheMinK.GetInteger() * 1024;
+            if (!fullLoad && (len > (idImageManager.image_cacheMinK.GetInteger() * 1024))) {
+                len = idImageManager.image_cacheMinK.GetInteger() * 1024;
             }
 
             final ByteBuffer data = ByteBuffer.allocate(len);// R_StaticAlloc(len);
@@ -2470,7 +2470,7 @@ public class Image {
             } else {
                 // see if we have a pre-generated image file that is
                 // already image processed and compressed
-                if (checkForPrecompressed && globalImages.image_usePrecompressedTextures.GetBool()) {
+                if (checkForPrecompressed && idImageManager.image_usePrecompressedTextures.GetBool()) {
                     if (CheckPrecompressedImage(true)) {
                         // we got the precompressed image
                         return;
@@ -2521,7 +2521,7 @@ public class Image {
             if (imageManager.numActiveBackgroundImageLoads >= idImageManager.MAX_BACKGROUND_IMAGE_LOADS) {
                 return;
             }
-            if (globalImages.image_showBackgroundLoads.GetBool()) {
+            if (idImageManager.image_showBackgroundLoads.GetBool()) {
                 common.Printf("idImage::StartBackgroundImageLoad: %s\n", this.imgName.getData());
             }
             this.backgroundLoadInProgress = true;
@@ -2563,12 +2563,12 @@ public class Image {
             }
             final int needed = this.StorageSize();
 
-            while ((totalSize + needed) > (globalImages.image_cacheMegs.GetFloat() * 1024 * 1024)) {
+            while ((totalSize + needed) > (idImageManager.image_cacheMegs.GetFloat() * 1024 * 1024)) {
                 // purge the least recently used
                 final idImage check = globalImages.cacheLRU.cacheUsagePrev;
                 if (check.texNum != TEXTURE_NOT_LOADED) {
                     totalSize -= check.StorageSize();
-                    if (globalImages.image_showBackgroundLoads.GetBool()) {
+                    if (idImageManager.image_showBackgroundLoads.GetBool()) {
                         common.Printf("purging %s\n", check.imgName.getData());
                     }
                     check.PurgeImage();
@@ -2681,7 +2681,7 @@ public class Image {
 
             if (mipLevel == 0) {
                 // Optionally write out the paletized normal map to a .tga
-                if (globalImages.image_writeNormalTGAPalletized.GetBool()) {
+                if (idImageManager.image_writeNormalTGAPalletized.GetBool()) {
                     final String[] filename = {null};
                     ImageProgramStringToCompressedFileName(this.imgName, filename);
                     final int ext = filename[0].lastIndexOf('.');
@@ -2783,10 +2783,10 @@ public class Image {
 
             // catch normal maps first
             if (minimumDepth == TD_BUMP) {
-                if (globalImages.image_useCompression.GetBool() && (globalImages.image_useNormalCompression.GetInteger() == 1) && glConfig.sharedTexturePaletteAvailable) {
+                if (idImageManager.image_useCompression.GetBool() && (idImageManager.image_useNormalCompression.GetInteger() == 1) && glConfig.sharedTexturePaletteAvailable) {
                     // image_useNormalCompression should only be set to 1 on nv_10 and nv_20 paths
                     return 0x80E5;
-                } else if (globalImages.image_useCompression.GetBool() && (globalImages.image_useNormalCompression.GetInteger() != 0) && glConfig.textureCompressionAvailable) {
+                } else if (idImageManager.image_useCompression.GetBool() && (idImageManager.image_useNormalCompression.GetInteger() != 0) && glConfig.textureCompressionAvailable) {
                     // image_useNormalCompression == 2 uses rxgb format which produces really good quality for medium settings
                     return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
                 } else {
@@ -2796,7 +2796,7 @@ public class Image {
             }
 
             // allow a complete override of image compression with a cvar
-            if (!globalImages.image_useCompression.GetBool()) {
+            if (!idImageManager.image_useCompression.GetBool()) {
                 minimumDepth = TD_HIGH_QUALITY;
             }
 
@@ -2826,7 +2826,7 @@ public class Image {
             // there will probably be some drivers that don't
             // correctly handle the intensity/alpha/luminance/luminance+alpha
             // formats, so provide a fallback that only uses the rgb/rgba formats
-            if (!globalImages.image_useAllFormats.GetBool()) {
+            if (!idImageManager.image_useAllFormats.GetBool()) {
                 // pretend rgb is varying and inconsistant, which
                 // prevents any of the more compact forms
                 rgbDiffer = 1;

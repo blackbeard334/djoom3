@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import neo.Game.Game_local.idGameLocal;
 import neo.Renderer.Model.modelSurface_s;
 import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.RenderWorld.deferredEntityCallback_t;
@@ -400,7 +401,7 @@ public class SmokeParticles {
                     last = smoke;
                 }
                 if (tri.numVerts > (quads * 4)) {
-                    gameLocal.Error("idSmokeParticles::UpdateRenderEntity: miscounted verts");
+                    idGameLocal.Error("idSmokeParticles::UpdateRenderEntity: miscounted verts");
                 }
 
                 if (tri.numVerts == 0) {

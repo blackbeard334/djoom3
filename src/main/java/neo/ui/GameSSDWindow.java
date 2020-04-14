@@ -502,7 +502,7 @@ public class GameSSDWindow {
             SetMaterial(ASTEROID_MATERIAL);
             SetSize(_size);
             SetRadius(Max(this.size.x, this.size.y), 0.3f);
-            SetRotation(this.game.random.RandomInt(360));
+            SetRotation(idGameSSDWindow.random.RandomInt(360));
 
             this.position = startPosition;
 
@@ -604,7 +604,7 @@ public class GameSSDWindow {
             SetMaterial(ASTRONAUT_MATERIAL);
             SetSize(new idVec2(256, 256));
             SetRadius(Max(this.size.x, this.size.y), 0.3f);
-            SetRotation(this.game.random.RandomInt(360));
+            SetRotation(idGameSSDWindow.random.RandomInt(360));
 
             this.position = startPosition;
             this.health = _health;
@@ -1248,7 +1248,7 @@ public class GameSSDWindow {
                     break;
                 }
                 case POWERUP_TYPE_BONUS_POINTS: {
-                    final int points = (this.game.random.RandomInt(5) + 1) * 100;
+                    final int points = (idGameSSDWindow.random.RandomInt(5) + 1) * 100;
                     this.game.AddScore(this, points);
                     break;
                 }
@@ -1273,15 +1273,15 @@ public class GameSSDWindow {
             this.type = SSD_ENTITY_POWERUP;
 
             final idVec3 startPosition = new idVec3();
-            startPosition.x = this.game.random.RandomInt(V_WIDTH) - (V_WIDTH / 2.0f);
-            startPosition.y = this.game.random.RandomInt(V_HEIGHT) - (V_HEIGHT / 2.0f);
+            startPosition.x = idGameSSDWindow.random.RandomInt(V_WIDTH) - (V_WIDTH / 2.0f);
+            startPosition.y = idGameSSDWindow.random.RandomInt(V_HEIGHT) - (V_HEIGHT / 2.0f);
             startPosition.z = ENTITY_START_DIST;
 
             this.position = startPosition;
             //SetPosition(startPosition);
 
             this.powerupState = POWERUP_STATE_CLOSED;
-            this.powerupType = this.game.random.RandomInt(POWERUP_TYPE_MAX + 1);
+            this.powerupType = idGameSSDWindow.random.RandomInt(POWERUP_TYPE_MAX + 1);
             if (this.powerupType >= POWERUP_TYPE_MAX) {
                 this.powerupType = 0;
             }

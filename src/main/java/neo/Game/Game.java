@@ -47,6 +47,7 @@ import neo.Game.AFEntity.idAFEntity_Base;
 import neo.Game.AFEntity.idAFEntity_Generic;
 import neo.Game.AFEntity.jointTransformData_t;
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Player.idPlayer;
 import neo.Game.Animation.Anim.frameBlend_t;
 import neo.Game.Animation.Anim.idMD5Anim;
@@ -686,7 +687,7 @@ public class Game {
             }
 
             if (numJoints != model.NumJoints()) {
-                gameLocal.Error("ANIM_CreateAnimFrame: different # of joints in renderEntity_t than in model (%s)", model.Name());
+                idGameLocal.Error("ANIM_CreateAnimFrame: different # of joints in renderEntity_t than in model (%s)", model.Name());
             }
 
             if (0 == model.NumJoints()) {
@@ -695,7 +696,7 @@ public class Game {
             }
 
             if (null == joints) {
-                gameLocal.Error("ANIM_CreateAnimFrame: NULL joint frame pointer on model (%s)", model.Name());
+                idGameLocal.Error("ANIM_CreateAnimFrame: NULL joint frame pointer on model (%s)", model.Name());
             }
 
             if (numJoints != anim.NumJoints()) {

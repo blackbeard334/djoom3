@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
 import neo.Game.GameSys.Class.eventCallback_t1;
@@ -178,7 +179,7 @@ public class Light {
             this.spawnArgs.GetInt("levels", "1", this.levels);
             this.currentLevel = this.levels[0];
             if (this.levels[0] <= 0) {
-                gameLocal.Error("Invalid light level set on entity #%d(%s)", this.entityNumber, this.name);
+                idGameLocal.Error("Invalid light level set on entity #%d(%s)", this.entityNumber, this.name);
             }
 
             // make sure the demonic shader is cached
@@ -225,7 +226,7 @@ public class Light {
             if (this.health != 0) {
                 final idStr model = new idStr(this.spawnArgs.GetString("model"));		// get the visual model
                 if (0 == model.Length()) {
-                    gameLocal.Error("Breakable light without a model set on entity #%d(%s)", this.entityNumber, this.name);
+                    idGameLocal.Error("Breakable light without a model set on entity #%d(%s)", this.entityNumber, this.name);
                 }
 
                 this.fl.takedamage = true;
@@ -253,7 +254,7 @@ public class Light {
                 // make sure the model gets cached
                 if (NOT(renderModelManager.CheckModel(this.brokenModel))) {
                     if (needBroken) {
-                        gameLocal.Error("Model '%s' not found for entity %d(%s)", this.brokenModel, this.entityNumber, this.name);
+                        idGameLocal.Error("Model '%s' not found for entity %d(%s)", this.brokenModel, this.entityNumber, this.name);
                     } else {
                         this.brokenModel.oSet("");
                     }
@@ -322,7 +323,7 @@ public class Light {
                 assert (false);
                 if (developer.GetBool()) {
                     // we really want to know if this happens
-                    gameLocal.Error("idLight::Restore: prelightModel '_prelight_%s' not found", this.name);
+                    idGameLocal.Error("idLight::Restore: prelightModel '_prelight_%s' not found", this.name);
                 } else {
                     // but let it slide after release
                     gameLocal.Warning("idLight::Restore: prelightModel '_prelight_%s' not found", this.name);
@@ -489,7 +490,7 @@ public class Light {
 
         public void SetLightParm(int parmnum, float value) {
             if ((parmnum < 0) || (parmnum >= MAX_ENTITY_SHADER_PARMS)) {
-                gameLocal.Error("shader parm index (%d) out of range", parmnum);
+                idGameLocal.Error("shader parm index (%d) out of range", parmnum);
             }
 
             this.renderLight.shaderParms[ parmnum] = value;
@@ -808,7 +809,7 @@ public class Light {
         private void Event_GetLightParm(idEventArg<Integer> _parmnum) {
             final int parmnum = _parmnum.value;
             if ((parmnum < 0) || (parmnum >= MAX_ENTITY_SHADER_PARMS)) {
-                gameLocal.Error("shader parm index (%d) out of range", parmnum);
+                idGameLocal.Error("shader parm index (%d) out of range", parmnum);
             }
 
             idThread.ReturnFloat(this.renderLight.shaderParms[ parmnum]);

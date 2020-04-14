@@ -32,6 +32,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import neo.framework.EditField.idEditField;
 import neo.idlib.Text.Str.idStr;
+import neo.sys.win_local.Win32Vars_t;
 
 /**
  *
@@ -433,7 +434,7 @@ public class win_syscon {
 //        wc.setVisible(true);
 
         // don't show it now that we have a splash screen up
-        if (win32.win_viewlog.GetBool()) {
+        if (Win32Vars_t.win_viewlog.GetBool()) {
             wc.setVisible(true);
 //		UpdateWindow( s_wcd.hWnd );
 //		SetForegroundWindow( s_wcd.hWnd );

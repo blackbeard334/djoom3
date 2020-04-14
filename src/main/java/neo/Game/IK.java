@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Mover.idPlat;
 import neo.Game.Animation.Anim_Blend.idAnimator;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
@@ -490,25 +491,25 @@ public class IK /*ea*/ {
                 jointName = self.spawnArgs.GetString(va("ik_foot%d", i + 1));
                 this.footJoints[i] = this.animator.GetJointHandle(jointName);
                 if (this.footJoints[i] == INVALID_JOINT) {
-                    gameLocal.Error("idIK_Walk::Init: invalid foot joint '%s'", jointName);
+                    idGameLocal.Error("idIK_Walk::Init: invalid foot joint '%s'", jointName);
                 }
 
                 jointName = self.spawnArgs.GetString(va("ik_ankle%d", i + 1));
                 this.ankleJoints[i] = this.animator.GetJointHandle(jointName);
                 if (this.ankleJoints[i] == INVALID_JOINT) {
-                    gameLocal.Error("idIK_Walk::Init: invalid ankle joint '%s'", jointName);
+                    idGameLocal.Error("idIK_Walk::Init: invalid ankle joint '%s'", jointName);
                 }
 
                 jointName = self.spawnArgs.GetString(va("ik_knee%d", i + 1));
                 this.kneeJoints[i] = this.animator.GetJointHandle(jointName);
                 if (this.kneeJoints[i] == INVALID_JOINT) {
-                    gameLocal.Error("idIK_Walk::Init: invalid knee joint '%s'\n", jointName);
+                    idGameLocal.Error("idIK_Walk::Init: invalid knee joint '%s'\n", jointName);
                 }
 
                 jointName = self.spawnArgs.GetString(va("ik_hip%d", i + 1));
                 this.hipJoints[i] = this.animator.GetJointHandle(jointName);
                 if (this.hipJoints[i] == INVALID_JOINT) {
-                    gameLocal.Error("idIK_Walk::Init: invalid hip joint '%s'\n", jointName);
+                    idGameLocal.Error("idIK_Walk::Init: invalid hip joint '%s'\n", jointName);
                 }
 
                 jointName = self.spawnArgs.GetString(va("ik_dir%d", i + 1));
@@ -520,7 +521,7 @@ public class IK /*ea*/ {
             jointName = self.spawnArgs.GetString("ik_waist");
             this.waistJoint = this.animator.GetJointHandle(jointName);
             if (this.waistJoint == INVALID_JOINT) {
-                gameLocal.Error("idIK_Walk::Init: invalid waist joint '%s'\n", jointName);
+                idGameLocal.Error("idIK_Walk::Init: invalid waist joint '%s'\n", jointName);
             }
 
             // get the leg bone lengths and rotation matrices
@@ -1015,19 +1016,19 @@ public class IK /*ea*/ {
                 jointName = self.spawnArgs.GetString(va("ik_hand%d", i + 1));
                 this.handJoints[i] = this.animator.GetJointHandle(jointName);
                 if (this.handJoints[i] == INVALID_JOINT) {
-                    gameLocal.Error("idIK_Reach::Init: invalid hand joint '%s'", jointName);
+                    idGameLocal.Error("idIK_Reach::Init: invalid hand joint '%s'", jointName);
                 }
 
                 jointName = self.spawnArgs.GetString(va("ik_elbow%d", i + 1));
                 this.elbowJoints[i] = this.animator.GetJointHandle(jointName);
                 if (this.elbowJoints[i] == INVALID_JOINT) {
-                    gameLocal.Error("idIK_Reach::Init: invalid elbow joint '%s'\n", jointName);
+                    idGameLocal.Error("idIK_Reach::Init: invalid elbow joint '%s'\n", jointName);
                 }
 
                 jointName = self.spawnArgs.GetString(va("ik_shoulder%d", i + 1));
                 this.shoulderJoints[i] = this.animator.GetJointHandle(jointName);
                 if (this.shoulderJoints[i] == INVALID_JOINT) {
-                    gameLocal.Error("idIK_Reach::Init: invalid shoulder joint '%s'\n", jointName);
+                    idGameLocal.Error("idIK_Reach::Init: invalid shoulder joint '%s'\n", jointName);
                 }
 
                 jointName = self.spawnArgs.GetString(va("ik_elbowDir%d", i + 1));

@@ -854,7 +854,6 @@ public class DeclParticle {
                 }
             }
 
-            byte[] color;
             byte bcolor;
             for (int i = 0; i < 4; i++) {
                 final float fcolor = ((this.entityColor ? g.renderEnt.shaderParms[i] : this.color.oGet(i)) * fadeFraction) + (this.fadeColor.oGet(i) * (1.0f - fadeFraction));

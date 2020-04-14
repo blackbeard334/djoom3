@@ -53,6 +53,7 @@ import neo.Game.AF.idAF;
 import neo.Game.Entity.idAnimatedEntity;
 import neo.Game.Entity.idEntity;
 import neo.Game.Game_local.idEntityPtr;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Item.idMoveableItem;
 import neo.Game.Player.idPlayer;
 import neo.Game.Animation.Anim_Blend.idDeclModelDef;
@@ -666,7 +667,7 @@ public class AFEntity {
 
             this.af.SetAnimator(GetAnimator());
             if (!this.af.Load(this, fileName[0])) {
-                gameLocal.Error("idAFEntity_Base::LoadAF: Couldn't load af file '%s' on entity '%s'", fileName[0], this.name);
+                idGameLocal.Error("idAFEntity_Base::LoadAF: Couldn't load af file '%s' on entity '%s'", fileName[0], this.name);
             }
 
             this.af.Start();
@@ -951,7 +952,7 @@ public class AFEntity {
 
             final idDict damageDef = gameLocal.FindEntityDefDict(damageDefName);
             if (null == damageDef) {
-                gameLocal.Error("Unknown damageDef '%s'", damageDefName);
+                idGameLocal.Error("Unknown damageDef '%s'", damageDefName);
             }
 
             // spawn gib articulated figures
@@ -991,7 +992,7 @@ public class AFEntity {
 
             final idDict damageDef = gameLocal.FindEntityDefDict(damageDefName);
             if (null == damageDef) {
-                gameLocal.Error("Unknown damageDef '%s'", damageDefName);
+                idGameLocal.Error("Unknown damageDef '%s'", damageDefName);
             }
 
             if (damageDef.GetBool("gibNonSolid")) {
@@ -1040,7 +1041,7 @@ public class AFEntity {
                 }
                 if ((this.skeletonModel != null) && (this.renderEntity.hModel != null)) {
                     if (this.skeletonModel.NumJoints() != this.renderEntity.hModel.NumJoints()) {
-                        gameLocal.Error("gib model '%s' has different number of joints than model '%s'",
+                        idGameLocal.Error("gib model '%s' has different number of joints than model '%s'",
                                 this.skeletonModel.Name(), this.renderEntity.hModel.Name());
                     }
                 }
@@ -1128,7 +1129,7 @@ public class AFEntity {
             super.Spawn();
             
             if (!LoadAF()) {
-                gameLocal.Error("Couldn't load af file on entity '%s'", this.name);
+                idGameLocal.Error("Couldn't load af file on entity '%s'", this.name);
             }
 
             SetCombatModel();
@@ -1294,7 +1295,7 @@ public class AFEntity {
                 jointName = this.spawnArgs.GetString("head_joint");
                 joint = this.animator.GetJointHandle(jointName);
                 if (joint == INVALID_JOINT) {
-                    gameLocal.Error("Joint '%s' not found for 'head_joint' on '%s'", jointName, this.name.getData());
+                    idGameLocal.Error("Joint '%s' not found for 'head_joint' on '%s'", jointName, this.name.getData());
                 }
 
                 headEnt = (idAFAttachment) gameLocal.SpawnEntityType(idAFAttachment.class, null);
@@ -1479,12 +1480,12 @@ public class AFEntity {
 
 //	if ( !eyesJointName[0] ) {
             if (eyesJointName.isEmpty()) {
-                gameLocal.Error("idAFEntity_Vehicle '%s' no eyes joint specified", this.name);
+                idGameLocal.Error("idAFEntity_Vehicle '%s' no eyes joint specified", this.name);
             }
             this.eyesJoint = this.animator.GetJointHandle(eyesJointName);
 //	if ( !steeringWheelJointName[0] ) {
             if (steeringWheelJointName.isEmpty()) {
-                gameLocal.Error("idAFEntity_Vehicle '%s' no steering wheel joint specified", this.name);
+                idGameLocal.Error("idAFEntity_Vehicle '%s' no steering wheel joint specified", this.name);
             }
             this.steeringWheelJoint = this.animator.GetJointHandle(steeringWheelJointName);
 
@@ -1599,11 +1600,11 @@ public class AFEntity {
                 final String wheelJointName = this.spawnArgs.GetString(wheelJointKeys[i], "");
 //		if ( !wheelJointName[0] ) {
                 if (wheelJointName.isEmpty()) {
-                    gameLocal.Error("idAFEntity_VehicleSimple '%s' no '%s' specified", this.name, wheelJointKeys[i]);
+                    idGameLocal.Error("idAFEntity_VehicleSimple '%s' no '%s' specified", this.name, wheelJointKeys[i]);
                 }
                 this.wheelJoints[i] = this.animator.GetJointHandle(wheelJointName);
                 if (this.wheelJoints[i] == INVALID_JOINT) {
-                    gameLocal.Error("idAFEntity_VehicleSimple '%s' can't find wheel joint '%s'", this.name, wheelJointName);
+                    idGameLocal.Error("idAFEntity_VehicleSimple '%s' can't find wheel joint '%s'", this.name, wheelJointName);
                 }
 
                 GetAnimator().GetJointTransform(this.wheelJoints[i], 0, origin, axis);
@@ -1688,7 +1689,7 @@ public class AFEntity {
 
                     origin = this.suspension[i].GetWheelOrigin();
                     velocity = body.GetPointVelocity(origin).oMultiply(body.GetWorldAxis().oGet(0));
-                    this.wheelAngles[i] += (velocity * MS2SEC(gameLocal.msec)) / this.wheelRadius;
+                    this.wheelAngles[i] += (velocity * MS2SEC(idGameLocal.msec)) / this.wheelRadius;
 
                     // additional rotation about the wheel axis
                     wheelRotation.SetAngle(RAD2DEG(this.wheelAngles[i]));
@@ -1790,20 +1791,20 @@ public class AFEntity {
                 wheelBodyName = this.spawnArgs.GetString(wheelBodyKeys[i], "");
 //		if ( !wheelBodyName[0] ) {
                 if (wheelBodyName.isEmpty()) {
-                    gameLocal.Error("idAFEntity_VehicleFourWheels '%s' no '%s' specified", this.name, wheelBodyKeys[i]);
+                    idGameLocal.Error("idAFEntity_VehicleFourWheels '%s' no '%s' specified", this.name, wheelBodyKeys[i]);
                 }
                 this.wheels[i] = this.af.GetPhysics().GetBody(wheelBodyName);
                 if (null == this.wheels[i]) {
-                    gameLocal.Error("idAFEntity_VehicleFourWheels '%s' can't find wheel body '%s'", this.name, wheelBodyName);
+                    idGameLocal.Error("idAFEntity_VehicleFourWheels '%s' can't find wheel body '%s'", this.name, wheelBodyName);
                 }
                 wheelJointName = this.spawnArgs.GetString(wheelJointKeys[i], "");
 //		if ( !wheelJointName[0] ) {
                 if (wheelJointName.isEmpty()) {
-                    gameLocal.Error("idAFEntity_VehicleFourWheels '%s' no '%s' specified", this.name, wheelJointKeys[i]);
+                    idGameLocal.Error("idAFEntity_VehicleFourWheels '%s' no '%s' specified", this.name, wheelJointKeys[i]);
                 }
                 this.wheelJoints[i] = this.animator.GetJointHandle(wheelJointName);
                 if (this.wheelJoints[i] == INVALID_JOINT) {
-                    gameLocal.Error("idAFEntity_VehicleFourWheels '%s' can't find wheel joint '%s'", this.name, wheelJointName);
+                    idGameLocal.Error("idAFEntity_VehicleFourWheels '%s' can't find wheel joint '%s'", this.name, wheelJointName);
                 }
             }
 
@@ -1811,11 +1812,11 @@ public class AFEntity {
                 steeringHingeName = this.spawnArgs.GetString(steeringHingeKeys[i], "");
 //		if ( !steeringHingeName[0] ) {
                 if (steeringHingeName.isEmpty()) {
-                    gameLocal.Error("idAFEntity_VehicleFourWheels '%s' no '%s' specified", this.name, steeringHingeKeys[i]);
+                    idGameLocal.Error("idAFEntity_VehicleFourWheels '%s' no '%s' specified", this.name, steeringHingeKeys[i]);
                 }
                 this.steering[i] = (idAFConstraint_Hinge) this.af.GetPhysics().GetConstraint(steeringHingeName);
                 if (NOT(this.steering[i])) {
-                    gameLocal.Error("idAFEntity_VehicleFourWheels '%s': can't find steering hinge '%s'", this.name, steeringHingeName);
+                    idGameLocal.Error("idAFEntity_VehicleFourWheels '%s': can't find steering hinge '%s'", this.name, steeringHingeName);
                 }
             }
 
@@ -1878,7 +1879,7 @@ public class AFEntity {
                     if (force == 0) {
                         velocity = this.wheels[i].GetLinearVelocity().oMultiply(this.wheels[i].GetWorldAxis().oGet(0));
                     }
-                    this.wheelAngles[i] += (velocity * MS2SEC(gameLocal.msec)) / this.wheelRadius;
+                    this.wheelAngles[i] += (velocity * MS2SEC(idGameLocal.msec)) / this.wheelRadius;
                     // give the wheel joint an additional rotation about the wheel axis
                     rotation.SetAngle(RAD2DEG(this.wheelAngles[i]));
                     axis = this.af.GetPhysics().GetAxis(0);
@@ -1973,20 +1974,20 @@ public class AFEntity {
                 wheelBodyName = this.spawnArgs.GetString(wheelBodyKeys[i], "");
 //		if ( !wheelBodyName[0] ) {
                 if (wheelBodyName.isEmpty()) {
-                    gameLocal.Error("idAFEntity_VehicleSixWheels '%s' no '%s' specified", this.name, wheelBodyKeys[i]);
+                    idGameLocal.Error("idAFEntity_VehicleSixWheels '%s' no '%s' specified", this.name, wheelBodyKeys[i]);
                 }
                 this.wheels[i] = this.af.GetPhysics().GetBody(wheelBodyName);
                 if (NOT(this.wheels[i])) {
-                    gameLocal.Error("idAFEntity_VehicleSixWheels '%s' can't find wheel body '%s'", this.name, wheelBodyName);
+                    idGameLocal.Error("idAFEntity_VehicleSixWheels '%s' can't find wheel body '%s'", this.name, wheelBodyName);
                 }
                 wheelJointName = this.spawnArgs.GetString(wheelJointKeys[i], "");
 //		if ( !wheelJointName[0] ) {
                 if (wheelJointName.isEmpty()) {
-                    gameLocal.Error("idAFEntity_VehicleSixWheels '%s' no '%s' specified", this.name, wheelJointKeys[i]);
+                    idGameLocal.Error("idAFEntity_VehicleSixWheels '%s' no '%s' specified", this.name, wheelJointKeys[i]);
                 }
                 this.wheelJoints[i] = this.animator.GetJointHandle(wheelJointName);
                 if (this.wheelJoints[i] == INVALID_JOINT) {
-                    gameLocal.Error("idAFEntity_VehicleSixWheels '%s' can't find wheel joint '%s'", this.name, wheelJointName);
+                    idGameLocal.Error("idAFEntity_VehicleSixWheels '%s' can't find wheel joint '%s'", this.name, wheelJointName);
                 }
             }
 
@@ -1994,11 +1995,11 @@ public class AFEntity {
                 steeringHingeName = this.spawnArgs.GetString(steeringHingeKeys[i], "");
 //		if ( !steeringHingeName[0] ) {
                 if (steeringHingeName.isEmpty()) {
-                    gameLocal.Error("idAFEntity_VehicleSixWheels '%s' no '%s' specified", this.name, steeringHingeKeys[i]);
+                    idGameLocal.Error("idAFEntity_VehicleSixWheels '%s' no '%s' specified", this.name, steeringHingeKeys[i]);
                 }
                 this.steering[i] = (idAFConstraint_Hinge) this.af.GetPhysics().GetConstraint(steeringHingeName);
                 if (NOT(this.steering[i])) {
-                    gameLocal.Error("idAFEntity_VehicleSixWheels '%s': can't find steering hinge '%s'", this.name, steeringHingeName);
+                    idGameLocal.Error("idAFEntity_VehicleSixWheels '%s': can't find steering hinge '%s'", this.name, steeringHingeName);
                 }
             }
 
@@ -2067,7 +2068,7 @@ public class AFEntity {
                     if (force == 0) {
                         velocity = this.wheels[i].GetLinearVelocity().oMultiply(this.wheels[i].GetWorldAxis().oGet(0));
                     }
-                    this.wheelAngles[i] += (velocity * MS2SEC(gameLocal.msec)) / this.wheelRadius;
+                    this.wheelAngles[i] += (velocity * MS2SEC(idGameLocal.msec)) / this.wheelRadius;
                     // give the wheel joint an additional rotation about the wheel axis
                     rotation.SetAngle(RAD2DEG(this.wheelAngles[i]));
                     axis = this.af.GetPhysics().GetAxis(0);
@@ -2269,7 +2270,7 @@ public class AFEntity {
             for (i = 0; i < 4; i++) {
                 this.fingers[i] = (idAFConstraint_Hinge) this.af.GetPhysics().GetConstraint(clawConstraintNames[i]);
                 if (NOT(this.fingers[i])) {
-                    gameLocal.Error("idClaw_FourFingers '%s': can't find claw constraint '%s'", this.name, clawConstraintNames[i]);
+                    idGameLocal.Error("idClaw_FourFingers '%s': can't find claw constraint '%s'", this.name, clawConstraintNames[i]);
                 }
             }
         }

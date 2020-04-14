@@ -27,6 +27,7 @@ import neo.CM.CollisionModel.trace_s;
 import neo.CM.CollisionModel_local;
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Light.idLight;
 import neo.Game.Player.idPlayer;
 import neo.Game.Pvs.pvsHandle_t;
@@ -157,7 +158,7 @@ public class SecurityCamera {
             }
 
             if (!CollisionModel_local.collisionModelManager.TrmFromModel(str, this.trm)) {
-                gameLocal.Error("idSecurityCamera '%s': cannot load collision model %s", this.name, str);
+                idGameLocal.Error("idSecurityCamera '%s': cannot load collision model %s", this.name, str);
                 return;
             }
 

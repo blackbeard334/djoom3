@@ -13,6 +13,7 @@ import neo.CM.CollisionModel.trace_s;
 import neo.Game.AFEntity.idAFEntity_Base;
 import neo.Game.Actor.idActor;
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Item.idMoveableItem;
 import neo.Game.Moveable.idMoveable;
 import neo.Game.Player.idPlayer;
@@ -534,7 +535,7 @@ public class Push {
 
             // don't overflow
             if (this.numPushed >= MAX_GENTITIES) {
-                gameLocal.Error("more than MAX_GENTITIES pushed entities");
+                idGameLocal.Error("more than MAX_GENTITIES pushed entities");
                 return;
             }
 

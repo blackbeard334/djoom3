@@ -44,6 +44,7 @@ import java.util.Map;
 
 import neo.CM.CollisionModel_local;
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Item.idItem;
 import neo.Game.Light.idLight;
 import neo.Game.Misc.idStaticEntity;
@@ -1730,13 +1731,13 @@ public class Target {
                 if ((ent != null) && ent.scriptObject.HasObject()) {
                     func = ent.scriptObject.GetFunction(funcName);
                     if (NOT(func)) {
-                        gameLocal.Error("Function '%s' not found on entity '%s' for function call from '%s'", funcName, ent.name, this.name);
+                        idGameLocal.Error("Function '%s' not found on entity '%s' for function call from '%s'", funcName, ent.name, this.name);
                     }
                     if (func.type.NumParameters() != 1) {
-                        gameLocal.Error("Function '%s' on entity '%s' has the wrong number of parameters for function call from '%s'", funcName, ent.name, this.name);
+                        idGameLocal.Error("Function '%s' on entity '%s' has the wrong number of parameters for function call from '%s'", funcName, ent.name, this.name);
                     }
                     if (!ent.scriptObject.GetTypeDef().Inherits(func.type.GetParmType(0))) {
-                        gameLocal.Error("Function '%s' on entity '%s' is the wrong type for function call from '%s'", funcName, ent.name, this.name);
+                        idGameLocal.Error("Function '%s' on entity '%s' is the wrong type for function call from '%s'", funcName, ent.name, this.name);
                     }
                     // create a thread and call the function
                     thread = new idThread();

@@ -40,6 +40,7 @@ import java.util.Map;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t1;
 import neo.Game.GameSys.Class.eventCallback_t2;
@@ -857,7 +858,7 @@ public class BrittleFracture {
 
                 ent = (idBrittleFracture) gameLocal.entities[e.entityNum];
                 if (null == ent) {
-                    gameLocal.Error("idBrittleFracture::ModelCallback: callback with NULL game entity");
+                    idGameLocal.Error("idBrittleFracture::ModelCallback: callback with NULL game entity");
                 }
 
                 return ent.UpdateRenderEntity(e, v);

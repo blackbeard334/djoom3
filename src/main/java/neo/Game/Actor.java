@@ -43,6 +43,7 @@ import neo.Game.AFEntity.idAFEntity_Base;
 import neo.Game.AFEntity.idAFEntity_Gibbable;
 import neo.Game.Entity.idEntity;
 import neo.Game.Game_local.idEntityPtr;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.IK.idIK_Walk;
 import neo.Game.Item.idMoveableItem;
 import neo.Game.Light.idLight;
@@ -223,7 +224,7 @@ public class Actor {
             func = this.self.scriptObject.GetFunction(statename);
             if (null == func) {
                 assert (false);
-                gameLocal.Error("Can't find function '%s' in object '%s'", statename, this.self.scriptObject.GetTypeName());
+                idGameLocal.Error("Can't find function '%s' in object '%s'", statename, this.self.scriptObject.GetTypeName());
             }
 
             this.state.oSet(statename);
@@ -593,7 +594,7 @@ public class Actor {
 
                 gameLocal.SpawnEntityDef(args, ent);
                 if (NOT(ent[0])) {
-                    gameLocal.Error("Couldn't spawn '%s' to attach to entity '%s'", kv.GetValue(), this.name);
+                    idGameLocal.Error("Couldn't spawn '%s' to attach to entity '%s'", kv.GetValue(), this.name);
                 } else {
                     Attach(ent[0]);
                 }
@@ -1137,7 +1138,7 @@ public class Actor {
 
             // make sure we have a scriptObject
             if (!this.scriptObject.HasObject()) {
-                gameLocal.Error("No scriptobject set on '%s'.  Check the '%s' entityDef.", this.name, GetEntityDefName());
+                idGameLocal.Error("No scriptobject set on '%s'.  Check the '%s' entityDef.", this.name, GetEntityDefName());
             }
 
             if (NOT(this.scriptThread)) {
@@ -1153,7 +1154,7 @@ public class Actor {
             // call script object's constructor
             constructor = this.scriptObject.GetConstructor();
             if (NOT(constructor)) {
-                gameLocal.Error("Missing constructor on '%s' for entity '%s'", this.scriptObject.GetTypeName(), this.name);
+                idGameLocal.Error("Missing constructor on '%s' for entity '%s'", this.scriptObject.GetTypeName(), this.name);
             }
 
             // init the script object's data
@@ -1210,7 +1211,7 @@ public class Actor {
 
         public void SetState(final function_t newState) {
             if (NOT(newState)) {
-                gameLocal.Error("idActor::SetState: Null state");
+                idGameLocal.Error("idActor::SetState: Null state");
             }
 
             if (ai_debugScript.GetInteger() == this.entityNumber) {
@@ -1430,7 +1431,7 @@ public class Actor {
 
             final idDict damageDef = gameLocal.FindEntityDefDict(damageDefName);
             if (null == damageDef) {
-                gameLocal.Error("Unknown damageDef '%s'", damageDefName);
+                idGameLocal.Error("Unknown damageDef '%s'", damageDefName);
             }
 
             final int[] damage = {(int) (damageDef.GetInt("damage") * damageScale)};
@@ -1795,7 +1796,7 @@ public class Actor {
             jointName = ent.spawnArgs.GetString("joint");
             joint = this.animator.GetJointHandle(jointName);
             if (joint == INVALID_JOINT) {
-                gameLocal.Error("Joint '%s' not found for attaching '%s' on '%s'", jointName, ent.GetClassname(), this.name);
+                idGameLocal.Error("Joint '%s' not found for attaching '%s' on '%s'", jointName, ent.GetClassname(), this.name);
             }
 
             angleOffset = ent.spawnArgs.GetAngles("angles");
@@ -1881,7 +1882,7 @@ public class Actor {
             func = this.scriptObject.GetFunction(statename);
             if (null == func) {
                 assert (false);
-                gameLocal.Error("Can't find function '%s' in object '%s'", statename, this.scriptObject.GetTypeName());
+                idGameLocal.Error("Can't find function '%s' in object '%s'", statename, this.scriptObject.GetTypeName());
             }
 
             switch (channel) {
@@ -1905,7 +1906,7 @@ public class Actor {
                     break;
 
                 default:
-                    gameLocal.Error("idActor::SetAnimState: Unknown anim group");
+                    idGameLocal.Error("idActor::SetAnimState: Unknown anim group");
                     break;
             }
         }
@@ -1919,7 +1920,7 @@ public class Actor {
                 case ANIMCHANNEL_LEGS:
                     return this.legsAnim.state;
                 default:
-                    gameLocal.Error("idActor::GetAnimState: Unknown anim group");
+                    idGameLocal.Error("idActor::GetAnimState: Unknown anim group");
                     return null;
             }
         }
@@ -1945,7 +1946,7 @@ public class Actor {
                     break;
 
                 default:
-                    gameLocal.Error("idActor::InAnimState: Unknown anim group");
+                    idGameLocal.Error("idActor::InAnimState: Unknown anim group");
                     break;
             }
 
@@ -2107,7 +2108,7 @@ public class Actor {
             // setup script object
             if (this.spawnArgs.GetString("scriptobject", null, scriptObjectName)) {
                 if (!this.scriptObject.SetType(scriptObjectName[0])) {
-                    gameLocal.Error("Script object '%s' not found on entity '%s'.", scriptObjectName, this.name);
+                    idGameLocal.Error("Script object '%s' not found on entity '%s'.", scriptObjectName, this.name);
                 }
 
                 ConstructScriptObject();
@@ -2134,7 +2135,7 @@ public class Actor {
                 jointName = this.spawnArgs.GetString("head_joint");
                 joint = this.animator.GetJointHandle(jointName);
                 if (joint == INVALID_JOINT) {
-                    gameLocal.Error("Joint '%s' not found for 'head_joint' on '%s'", jointName, this.name);
+                    idGameLocal.Error("Joint '%s' not found for 'head_joint' on '%s'", jointName, this.name);
                 }
 
                 // set the damage joint to be part of the head damage group
@@ -2287,7 +2288,7 @@ public class Actor {
                     break;
 
                 default:
-                    gameLocal.Error("Unknown anim group");
+                    idGameLocal.Error("Unknown anim group");
                     break;
             }
         }
@@ -2363,7 +2364,7 @@ public class Actor {
                     break;
 
                 default:
-                    gameLocal.Error("Unknown anim group");
+                    idGameLocal.Error("Unknown anim group");
                     break;
             }
             idThread.ReturnInt(1);
@@ -2434,7 +2435,7 @@ public class Actor {
                     break;
 
                 default:
-                    gameLocal.Error("Unknown anim group");
+                    idGameLocal.Error("Unknown anim group");
             }
 
             idThread.ReturnInt(true);
@@ -2467,7 +2468,7 @@ public class Actor {
                         break;
 
                     default:
-                        gameLocal.Error("Unknown anim group");
+                        idGameLocal.Error("Unknown anim group");
                 }
 
                 idThread.ReturnInt(false);
@@ -2538,7 +2539,7 @@ public class Actor {
                     break;
 
                 default:
-                    gameLocal.Error("Unknown anim group");
+                    idGameLocal.Error("Unknown anim group");
             }
 
             idThread.ReturnInt(true);
@@ -2587,7 +2588,7 @@ public class Actor {
                     break;
 
                 default:
-                    gameLocal.Error("Unknown anim group");
+                    idGameLocal.Error("Unknown anim group");
             }
         }
 
@@ -2616,7 +2617,7 @@ public class Actor {
                     break;
 
                 default:
-                    gameLocal.Error("Unknown anim group");
+                    idGameLocal.Error("Unknown anim group");
                     break;
             }
         }
@@ -2637,7 +2638,7 @@ public class Actor {
                     break;
 
                 default:
-                    gameLocal.Error("Unknown anim group");
+                    idGameLocal.Error("Unknown anim group");
                     break;
             }
         }
@@ -2662,7 +2663,7 @@ public class Actor {
                     break;
 
                 default:
-                    gameLocal.Error("Unknown anim group");
+                    idGameLocal.Error("Unknown anim group");
                     break;
             }
         }
@@ -2683,7 +2684,7 @@ public class Actor {
                     break;
 
                 default:
-                    gameLocal.Error("Unknown anim group");
+                    idGameLocal.Error("Unknown anim group");
                     break;
             }
         }
@@ -2733,7 +2734,7 @@ public class Actor {
                     break;
 
                 default:
-                    gameLocal.Error("Unknown anim group");
+                    idGameLocal.Error("Unknown anim group");
             }
         }
 
@@ -2748,9 +2749,9 @@ public class Actor {
         private void Event_CheckAnim(idEventArg<Integer> channel, final idEventArg<String> animname) {
             if (0 == GetAnim(channel.value, animname.value)) {
                 if (this.animPrefix.Length() != 0) {
-                    gameLocal.Error("Can't find anim '%s_%s' for '%s'", this.animPrefix, animname, this.name);
+                    idGameLocal.Error("Can't find anim '%s_%s' for '%s'", this.animPrefix, animname, this.name);
                 } else {
-                    gameLocal.Error("Can't find anim '%s' for '%s'", animname, this.name);
+                    idGameLocal.Error("Can't find anim '%s' for '%s'", animname, this.name);
                 }
             }
         }
@@ -2827,12 +2828,12 @@ public class Actor {
                 actor = this.enemyList.Next();
             } else {
                 if (!ent.IsType(idActor.class)) {
-                    gameLocal.Error("'%s' cannot be an enemy", ent.name);
+                    idGameLocal.Error("'%s' cannot be an enemy", ent.name);
                 }
 
                 actor = (idActor) ent;
                 if (actor.enemyNode.ListHead() != this.enemyList) {
-                    gameLocal.Error("'%s' is not in '%s' enemy list", actor.name, this.name);
+                    idGameLocal.Error("'%s' is not in '%s' enemy list", actor.name, this.name);
                 }
             }
 

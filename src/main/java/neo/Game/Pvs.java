@@ -20,6 +20,7 @@ import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import neo.Game.Game_local.idGameLocal;
 import neo.Renderer.RenderWorld.exitPortal_t;
 import neo.idlib.BitMsg.idBitMsg;
 import neo.idlib.Timer.idTimer;
@@ -373,7 +374,7 @@ public class Pvs {
 
             if ((pvs1.i < 0) || (pvs1.i >= MAX_CURRENT_PVS) || (pvs1.h != this.currentPVS[pvs1.i].handle.h)
                     || (pvs2.i < 0) || (pvs2.i >= MAX_CURRENT_PVS) || (pvs2.h != this.currentPVS[pvs2.i].handle.h)) {
-                gameLocal.Error("idPVS::MergeCurrentPVS: invalid handle");
+                idGameLocal.Error("idPVS::MergeCurrentPVS: invalid handle");
             }
 
             handle = AllocCurrentPVS(pvs1.h ^ pvs2.h);
@@ -391,7 +392,7 @@ public class Pvs {
 
         public void FreeCurrentPVS(pvsHandle_t handle) {
             if ((handle.i < 0) || (handle.i >= MAX_CURRENT_PVS) || (handle.h != this.currentPVS[handle.i].handle.h)) {
-                gameLocal.Error("idPVS::FreeCurrentPVS: invalid handle");
+                idGameLocal.Error("idPVS::FreeCurrentPVS: invalid handle");
             }
             this.currentPVS[handle.i].handle.i = -1;
         }
@@ -402,7 +403,7 @@ public class Pvs {
 
             if ((handle.i < 0) || (handle.i >= MAX_CURRENT_PVS)
                     || (handle.h != this.currentPVS[handle.i].handle.h)) {
-                gameLocal.Error("idPVS::InCurrentPVS: invalid handle");
+                idGameLocal.Error("idPVS::InCurrentPVS: invalid handle");
             }
 
             targetArea = gameRenderWorld.PointInArea(target);
@@ -420,7 +421,7 @@ public class Pvs {
 
             if ((handle.i < 0) || (handle.i >= MAX_CURRENT_PVS)
                     || (handle.h != this.currentPVS[handle.i].handle.h)) {
-                gameLocal.Error("idPVS::InCurrentPVS: invalid handle");
+                idGameLocal.Error("idPVS::InCurrentPVS: invalid handle");
             }
 
             numTargetAreas = gameRenderWorld.BoundsInAreas(target, targetAreas, MAX_BOUNDS_AREAS);
@@ -437,7 +438,7 @@ public class Pvs {
 
             if ((handle.i < 0) || (handle.i >= MAX_CURRENT_PVS)
                     || (handle.h != this.currentPVS[handle.i].handle.h)) {
-                gameLocal.Error("idPVS::InCurrentPVS: invalid handle");
+                idGameLocal.Error("idPVS::InCurrentPVS: invalid handle");
             }
 
             if ((targetArea < 0) || (targetArea >= this.numAreas)) {
@@ -452,7 +453,7 @@ public class Pvs {
 
             if ((handle.i < 0) || (handle.i >= MAX_CURRENT_PVS)
                     || (handle.h != this.currentPVS[handle.i].handle.h)) {
-                gameLocal.Error("idPVS::InCurrentPVS: invalid handle");
+                idGameLocal.Error("idPVS::InCurrentPVS: invalid handle");
             }
 
             for (i = 0; i < numTargetAreas; i++) {
@@ -577,7 +578,7 @@ public class Pvs {
 
             if ((handle.i < 0) || (handle.i >= MAX_CURRENT_PVS)
                     || (handle.h != this.currentPVS[handle.i].handle.h)) {
-                gameLocal.Error("idPVS::DrawCurrentPVS: invalid handle");
+                idGameLocal.Error("idPVS::DrawCurrentPVS: invalid handle");
             }
 
             sourceArea = gameRenderWorld.PointInArea(source);
@@ -1329,7 +1330,7 @@ public class Pvs {
                 }
             }
 
-            gameLocal.Error("idPVS::AllocCurrentPVS: no free PVS left");
+            idGameLocal.Error("idPVS::AllocCurrentPVS: no free PVS left");
 
             handle.i = -1;
             handle.h = 0;

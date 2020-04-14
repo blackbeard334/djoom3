@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Animation.Anim.AFJointModType_t;
 import neo.Game.Animation.Anim_Blend.idAnimator;
 import neo.Game.Animation.Anim_Blend.idDeclModelDef;
@@ -914,7 +915,7 @@ public class AF {
 
             handle = this.animator.GetJointHandle(jointName);
             if (handle == INVALID_JOINT) {
-                gameLocal.Error("idAF for entity '%s' at (%s) modifies unknown joint '%s'", this.self.name, this.self.GetPhysics().GetOrigin().ToString(0), jointName);
+                idGameLocal.Error("idAF for entity '%s' at (%s) modifies unknown joint '%s'", this.self.name, this.self.GetPhysics().GetOrigin().ToString(0), jointName);
             }
 
             assert (handle < this.animator.NumJoints());

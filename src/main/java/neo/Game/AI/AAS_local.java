@@ -68,6 +68,7 @@ import static neo.idlib.math.Vector.getVec3_origin;
 
 import java.nio.IntBuffer;
 
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Player.idPlayer;
 import neo.Game.AI.AAS.aasGoal_s;
 import neo.Game.AI.AAS.aasObstacle_s;
@@ -1420,7 +1421,7 @@ public class AAS_local {
                 for (maxt = i = 0, reach = this.file.GetArea(n).reach; reach != null; reach = reach.next, i++) {
                     assert (i < MAX_REACH_PER_AREA);
                     if (i >= MAX_REACH_PER_AREA) {
-                        gameLocal.Error("i >= MAX_REACH_PER_AREA");
+                        idGameLocal.Error("i >= MAX_REACH_PER_AREA");
                     }
                     reach.number = (byte) i;
                     reach.disableCount = 0;

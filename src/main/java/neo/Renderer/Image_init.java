@@ -46,6 +46,7 @@ import java.util.Arrays;
 
 import neo.Renderer.Image.GeneratorFunction;
 import neo.Renderer.Image.idImage;
+import neo.Renderer.Image.idImageManager;
 import neo.framework.CmdSystem.cmdFunction_t;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Text.Str.idStr;
@@ -850,7 +851,7 @@ public class Image_init {
             final byte[][][] data = new byte[DEFAULT_SIZE][DEFAULT_SIZE][4];
             int i;
 
-            final int red = (globalImages.image_useNormalCompression.GetInteger() == 1) ? 0 : 3;
+            final int red = (idImageManager.image_useNormalCompression.GetInteger() == 1) ? 0 : 3;
             final int alpha = (red == 0) ? 3 : 0;
             // flat normal map for default bunp mapping
             for (i = 0; i < 4; i++) {
@@ -880,7 +881,7 @@ public class Image_init {
             final byte[] data = new byte[DEFAULT_SIZE];
             int i;
 
-            final int red = (globalImages.image_useNormalCompression.GetInteger() == 1) ? 0 : 3;
+            final int red = (idImageManager.image_useNormalCompression.GetInteger() == 1) ? 0 : 3;
             final int alpha = (red == 0) ? 3 : 0;
             // flat normal map for default bunp mapping
             for (i = 0; i < DEFAULT_SIZE; i += 4) {

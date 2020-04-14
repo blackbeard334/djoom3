@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Player.idPlayer;
 import neo.Game.Projectile.idProjectile;
 import neo.Game.GameSys.Class.eventCallback_t;
@@ -579,7 +580,7 @@ public class FX {
                 }
                 final idDeclFX fx = (idDeclFX) declManager.DeclByIndex(DECL_FX, fx_index);
                 if (null == fx) {
-                    gameLocal.Error("FX at index %d not found", fx_index);
+                    idGameLocal.Error("FX at index %d not found", fx_index);
                 }
                 this.fxEffect = fx;
                 Setup(fx.GetName());

@@ -83,6 +83,7 @@ import neo.Game.Entity.idAnimatedEntity;
 import neo.Game.Entity.idEntity;
 import neo.Game.Game.refSound_t;
 import neo.Game.Game_local.idEntityPtr;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Item.idMoveableItem;
 import neo.Game.Player.idPlayer;
 import neo.Game.Projectile.idDebris;
@@ -1137,7 +1138,7 @@ public class Weapon {
             if (this.meleeDefName.Length() != 0) {
                 this.meleeDef = gameLocal.FindEntityDef(this.meleeDefName.getData(), false);
                 if (null == this.meleeDef) {
-                    gameLocal.Error("Unknown melee '%s'", this.meleeDefName);
+                    idGameLocal.Error("Unknown melee '%s'", this.meleeDefName);
                 }
             }
 
@@ -1186,12 +1187,12 @@ public class Weapon {
             this.weaponOffsetScale = this.weaponDef.dict.GetFloat("weaponOffsetScale", "0.005");
 
             if (!this.weaponDef.dict.GetString("weapon_scriptobject", null, objectType)) {
-                gameLocal.Error("No 'weapon_scriptobject' set on '%s'.", objectName);
+                idGameLocal.Error("No 'weapon_scriptobject' set on '%s'.", objectName);
             }
 
             // setup script object
             if (!this.scriptObject.SetType(objectType[0])) {
-                gameLocal.Error("Script object '%s' not found on weapon '%s'.", objectType[0], objectName);
+                idGameLocal.Error("Script object '%s' not found on weapon '%s'.", objectType[0], objectName);
             }
 
             this.WEAPON_ATTACK.LinkTo(this.scriptObject, "WEAPON_ATTACK");
@@ -1581,7 +1582,7 @@ public class Weapon {
             // call script object's constructor
             constructor = this.scriptObject.GetConstructor();
             if (null == constructor) {
-                gameLocal.Error("Missing constructor on '%s' for weapon", this.scriptObject.GetTypeName());
+                idGameLocal.Error("Missing constructor on '%s' for weapon", this.scriptObject.GetTypeName());
             }
 
             // init the script object's data
@@ -1638,7 +1639,7 @@ public class Weapon {
             func = this.scriptObject.GetFunction(statename);
             if (null == func) {
                 assert (false);
-                gameLocal.Error("Can't find function '%s' in object '%s'", statename, this.scriptObject.GetTypeName());
+                idGameLocal.Error("Can't find function '%s' in object '%s'", statename, this.scriptObject.GetTypeName());
             }
 
             this.thread.CallFunction(this, func, true);
@@ -1939,7 +1940,7 @@ public class Weapon {
 
             ammoDict = gameLocal.FindEntityDefDict("ammo_types", false);
             if (null == ammoDict) {
-                gameLocal.Error("Could not find entity definition for 'ammo_types'\n");
+                idGameLocal.Error("Could not find entity definition for 'ammo_types'\n");
             }
 
             if (!isNotNullOrEmpty(ammoname)) {
@@ -1947,11 +1948,11 @@ public class Weapon {
             }
 
             if (!ammoDict.GetInt(ammoname, "-1", num)) {
-                gameLocal.Error("Unknown ammo type '%s'", ammoname);
+                idGameLocal.Error("Unknown ammo type '%s'", ammoname);
             }
 
             if ((num[0] < 0) || (num[0] >= AMMO_NUMTYPES)) {
-                gameLocal.Error("Ammo type '%s' value out of range.  Maximum ammo types is %d.\n", ammoname, AMMO_NUMTYPES);
+                idGameLocal.Error("Ammo type '%s' value out of range.  Maximum ammo types is %d.\n", ammoname, AMMO_NUMTYPES);
             }
 
             return num[0];
@@ -1967,7 +1968,7 @@ public class Weapon {
 
             ammoDict = gameLocal.FindEntityDefDict("ammo_types", false);
             if (null == ammoDict) {
-                gameLocal.Error("Could not find entity definition for 'ammo_types'\n");
+                idGameLocal.Error("Could not find entity definition for 'ammo_types'\n");
             }
 
             text = String.format("%d", ammonum);
@@ -1991,7 +1992,7 @@ public class Weapon {
 
             ammoDict = gameLocal.FindEntityDefDict("ammo_names", false);
             if (null == ammoDict) {
-                gameLocal.Error("Could not find entity definition for 'ammo_names'\n");
+                idGameLocal.Error("Could not find entity definition for 'ammo_names'\n");
             }
 
             final String name = GetAmmoNameForNum(ammonum);
@@ -2359,7 +2360,7 @@ public class Weapon {
             func = this.scriptObject.GetFunction(statename);
             if (null == func) {
                 assert (false);
-                gameLocal.Error("Can't find function '%s' in object '%s'", statename, this.scriptObject.GetTypeName());
+                idGameLocal.Error("Can't find function '%s' in object '%s'", statename, this.scriptObject.GetTypeName());
             }
 
             this.idealState.oSet(statename);
@@ -2587,7 +2588,7 @@ public class Weapon {
         private void Event_GetLightParm(idEventArg<Integer> _parmnum) {
             final int parmnum = _parmnum.value;
             if ((parmnum < 0) || (parmnum >= MAX_ENTITY_SHADER_PARMS)) {
-                gameLocal.Error("shader parm index (%d) out of range", parmnum);
+                idGameLocal.Error("shader parm index (%d) out of range", parmnum);
             }
 
             idThread.ReturnFloat(this.muzzleFlash.shaderParms[ parmnum]);
@@ -2597,7 +2598,7 @@ public class Weapon {
             final int parmnum = _parmnum.value;
             final float value = _value.value;
             if ((parmnum < 0) || (parmnum >= MAX_ENTITY_SHADER_PARMS)) {
-                gameLocal.Error("shader parm index (%d) out of range", parmnum);
+                idGameLocal.Error("shader parm index (%d) out of range", parmnum);
             }
 
             this.muzzleFlash.shaderParms[ parmnum] = value;
@@ -2750,7 +2751,7 @@ public class Weapon {
 
                     if ((null == ent[0]) || !ent[0].IsType(idProjectile.class)) {
                         final String projectileName = this.weaponDef.dict.GetString("def_projectile");
-                        gameLocal.Error("'%s' is not an idProjectile", projectileName);
+                        idGameLocal.Error("'%s' is not an idProjectile", projectileName);
                     }
 
                     if (this.projectileDict.GetBool("net_instanthit")) {
@@ -2842,7 +2843,7 @@ public class Weapon {
 
             gameLocal.SpawnEntityDef(this.brassDict, ent, false);
             if (NOT(ent[0]) || !ent[0].IsType(idDebris.class)) {
-                gameLocal.Error("'%s' is not an idDebris", this.weaponDef != null ? this.weaponDef.dict.GetString("def_ejectBrass") : "def_ejectBrass");
+                idGameLocal.Error("'%s' is not an idDebris", this.weaponDef != null ? this.weaponDef.dict.GetString("def_ejectBrass") : "def_ejectBrass");
             }
             final idDebris debris = (idDebris) ent[0];
             debris.Create(this.owner, origin, axis);
@@ -2860,7 +2861,7 @@ public class Weapon {
             final trace_s[] tr = {null};
 
             if (null == this.meleeDef) {
-                gameLocal.Error("No meleeDef on '%s'", this.weaponDef.dict.GetString("classname"));
+                idGameLocal.Error("No meleeDef on '%s'", this.weaponDef.dict.GetString("classname"));
             }
 
             if (!gameLocal.isClient) {

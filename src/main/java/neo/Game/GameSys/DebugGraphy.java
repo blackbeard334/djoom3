@@ -3,6 +3,7 @@ package neo.Game.GameSys;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_local.gameRenderWorld;
 
+import neo.Game.Game_local.idGameLocal;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
@@ -55,7 +56,7 @@ public class DebugGraphy {
                 vec1 = pos.oPlus(axis.oGet(2).oMultiply(value1).oMinus(axis.oGet(1).oMultiply(i - 1).oPlus(axis.oGet(0).oMultiply(this.samples.Num()))));
                 vec2 = pos.oPlus(axis.oGet(2).oMultiply(value2).oMinus(axis.oGet(1).oMultiply(i).oPlus(axis.oGet(0).oMultiply(this.samples.Num()))));
 
-                gameRenderWorld.DebugLine(color, vec1, vec2, gameLocal.msec, false);
+                gameRenderWorld.DebugLine(color, vec1, vec2, idGameLocal.msec, false);
                 value1 = value2;
             }
         }
