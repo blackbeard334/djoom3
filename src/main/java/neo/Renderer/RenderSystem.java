@@ -578,8 +578,8 @@ public class RenderSystem {
         // the entity matricies
         for (vModel = tr.lockSurfacesCmd.viewDef.viewEntitys; vModel != null; vModel = vModel.next) {
             myGlMultMatrix(vModel.modelMatrix,
-                    tr.lockSurfacesCmd.viewDef.worldSpace.modelViewMatrix,
-                    vModel.modelViewMatrix);
+                    tr.lockSurfacesCmd.viewDef.worldSpace.getModelViewMatrix(),
+                    vModel.getModelViewMatrix());
         }
 
         // add the stored off surface commands again

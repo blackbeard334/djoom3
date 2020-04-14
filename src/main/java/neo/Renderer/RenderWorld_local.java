@@ -1769,7 +1769,7 @@ public class RenderWorld_local {
                 surf.geometry = tri;
 
                 tri.numVerts = src.ParseInt();
-                tri.numIndexes = src.ParseInt();
+                tri.getIndexes().setNumValues(src.ParseInt());
 
                 R_AllocStaticTriSurfVerts(tri, tri.numVerts);
                 for (j = 0; j < tri.numVerts; j++) {
@@ -1787,9 +1787,9 @@ public class RenderWorld_local {
                     tri.verts[j].normal.oSet(2, vec[7]);
                 }
 
-                R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
-                for (j = 0; j < tri.numIndexes; j++) {
-                    tri.indexes[j] = src.ParseInt();
+                R_AllocStaticTriSurfIndexes(tri, tri.getIndexes().getNumValues());
+                for (j = 0; j < tri.getIndexes().getNumValues(); j++) {
+                    tri.getIndexes().getValues()[j] = src.ParseInt();
                 }
                 src.ExpectTokenString("}");
 
@@ -1827,7 +1827,7 @@ public class RenderWorld_local {
             tri.numVerts = src.ParseInt();
             tri.numShadowIndexesNoCaps = src.ParseInt();
             tri.numShadowIndexesNoFrontCaps = src.ParseInt();
-            tri.numIndexes = src.ParseInt();
+            tri.getIndexes().setNumValues(src.ParseInt());
             tri.shadowCapPlaneBits = src.ParseInt();
 
             R_AllocStaticTriSurfShadowVerts(tri, tri.numVerts);
@@ -1847,9 +1847,9 @@ public class RenderWorld_local {
                 final int a = 0;
             }
 
-            R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
-            for (j = 0; j < tri.numIndexes; j++) {
-                tri.indexes[j] = src.ParseInt();
+            R_AllocStaticTriSurfIndexes(tri, tri.getIndexes().getNumValues());
+            for (j = 0; j < tri.getIndexes().getNumValues(); j++) {
+                tri.getIndexes().getValues()[j] = src.ParseInt();
             }
 
             // add the completed surface to the model
@@ -2384,10 +2384,10 @@ public class RenderWorld_local {
                 a = -0.5f / alpha;
             }
 
-            forward.oSet(0, a * tr.viewDef.worldSpace.modelViewMatrix[2]);
-            forward.oSet(1, a * tr.viewDef.worldSpace.modelViewMatrix[6]);
-            forward.oSet(2, a * tr.viewDef.worldSpace.modelViewMatrix[10]);
-            forward.oSet(3, a * tr.viewDef.worldSpace.modelViewMatrix[14]);
+            forward.oSet(0, a * tr.viewDef.worldSpace.getModelViewMatrix()[2]);
+            forward.oSet(1, a * tr.viewDef.worldSpace.getModelViewMatrix()[6]);
+            forward.oSet(2, a * tr.viewDef.worldSpace.getModelViewMatrix()[10]);
+            forward.oSet(3, a * tr.viewDef.worldSpace.getModelViewMatrix()[14]);
 
             w = p.w;
             for (i = 0; i < w.GetNumPoints(); i++) {

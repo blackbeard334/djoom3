@@ -133,12 +133,12 @@ public class tr_render {
      */
     public static void RB_DrawElementsImmediate(final srfTriangles_s tri) {
         backEnd.pc.c_drawElements++;
-        backEnd.pc.c_drawIndexes += tri.numIndexes;
+        backEnd.pc.c_drawIndexes += tri.getIndexes().getNumValues();
         backEnd.pc.c_drawVertexes += tri.numVerts;
 
         if (tri.ambientSurface != null) {
-            if (tri.indexes == tri.ambientSurface.indexes) {
-                backEnd.pc.c_drawRefIndexes += tri.numIndexes;
+            if (tri.getIndexes().getValues() == tri.ambientSurface.getIndexes().getValues()) {
+                backEnd.pc.c_drawRefIndexes += tri.getIndexes().getNumValues();
             }
             if (tri.verts == tri.ambientSurface.verts) {
                 backEnd.pc.c_drawRefVertexes += tri.numVerts;
@@ -146,9 +146,9 @@ public class tr_render {
         }
 
         qglBegin(GL_TRIANGLES);
-        for (int i = 0; i < tri.numIndexes; i++) {
-            qglTexCoord2fv(tri.verts[tri.indexes[i]].st.toFloatBuffer());
-            qglVertex3fv(tri.verts[tri.indexes[i]].xyz.toFloatBuffer());
+        for (int i = 0; i < tri.getIndexes().getNumValues(); i++) {
+            qglTexCoord2fv(tri.verts[tri.getIndexes().getValues()[i]].st.toFloatBuffer());
+            qglVertex3fv(tri.verts[tri.getIndexes().getValues()[i]].xyz.toFloatBuffer());
         }
         qglEnd();
     }
@@ -162,30 +162,30 @@ public class tr_render {
     public static void RB_DrawElementsWithCounters(final srfTriangles_s tri) {
 
         backEnd.pc.c_drawElements++;
-        backEnd.pc.c_drawIndexes += tri.numIndexes;
+        backEnd.pc.c_drawIndexes += tri.getIndexes().getNumValues();
         backEnd.pc.c_drawVertexes += tri.numVerts;
         DEBUG_RB_DrawElementsWithCounters++;
 //        TempDump.printCallStack("" + DEBUG_RB_DrawElementsWithCounters);
 
         if (tri.ambientSurface != null) {
-            if (tri.indexes == tri.ambientSurface.indexes) {
-                backEnd.pc.c_drawRefIndexes += tri.numIndexes;
+            if (tri.getIndexes().getValues() == tri.ambientSurface.getIndexes().getValues()) {
+                backEnd.pc.c_drawRefIndexes += tri.getIndexes().getNumValues();
             }
             if (tri.verts == tri.ambientSurface.verts) {
                 backEnd.pc.c_drawRefVertexes += tri.numVerts;
             }
         }
 
-        final int count = r_singleTriangle.GetBool() ? 3 : tri.numIndexes;
+        final int count = r_singleTriangle.GetBool() ? 3 : tri.getIndexes().getNumValues();
         if ((tri.indexCache != null) && r_useIndexBuffers.GetBool()) {
             qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE, vertexCache.Position(tri.indexCache));
-            backEnd.pc.c_vboIndexes += tri.numIndexes;
+            backEnd.pc.c_vboIndexes += tri.getIndexes().getNumValues();
         } else {
             if (r_useIndexBuffers.GetBool()) {
                 vertexCache.UnbindIndex();
             }
 //            if(tri.DBG_count!=11)
-            qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE/*GL_UNSIGNED_INT*/, Nio.wrap(tri.indexes));
+            qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE/*GL_UNSIGNED_INT*/, Nio.wrap(tri.getIndexes().getValues()));
         }
     }
 
@@ -214,7 +214,7 @@ public class tr_render {
             qglDrawElements(GL_TRIANGLES,
                     r_singleTriangle.GetBool() ? 3 : numIndexes,
                     GL_INDEX_TYPE,
-                    Nio.wrap(tri.indexes));
+                    Nio.wrap(tri.getIndexes().getValues()));
         }
     }
 
@@ -272,10 +272,12 @@ public class tr_render {
         //System.arraycopy(backEnd.viewDef.projectionMatrix, 0, matrix, 0, matrix.length);
 
         qglMatrixMode(GL_PROJECTION);
-        if (backEnd.viewDef.projectionMatrix.length != 16) {
-        	System.err.println("tr_render.RB_EnterWeaponDepthHack length != 16 "+backEnd.viewDef.projectionMatrix.length);
-        }
-        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.projectionMatrix, 16));
+//        // projectionMatrix has per definition length of 16! 
+//        if (backEnd.viewDef.getProjectionMatrix().length != 16) {
+//        	System.err.println("tr_render.RB_EnterWeaponDepthHack length != 16 "+backEnd.viewDef.getProjectionMatrix().length);
+//        }
+//        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix(), 16));
+        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix()));
         qglMatrixMode(GL_MODELVIEW);
     }
 
@@ -294,7 +296,10 @@ public class tr_render {
 
         //matrix[14] -= depth;
 
-        FloatBuffer matrix = Nio.wrap(backEnd.viewDef.projectionMatrix, 16);
+//      // projectionMatrix has per definition length of 16! 
+//        FloatBuffer matrix = Nio.wrap(backEnd.viewDef.getProjectionMatrix(), 16);
+        FloatBuffer matrix = Nio.wrap(backEnd.viewDef.getProjectionMatrix());
+
         matrix.put(14, matrix.get(14)- depth);
 
         qglMatrixMode(GL_PROJECTION);
@@ -311,7 +316,7 @@ public class tr_render {
         qglDepthRange(0, 1);
 
         qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.projectionMatrix));
+        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix()));
         qglMatrixMode(GL_MODELVIEW);
     }
 
@@ -336,7 +341,7 @@ public class tr_render {
 
             // change the matrix if needed
             if (drawSurf.space != backEnd.currentSpace) {
-                qglLoadMatrixf(Nio.wrap(drawSurf.space.modelViewMatrix));
+                qglLoadMatrixf(Nio.wrap(drawSurf.space.getModelViewMatrix()));
             }
 
             if (drawSurf.space.weaponDepthHack) {
@@ -380,7 +385,7 @@ public class tr_render {
         for (drawSurf = drawSurfs; drawSurf != null; drawSurf = drawSurf.nextOnLight) {
             // change the matrix if needed
             if (drawSurf.space != backEnd.currentSpace) {
-                qglLoadMatrixf(Nio.wrap(drawSurf.space.modelViewMatrix));
+                qglLoadMatrixf(Nio.wrap(drawSurf.space.getModelViewMatrix()));
             }
 
             if (drawSurf.space.weaponDepthHack) {
@@ -550,7 +555,7 @@ public class tr_render {
 
             qglMatrixMode(GL_TEXTURE);
 
-            qglLoadMatrixf(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.modelViewMatrix));
+            qglLoadMatrixf(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.getModelViewMatrix()));
             qglMatrixMode(GL_MODELVIEW);
         }
 
@@ -669,7 +674,7 @@ public class tr_render {
     public static void RB_BeginDrawingView() {
         // set the modelview matrix for the viewer
         qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.projectionMatrix));
+        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix()));
         qglMatrixMode(GL_MODELVIEW);
 
         // set the window clipping
@@ -817,7 +822,7 @@ public class tr_render {
         // change the matrix and light projection vectors if needed
         if (surf.space != backEnd.currentSpace) {
             backEnd.currentSpace = surf.space;
-            qglLoadMatrixf(Nio.wrap(surf.space.modelViewMatrix));
+            qglLoadMatrixf(Nio.wrap(surf.space.getModelViewMatrix()));
         }
 
         // change the scissor if needed
@@ -869,8 +874,8 @@ public class tr_render {
             }
             // now multiply the texgen by the light texture matrix
             if (lightStage.texture.hasMatrix) {
-                RB_GetShaderTextureMatrix(lightRegs, lightStage.texture, backEnd.lightTextureMatrix);
-                RB_BakeTextureMatrixIntoTexgen( /*reinterpret_cast<class idPlane *>*/inter.lightProjection, backEnd.lightTextureMatrix);
+                RB_GetShaderTextureMatrix(lightRegs, lightStage.texture, backEnd.getLightTextureMatrix());
+                RB_BakeTextureMatrixIntoTexgen( /*reinterpret_cast<class idPlane *>*/inter.lightProjection, backEnd.getLightTextureMatrix());
             }
 
             inter.bumpImage = null;

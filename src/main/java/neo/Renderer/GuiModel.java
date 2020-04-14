@@ -79,16 +79,19 @@ public class GuiModel {
 
             i = this.verts.Num();
             demo.WriteInt(i);
+            byte[] color;
             for (j = 0; j < i; j++) {
                 demo.WriteVec3(this.verts.oGet(j).xyz);
                 demo.WriteVec2(this.verts.oGet(j).st);
                 demo.WriteVec3(this.verts.oGet(j).normal);
                 demo.WriteVec3(this.verts.oGet(j).tangents[0]);
                 demo.WriteVec3(this.verts.oGet(j).tangents[1]);
-                demo.WriteUnsignedChar((char) this.verts.oGet(j).color[0]);
-                demo.WriteUnsignedChar((char) this.verts.oGet(j).color[1]);
-                demo.WriteUnsignedChar((char) this.verts.oGet(j).color[2]);
-                demo.WriteUnsignedChar((char) this.verts.oGet(j).color[3]);
+                
+                color = this.verts.oGet(j).getColor().array();
+                demo.WriteUnsignedChar((char) color[0]);
+                demo.WriteUnsignedChar((char) color[1]);
+                demo.WriteUnsignedChar((char) color[2]);
+                demo.WriteUnsignedChar((char) color[3]);
             }
 
             i = this.indexes.Num();
@@ -125,20 +128,23 @@ public class GuiModel {
             i[0] = this.verts.Num();
             demo.ReadInt(i);
             this.verts.SetNum(i[0], false);
+            byte[] bcolor;
             for (j = 0; j < i[0]; j++) {
                 demo.ReadVec3(this.verts.oGet(j).xyz);
                 demo.ReadVec2(this.verts.oGet(j).st);
                 demo.ReadVec3(this.verts.oGet(j).normal);
                 demo.ReadVec3(this.verts.oGet(j).tangents[0]);
                 demo.ReadVec3(this.verts.oGet(j).tangents[1]);
+                
+                bcolor = this.verts.oGet(j).getColor().array();
                 demo.ReadUnsignedChar(color);
-                this.verts.oGet(j).color[0] = (byte) color[0];
+                bcolor[0] = (byte) color[0];
                 demo.ReadUnsignedChar(color);
-                this.verts.oGet(j).color[1] = (byte) color[0];
+                bcolor[1] = (byte) color[0];
                 demo.ReadUnsignedChar(color);
-                this.verts.oGet(j).color[2] = (byte) color[0];
+                bcolor[2] = (byte) color[0];
                 demo.ReadUnsignedChar(color);
-                this.verts.oGet(j).color[3] = (byte) color[0];
+                bcolor[3] = (byte) color[0];
             }
 
             i[0] = this.indexes.Num();
@@ -172,7 +178,7 @@ public class GuiModel {
         public void EmitToCurrentView(float[] modelMatrix/*[16]*/, boolean depthHack) {
             final float[] modelViewMatrix = new float[16];
 
-            myGlMultMatrix(modelMatrix, tr.viewDef.worldSpace.modelViewMatrix,
+            myGlMultMatrix(modelMatrix, tr.viewDef.worldSpace.getModelViewMatrix(),
                     modelViewMatrix);
 
             for (int i = 0; i < this.surfaces.Num(); i++) {
@@ -229,18 +235,18 @@ public class GuiModel {
             viewDef.floatTime = tr.frameShaderTime;
 
             // TODO: qglOrtho( 0, 640, 480, 0, 0, 1 );		// always assume 640x480 virtual coordinates
-            viewDef.projectionMatrix[ 0] = +2.0f / 640.0f;
-            viewDef.projectionMatrix[ 5] = -2.0f / 480.0f;
-            viewDef.projectionMatrix[10] = -2.0f / 1.0f;
-            viewDef.projectionMatrix[12] = -1.0f;
-            viewDef.projectionMatrix[13] = +1.0f;
-            viewDef.projectionMatrix[14] = -1.0f;
-            viewDef.projectionMatrix[15] = +1.0f;
+            viewDef.getProjectionMatrix()[ 0] = +2.0f / 640.0f;
+            viewDef.getProjectionMatrix()[ 5] = -2.0f / 480.0f;
+            viewDef.getProjectionMatrix()[10] = -2.0f / 1.0f;
+            viewDef.getProjectionMatrix()[12] = -1.0f;
+            viewDef.getProjectionMatrix()[13] = +1.0f;
+            viewDef.getProjectionMatrix()[14] = -1.0f;
+            viewDef.getProjectionMatrix()[15] = +1.0f;
 
-            viewDef.worldSpace.modelViewMatrix[ 0] = 1.0f;
-            viewDef.worldSpace.modelViewMatrix[ 5] = 1.0f;
-            viewDef.worldSpace.modelViewMatrix[10] = 1.0f;
-            viewDef.worldSpace.modelViewMatrix[15] = 1.0f;
+            viewDef.worldSpace.getModelViewMatrix()[ 0] = 1.0f;
+            viewDef.worldSpace.getModelViewMatrix()[ 5] = 1.0f;
+            viewDef.worldSpace.getModelViewMatrix()[10] = 1.0f;
+            viewDef.worldSpace.getModelViewMatrix()[15] = 1.0f;
 
             viewDef.maxDrawSurfs = this.surfaces.Num();
             viewDef.drawSurfs = new drawSurf_s[viewDef.maxDrawSurfs];///*(drawSurf_t **)*/ R_FrameAlloc(viewDef.maxDrawSurfs * sizeof(viewDef.drawSurfs[0]));
@@ -254,7 +260,7 @@ public class GuiModel {
                 if (i == 33) {
                     this.surfaces.oGet(i).material.DBG_BALLS = i;
                 }
-                EmitSurface(this.surfaces.oGet(i), viewDef.worldSpace.modelMatrix, viewDef.worldSpace.modelViewMatrix, false);
+                EmitSurface(this.surfaces.oGet(i), viewDef.worldSpace.modelMatrix, viewDef.worldSpace.getModelViewMatrix(), false);
             }
 
             tr.viewDef = oldViewDef;
@@ -658,12 +664,12 @@ public class GuiModel {
 
             // copy verts and indexes
             tri = new srfTriangles_s();///*(srfTriangles_s *)*/ R_ClearedFrameAlloc(sizeof(tri));
-            tri.numIndexes = surf.numIndexes;
+            tri.getIndexes().setNumValues(surf.numIndexes);
             tri.numVerts = surf.numVerts;//TODO:see if we can get rid of these single element arrays. EDIT:done.
-            tri.indexes = new int[tri.numIndexes];///*(glIndex_t *)*/ R_FrameAlloc(tri.numIndexes * sizeof(tri.indexes[0]));
+            tri.getIndexes().setValues(new int[tri.getIndexes().getNumValues()]);///*(glIndex_t *)*/ R_FrameAlloc(tri.numIndexes * sizeof(tri.indexes[0]));
 //            memcpy(tri.indexes, indexes[surf.firstIndex], tri.numIndexes * sizeof(tri.indexes[0]));
-            for (int s = surf.firstIndex, d = 0; d < tri.numIndexes; s++, d++) {
-                tri.indexes[d] = this.indexes.oGet(s);
+            for (int s = surf.firstIndex, d = 0; d < tri.getIndexes().getNumValues(); s++, d++) {
+                tri.getIndexes().getValues()[d] = this.indexes.oGet(s);
             }
 
             // we might be able to avoid copying these and just let them reference the list vars
@@ -695,7 +701,7 @@ public class GuiModel {
 //            memcpy(guiSpace.modelMatrix, modelMatrix, sizeof(guiSpace.modelMatrix));
             System.arraycopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.length);
 //            memcpy(guiSpace.modelViewMatrix, modelViewMatrix, sizeof(guiSpace.modelViewMatrix));
-            System.arraycopy(modelViewMatrix, 0, guiSpace.modelViewMatrix, 0, guiSpace.modelViewMatrix.length);
+            System.arraycopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().length);
             guiSpace.weaponDepthHack = depthHack;
 
             // add the surface, which might recursively create another gui

@@ -7513,7 +7513,7 @@ public class AI {
         // predict our position
         predictedPos = org.oPlus(vel.oMultiply(prediction));
         goalDelta = goal.oMinus(predictedPos);
-        seekVel = goalDelta.oMultiply(MS2SEC(gameLocal.msec));
+        seekVel = goalDelta.oMultiply(MS2SEC(idGameLocal.msec));
 
         return seekVel;
     }

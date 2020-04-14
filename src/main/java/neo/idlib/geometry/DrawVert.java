@@ -7,6 +7,7 @@ import neo.TempDump;
 import neo.TempDump.SERiAL;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.ColorUtil;
 import neo.open.Nio;
 
 /**
@@ -41,7 +42,8 @@ public class DrawVert {
         public idVec2   st;
         public idVec3   normal;
         public idVec3[] tangents;
-        public byte[] color = new byte[4];
+        //public byte[] color = new byte[4];
+        private ByteBuffer color = Nio.newByteBuffer(4);
 ////#if 0 // was MACOS_X see comments concerning DRAWVERT_PADDED in Simd_Altivec.h 
 ////	float			padding;
 ////#endif
@@ -120,7 +122,7 @@ public class DrawVert {
                 case 15:
                 case 16:
                 case 17:
-                    return this.color[index - 14];
+                    return this.getColor().get(index - 14);
             }
             return -1;
         }
@@ -131,7 +133,7 @@ public class DrawVert {
             this.normal.Zero();
             this.tangents[0].Zero();
             this.tangents[1].Zero();
-            this.color[0] = this.color[1] = this.color[2] = this.color[3] = 0;
+            ColorUtil.setElements(this.getColor(), (byte) 0);
         }
 
         public void Lerp(final idDrawVert a, final idDrawVert b, final float f) {
@@ -145,10 +147,9 @@ public class DrawVert {
             this.normal.oSet(a.normal.oPlus((b.normal.oMinus(a.normal)).oMultiply(f)));
             this.tangents[0].oSet(a.tangents[0].oPlus((b.tangents[0].oMinus(a.tangents[0])).oMultiply(f)));
             this.tangents[1].oSet(a.tangents[1].oPlus((b.tangents[1].oMinus(a.tangents[1])).oMultiply(f)));
-            this.color[0] = (byte) (a.color[0] + (f * (b.color[0] - a.color[0])));
-            this.color[1] = (byte) (a.color[1] + (f * (b.color[1] - a.color[1])));
-            this.color[2] = (byte) (a.color[2] + (f * (b.color[2] - a.color[2])));
-            this.color[3] = (byte) (a.color[3] + (f * (b.color[3] - a.color[3])));
+    		for (int i = 0; i < 4; i++) {
+    			this.getColor().put((byte) (a.getColor().get(i) + (f * (b.getColor().get(i) - a.getColor().get(i)))));
+    		}
         }
 
         public void Normalize() {
@@ -170,10 +171,10 @@ public class DrawVert {
         }
 
         private long get_reinterpret_cast() {
-            return (this.color[0] & 0x0000_00FF)
-                    | (this.color[1] & 0x0000_FF00)
-                    | (this.color[2] & 0x00FF_0000)
-                    | (this.color[3] & 0xFF00_0000);
+            return (this.getColor().get(0) & 0x0000_00FF)
+                    | (this.getColor().get(1) & 0x0000_FF00)
+                    | (this.getColor().get(2) & 0x00FF_0000)
+                    | (this.getColor().get(3) & 0xFF00_0000);
         }
 
         private short[] set_reinterpret_cast(long color) {
@@ -218,9 +219,7 @@ public class DrawVert {
                 tan.oSet(2, buffer.getFloat());
             }
 
-            for (int c = 0; c < this.color.length; c++) {
-                this.color[c] = buffer.get();
-            }
+            ColorUtil.setElements(this.getColor(), buffer.get());
         }
 
         @Override
@@ -245,9 +244,7 @@ public class DrawVert {
                 data.putFloat(tan.oGet(2));
             }
 
-            for (final short colour : this.color) {
-                data.put((byte) colour);
-            }
+            ColorUtil.setElements(this.getColor(), data);
 
             return data;
         }
@@ -275,6 +272,15 @@ public class DrawVert {
         public int colorOffset() {
             return tangentsOffset_1() + idVec3.BYTES;//+xyz+st+normal+tangents
         }
+
+		public ByteBuffer getColor() {
+			return color;
+		}
+
+		public void setColor(ByteBuffer color) {
+			this.color.clear();
+			this.color.put(color);
+		}
     }
 
     public static ByteBuffer toByteBuffer(idDrawVert[] verts) {

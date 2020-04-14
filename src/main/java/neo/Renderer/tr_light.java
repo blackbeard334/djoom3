@@ -144,7 +144,7 @@ public class tr_light {
 
         if (true) {
 
-            SIMDProcessor.CreateTextureSpaceLightVectors(cache[0].localLightVector, localLightOrigin, tri.ambientSurface.verts, tri.ambientSurface.numVerts, tri.indexes, tri.numIndexes);
+            SIMDProcessor.CreateTextureSpaceLightVectors(cache[0].localLightVector, localLightOrigin, tri.ambientSurface.verts, tri.ambientSurface.numVerts, tri.getIndexes().getValues(), tri.getIndexes().getNumValues());
 
         } else {
 //	boolean []used = new boolean[tri.ambientSurface.numVerts];
@@ -358,7 +358,7 @@ public class tr_light {
         if (true) {
 
             SIMDProcessor.CreateSpecularTextureCoords(texCoords, localLightOrigin, localViewOrigin,
-                    tri.verts, tri.numVerts, tri.indexes, tri.numIndexes);
+                    tri.verts, tri.numVerts, tri.getIndexes().getValues(), tri.getIndexes().getNumValues());
 
         } else {
 //	bool *used = (bool *)_alloca16( tri.numVerts * sizeof( used[0] ) );
@@ -439,7 +439,7 @@ public class tr_light {
 
         // we may not have a viewDef if we are just creating shadows at entity creation time
         if (tr.viewDef != null) {
-            myGlMultMatrix(vModel.modelMatrix, tr.viewDef.worldSpace.modelViewMatrix, vModel.modelViewMatrix);
+            myGlMultMatrix(vModel.modelMatrix, tr.viewDef.worldSpace.getModelViewMatrix(), vModel.getModelViewMatrix());
 
             vModel.next = tr.viewDef.viewEntitys;
             tr.viewDef.viewEntitys = vModel;
@@ -652,7 +652,7 @@ public class tr_light {
                 final idPlane eye = new idPlane(), clip = new idPlane();
                 final idVec3 ndc = new idVec3();
 
-                R_TransformModelToClip(w.oGet(j).ToVec3(), tr.viewDef.worldSpace.modelViewMatrix, tr.viewDef.projectionMatrix, eye, clip);
+                R_TransformModelToClip(w.oGet(j).ToVec3(), tr.viewDef.worldSpace.getModelViewMatrix(), tr.viewDef.getProjectionMatrix(), eye, clip);
 
                 if (clip.oGet(3) <= 0.01f) {
                     clip.oSet(3, 0.01f);
@@ -715,8 +715,8 @@ public class tr_light {
 
         tri = vLight.lightDef.frustumTris;
         for (int i = 0; i < tri.numVerts; i++) {
-            R_TransformModelToClip(tri.verts[i].xyz, tr.viewDef.worldSpace.modelViewMatrix,
-                    tr.viewDef.projectionMatrix, eye, clip);
+            R_TransformModelToClip(tri.verts[i].xyz, tr.viewDef.worldSpace.getModelViewMatrix(),
+                    tr.viewDef.getProjectionMatrix(), eye, clip);
 
             // if it is near clipped, clip the winding polygons to the view frustum
             if (clip.oGet(3) <= 1) {
@@ -958,7 +958,7 @@ public class tr_light {
                 vertexCache.Touch(tri.shadowCache);
 
                 if (NOT(tri.indexCache) && r_useIndexBuffers.GetBool()) {
-                    tri.indexCache = vertexCache.Alloc(tri.indexes, tri.numIndexes, true);
+                    tri.indexCache = vertexCache.Alloc(tri.getIndexes().getValues(), tri.getIndexes().getNumValues(), true);
                 }
                 if (tri.indexCache != null) {
                     vertexCache.Touch(tri.indexCache);
@@ -1085,7 +1085,7 @@ public class tr_light {
         if ((def.dynamicModel != null) && (model.DepthHack() != 0.0f) && (tr.viewDef != null)) {
             final idPlane eye = new idPlane(), clip = new idPlane();
             final idVec3 ndc = new idVec3();
-            R_TransformModelToClip(def.parms.origin, tr.viewDef.worldSpace.modelViewMatrix, tr.viewDef.projectionMatrix, eye, clip);
+            R_TransformModelToClip(def.parms.origin, tr.viewDef.worldSpace.getModelViewMatrix(), tr.viewDef.getProjectionMatrix(), eye, clip);
             R_TransformClipToDevice(clip, tr.viewDef, ndc);
             def.parms.modelDepthHack = model.DepthHack() * (1.0f - ndc.z);
         }
@@ -1290,7 +1290,7 @@ public class tr_light {
             if (null == tri) {
                 continue;
             }
-            if (0 == tri.numIndexes) {
+            if (0 == tri.getIndexes().getNumValues()) {
                 continue;
             }
             shader[0] = surf.shader = R_RemapShaderBySkin(surf.shader, def.parms.customSkin, def.parms.customShader);
@@ -1339,7 +1339,7 @@ public class tr_light {
                 vertexCache.Touch(tri.ambientCache);
 
                 if (r_useIndexBuffers.GetBool() && NOT(tri.indexCache)) {
-                    tri.indexCache = vertexCache.Alloc(tri.indexes, tri.numIndexes, true);
+                    tri.indexCache = vertexCache.Alloc(tri.getIndexes().getValues(), tri.getIndexes().getNumValues(), true);
                 }
                 if (tri.indexCache != null) {
                     vertexCache.Touch(tri.indexCache);

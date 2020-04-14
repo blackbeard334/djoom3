@@ -70,9 +70,9 @@ public class tr_guisurf {
         boundsOrg[1] = (float) Math.floor((bounds[0][1] + bounds[1][1]) * 0.5);
 
         // determine the world S and T vectors from the first drawSurf triangle
-        a = tri.verts[tri.indexes[0]];
-        b = tri.verts[tri.indexes[1]];
-        c = tri.verts[tri.indexes[2]];
+        a = tri.verts[tri.getIndexes().getValues()[0]];
+        b = tri.verts[tri.getIndexes().getValues()[1]];
+        c = tri.verts[tri.getIndexes().getValues()[2]];
 
         VectorSubtract(b.xyz, a.xyz, d0);
         d0[3] = b.st.oGet(0) - a.st.oGet(0);

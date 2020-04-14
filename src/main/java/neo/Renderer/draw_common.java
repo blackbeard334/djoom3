@@ -245,7 +245,7 @@ public class draw_common {
         genMatrix[11] = lightProject[2].oGet(2);
         genMatrix[15] = lightProject[2].oGet(3);
 
-        myGlMultMatrix(genMatrix, backEnd.lightTextureMatrix, finale);
+        myGlMultMatrix(genMatrix, backEnd.getLightTextureMatrix(), finale);
 
         lightProject[0].oSet(0, finale[0]);
         lightProject[0].oSet(1, finale[4]);
@@ -352,7 +352,7 @@ public class draw_common {
 
                 qglMatrixMode(GL_TEXTURE);
 
-                qglLoadMatrixf(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.modelViewMatrix));
+                qglLoadMatrixf(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.getModelViewMatrix()));
                 qglMatrixMode(GL_MODELVIEW);
             }
         }
@@ -364,7 +364,7 @@ public class draw_common {
         qglEnable(GL_TEXTURE_GEN_Q);
 
         final float[] mat = new float[16]; //, plane = new float[4];
-        myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.projectionMatrix, mat);
+        myGlMultMatrix(surf.space.getModelViewMatrix(), backEnd.viewDef.getProjectionMatrix(), mat);
 
 //        plane[0] = mat[0];
 //        plane[1] = mat[4];
@@ -515,7 +515,7 @@ public class draw_common {
             idMaterial shader;
             shaderStage_t pStage;
             float[] regs;
-            final float[] color = new float[4];
+            final FloatBuffer color = Nio.newFloatBuffer(4);
             srfTriangles_s tri;
 
             tri = surf.geo;
@@ -538,7 +538,7 @@ public class draw_common {
             }
 
             // some deforms may disable themselves by setting numIndexes = 0
-            if (0 == tri.numIndexes) {
+            if (0 == tri.getIndexes().getNumValues()) {
                 return;
             }
 
@@ -574,15 +574,20 @@ public class draw_common {
                 qglPolygonOffset(r_offsetFactor.GetFloat(), r_offsetUnits.GetFloat() * shader.GetPolygonOffset());
             }
 
-            // subviews will just down-modulate the color buffer by overbright
-            if (shader.GetSort() == SS_SUBVIEW) {
-                GL_State(GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO | GLS_DEPTHFUNC_LESS);
-                color[0] = color[1] = color[2] = (1.0f / backEnd.overBright);
-                color[3] = 1;
-            } else {
-                // others just draw black
-                color[0] = color[1] = color[2] = 0;
-                color[3] = 1;
+            {
+                float colorValue;
+            	// subviews will just down-modulate the color buffer by overbright
+                if (shader.GetSort() == SS_SUBVIEW) {
+                    GL_State(GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO | GLS_DEPTHFUNC_LESS);
+                    colorValue = (1.0f / backEnd.overBright);
+                } else {
+                    // others just draw black
+                    colorValue = 0;
+                }
+                color.put(0, colorValue)
+                .put(1, colorValue)
+                .put(2, colorValue)
+                .put(3, 1);
             }
 
             final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
@@ -620,13 +625,13 @@ public class draw_common {
                     didDraw = true;
 
                     // set the alpha modulate
-                    color[3] = regs[ pStage.color.registers[3]];
+                    color.put(3, regs[ pStage.color.registers[3]]);
 
                     // skip the entire stage if alpha would be black
-                    if (color[3] <= 0) {
+                    if (color.get(3) <= 0) {
                         continue;
                     }
-                    qglColor4fv(Nio.wrap(color));
+                    qglColor4fv(color);
 
                     qglAlphaFunc(GL_GREATER, regs[ pStage.alphaTestRegister]);
 
@@ -649,7 +654,7 @@ public class draw_common {
 
             // draw the entire surface solid
             if (drawSolid) {
-                qglColor4fv(Nio.wrap(color));
+            	qglColor4fv(color);
                 globalImages.whiteImage.Bind();
 
                 // draw it
@@ -866,7 +871,7 @@ public class draw_common {
 
         // change the matrix if needed
         if (surf.space != backEnd.currentSpace) {
-            qglLoadMatrixf(Nio.wrap(surf.space.modelViewMatrix));
+            qglLoadMatrixf(Nio.wrap(surf.space.getModelViewMatrix()));
             backEnd.currentSpace = surf.space;
             RB_SetProgramEnvironmentSpace();
         }
@@ -881,7 +886,7 @@ public class draw_common {
         }
 
         // some deforms may disable themselves by setting numIndexes = 0
-        if (0 == tri.numIndexes) {
+        if (0 == tri.getIndexes().getNumValues()) {
             return;
         }
 
@@ -1246,7 +1251,7 @@ public class draw_common {
             boolean external = false;
 
             if (0 == r_useExternalShadows.GetInteger()) {
-                numIndexes = tri.numIndexes;
+                numIndexes = tri.getIndexes().getNumValues();
             } else if (r_useExternalShadows.GetInteger() == 2) { // force to no caps for testing
                 numIndexes = tri.numShadowIndexesNoCaps;
             } else if (0 == (surf.dsFlags & DSF_VIEW_INSIDE_SHADOW)) {
@@ -1267,7 +1272,7 @@ public class draw_common {
                 external = true;
             } else {
                 // must draw everything
-                numIndexes = tri.numIndexes;
+                numIndexes = tri.getIndexes().getNumValues();
             }
 
             // set depth bounds
@@ -1287,13 +1292,13 @@ public class draw_common {
                 } else {
                     // draw different color for turboshadows
                     if ((surf.geo.shadowCapPlaneBits & SHADOW_CAP_INFINITE) != 0) {
-                        if (numIndexes == tri.numIndexes) {
+                        if (numIndexes == tri.getIndexes().getNumValues()) {
                             qglColor3f(1 / backEnd.overBright, 0.1f / backEnd.overBright, 0.1f / backEnd.overBright);
                         } else {
                             qglColor3f(1 / backEnd.overBright, 0.4f / backEnd.overBright, 0.1f / backEnd.overBright);
                         }
                     } else {
-                        if (numIndexes == tri.numIndexes) {
+                        if (numIndexes == tri.getIndexes().getNumValues()) {
                             qglColor3f(0.1f / backEnd.overBright, 1 / backEnd.overBright, 0.1f / backEnd.overBright);
                         } else if (numIndexes == tri.numShadowIndexesNoFrontCaps) {
                             qglColor3f(0.1f / backEnd.overBright, 1 / backEnd.overBright, 0.6f / backEnd.overBright);
@@ -1516,11 +1521,11 @@ public class draw_common {
             }
 
             // get the modulate values from the light, including alpha, unlike normal lights
-            backEnd.lightColor[0] = regs[ stage.color.registers[0]];
-            backEnd.lightColor[1] = regs[ stage.color.registers[1]];
-            backEnd.lightColor[2] = regs[ stage.color.registers[2]];
-            backEnd.lightColor[3] = regs[ stage.color.registers[3]];
-            qglColor4fv(Nio.wrap(backEnd.lightColor));
+            backEnd.getLightColor()[0] = regs[ stage.color.registers[0]];
+            backEnd.getLightColor()[1] = regs[ stage.color.registers[1]];
+            backEnd.getLightColor()[2] = regs[ stage.color.registers[2]];
+            backEnd.getLightColor()[3] = regs[ stage.color.registers[3]];
+            qglColor4fv(Nio.wrap(backEnd.getLightColor()));
 
             RB_RenderDrawSurfChainWithFunction(drawSurfs, RB_T_BlendLight.INSTANCE);
             RB_RenderDrawSurfChainWithFunction(drawSurfs2, RB_T_BlendLight.INSTANCE);
@@ -1620,22 +1625,22 @@ public class draw_common {
         // assume fog shaders have only a single stage
         stage = lightShader.GetStage(0);
 
-        backEnd.lightColor[0] = regs[ stage.color.registers[0]];
-        backEnd.lightColor[1] = regs[ stage.color.registers[1]];
-        backEnd.lightColor[2] = regs[ stage.color.registers[2]];
-        backEnd.lightColor[3] = regs[ stage.color.registers[3]];
+        backEnd.getLightColor()[0] = regs[ stage.color.registers[0]];
+        backEnd.getLightColor()[1] = regs[ stage.color.registers[1]];
+        backEnd.getLightColor()[2] = regs[ stage.color.registers[2]];
+        backEnd.getLightColor()[3] = regs[ stage.color.registers[3]];
 
-        qglColor3fv(Nio.wrap(backEnd.lightColor));
+        qglColor3fv(Nio.wrap(backEnd.getLightColor()));
 
         // calculate the falloff planes
         float a;
 
         // if they left the default value on, set a fog distance of 500
-        if (backEnd.lightColor[3] <= 1.0) {
+        if (backEnd.getLightColor()[3] <= 1.0) {
             a = -0.5f / DEFAULT_FOG_DISTANCE;
         } else {
             // otherwise, distance = alpha color
-            a = -0.5f / backEnd.lightColor[3];
+            a = -0.5f / backEnd.getLightColor()[3];
         }
 
         GL_State(GLS_DEPTHMASK | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_DEPTHFUNC_EQUAL);
@@ -1649,15 +1654,15 @@ public class draw_common {
         qglEnable(GL_TEXTURE_GEN_T);
         qglTexCoord2f(0.5f, 0.5f);		// make sure Q is set
 
-        fogPlanes[0].oSet(0, a * backEnd.viewDef.worldSpace.modelViewMatrix[2]);
-        fogPlanes[0].oSet(1, a * backEnd.viewDef.worldSpace.modelViewMatrix[6]);
-        fogPlanes[0].oSet(2, a * backEnd.viewDef.worldSpace.modelViewMatrix[10]);
-        fogPlanes[0].oSet(3, a * backEnd.viewDef.worldSpace.modelViewMatrix[14]);
+        fogPlanes[0].oSet(0, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[2]);
+        fogPlanes[0].oSet(1, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[6]);
+        fogPlanes[0].oSet(2, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[10]);
+        fogPlanes[0].oSet(3, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[14]);
 
-        fogPlanes[1].oSet(0, a * backEnd.viewDef.worldSpace.modelViewMatrix[0]);
-        fogPlanes[1].oSet(1, a * backEnd.viewDef.worldSpace.modelViewMatrix[4]);
-        fogPlanes[1].oSet(2, a * backEnd.viewDef.worldSpace.modelViewMatrix[8]);
-        fogPlanes[1].oSet(3, a * backEnd.viewDef.worldSpace.modelViewMatrix[12]);
+        fogPlanes[1].oSet(0, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[0]);
+        fogPlanes[1].oSet(1, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[4]);
+        fogPlanes[1].oSet(2, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[8]);
+        fogPlanes[1].oSet(3, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[12]);
 
         // texture 1 is the entering plane fade correction
         GL_SelectTexture(1);

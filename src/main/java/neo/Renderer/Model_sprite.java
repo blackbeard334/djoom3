@@ -24,6 +24,7 @@ import neo.Renderer.tr_local.viewDef_s;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.ColorUtil;
 
 /**
  *
@@ -122,15 +123,15 @@ public class Model_sprite {
                 tri.verts[ 3].st.oSet(0, 0.0f);
                 tri.verts[ 3].st.oSet(1, 1.0f);
 
-                tri.indexes[ 0] = 0;
-                tri.indexes[ 1] = 1;
-                tri.indexes[ 2] = 3;
-                tri.indexes[ 3] = 1;
-                tri.indexes[ 4] = 2;
-                tri.indexes[ 5] = 3;
+                tri.getIndexes().getValues()[ 0] = 0;
+                tri.getIndexes().getValues()[ 1] = 1;
+                tri.getIndexes().getValues()[ 2] = 3;
+                tri.getIndexes().getValues()[ 3] = 1;
+                tri.getIndexes().getValues()[ 4] = 2;
+                tri.getIndexes().getValues()[ 5] = 3;
 
                 tri.numVerts = 4;
-                tri.numIndexes = 6;
+                tri.getIndexes().setNumValues(6);
 
                 surf.geometry = tri;
                 surf.id = 0;
@@ -147,28 +148,16 @@ public class Model_sprite {
             final idVec3 up = new idVec3(0.0f, 0.0f, renderEntity.shaderParms[SHADERPARM_SPRITE_HEIGHT] * 0.5f);
 
             tri.verts[ 0].xyz = up.oPlus(right);
-            tri.verts[ 0].color[ 0] = red;
-            tri.verts[ 0].color[ 1] = green;
-            tri.verts[ 0].color[ 2] = blue;
-            tri.verts[ 0].color[ 3] = alpha;
 
             tri.verts[ 1].xyz = up.oMinus(right);
-            tri.verts[ 1].color[ 0] = red;
-            tri.verts[ 1].color[ 1] = green;
-            tri.verts[ 1].color[ 2] = blue;
-            tri.verts[ 1].color[ 3] = alpha;
 
             tri.verts[ 2].xyz = right.oMinus(up).oNegative();
-            tri.verts[ 2].color[ 0] = red;
-            tri.verts[ 2].color[ 1] = green;
-            tri.verts[ 2].color[ 2] = blue;
-            tri.verts[ 2].color[ 3] = alpha;
 
             tri.verts[ 3].xyz = right.oMinus(up);
-            tri.verts[ 3].color[ 0] = red;
-            tri.verts[ 3].color[ 1] = green;
-            tri.verts[ 3].color[ 2] = blue;
-            tri.verts[ 3].color[ 3] = alpha;
+
+            for (int i = 0; i < 4; i++) {
+            	ColorUtil.setColors(tri.verts[i].getColor(), red, green, blue, alpha);
+			}
 
             R_BoundTriSurf(tri);
 

@@ -7,6 +7,7 @@ import neo.idlib.math.Curve.idCurve_Spline;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.ColorUtil;
 import neo.idlib.math.Matrix.idMat3;
 
 /**
@@ -126,7 +127,7 @@ public class Surface_SweptSpline {
                     v.tangents[1] = splineD1.ToVec3();
                     v.normal = v.tangents[1].Cross(v.tangents[0]);
                     v.normal.Normalize();
-                    v.color[0] = v.color[1] = v.color[2] = v.color[3] = 0;
+                    ColorUtil.setElements(v.getColor(), (byte) 0);
                 }
             }
 

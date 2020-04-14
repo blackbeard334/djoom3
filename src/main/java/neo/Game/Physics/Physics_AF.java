@@ -6595,7 +6595,7 @@ public class Physics_AF {
 
                     if (constraint.boxIndex[j] >= 0) {
                         if (constraint.boxConstraint.fl.isPrimary) {
-                            gameLocal.Error("cannot reference primary constraints for the box index");
+                            idGameLocal.Error("cannot reference primary constraints for the box index");
                         }
                         boxIndex[k] = constraint.boxConstraint.firstIndex + constraint.boxIndex[j];
                     } else {

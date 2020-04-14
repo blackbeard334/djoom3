@@ -76,6 +76,7 @@ import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.ColorUtil;
 
 /**
  *
@@ -370,7 +371,7 @@ public class Model_local {
                 R_CleanupTriangles(surf.geometry, surf.geometry.generateNormals, true, surf.shader.UseUnsmoothedTangents());
                 if (surf.shader.SurfaceCastsShadow()) {
                     totalVerts += surf.geometry.numVerts;
-                    totalIndexes += surf.geometry.numIndexes;
+                    totalIndexes += surf.geometry.getIndexes().getNumValues();
                 }
             }
 
@@ -379,9 +380,9 @@ public class Model_local {
                 final modelSurface_s surf = this.surfaces.oGet(i);
                 final srfTriangles_s tri = surf.geometry;
 
-                for (int j = 0; j < tri.numIndexes; j += 3) {
-                    final float area = idWinding.TriangleArea(tri.verts[tri.indexes[j]].xyz,
-                            tri.verts[tri.indexes[j + 1]].xyz, tri.verts[tri.indexes[j + 2]].xyz);
+                for (int j = 0; j < tri.getIndexes().getNumValues(); j += 3) {
+                    final float area = idWinding.TriangleArea(tri.verts[tri.getIndexes().getValues()[j]].xyz,
+                            tri.verts[tri.getIndexes().getValues()[j + 1]].xyz, tri.verts[tri.getIndexes().getValues()[j + 2]].xyz);
                     surf.shader.AddToSurfaceArea(area);
                 }
             }
@@ -470,7 +471,7 @@ public class Model_local {
                 if (!surf.geometry.perfectHull) {
                     closed = ' ';
                 }
-                totalTris += surf.geometry.numIndexes / 3;
+                totalTris += surf.geometry.getIndexes().getNumValues() / 3;
                 totalVerts += surf.geometry.numVerts;
             }
             common.Printf("%c%4dk %3d %4d %4d %s", closed, totalBytes / 1024, NumSurfaces(), totalVerts, totalTris, Name());
@@ -511,7 +512,7 @@ public class Model_local {
                 if (!surf.geometry.perfectHull) {
                     closed = ' ';
                 }
-                totalTris += surf.geometry.numIndexes / 3;
+                totalTris += surf.geometry.getIndexes().getNumValues() / 3;
                 totalVerts += surf.geometry.numVerts;
             }
             common.Printf("%c%4dk %3d %4d %4d %s", closed, totalBytes / 1024, NumSurfaces(), totalVerts, totalTris, Name());
@@ -687,31 +688,24 @@ public class Model_local {
                 final srfTriangles_s tri = R_AllocStaticTriSurf();
 
                 f.ReadInt(index);
-                tri.numIndexes = index[0];
-                R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
-                for (j = 0; j < tri.numIndexes; ++j) {
+                tri.getIndexes().setNumValues(index[0]);
+                R_AllocStaticTriSurfIndexes(tri, tri.getIndexes().getNumValues());
+                for (j = 0; j < tri.getIndexes().getNumValues(); ++j) {
                     f.ReadInt(index);
-                    tri.indexes[j] = index[0];
+                    tri.getIndexes().getValues()[j] = index[0];
                 }
 
                 f.ReadInt(vert);
                 tri.numVerts = vert[0];
                 R_AllocStaticTriSurfVerts(tri, tri.numVerts);
                 for (j = 0; j < tri.numVerts; ++j) {
-                    final char[][] color = new char[4][1];
                     f.ReadVec3(tri.verts[j].xyz);
                     f.ReadVec2(tri.verts[j].st);
                     f.ReadVec3(tri.verts[j].normal);
                     f.ReadVec3(tri.verts[j].tangents[0]);
                     f.ReadVec3(tri.verts[j].tangents[1]);
-                    f.ReadUnsignedChar(color[0]);
-                    tri.verts[j].color[0] = (byte) color[0][0];
-                    f.ReadUnsignedChar(color[0]);
-                    tri.verts[j].color[1] = (byte) color[1][0];
-                    f.ReadUnsignedChar(color[0]);
-                    tri.verts[j].color[2] = (byte) color[2][0];
-                    f.ReadUnsignedChar(color[0]);
-                    tri.verts[j].color[3] = (byte) color[3][0];
+                    
+                    ColorUtil.readFile(tri.verts[j].getColor(), f);
                 }
 
                 surf.geometry = tri;
@@ -742,9 +736,9 @@ public class Model_local {
                 f.WriteHashString(surf.shader.GetName());
 
                 final srfTriangles_s tri = surf.geometry;
-                f.WriteInt(tri.numIndexes);
-                for (j = 0; j < tri.numIndexes; ++j) {
-                    f.WriteInt(tri.indexes[j]);
+                f.WriteInt(tri.getIndexes().getNumValues());
+                for (j = 0; j < tri.getIndexes().getNumValues(); ++j) {
+                    f.WriteInt(tri.getIndexes().getValues()[j]);
                 }
                 f.WriteInt(tri.numVerts);
                 for (j = 0; j < tri.numVerts; ++j) {
@@ -753,10 +747,7 @@ public class Model_local {
                     f.WriteVec3(tri.verts[j].normal);
                     f.WriteVec3(tri.verts[j].tangents[0]);
                     f.WriteVec3(tri.verts[j].tangents[1]);
-                    f.WriteUnsignedChar((char) tri.verts[j].color[0]);
-                    f.WriteUnsignedChar((char) tri.verts[j].color[1]);
-                    f.WriteUnsignedChar((char) tri.verts[j].color[2]);
-                    f.WriteUnsignedChar((char) tri.verts[j].color[3]);
+                    ColorUtil.writeFile(tri.verts[j].getColor(), f);
                 }
             }
         }
@@ -940,11 +931,11 @@ public class Model_local {
             // allocate triangle surface
             final srfTriangles_s tri = R_AllocStaticTriSurf();
             tri.numVerts = width * height;
-            tri.numIndexes = (width - 1) * (height - 1) * 6;
+            tri.getIndexes().setNumValues((width - 1) * (height - 1) * 6);
 
             this.fastLoad = true;		// don't do all the sil processing
 
-            R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
+            R_AllocStaticTriSurfIndexes(tri, tri.getIndexes().getNumValues());
             R_AllocStaticTriSurfVerts(tri, tri.numVerts);
 
             for (int i = 0; i < height; i++) {
@@ -971,12 +962,12 @@ public class Model_local {
 //			tri.indexes[ v + 5 ] = i * width + j + 1;
 //}else
                     {
-                        tri.indexes[ v + 0] = (i * width) + j;
-                        tri.indexes[ v + 1] = (i * width) + j + 1;
-                        tri.indexes[ v + 2] = ((i + 1) * width) + j + 1;
-                        tri.indexes[ v + 3] = (i * width) + j;
-                        tri.indexes[ v + 4] = ((i + 1) * width) + j + 1;
-                        tri.indexes[ v + 5] = ((i + 1) * width) + j;
+                        tri.getIndexes().getValues()[ v + 0] = (i * width) + j;
+                        tri.getIndexes().getValues()[ v + 1] = (i * width) + j + 1;
+                        tri.getIndexes().getValues()[ v + 2] = ((i + 1) * width) + j + 1;
+                        tri.getIndexes().getValues()[ v + 3] = (i * width) + j;
+                        tri.getIndexes().getValues()[ v + 4] = ((i + 1) * width) + j + 1;
+                        tri.getIndexes().getValues()[ v + 5] = ((i + 1) * width) + j;
                     }
                 }
             }
@@ -1019,7 +1010,7 @@ public class Model_local {
 
             matchVert_s next;
             int v, tv;
-            byte[] color = new byte[4];
+            private byte[] color = new byte[4];
             idVec3 normal = new idVec3();
 
             final int index;
@@ -1065,6 +1056,10 @@ public class Model_local {
                 return this.tv == that.tv;
 
             }
+
+			byte[] getColor() {
+				return color;
+			}
 
 //            static matchVert_s[] generateArray(final int length) {
 //                return Stream.
@@ -1237,7 +1232,7 @@ public class Model_local {
                 // allocate triangle surface
                 tri = R_AllocStaticTriSurf();
                 tri.numVerts = 0;
-                tri.numIndexes = 0;
+                tri.getIndexes().setNumValues(0);
                 R_AllocStaticTriSurfIndexes(tri, mesh.numFaces * 3);
                 tri.generateNormals = !normalsParsed;
 
@@ -1287,7 +1282,7 @@ public class Model_local {
                             if (mv.tv != tv) {
                                 continue;
                             }
-                            if (!Arrays.equals(mv.color, color)) {
+                            if (!Arrays.equals(mv.getColor(), color)) {
                                 continue;
                             }
                             if (!normalsParsed) {
@@ -1305,7 +1300,7 @@ public class Model_local {
                             mv.v = v;
                             mv.tv = tv;
                             mv.normal.oSet(normal);
-                            System.arraycopy(color, 0, mv.color, 0, color.length);
+                            System.arraycopy(color, 0, mv.getColor(), 0, color.length);
                             mv.next = null;
                             if (lastmv != null) {
                                 lastmv.next = mv;
@@ -1315,13 +1310,13 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.indexes[tri.numIndexes] = mv.index;
-                        tri.numIndexes++;
+                        tri.getIndexes().getValues()[tri.getIndexes().getNumValues()] = mv.index;
+                        tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() + 1);
                     }
                 }
 
                 // allocate space for the indexes and copy them
-                if (tri.numIndexes > (mesh.numFaces * 3)) {
+                if (tri.getIndexes().getNumValues() > (mesh.numFaces * 3)) {
                     common.FatalError("ConvertASEToModelSurfaces: index miscount in ASE file %s", this.name);
                 }
                 if (tri.numVerts > (mesh.numFaces * 3)) {
@@ -1351,7 +1346,8 @@ public class Model_local {
                     tri.verts[ j].Clear();
                     tri.verts[ j].xyz.oSet(mesh.vertexes[ mv.v]);
                     tri.verts[ j].normal.oSet(mv.normal);
-                    System.arraycopy(mv.color, 0, tri.verts[j].color = mv.color, 0, mv.color.length);
+                    //System.arraycopy(mv.color, 0, tri.verts[j].color = mv.color, 0, mv.color.length);
+                    ColorUtil.setElements(tri.verts[j].getColor(), mv.getColor());
                     if ((mesh.numTVFaces == mesh.numFaces) && (mesh.numTVertexes != 0)) {
                         final idVec2 tv2 = mesh.tvertexes[ mv.tv];
                         final float u = (tv2.x * uTiling) + uOffset;
@@ -1581,7 +1577,7 @@ public class Model_local {
                 // allocate triangle surface
                 tri = R_AllocStaticTriSurf();
                 tri.numVerts = 0;
-                tri.numIndexes = 0;
+                tri.getIndexes().setNumValues(0);
                 R_AllocStaticTriSurfIndexes(tri, layer.polygon.count * 3);
                 tri.generateNormals = !normalsParsed;
 
@@ -1657,7 +1653,7 @@ public class Model_local {
                             if (mv.tv != tv) {
                                 continue;
                             }
-                            if (!Arrays.equals(mv.color, color)) {
+                            if (!Arrays.equals(mv.getColor(), color)) {
                                 continue;
                             }
                             if (!normalsParsed) {
@@ -1675,7 +1671,7 @@ public class Model_local {
                             mv.v = v;
                             mv.tv = tv;
                             mv.normal.oSet(normal);
-                            System.arraycopy(color, 0, mv.color, 0, color.length);
+                            System.arraycopy(color, 0, mv.getColor(), 0, color.length);
                             mv.next = null;
                             if (lastmv != null) {
                                 lastmv.next = mv;
@@ -1685,13 +1681,13 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.indexes[tri.numIndexes] = mv.index;
-                        tri.numIndexes++;
+                        tri.getIndexes().getValues()[tri.getIndexes().getNumValues()] = mv.index;
+                        tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() + 1);
                     }
                 }
 
                 // allocate space for the indexes and copy them
-                if (tri.numIndexes > (layer.polygon.count * 3)) {
+                if (tri.getIndexes().getNumValues() > (layer.polygon.count * 3)) {
                     common.FatalError("ConvertLWOToModelSurfaces: index miscount in LWO file %s", this.name);
                 }
                 if (tri.numVerts > (layer.polygon.count * 3)) {
@@ -1706,7 +1702,8 @@ public class Model_local {
                     tri.verts[j].xyz = vList[mv.v];
                     tri.verts[j].st = tvList[mv.tv];
                     tri.verts[j].normal = mv.normal;
-                    tri.verts[j].color = mv.color;
+                    //tri.verts[j].setColor(mv.getColor());
+                    ColorUtil.setElements(tri.verts[j].getColor(), mv.getColor());
                 }
 //
 //                R_StaticFree(mvTable);
@@ -1910,7 +1907,7 @@ public class Model_local {
                 // allocate triangle surface
                 tri = R_AllocStaticTriSurf();
                 tri.numVerts = 0;
-                tri.numIndexes = 0;
+                tri.getIndexes().setNumValues(0);
                 R_AllocStaticTriSurfIndexes(tri, mesh.numFaces * 3);
                 tri.generateNormals = !normalsParsed;
 
@@ -1959,7 +1956,7 @@ public class Model_local {
                             if (mv.tv != tv) {
                                 continue;
                             }
-                            if (!Arrays.equals(mv.color, color)) {
+                            if (!Arrays.equals(mv.getColor(), color)) {
                                 continue;
                             }
                             if (!normalsParsed) {
@@ -1977,7 +1974,7 @@ public class Model_local {
                             mv.v = v;
                             mv.tv = tv;
                             mv.normal.oSet(normal);
-                            System.arraycopy(color, 0, mv.color, 0, color.length);
+                            System.arraycopy(color, 0, mv.getColor(), 0, color.length);
                             mv.next = null;
                             if (lastmv != null) {
                                 lastmv.next = mv;
@@ -1987,13 +1984,13 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.indexes[tri.numIndexes] = mv.index;
-                        tri.numIndexes++;
+                        tri.getIndexes().getValues()[tri.getIndexes().getNumValues()] = mv.index;
+                        tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() + 1);
                     }
                 }
 
                 // allocate space for the indexes and copy them
-                if (tri.numIndexes > (mesh.numFaces * 3)) {
+                if (tri.getIndexes().getNumValues() > (mesh.numFaces * 3)) {
                     common.FatalError("ConvertMAToModelSurfaces: index miscount in MA file %s", this.name);
                 }
                 if (tri.numVerts > (mesh.numFaces * 3)) {
@@ -2024,7 +2021,8 @@ public class Model_local {
                     tri.verts[ j].Clear();
                     tri.verts[ j].xyz = mesh.vertexes[ mv.v];
                     tri.verts[ j].normal = mv.normal;
-                    tri.verts[j].color = mv.color;
+                    //tri.verts[j].setColor(mv.getColor());
+                    ColorUtil.setElements(tri.verts[j].getColor(), mv.getColor());
                     if (mesh.numTVertexes != 0) {
                         final idVec2 tv2 = mesh.tvertexes[ mv.tv];
                         final float U = (tv2.x * uTiling) + uOffset;
@@ -2296,14 +2294,14 @@ public class Model_local {
         tri.verts[tri.numVerts + 3].st.oSet(0, 0);
         tri.verts[tri.numVerts + 3].st.oSet(1, 1);
 
-        tri.indexes[tri.numIndexes + 0] = tri.numVerts + 0;
-        tri.indexes[tri.numIndexes + 1] = tri.numVerts + 1;
-        tri.indexes[tri.numIndexes + 2] = tri.numVerts + 2;
-        tri.indexes[tri.numIndexes + 3] = tri.numVerts + 0;
-        tri.indexes[tri.numIndexes + 4] = tri.numVerts + 2;
-        tri.indexes[tri.numIndexes + 5] = tri.numVerts + 3;
+        tri.getIndexes().getValues()[tri.getIndexes().getNumValues() + 0] = tri.numVerts + 0;
+        tri.getIndexes().getValues()[tri.getIndexes().getNumValues() + 1] = tri.numVerts + 1;
+        tri.getIndexes().getValues()[tri.getIndexes().getNumValues() + 2] = tri.numVerts + 2;
+        tri.getIndexes().getValues()[tri.getIndexes().getNumValues() + 3] = tri.numVerts + 0;
+        tri.getIndexes().getValues()[tri.getIndexes().getNumValues() + 4] = tri.numVerts + 2;
+        tri.getIndexes().getValues()[tri.getIndexes().getNumValues() + 5] = tri.numVerts + 3;
 
         tri.numVerts += 4;
-        tri.numIndexes += 6;
+        tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() + 6);
     }
 }

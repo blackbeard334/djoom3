@@ -102,8 +102,8 @@ public class ModelOverlay {
                 if (surf.geometry.numVerts > maxVerts) {
                     maxVerts = surf.geometry.numVerts;
                 }
-                if (surf.geometry.numIndexes > maxIndexes) {
-                    maxIndexes = surf.geometry.numIndexes;
+                if (surf.geometry.getIndexes().getNumValues() > maxIndexes) {
+                    maxIndexes = surf.geometry.getIndexes().getNumValues();
                 }
             }
 
@@ -151,10 +151,10 @@ public class ModelOverlay {
                 int numVerts = 0;
                 int numIndexes = 0;
                 int triNum = 0;
-                for (int index = 0; index < stri.numIndexes; index += 3, triNum++) {
-                    final int v1 = stri.indexes[index + 0];
-                    final int v2 = stri.indexes[index + 1];
-                    final int v3 = stri.indexes[index + 2];
+                for (int index = 0; index < stri.getIndexes().getNumValues(); index += 3, triNum++) {
+                    final int v1 = stri.getIndexes().getValues()[index + 0];
+                    final int v2 = stri.getIndexes().getValues()[index + 1];
+                    final int v3 = stri.getIndexes().getValues()[index + 2];
 
                     // skip triangles completely off one side
                     if ((cullBits[v1] & cullBits[v2] & cullBits[v3]) != 0) {
@@ -164,7 +164,7 @@ public class ModelOverlay {
                     // we could do more precise triangle culling, like the light interaction does, if desired
                     // keep this triangle
                     for (int vnum = 0; vnum < 3; vnum++) {
-                        final int ind = stri.indexes[index + vnum];
+                        final int ind = stri.getIndexes().getValues()[index + vnum];
                         if (vertexRemap[ind] == -1) {
                             vertexRemap[ind] = numVerts;
 
@@ -268,7 +268,7 @@ public class ModelOverlay {
                     newSurf.id = -1 - k;
                 }
 
-                if ((newSurf.geometry == null) || (newSurf.geometry.numVerts < numVerts) || (newSurf.geometry.numIndexes < numIndexes)) {
+                if ((newSurf.geometry == null) || (newSurf.geometry.numVerts < numVerts) || (newSurf.geometry.getIndexes().getNumValues() < numIndexes)) {
                     R_FreeStaticTriSurf(newSurf.geometry);
                     newSurf.geometry = R_AllocStaticTriSurf();
                     R_AllocStaticTriSurfVerts(newSurf.geometry, numVerts);
@@ -307,7 +307,7 @@ public class ModelOverlay {
 
                     // copy indexes;
                     for (j = 0; j < surf.numIndexes; j++) {
-                        newTri.indexes[numIndexes + j] = numVerts + surf.indexes[j];
+                        newTri.getIndexes().getValues()[numIndexes + j] = numVerts + surf.indexes[j];
                     }
                     numIndexes += surf.numIndexes;
 
@@ -332,7 +332,7 @@ public class ModelOverlay {
                 }
 
                 newTri.numVerts = numVerts;
-                newTri.numIndexes = numIndexes;
+                newTri.getIndexes().setNumValues(numIndexes);
                 R_BoundTriSurf(newTri);
 
                 staticModel.overlaysAdded++;	// so we don't create an overlay on an overlay surface

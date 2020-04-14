@@ -59,55 +59,55 @@ public class Nio {
 		return bb.asIntBuffer();
 	}
 
-	/**
-	 * @deprecated the calling functions should send ByteBuffers instead.
-	 */
-	public static ByteBuffer wrap(final boolean booleanValue) {
-		return (ByteBuffer) newByteBuffer(1).put(booleanValue ? (byte) 1 : (byte) 0).flip();
-	}
+//	/**
+//	 * @deprecated the calling functions should send ByteBuffers instead.
+//	 */
+//	public static ByteBuffer wrap(final boolean booleanValue) {
+//		return (ByteBuffer) newByteBuffer(1).put(booleanValue ? (byte) 1 : (byte) 0).flip();
+//	}
 
-	/**
-	 * @deprecated the calling functions should send ByteBuffers instead.
-	 */
-	public static ByteBuffer wrap(final boolean[] booleanArray) {
-		byte[] byteArray = new byte[booleanArray.length];
-		for (int i = 0; i < byteArray.length; i++) {
-			byteArray[i] = booleanArray[i] ? (byte) 1 : (byte) 0;
-		}
-		return (ByteBuffer) newByteBuffer(byteArray.length).put(byteArray).flip();
-	}
+//	/**
+//	 * @deprecated the calling functions should send ByteBuffers instead.
+//	 */
+//	public static ByteBuffer wrap(final boolean[] booleanArray) {
+//		byte[] byteArray = new byte[booleanArray.length];
+//		for (int i = 0; i < byteArray.length; i++) {
+//			byteArray[i] = booleanArray[i] ? (byte) 1 : (byte) 0;
+//		}
+//		return (ByteBuffer) newByteBuffer(byteArray.length).put(byteArray).flip();
+//	}
 
-	/**
-	 * @deprecated the calling functions should send ByteBuffers instead.
-	 */
-	public static ByteBuffer wrap(final byte byteValue) {
+//	/**
+//	 * @deprecated the calling functions should send ByteBuffers instead.
+//	 */
+//	public static ByteBuffer wrap(final byte byteValue) {
+//
+//		return (ByteBuffer) newByteBuffer(1).put(byteValue).flip();
+//	}
 
-		return (ByteBuffer) newByteBuffer(1).put(byteValue).flip();
-	}
+//	/**
+//	 * @deprecated the calling functions should send ByteBuffers instead.
+//	 */
+//	public static ByteBuffer wrap(final byte[] byteArray) {
+//
+//		return (ByteBuffer) newByteBuffer(byteArray.length).put(byteArray).flip();
+//	}
 
-	/**
-	 * @deprecated the calling functions should send ByteBuffers instead.
-	 */
-	public static ByteBuffer wrap(final byte[] byteArray) {
+//	/**
+//	 * @deprecated the calling functions should send DoubleBuffers instead.
+//	 */
+//	public static DoubleBuffer wrap(final double doubleValue) {
+//
+//		return (DoubleBuffer) newDoubleBuffer(1).put(doubleValue).flip();
+//	}
 
-		return (ByteBuffer) newByteBuffer(byteArray.length).put(byteArray).flip();
-	}
-
-	/**
-	 * @deprecated the calling functions should send DoubleBuffers instead.
-	 */
-	public static DoubleBuffer wrap(final double doubleValue) {
-
-		return (DoubleBuffer) newDoubleBuffer(1).put(doubleValue).flip();
-	}
-
-	/**
-	 * @deprecated the calling functions should send DoubleBuffers instead.
-	 */
-	public static DoubleBuffer wrap(final double[] doubleArray) {
-
-		return (DoubleBuffer) newDoubleBuffer(doubleArray.length).put(doubleArray).flip();
-	}
+//	/**
+//	 * @deprecated the calling functions should send DoubleBuffers instead.
+//	 */
+//	public static DoubleBuffer wrap(final double[] doubleArray) {
+//
+//		return (DoubleBuffer) newDoubleBuffer(doubleArray.length).put(doubleArray).flip();
+//	}
 
 	/**
 	 * @deprecated the calling functions should send FloatBuffers instead.
@@ -125,25 +125,25 @@ public class Nio {
 		return (FloatBuffer) newFloatBuffer(floatArray.length).put(floatArray).flip();
 	}
 
-	/**
-	 * @deprecated the calling functions should send FloatBuffers instead.
-	 */
-	public static FloatBuffer wrap(final float[] floatArray, int length) {
-
-		if (floatArray.length == length) {
-			return wrap(floatArray);
-		} else {
-			FloatBuffer buffer = newFloatBuffer(length);
-			int len = length;
-			if (length > floatArray.length) {
-				len = floatArray.length;
-			}
-			for (int i = 0; i < len; i++) {
-				buffer.put(floatArray[i]);
-			}
-			return (FloatBuffer) buffer.flip();
-		}
-	}
+//	/**
+//	 * @deprecated the calling functions should send FloatBuffers instead.
+//	 */
+//	public static FloatBuffer wrap(final float[] floatArray, int length) {
+//
+//		if (floatArray.length == length) {
+//			return wrap(floatArray);
+//		} else {
+//			FloatBuffer buffer = newFloatBuffer(length);
+//			int len = length;
+//			if (length > floatArray.length) {
+//				len = floatArray.length;
+//			}
+//			for (int i = 0; i < len; i++) {
+//				buffer.put(floatArray[i]);
+//			}
+//			return (FloatBuffer) buffer.flip();
+//		}
+//	}
 
 	/**
 	 * @deprecated the calling functions should send IntBuffers instead.

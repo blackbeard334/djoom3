@@ -75,8 +75,8 @@ public class tr_main {
 
         if (r_useDepthBoundsTest.GetInteger() != 0) {
             final float[] zmin = {screenRect.zmin}, zmax = {screenRect.zmax};
-            R_TransformEyeZToWin(-bounds.oGet(0).x, tr.viewDef.projectionMatrix, zmin);
-            R_TransformEyeZToWin(-bounds.oGet(1).x, tr.viewDef.projectionMatrix, zmax);
+            R_TransformEyeZToWin(-bounds.oGet(0).x, tr.viewDef.getProjectionMatrix(), zmin);
+            R_TransformEyeZToWin(-bounds.oGet(1).x, tr.viewDef.getProjectionMatrix(), zmax);
             screenRect.zmin = zmin[0];
             screenRect.zmax = zmax[0];
         }
@@ -672,36 +672,36 @@ public class tr_main {
 
             for (i = 0; i < 4; i++) {
                 view.oSet(i,
-                        (global.oGet(0) * tr.primaryView.worldSpace.modelViewMatrix[i + (0 * 4)])
-                        + (global.oGet(1) * tr.primaryView.worldSpace.modelViewMatrix[i + (1 * 4)])
-                        + (global.oGet(2) * tr.primaryView.worldSpace.modelViewMatrix[i + (2 * 4)])
-                        + tr.primaryView.worldSpace.modelViewMatrix[i + (3 * 4)]);
+                        (global.oGet(0) * tr.primaryView.worldSpace.getModelViewMatrix()[i + (0 * 4)])
+                        + (global.oGet(1) * tr.primaryView.worldSpace.getModelViewMatrix()[i + (1 * 4)])
+                        + (global.oGet(2) * tr.primaryView.worldSpace.getModelViewMatrix()[i + (2 * 4)])
+                        + tr.primaryView.worldSpace.getModelViewMatrix()[i + (3 * 4)]);
             }
 
             for (i = 0; i < 4; i++) {
                 clip.oSet(i,
-                        (view.oGet(0) * tr.primaryView.projectionMatrix[i + (0 * 4)])
-                        + (view.oGet(1) * tr.primaryView.projectionMatrix[i + (1 * 4)])
-                        + (view.oGet(2) * tr.primaryView.projectionMatrix[i + (2 * 4)])
-                        + (view.oGet(3) * tr.primaryView.projectionMatrix[i + (3 * 4)]));
+                        (view.oGet(0) * tr.primaryView.getProjectionMatrix()[i + (0 * 4)])
+                        + (view.oGet(1) * tr.primaryView.getProjectionMatrix()[i + (1 * 4)])
+                        + (view.oGet(2) * tr.primaryView.getProjectionMatrix()[i + (2 * 4)])
+                        + (view.oGet(3) * tr.primaryView.getProjectionMatrix()[i + (3 * 4)]));
             }
 
         } else {
 
             for (i = 0; i < 4; i++) {
                 view.oSet(i,
-                        (global.oGet(0) * tr.viewDef.worldSpace.modelViewMatrix[i + (0 * 4)])
-                        + (global.oGet(1) * tr.viewDef.worldSpace.modelViewMatrix[i + (1 * 4)])
-                        + (global.oGet(2) * tr.viewDef.worldSpace.modelViewMatrix[i + (2 * 4)])
-                        + tr.viewDef.worldSpace.modelViewMatrix[i + (3 * 4)]);
+                        (global.oGet(0) * tr.viewDef.worldSpace.getModelViewMatrix()[i + (0 * 4)])
+                        + (global.oGet(1) * tr.viewDef.worldSpace.getModelViewMatrix()[i + (1 * 4)])
+                        + (global.oGet(2) * tr.viewDef.worldSpace.getModelViewMatrix()[i + (2 * 4)])
+                        + tr.viewDef.worldSpace.getModelViewMatrix()[i + (3 * 4)]);
             }
 
             for (i = 0; i < 4; i++) {
                 clip.oSet(i,
-                        (view.oGet(0) * tr.viewDef.projectionMatrix[i + (0 * 4)])
-                        + (view.oGet(1) * tr.viewDef.projectionMatrix[i + (1 * 4)])
-                        + (view.oGet(2) * tr.viewDef.projectionMatrix[i + (2 * 4)])
-                        + (view.oGet(3) * tr.viewDef.projectionMatrix[i + (3 * 4)]));
+                        (view.oGet(0) * tr.viewDef.getProjectionMatrix()[i + (0 * 4)])
+                        + (view.oGet(1) * tr.viewDef.getProjectionMatrix()[i + (1 * 4)])
+                        + (view.oGet(2) * tr.viewDef.getProjectionMatrix()[i + (2 * 4)])
+                        + (view.oGet(3) * tr.viewDef.getProjectionMatrix()[i + (3 * 4)]));
             }
 
         }
@@ -728,6 +728,47 @@ public class tr_main {
      ==========================
      myGlMultMatrix
      ==========================
+     */
+    public static void myGlMultMatrix(final float[] a/*[16]*/, final FloatBuffer b/*[16]*/, float[] out/*[16]*/) {
+        if (false) {
+//            int i, j;
+//
+//            for (i = 0; i < 4; i++) {
+//                for (j = 0; j < 4; j++) {
+//                    out[ i * 4 + j] =
+//                            a[ i * 4 + 0] * b[ 0 * 4 + j]
+//                            + a[ i * 4 + 1] * b[ 1 * 4 + j]
+//                            + a[ i * 4 + 2] * b[ 2 * 4 + j]
+//                            + a[ i * 4 + 3] * b[ 3 * 4 + j];
+//                }
+//            }
+        } else {
+            out[(0 * 4) + 0] = (a[(0 * 4) + 0] * b.get((0 * 4) + 0)) + (a[(0 * 4) + 1] * b.get((1 * 4) + 0)) + (a[(0 * 4) + 2] * b.get((2 * 4) + 0)) + (a[(0 * 4) + 3] * b.get((3 * 4) + 0));
+            out[(0 * 4) + 1] = (a[(0 * 4) + 0] * b.get((0 * 4) + 1)) + (a[(0 * 4) + 1] * b.get((1 * 4) + 1)) + (a[(0 * 4) + 2] * b.get((2 * 4) + 1)) + (a[(0 * 4) + 3] * b.get((3 * 4) + 1));
+            out[(0 * 4) + 2] = (a[(0 * 4) + 0] * b.get((0 * 4) + 2)) + (a[(0 * 4) + 1] * b.get((1 * 4) + 2)) + (a[(0 * 4) + 2] * b.get((2 * 4) + 2)) + (a[(0 * 4) + 3] * b.get((3 * 4) + 2));
+            out[(0 * 4) + 3] = (a[(0 * 4) + 0] * b.get((0 * 4) + 3)) + (a[(0 * 4) + 1] * b.get((1 * 4) + 3)) + (a[(0 * 4) + 2] * b.get((2 * 4) + 3)) + (a[(0 * 4) + 3] * b.get((3 * 4) + 3));
+            out[(1 * 4) + 0] = (a[(1 * 4) + 0] * b.get((0 * 4) + 0)) + (a[(1 * 4) + 1] * b.get((1 * 4) + 0)) + (a[(1 * 4) + 2] * b.get((2 * 4) + 0)) + (a[(1 * 4) + 3] * b.get((3 * 4) + 0));
+            out[(1 * 4) + 1] = (a[(1 * 4) + 0] * b.get((0 * 4) + 1)) + (a[(1 * 4) + 1] * b.get((1 * 4) + 1)) + (a[(1 * 4) + 2] * b.get((2 * 4) + 1)) + (a[(1 * 4) + 3] * b.get((3 * 4) + 1));
+            out[(1 * 4) + 2] = (a[(1 * 4) + 0] * b.get((0 * 4) + 2)) + (a[(1 * 4) + 1] * b.get((1 * 4) + 2)) + (a[(1 * 4) + 2] * b.get((2 * 4) + 2)) + (a[(1 * 4) + 3] * b.get((3 * 4) + 2));
+            out[(1 * 4) + 3] = (a[(1 * 4) + 0] * b.get((0 * 4) + 3)) + (a[(1 * 4) + 1] * b.get((1 * 4) + 3)) + (a[(1 * 4) + 2] * b.get((2 * 4) + 3)) + (a[(1 * 4) + 3] * b.get((3 * 4) + 3));
+            out[(2 * 4) + 0] = (a[(2 * 4) + 0] * b.get((0 * 4) + 0)) + (a[(2 * 4) + 1] * b.get((1 * 4) + 0)) + (a[(2 * 4) + 2] * b.get((2 * 4) + 0)) + (a[(2 * 4) + 3] * b.get((3 * 4) + 0));
+            out[(2 * 4) + 1] = (a[(2 * 4) + 0] * b.get((0 * 4) + 1)) + (a[(2 * 4) + 1] * b.get((1 * 4) + 1)) + (a[(2 * 4) + 2] * b.get((2 * 4) + 1)) + (a[(2 * 4) + 3] * b.get((3 * 4) + 1));
+            out[(2 * 4) + 2] = (a[(2 * 4) + 0] * b.get((0 * 4) + 2)) + (a[(2 * 4) + 1] * b.get((1 * 4) + 2)) + (a[(2 * 4) + 2] * b.get((2 * 4) + 2)) + (a[(2 * 4) + 3] * b.get((3 * 4) + 2));
+            out[(2 * 4) + 3] = (a[(2 * 4) + 0] * b.get((0 * 4) + 3)) + (a[(2 * 4) + 1] * b.get((1 * 4) + 3)) + (a[(2 * 4) + 2] * b.get((2 * 4) + 3)) + (a[(2 * 4) + 3] * b.get((3 * 4) + 3));
+            out[(3 * 4) + 0] = (a[(3 * 4) + 0] * b.get((0 * 4) + 0)) + (a[(3 * 4) + 1] * b.get((1 * 4) + 0)) + (a[(3 * 4) + 2] * b.get((2 * 4) + 0)) + (a[(3 * 4) + 3] * b.get((3 * 4) + 0));
+            out[(3 * 4) + 1] = (a[(3 * 4) + 0] * b.get((0 * 4) + 1)) + (a[(3 * 4) + 1] * b.get((1 * 4) + 1)) + (a[(3 * 4) + 2] * b.get((2 * 4) + 1)) + (a[(3 * 4) + 3] * b.get((3 * 4) + 1));
+            out[(3 * 4) + 2] = (a[(3 * 4) + 0] * b.get((0 * 4) + 2)) + (a[(3 * 4) + 1] * b.get((1 * 4) + 2)) + (a[(3 * 4) + 2] * b.get((2 * 4) + 2)) + (a[(3 * 4) + 3] * b.get((3 * 4) + 2));
+            out[(3 * 4) + 3] = (a[(3 * 4) + 0] * b.get((0 * 4) + 3)) + (a[(3 * 4) + 1] * b.get((1 * 4) + 3)) + (a[(3 * 4) + 2] * b.get((2 * 4) + 3)) + (a[(3 * 4) + 3] * b.get((3 * 4) + 3));
+        }
+    }
+
+    /**
+     * 
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final float[] a, final FloatBuffer b, float[] out) instead
      */
     public static void myGlMultMatrix(final float[] a/*[16]*/, final float[] b/*[16]*/, float[] out/*[16]*/) {
         if (false) {
@@ -835,7 +876,7 @@ public class tr_main {
 
         // convert from our coordinate system (looking down X)
         // to OpenGL's coordinate system (looking down -Z)
-        myGlMultMatrix(viewerMatrix, s_flipMatrix, world.modelViewMatrix);
+        myGlMultMatrix(viewerMatrix, s_flipMatrix, world.getModelViewMatrix());
     }
     /*
      ===============
@@ -886,28 +927,28 @@ public class tr_main {
         ymin += jittery;
         ymax += jittery;
 
-        tr.viewDef.projectionMatrix[ 0] = (2 * zNear) / width;
-        tr.viewDef.projectionMatrix[ 4] = 0;
-        tr.viewDef.projectionMatrix[ 8] = (xmax + xmin) / width;	// normally 0
-        tr.viewDef.projectionMatrix[12] = 0;
+        tr.viewDef.getProjectionMatrix()[ 0] = (2 * zNear) / width;
+        tr.viewDef.getProjectionMatrix()[ 4] = 0;
+        tr.viewDef.getProjectionMatrix()[ 8] = (xmax + xmin) / width;	// normally 0
+        tr.viewDef.getProjectionMatrix()[12] = 0;
 
-        tr.viewDef.projectionMatrix[ 1] = 0;
-        tr.viewDef.projectionMatrix[ 5] = (2 * zNear) / height;
-        tr.viewDef.projectionMatrix[ 9] = (ymax + ymin) / height;	// normally 0
-        tr.viewDef.projectionMatrix[13] = 0;
+        tr.viewDef.getProjectionMatrix()[ 1] = 0;
+        tr.viewDef.getProjectionMatrix()[ 5] = (2 * zNear) / height;
+        tr.viewDef.getProjectionMatrix()[ 9] = (ymax + ymin) / height;	// normally 0
+        tr.viewDef.getProjectionMatrix()[13] = 0;
 
         // this is the far-plane-at-infinity formulation, and
         // crunches the Z range slightly so w=0 vertexes do not
         // rasterize right at the wraparound point
-        tr.viewDef.projectionMatrix[ 2] = 0;
-        tr.viewDef.projectionMatrix[ 6] = 0;
-        tr.viewDef.projectionMatrix[10] = -0.999f;
-        tr.viewDef.projectionMatrix[14] = -2.0f * zNear;
+        tr.viewDef.getProjectionMatrix()[ 2] = 0;
+        tr.viewDef.getProjectionMatrix()[ 6] = 0;
+        tr.viewDef.getProjectionMatrix()[10] = -0.999f;
+        tr.viewDef.getProjectionMatrix()[14] = -2.0f * zNear;
 
-        tr.viewDef.projectionMatrix[ 3] = 0;
-        tr.viewDef.projectionMatrix[ 7] = 0;
-        tr.viewDef.projectionMatrix[11] = -1;
-        tr.viewDef.projectionMatrix[15] = 0;
+        tr.viewDef.getProjectionMatrix()[ 3] = 0;
+        tr.viewDef.getProjectionMatrix()[ 7] = 0;
+        tr.viewDef.getProjectionMatrix()[11] = -1;
+        tr.viewDef.getProjectionMatrix()[15] = 0;
     }
 
     /*

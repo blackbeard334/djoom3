@@ -62,7 +62,7 @@ public class tr_turboshadow {
             R_CalcInteractionCullBits(ent, tri, light, cullInfo);
         }
 
-        final int numFaces = tri.numIndexes / 3;
+        final int numFaces = tri.getIndexes().getNumValues() / 3;
         int numShadowingFaces = 0;
         facing = cullInfo.facing;
 
@@ -78,10 +78,10 @@ public class tr_turboshadow {
         } else {
 
             // make all triangles that are outside the light frustum "facing", so they won't cast shadows
-            indexes = tri.indexes;
+            indexes = tri.getIndexes().getValues();
             final byte[] modifyFacing = cullInfo.facing;
             final byte[] cullBits = cullInfo.cullBits;
-            for (j = i = 0; i < tri.numIndexes; i += 3, j++) {
+            for (j = i = 0; i < tri.getIndexes().getNumValues(); i += 3, j++) {
                 if (0 == modifyFacing[j]) {
                     final int i1 = indexes[i + 0];
                     final int i2 = indexes[i + 1];
@@ -110,8 +110,8 @@ public class tr_turboshadow {
         int/*glIndex_t */[] shadowIndexes;
         if (USE_TRI_DATA_ALLOCATOR) {
             R_AllocStaticTriSurfIndexes(newTri, (numShadowingFaces + tri.numSilEdges) * 6);
-            tempIndexes = newTri.indexes;
-            shadowIndexes = newTri.indexes;
+            tempIndexes = newTri.getIndexes().getValues();
+            shadowIndexes = newTri.getIndexes().getValues();
         } else {
             tempIndexes = new int[tri.numSilEdges * 6];
             shadowIndexes = tempIndexes;
@@ -146,28 +146,28 @@ public class tr_turboshadow {
         final int numShadowIndexes = shadowIndex;//shadowIndexes - tempIndexes;
 
         // we aren't bothering to separate front and back caps on these
-        newTri.numIndexes = newTri.numShadowIndexesNoFrontCaps = numShadowIndexes + (numShadowingFaces * 6);
+        newTri.getIndexes().setNumValues(newTri.numShadowIndexesNoFrontCaps = numShadowIndexes + (numShadowingFaces * 6));
         newTri.numShadowIndexesNoCaps = numShadowIndexes;
         newTri.shadowCapPlaneBits = SHADOW_CAP_INFINITE;
 
         if (USE_TRI_DATA_ALLOCATOR) {
             // decrease the size of the memory block to only store the used indexes
-            R_ResizeStaticTriSurfIndexes(newTri, newTri.numIndexes);
+            R_ResizeStaticTriSurfIndexes(newTri, newTri.getIndexes().getNumValues());
         } else {
             // allocate memory for the indexes
-            R_AllocStaticTriSurfIndexes(newTri, newTri.numIndexes);
+            R_AllocStaticTriSurfIndexes(newTri, newTri.getIndexes().getNumValues());
             // copy the indexes we created for the sil planes
-            SIMDProcessor.Memcpy(newTri.indexes, tempIndexes, numShadowIndexes /* sizeof( tempIndexes[0] )*/);
+            SIMDProcessor.Memcpy(newTri.getIndexes().getValues(), tempIndexes, numShadowIndexes /* sizeof( tempIndexes[0] )*/);
         }
 
         // these have no effect, because they extend to infinity
         newTri.bounds.Clear();
 
         // put some faces on the model and some on the distant projection
-        indexes = tri.indexes;
+        indexes = tri.getIndexes().getValues();
         shadowIndex = numShadowIndexes;
-        shadowIndexes = newTri.indexes;
-        for (i = 0, j = 0; i < tri.numIndexes; i += 3, j++) {
+        shadowIndexes = newTri.getIndexes().getValues();
+        for (i = 0, j = 0; i < tri.getIndexes().getNumValues(); i += 3, j++) {
             if (facing[j] != 0) {
                 continue;
             }
@@ -206,7 +206,7 @@ public class tr_turboshadow {
             R_CalcInteractionCullBits(ent, tri, light, cullInfo);
         }
 
-        final int numFaces = tri.numIndexes / 3;
+        final int numFaces = tri.getIndexes().getNumValues() / 3;
         int numShadowingFaces = 0;
         facing = cullInfo.facing;
 
@@ -222,10 +222,10 @@ public class tr_turboshadow {
         } else {
 
             // make all triangles that are outside the light frustum "facing", so they won't cast shadows
-            indexes = tri.indexes;
+            indexes = tri.getIndexes().getValues();
             final byte[] modifyFacing = cullInfo.facing;
             final byte[] cullBits = cullInfo.cullBits;
-            for (j = i = 0; i < tri.numIndexes; i += 3, j++) {
+            for (j = i = 0; i < tri.getIndexes().getNumValues(); i += 3, j++) {
                 if (0 == modifyFacing[j]) {
                     final int i1 = indexes[i + 0];
                     final int i2 = indexes[i + 1];
@@ -260,7 +260,7 @@ public class tr_turboshadow {
 
         SIMDProcessor.Memset(vertRemap, -1, tri.numVerts /* sizeof(vertRemap[0])*/);
 
-        for (i = 0, j = 0; i < tri.numIndexes; i += 3, j++) {
+        for (i = 0, j = 0; i < tri.getIndexes().getNumValues(); i += 3, j++) {
             if (facing[j] != 0) {
                 continue;
             }
@@ -295,8 +295,8 @@ public class tr_turboshadow {
         int/*glIndex_t */[] shadowIndexes;
         if (USE_TRI_DATA_ALLOCATOR) {
             R_AllocStaticTriSurfIndexes(newTri, (numShadowingFaces + tri.numSilEdges) * 6);
-            tempIndexes = newTri.indexes;
-            shadowIndexes = newTri.indexes;
+            tempIndexes = newTri.getIndexes().getValues();
+            shadowIndexes = newTri.getIndexes().getValues();
         } else {
             tempIndexes = new int[tri.numSilEdges * 6];
             shadowIndexes = tempIndexes;
@@ -332,18 +332,18 @@ public class tr_turboshadow {
         final int numShadowIndexes = shadowIndex;
 
         // we aren't bothering to separate front and back caps on these
-        newTri.numIndexes = newTri.numShadowIndexesNoFrontCaps = numShadowIndexes + (numShadowingFaces * 6);
+        newTri.getIndexes().setNumValues(newTri.numShadowIndexesNoFrontCaps = numShadowIndexes + (numShadowingFaces * 6));
         newTri.numShadowIndexesNoCaps = numShadowIndexes;
         newTri.shadowCapPlaneBits = SHADOW_CAP_INFINITE;
 
         if (USE_TRI_DATA_ALLOCATOR) {
             // decrease the size of the memory block to only store the used indexes
-            R_ResizeStaticTriSurfIndexes(newTri, newTri.numIndexes);
+            R_ResizeStaticTriSurfIndexes(newTri, newTri.getIndexes().getNumValues());
         } else {
             // allocate memory for the indexes
-            R_AllocStaticTriSurfIndexes(newTri, newTri.numIndexes);
+            R_AllocStaticTriSurfIndexes(newTri, newTri.getIndexes().getNumValues());
             // copy the indexes we created for the sil planes
-            SIMDProcessor.Memcpy(newTri.indexes, tempIndexes, numShadowIndexes /* sizeof( tempIndexes[0] )*/);
+            SIMDProcessor.Memcpy(newTri.getIndexes().getValues(), tempIndexes, numShadowIndexes /* sizeof( tempIndexes[0] )*/);
         }
 
         // these have no effect, because they extend to infinity
@@ -352,8 +352,8 @@ public class tr_turboshadow {
         // put some faces on the model and some on the distant projection
         indexes = tri.silIndexes;
         shadowIndex = numShadowIndexes;
-        shadowIndexes = newTri.indexes;
-        for (i = 0, j = 0; i < tri.numIndexes; i += 3, j++) {
+        shadowIndexes = newTri.getIndexes().getValues();
+        for (i = 0, j = 0; i < tri.getIndexes().getNumValues(); i += 3, j++) {
             if (facing[j] != 0) {
                 continue;
             }
