@@ -84,6 +84,7 @@ import static neo.sys.win_glimp.GLimp_Shutdown;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -1080,7 +1081,7 @@ public class tr_local {
 //
         viewLight_s vLight;
         int depthFunc;			// GLS_DEPTHFUNC_EQUAL, or GLS_DEPTHFUNC_LESS for translucent
-        private final float[] lightTextureMatrix = new float[16];	// only if lightStage->texture.hasMatrix
+        private final FloatBuffer lightTextureMatrix = Nio.newFloatBuffer(16);	// only if lightStage->texture.hasMatrix
         private final float[] lightColor = new float[4];		// evaluation of current light's color stage
 //
         float lightScale;			// Every light color calaculation will be multiplied by this,
@@ -1106,7 +1107,7 @@ public class tr_local {
 			return lightColor;
 		}
 
-		float[] getLightTextureMatrix() {
+		FloatBuffer getLightTextureMatrix() {
 			return lightTextureMatrix;
 		}
 

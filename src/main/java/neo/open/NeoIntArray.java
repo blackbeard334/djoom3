@@ -3,11 +3,11 @@ package neo.open;
 /**
  * Handles int Array and number of Elements in int Array. 
  *
- * In a later step this can be replaced with a List or an IntBuffer.
+ * In a later step this can be replaced with java.util.List or java.nio.IntBuffer.
  * 
  */
 public class NeoIntArray {
-	private int numValues;
+	private int numValues; // position pointer, remaining = values.length - numValues
 
 	private int[] values;
 

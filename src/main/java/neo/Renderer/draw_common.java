@@ -221,7 +221,7 @@ public class draw_common {
      =====================
      */
 
-    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/, final float[] textureMatrix) {
+    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/) {
         final float[] genMatrix = new float[16];
         final float[] finale = new float[16];
 
@@ -256,6 +256,28 @@ public class draw_common {
         lightProject[1].oSet(1, finale[5]);
         lightProject[1].oSet(2, finale[9]);
         lightProject[1].oSet(3, finale[13]);
+    }
+
+    /**
+     * 
+     * @param lightProject
+     * @param textureMatrix - why this ???
+     * 
+     * @deprecated use public static void RB_BakeTextureMatrixIntoTexgen(idVec4[] lightProject) instead
+     */
+    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/, final FloatBuffer textureMatrix) {
+    	RB_BakeTextureMatrixIntoTexgen(lightProject);
+    }
+
+    /**
+     * 
+     * @param lightProject
+     * @param textureMatrix - why this ???
+     * 
+     * @deprecated use public static void RB_BakeTextureMatrixIntoTexgen(idVec4[] lightProject) instead
+     */
+    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/, final float[] textureMatrix) {
+    	RB_BakeTextureMatrixIntoTexgen(lightProject);
     }
 
     /*

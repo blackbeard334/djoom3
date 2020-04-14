@@ -7,7 +7,7 @@ import neo.idlib.math.Vector.idVec;
 
 public class MatrixUtil {
 
-    public static void multiplyIdPlaneGet3(final idPlane set, final idPlane get, float[] matrix) {
+    public static void multiplyIdPlaneGet3(final idPlane set, final idPlane get, final float[] matrix) {
         int j = 0;
         for (int i = 0; i < 4; i++) {
         	j = 0;
@@ -22,7 +22,7 @@ public class MatrixUtil {
         }
     }
 
-    public static void multiplyIdPlaneGet3(final idPlane set, final idPlane get, FloatBuffer matrix) {
+    public static void multiplyIdPlaneGet3(final idPlane set, final idPlane get, final FloatBuffer matrix) {
         int j = 0;
         for (int i = 0; i < 4; i++) {
         	j = 0;
@@ -37,7 +37,7 @@ public class MatrixUtil {
         }
     }
 
-    public static void multiplyIdPlaneGet4(final idPlane set, final idPlane get, float[] matrix) {
+    public static void multiplyIdPlaneGet4(final idPlane set, final idPlane get, final float[] matrix) {
         int j = 0;
         for (int i = 0; i < 4; i++) {
         	j = 0;
@@ -52,7 +52,7 @@ public class MatrixUtil {
         }
     }
 
-    public static void multiplyIdPlaneGet4(final idPlane set, final idPlane get, FloatBuffer matrix) {
+    public static void multiplyIdPlaneGet4(final idPlane set, final idPlane get, final FloatBuffer matrix) {
         int j = 0;
         for (int i = 0; i < 4; i++) {
         	j = 0;
@@ -67,7 +67,7 @@ public class MatrixUtil {
         }
     }
 
-    public static void multiplyIdVecGet3(final idVec<?> set, final idVec<?> get, float[] matrix) {
+    public static void multiplyIdVecGet3(final idVec<?> set, final idVec<?> get, final float[] matrix) {
         int j = 0;
         for (int i = 0; i < 4; i++) {
         	j = 0;
@@ -82,7 +82,7 @@ public class MatrixUtil {
         }
     }
 
-    public static void multiplyIdVecGet3(final idVec<?> set, final idVec<?> get, FloatBuffer matrix) {
+    public static void multiplyIdVecGet3(final idVec<?> set, final idVec<?> get, final FloatBuffer matrix) {
         int j = 0;
         for (int i = 0; i < 4; i++) {
         	j = 0;
@@ -97,7 +97,7 @@ public class MatrixUtil {
         }
     }
 
-    public static void multiplyIdVecGet4(final idVec<?> set, final idVec<?> get, float[] matrix) {
+    public static void multiplyIdVecGet4(final idVec<?> set, final idVec<?> get, final float[] matrix) {
         int j = 0;
         for (int i = 0; i < 4; i++) {
         	j = 0;
@@ -112,7 +112,7 @@ public class MatrixUtil {
         }
     }
 
-    public static void multiplyIdVecGet4(final idVec<?> set, final idVec<?> get, FloatBuffer matrix) {
+    public static void multiplyIdVecGet4(final idVec<?> set, final idVec<?> get, final FloatBuffer matrix) {
         int j = 0;
         for (int i = 0; i < 4; i++) {
         	j = 0;
