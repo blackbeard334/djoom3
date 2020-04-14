@@ -1543,11 +1543,11 @@ public class draw_common {
             }
 
             // get the modulate values from the light, including alpha, unlike normal lights
-            backEnd.getLightColor()[0] = regs[ stage.color.registers[0]];
-            backEnd.getLightColor()[1] = regs[ stage.color.registers[1]];
-            backEnd.getLightColor()[2] = regs[ stage.color.registers[2]];
-            backEnd.getLightColor()[3] = regs[ stage.color.registers[3]];
-            qglColor4fv(Nio.wrap(backEnd.getLightColor()));
+            backEnd.getLightColor().put(0, regs[ stage.color.registers[0]]);
+            backEnd.getLightColor().put(1, regs[ stage.color.registers[1]]);
+            backEnd.getLightColor().put(2, regs[ stage.color.registers[2]]);
+            backEnd.getLightColor().put(3, regs[ stage.color.registers[3]]);
+            qglColor4fv(backEnd.getLightColor());
 
             RB_RenderDrawSurfChainWithFunction(drawSurfs, RB_T_BlendLight.INSTANCE);
             RB_RenderDrawSurfChainWithFunction(drawSurfs2, RB_T_BlendLight.INSTANCE);
@@ -1647,22 +1647,22 @@ public class draw_common {
         // assume fog shaders have only a single stage
         stage = lightShader.GetStage(0);
 
-        backEnd.getLightColor()[0] = regs[ stage.color.registers[0]];
-        backEnd.getLightColor()[1] = regs[ stage.color.registers[1]];
-        backEnd.getLightColor()[2] = regs[ stage.color.registers[2]];
-        backEnd.getLightColor()[3] = regs[ stage.color.registers[3]];
+        backEnd.getLightColor().put(0, regs[ stage.color.registers[0]]);
+        backEnd.getLightColor().put(1, regs[ stage.color.registers[1]]);
+        backEnd.getLightColor().put(2, regs[ stage.color.registers[2]]);
+        backEnd.getLightColor().put(3, regs[ stage.color.registers[3]]);
 
-        qglColor3fv(Nio.wrap(backEnd.getLightColor()));
+        qglColor3fv(backEnd.getLightColor());
 
         // calculate the falloff planes
         float a;
 
         // if they left the default value on, set a fog distance of 500
-        if (backEnd.getLightColor()[3] <= 1.0) {
+        if (backEnd.getLightColor().get(3) <= 1.0) {
             a = -0.5f / DEFAULT_FOG_DISTANCE;
         } else {
             // otherwise, distance = alpha color
-            a = -0.5f / backEnd.getLightColor()[3];
+            a = -0.5f / backEnd.getLightColor().get(3);
         }
 
         GL_State(GLS_DEPTHMASK | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_DEPTHFUNC_EQUAL);

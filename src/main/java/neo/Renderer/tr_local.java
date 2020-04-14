@@ -1082,7 +1082,7 @@ public class tr_local {
         viewLight_s vLight;
         int depthFunc;			// GLS_DEPTHFUNC_EQUAL, or GLS_DEPTHFUNC_LESS for translucent
         private final FloatBuffer lightTextureMatrix = Nio.newFloatBuffer(16);	// only if lightStage->texture.hasMatrix
-        private final float[] lightColor = new float[4];		// evaluation of current light's color stage
+        private final FloatBuffer lightColor = Nio.newFloatBuffer(4);		// evaluation of current light's color stage
 //
         float lightScale;			// Every light color calaculation will be multiplied by this,
         // which will guarantee that the result is < tr.backEndRendererMaxLight
@@ -1103,7 +1103,7 @@ public class tr_local {
             this.glState = new glstate_t();
         }
 
-		float[] getLightColor() {
+        FloatBuffer getLightColor() {
 			return lightColor;
 		}
 
