@@ -17,6 +17,13 @@ public class Nio {
 	public static final int SIZEOF_FLOAT = 4;
 	public static final int SIZEOF_INT = 4;
 
+//	public static FloatBuffer arrrayCopy(final FloatBuffer buffer, final float[] floatArray) {
+//		for (int i = 0; i < floatArray.length; i++) {
+//			buffer.put(i, floatArray[i]);
+//		}
+//		return buffer;
+//	}
+
 	public static ByteBuffer newByteBuffer(int numElements) {
 		ByteBuffer bb = ByteBuffer.allocateDirect(numElements);
 		bb.order(ByteOrder.nativeOrder());

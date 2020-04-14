@@ -2281,8 +2281,10 @@ public class tr_trisurf {
         deform.numSourceVerts = numVerts;
         deform.numOutputVerts = tri.numVerts;
 
-        deform.numIndexes = numIndexes;
-        deform.indexes = tri.getIndexes().getValues();
+        //deform.numIndexes = numIndexes;
+        //deform.indexes = tri.getIndexes().getValues();
+        deform.getIndexes().setNumValues(numIndexes);
+        deform.getIndexes().setValues(tri.getIndexes().getValues());
 
         deform.silIndexes = tri.silIndexes;
 
@@ -2352,8 +2354,10 @@ public class tr_trisurf {
         deform.numSourceVerts = numVerts;
         deform.numOutputVerts = tri.numVerts;
 
-        deform.numIndexes = numIndexes;
-        deform.indexes = tri.getIndexes().getValues();
+        //deform.numIndexes = numIndexes;
+        //deform.indexes = tri.getIndexes().getValues();
+        deform.getIndexes().setNumValues(numIndexes);
+        deform.getIndexes().setValues(tri.getIndexes().getValues());
 
         deform.silIndexes = tri.silIndexes;
 
@@ -2413,11 +2417,13 @@ public class tr_trisurf {
     public static int R_DeformInfoMemoryUsed(deformInfo_s deformInfo) {
         int total = 0;
 
-        if (deformInfo.indexes != null) {
-            total += deformInfo.numIndexes;// * sizeof( deformInfo.indexes[0] );
+        if (deformInfo.getIndexes().getValues() != null) {
+            //total += deformInfo.numIndexes;// * sizeof( deformInfo.indexes[0] );
+            total += deformInfo.getIndexes().getNumValues();// * sizeof( deformInfo.indexes[0] );
         }
         if (deformInfo.silIndexes != null) {
-            total += deformInfo.numIndexes;// * sizeof( deformInfo.silIndexes[0] );
+            //total += deformInfo.numIndexes;// * sizeof( deformInfo.silIndexes[0] );
+            total += deformInfo.getIndexes().getNumValues();// * sizeof( deformInfo.indexes[0] );
         }
         if (deformInfo.silEdges != null) {
             total += deformInfo.numSilEdges;//* sizeof( deformInfo.silEdges[0] );

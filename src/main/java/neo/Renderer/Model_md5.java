@@ -285,14 +285,14 @@ public class Model_md5 {
 
             tr.pc.c_deformedSurfaces++;
             tr.pc.c_deformedVerts += this.deformInfo.numOutputVerts;
-            tr.pc.c_deformedIndexes += this.deformInfo.numIndexes;
+            tr.pc.c_deformedIndexes += this.deformInfo.getIndexes().getNumValues();
 
             surf.shader = this.shader;
 
             if (surf.geometry != null) {
                 // if the number of verts and indexes are the same we can re-use the triangle surface
                 // the number of indexes must be the same to assure the correct amount of memory is allocated for the facePlanes
-                if ((surf.geometry.numVerts == this.deformInfo.numOutputVerts) && (surf.geometry.getIndexes().getNumValues() == this.deformInfo.numIndexes)) {
+                if ((surf.geometry.numVerts == this.deformInfo.numOutputVerts) && (surf.geometry.getIndexes().getNumValues() == this.deformInfo.getIndexes().getNumValues())) {
                     R_FreeStaticTriSurfVertexCaches(surf.geometry);
                 } else {
                     R_FreeStaticTriSurf(surf.geometry);
@@ -309,8 +309,8 @@ public class Model_md5 {
             tri.tangentsCalculated = false;
             tri.facePlanesCalculated = false;
 
-            tri.getIndexes().setNumValues(this.deformInfo.numIndexes);
-            tri.getIndexes().setValues(this.deformInfo.indexes);
+            tri.getIndexes().setNumValues(this.deformInfo.getIndexes().getNumValues());
+            tri.getIndexes().setValues(this.deformInfo.getIndexes().getValues());
             tri.silIndexes = this.deformInfo.silIndexes;
             tri.numMirroredVerts = this.deformInfo.numMirroredVerts;
             tri.mirroredVerts = this.deformInfo.mirroredVerts;
