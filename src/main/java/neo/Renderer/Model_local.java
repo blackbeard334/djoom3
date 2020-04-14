@@ -371,7 +371,7 @@ public class Model_local {
                 R_CleanupTriangles(surf.geometry, surf.geometry.generateNormals, true, surf.shader.UseUnsmoothedTangents());
                 if (surf.shader.SurfaceCastsShadow()) {
                     totalVerts += surf.geometry.numVerts;
-                    totalIndexes += surf.geometry.numIndexes;
+                    totalIndexes += surf.geometry.getNumIndexes();
                 }
             }
 
@@ -380,9 +380,9 @@ public class Model_local {
                 final modelSurface_s surf = this.surfaces.oGet(i);
                 final srfTriangles_s tri = surf.geometry;
 
-                for (int j = 0; j < tri.numIndexes; j += 3) {
-                    final float area = idWinding.TriangleArea(tri.verts[tri.indexes[j]].xyz,
-                            tri.verts[tri.indexes[j + 1]].xyz, tri.verts[tri.indexes[j + 2]].xyz);
+                for (int j = 0; j < tri.getNumIndexes(); j += 3) {
+                    final float area = idWinding.TriangleArea(tri.verts[tri.getIndexes()[j]].xyz,
+                            tri.verts[tri.getIndexes()[j + 1]].xyz, tri.verts[tri.getIndexes()[j + 2]].xyz);
                     surf.shader.AddToSurfaceArea(area);
                 }
             }
@@ -471,7 +471,7 @@ public class Model_local {
                 if (!surf.geometry.perfectHull) {
                     closed = ' ';
                 }
-                totalTris += surf.geometry.numIndexes / 3;
+                totalTris += surf.geometry.getNumIndexes() / 3;
                 totalVerts += surf.geometry.numVerts;
             }
             common.Printf("%c%4dk %3d %4d %4d %s", closed, totalBytes / 1024, NumSurfaces(), totalVerts, totalTris, Name());
@@ -512,7 +512,7 @@ public class Model_local {
                 if (!surf.geometry.perfectHull) {
                     closed = ' ';
                 }
-                totalTris += surf.geometry.numIndexes / 3;
+                totalTris += surf.geometry.getNumIndexes() / 3;
                 totalVerts += surf.geometry.numVerts;
             }
             common.Printf("%c%4dk %3d %4d %4d %s", closed, totalBytes / 1024, NumSurfaces(), totalVerts, totalTris, Name());
@@ -688,11 +688,11 @@ public class Model_local {
                 final srfTriangles_s tri = R_AllocStaticTriSurf();
 
                 f.ReadInt(index);
-                tri.numIndexes = index[0];
-                R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
-                for (j = 0; j < tri.numIndexes; ++j) {
+                tri.setNumIndexes(index[0]);
+                R_AllocStaticTriSurfIndexes(tri, tri.getNumIndexes());
+                for (j = 0; j < tri.getNumIndexes(); ++j) {
                     f.ReadInt(index);
-                    tri.indexes[j] = index[0];
+                    tri.getIndexes()[j] = index[0];
                 }
 
                 f.ReadInt(vert);
@@ -736,9 +736,9 @@ public class Model_local {
                 f.WriteHashString(surf.shader.GetName());
 
                 final srfTriangles_s tri = surf.geometry;
-                f.WriteInt(tri.numIndexes);
-                for (j = 0; j < tri.numIndexes; ++j) {
-                    f.WriteInt(tri.indexes[j]);
+                f.WriteInt(tri.getNumIndexes());
+                for (j = 0; j < tri.getNumIndexes(); ++j) {
+                    f.WriteInt(tri.getIndexes()[j]);
                 }
                 f.WriteInt(tri.numVerts);
                 for (j = 0; j < tri.numVerts; ++j) {
@@ -931,11 +931,11 @@ public class Model_local {
             // allocate triangle surface
             final srfTriangles_s tri = R_AllocStaticTriSurf();
             tri.numVerts = width * height;
-            tri.numIndexes = (width - 1) * (height - 1) * 6;
+            tri.setNumIndexes((width - 1) * (height - 1) * 6);
 
             this.fastLoad = true;		// don't do all the sil processing
 
-            R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
+            R_AllocStaticTriSurfIndexes(tri, tri.getNumIndexes());
             R_AllocStaticTriSurfVerts(tri, tri.numVerts);
 
             for (int i = 0; i < height; i++) {
@@ -962,12 +962,12 @@ public class Model_local {
 //			tri.indexes[ v + 5 ] = i * width + j + 1;
 //}else
                     {
-                        tri.indexes[ v + 0] = (i * width) + j;
-                        tri.indexes[ v + 1] = (i * width) + j + 1;
-                        tri.indexes[ v + 2] = ((i + 1) * width) + j + 1;
-                        tri.indexes[ v + 3] = (i * width) + j;
-                        tri.indexes[ v + 4] = ((i + 1) * width) + j + 1;
-                        tri.indexes[ v + 5] = ((i + 1) * width) + j;
+                        tri.getIndexes()[ v + 0] = (i * width) + j;
+                        tri.getIndexes()[ v + 1] = (i * width) + j + 1;
+                        tri.getIndexes()[ v + 2] = ((i + 1) * width) + j + 1;
+                        tri.getIndexes()[ v + 3] = (i * width) + j;
+                        tri.getIndexes()[ v + 4] = ((i + 1) * width) + j + 1;
+                        tri.getIndexes()[ v + 5] = ((i + 1) * width) + j;
                     }
                 }
             }
@@ -1232,7 +1232,7 @@ public class Model_local {
                 // allocate triangle surface
                 tri = R_AllocStaticTriSurf();
                 tri.numVerts = 0;
-                tri.numIndexes = 0;
+                tri.setNumIndexes(0);
                 R_AllocStaticTriSurfIndexes(tri, mesh.numFaces * 3);
                 tri.generateNormals = !normalsParsed;
 
@@ -1310,13 +1310,13 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.indexes[tri.numIndexes] = mv.index;
-                        tri.numIndexes++;
+                        tri.getIndexes()[tri.getNumIndexes()] = mv.index;
+                        tri.setNumIndexes(tri.getNumIndexes() + 1);
                     }
                 }
 
                 // allocate space for the indexes and copy them
-                if (tri.numIndexes > (mesh.numFaces * 3)) {
+                if (tri.getNumIndexes() > (mesh.numFaces * 3)) {
                     common.FatalError("ConvertASEToModelSurfaces: index miscount in ASE file %s", this.name);
                 }
                 if (tri.numVerts > (mesh.numFaces * 3)) {
@@ -1577,7 +1577,7 @@ public class Model_local {
                 // allocate triangle surface
                 tri = R_AllocStaticTriSurf();
                 tri.numVerts = 0;
-                tri.numIndexes = 0;
+                tri.setNumIndexes(0);
                 R_AllocStaticTriSurfIndexes(tri, layer.polygon.count * 3);
                 tri.generateNormals = !normalsParsed;
 
@@ -1681,13 +1681,13 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.indexes[tri.numIndexes] = mv.index;
-                        tri.numIndexes++;
+                        tri.getIndexes()[tri.getNumIndexes()] = mv.index;
+                        tri.setNumIndexes(tri.getNumIndexes() + 1);
                     }
                 }
 
                 // allocate space for the indexes and copy them
-                if (tri.numIndexes > (layer.polygon.count * 3)) {
+                if (tri.getNumIndexes() > (layer.polygon.count * 3)) {
                     common.FatalError("ConvertLWOToModelSurfaces: index miscount in LWO file %s", this.name);
                 }
                 if (tri.numVerts > (layer.polygon.count * 3)) {
@@ -1907,7 +1907,7 @@ public class Model_local {
                 // allocate triangle surface
                 tri = R_AllocStaticTriSurf();
                 tri.numVerts = 0;
-                tri.numIndexes = 0;
+                tri.setNumIndexes(0);
                 R_AllocStaticTriSurfIndexes(tri, mesh.numFaces * 3);
                 tri.generateNormals = !normalsParsed;
 
@@ -1984,13 +1984,13 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.indexes[tri.numIndexes] = mv.index;
-                        tri.numIndexes++;
+                        tri.getIndexes()[tri.getNumIndexes()] = mv.index;
+                        tri.setNumIndexes(tri.getNumIndexes() + 1);
                     }
                 }
 
                 // allocate space for the indexes and copy them
-                if (tri.numIndexes > (mesh.numFaces * 3)) {
+                if (tri.getNumIndexes() > (mesh.numFaces * 3)) {
                     common.FatalError("ConvertMAToModelSurfaces: index miscount in MA file %s", this.name);
                 }
                 if (tri.numVerts > (mesh.numFaces * 3)) {
@@ -2294,14 +2294,14 @@ public class Model_local {
         tri.verts[tri.numVerts + 3].st.oSet(0, 0);
         tri.verts[tri.numVerts + 3].st.oSet(1, 1);
 
-        tri.indexes[tri.numIndexes + 0] = tri.numVerts + 0;
-        tri.indexes[tri.numIndexes + 1] = tri.numVerts + 1;
-        tri.indexes[tri.numIndexes + 2] = tri.numVerts + 2;
-        tri.indexes[tri.numIndexes + 3] = tri.numVerts + 0;
-        tri.indexes[tri.numIndexes + 4] = tri.numVerts + 2;
-        tri.indexes[tri.numIndexes + 5] = tri.numVerts + 3;
+        tri.getIndexes()[tri.getNumIndexes() + 0] = tri.numVerts + 0;
+        tri.getIndexes()[tri.getNumIndexes() + 1] = tri.numVerts + 1;
+        tri.getIndexes()[tri.getNumIndexes() + 2] = tri.numVerts + 2;
+        tri.getIndexes()[tri.getNumIndexes() + 3] = tri.numVerts + 0;
+        tri.getIndexes()[tri.getNumIndexes() + 4] = tri.numVerts + 2;
+        tri.getIndexes()[tri.getNumIndexes() + 5] = tri.numVerts + 3;
 
         tri.numVerts += 4;
-        tri.numIndexes += 6;
+        tri.setNumIndexes(tri.getNumIndexes() + 6);
     }
 }

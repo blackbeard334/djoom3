@@ -1769,7 +1769,7 @@ public class RenderWorld_local {
                 surf.geometry = tri;
 
                 tri.numVerts = src.ParseInt();
-                tri.numIndexes = src.ParseInt();
+                tri.setNumIndexes(src.ParseInt());
 
                 R_AllocStaticTriSurfVerts(tri, tri.numVerts);
                 for (j = 0; j < tri.numVerts; j++) {
@@ -1787,9 +1787,9 @@ public class RenderWorld_local {
                     tri.verts[j].normal.oSet(2, vec[7]);
                 }
 
-                R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
-                for (j = 0; j < tri.numIndexes; j++) {
-                    tri.indexes[j] = src.ParseInt();
+                R_AllocStaticTriSurfIndexes(tri, tri.getNumIndexes());
+                for (j = 0; j < tri.getNumIndexes(); j++) {
+                    tri.getIndexes()[j] = src.ParseInt();
                 }
                 src.ExpectTokenString("}");
 
@@ -1827,7 +1827,7 @@ public class RenderWorld_local {
             tri.numVerts = src.ParseInt();
             tri.numShadowIndexesNoCaps = src.ParseInt();
             tri.numShadowIndexesNoFrontCaps = src.ParseInt();
-            tri.numIndexes = src.ParseInt();
+            tri.setNumIndexes(src.ParseInt());
             tri.shadowCapPlaneBits = src.ParseInt();
 
             R_AllocStaticTriSurfShadowVerts(tri, tri.numVerts);
@@ -1847,9 +1847,9 @@ public class RenderWorld_local {
                 final int a = 0;
             }
 
-            R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
-            for (j = 0; j < tri.numIndexes; j++) {
-                tri.indexes[j] = src.ParseInt();
+            R_AllocStaticTriSurfIndexes(tri, tri.getNumIndexes());
+            for (j = 0; j < tri.getNumIndexes(); j++) {
+                tri.getIndexes()[j] = src.ParseInt();
             }
 
             // add the completed surface to the model

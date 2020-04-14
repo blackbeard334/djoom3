@@ -373,8 +373,8 @@ public class Model_liquid {
             // note that some of the data is references, and should not be freed
             tri.deformedSurface = true;
 
-            tri.numIndexes = this.deformInfo.numIndexes;
-            tri.indexes = this.deformInfo.indexes;
+            tri.setNumIndexes(this.deformInfo.numIndexes);
+            tri.setIndexes(this.deformInfo.indexes);
             tri.silIndexes = this.deformInfo.silIndexes;
             tri.numMirroredVerts = this.deformInfo.numMirroredVerts;
             tri.mirroredVerts = this.deformInfo.mirroredVerts;

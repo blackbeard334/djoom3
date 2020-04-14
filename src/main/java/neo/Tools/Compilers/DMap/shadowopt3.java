@@ -1120,15 +1120,15 @@ public class shadowopt3 {
 
         // check for completely degenerate triangles
         c_removed = 0;
-        for (i = 0; i < tri.numIndexes; i += 3) {
-            a = tri.indexes[i];
-            b = tri.indexes[i + 1];
-            c = tri.indexes[i + 2];
+        for (i = 0; i < tri.getNumIndexes(); i += 3) {
+            a = tri.getIndexes()[i];
+            b = tri.getIndexes()[i + 1];
+            c = tri.getIndexes()[i + 2];
             if ((a == b) || (a == c) || (b == c)) {
                 c_removed++;
 //			memmove( tri.indexes + i, tri.indexes + i + 3, ( tri.numIndexes - i - 3 ) * sizeof( tri.indexes[0] ) );
-                System.arraycopy(tri.indexes, i + 3, tri.indexes, i, tri.numIndexes - i - 3);
-                tri.numIndexes -= 3;
+                System.arraycopy(tri.getIndexes(), i + 3, tri.getIndexes(), i, tri.getNumIndexes() - i - 3);
+                tri.setNumIndexes(tri.getNumIndexes() - 3);
                 if (i < tri.numShadowIndexesNoCaps) {
                     tri.numShadowIndexesNoCaps -= 3;
                 }
@@ -1164,8 +1164,8 @@ public class shadowopt3 {
 
         final int/*glIndex_t*/[] remap = new int[tri.numVerts];
 
-        for (i = 0; i < tri.numIndexes; i++) {
-            if ((tri.indexes[i] > tri.numVerts) || (tri.indexes[i] < 0)) {
+        for (i = 0; i < tri.getNumIndexes(); i++) {
+            if ((tri.getIndexes()[i] > tri.numVerts) || (tri.getIndexes()[i] < 0)) {
                 common.Error("CleanupOptimizedShadowTris: index out of range");
             }
         }
@@ -1179,8 +1179,8 @@ public class shadowopt3 {
             tri.shadowVertexes[i].xyz.oSet(3, 1);
         }
 
-        for (i = 0; i < tri.numIndexes; i++) {
-            tri.indexes[i] = remap[tri.indexes[i]];
+        for (i = 0; i < tri.getNumIndexes(); i++) {
+            tri.getIndexes()[i] = remap[tri.getIndexes()[i]];
         }
 
         // remove matched quads
@@ -1191,12 +1191,12 @@ public class shadowopt3 {
                 // if there is a reversed quad match, we can throw both of them out
                 // this is not a robust check, it relies on the exact ordering of
                 // quad indexes
-                if ((tri.indexes[i2 + 0] == tri.indexes[j + 1])
-                        && (tri.indexes[i2 + 1] == tri.indexes[j + 0])
-                        && (tri.indexes[i2 + 2] == tri.indexes[j + 3])
-                        && (tri.indexes[i2 + 3] == tri.indexes[j + 5])
-                        && (tri.indexes[i2 + 4] == tri.indexes[j + 1])
-                        && (tri.indexes[i2 + 5] == tri.indexes[j + 3])) {
+                if ((tri.getIndexes()[i2 + 0] == tri.getIndexes()[j + 1])
+                        && (tri.getIndexes()[i2 + 1] == tri.getIndexes()[j + 0])
+                        && (tri.getIndexes()[i2 + 2] == tri.getIndexes()[j + 3])
+                        && (tri.getIndexes()[i2 + 3] == tri.getIndexes()[j + 5])
+                        && (tri.getIndexes()[i2 + 4] == tri.getIndexes()[j + 1])
+                        && (tri.getIndexes()[i2 + 5] == tri.getIndexes()[j + 3])) {
                     break;
                 }
             }
@@ -1206,11 +1206,11 @@ public class shadowopt3 {
             int k;
             // remove first quad
             for (k = i2 + 6; k < j; k++) {
-                tri.indexes[k - 6] = tri.indexes[k];
+                tri.getIndexes()[k - 6] = tri.getIndexes()[k];
             }
             // remove second quad
-            for (k = j + 6; k < tri.numIndexes; k++) {
-                tri.indexes[k - 12] = tri.indexes[k];
+            for (k = j + 6; k < tri.getNumIndexes(); k++) {
+                tri.getIndexes()[k - 12] = tri.getIndexes()[k];
             }
             numSilIndexes -= 12;
             i2 -= 6;
@@ -1218,7 +1218,7 @@ public class shadowopt3 {
 
         final int removed = tri.numShadowIndexesNoCaps - numSilIndexes;
 
-        tri.numIndexes -= removed;
+        tri.setNumIndexes(tri.getNumIndexes() - removed);
         tri.numShadowIndexesNoCaps -= removed;
         tri.numShadowIndexesNoFrontCaps -= removed;
 
@@ -1288,7 +1288,7 @@ public class shadowopt3 {
         R_FreeInteractionCullInfo(cullInfo);
 
         if (shadowTris != null) {
-            dmapGlobals.totalShadowTriangles += shadowTris.numIndexes / 3;
+            dmapGlobals.totalShadowTriangles += shadowTris.getNumIndexes() / 3;
             dmapGlobals.totalShadowVerts += shadowTris.numVerts / 3;
         }
 

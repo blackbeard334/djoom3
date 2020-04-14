@@ -133,12 +133,12 @@ public class tr_render {
      */
     public static void RB_DrawElementsImmediate(final srfTriangles_s tri) {
         backEnd.pc.c_drawElements++;
-        backEnd.pc.c_drawIndexes += tri.numIndexes;
+        backEnd.pc.c_drawIndexes += tri.getNumIndexes();
         backEnd.pc.c_drawVertexes += tri.numVerts;
 
         if (tri.ambientSurface != null) {
-            if (tri.indexes == tri.ambientSurface.indexes) {
-                backEnd.pc.c_drawRefIndexes += tri.numIndexes;
+            if (tri.getIndexes() == tri.ambientSurface.getIndexes()) {
+                backEnd.pc.c_drawRefIndexes += tri.getNumIndexes();
             }
             if (tri.verts == tri.ambientSurface.verts) {
                 backEnd.pc.c_drawRefVertexes += tri.numVerts;
@@ -146,9 +146,9 @@ public class tr_render {
         }
 
         qglBegin(GL_TRIANGLES);
-        for (int i = 0; i < tri.numIndexes; i++) {
-            qglTexCoord2fv(tri.verts[tri.indexes[i]].st.toFloatBuffer());
-            qglVertex3fv(tri.verts[tri.indexes[i]].xyz.toFloatBuffer());
+        for (int i = 0; i < tri.getNumIndexes(); i++) {
+            qglTexCoord2fv(tri.verts[tri.getIndexes()[i]].st.toFloatBuffer());
+            qglVertex3fv(tri.verts[tri.getIndexes()[i]].xyz.toFloatBuffer());
         }
         qglEnd();
     }
@@ -162,30 +162,30 @@ public class tr_render {
     public static void RB_DrawElementsWithCounters(final srfTriangles_s tri) {
 
         backEnd.pc.c_drawElements++;
-        backEnd.pc.c_drawIndexes += tri.numIndexes;
+        backEnd.pc.c_drawIndexes += tri.getNumIndexes();
         backEnd.pc.c_drawVertexes += tri.numVerts;
         DEBUG_RB_DrawElementsWithCounters++;
 //        TempDump.printCallStack("" + DEBUG_RB_DrawElementsWithCounters);
 
         if (tri.ambientSurface != null) {
-            if (tri.indexes == tri.ambientSurface.indexes) {
-                backEnd.pc.c_drawRefIndexes += tri.numIndexes;
+            if (tri.getIndexes() == tri.ambientSurface.getIndexes()) {
+                backEnd.pc.c_drawRefIndexes += tri.getNumIndexes();
             }
             if (tri.verts == tri.ambientSurface.verts) {
                 backEnd.pc.c_drawRefVertexes += tri.numVerts;
             }
         }
 
-        final int count = r_singleTriangle.GetBool() ? 3 : tri.numIndexes;
+        final int count = r_singleTriangle.GetBool() ? 3 : tri.getNumIndexes();
         if ((tri.indexCache != null) && r_useIndexBuffers.GetBool()) {
             qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE, vertexCache.Position(tri.indexCache));
-            backEnd.pc.c_vboIndexes += tri.numIndexes;
+            backEnd.pc.c_vboIndexes += tri.getNumIndexes();
         } else {
             if (r_useIndexBuffers.GetBool()) {
                 vertexCache.UnbindIndex();
             }
 //            if(tri.DBG_count!=11)
-            qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE/*GL_UNSIGNED_INT*/, Nio.wrap(tri.indexes));
+            qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE/*GL_UNSIGNED_INT*/, Nio.wrap(tri.getIndexes()));
         }
     }
 
@@ -214,7 +214,7 @@ public class tr_render {
             qglDrawElements(GL_TRIANGLES,
                     r_singleTriangle.GetBool() ? 3 : numIndexes,
                     GL_INDEX_TYPE,
-                    Nio.wrap(tri.indexes));
+                    Nio.wrap(tri.getIndexes()));
         }
     }
 

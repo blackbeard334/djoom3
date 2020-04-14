@@ -664,12 +664,12 @@ public class GuiModel {
 
             // copy verts and indexes
             tri = new srfTriangles_s();///*(srfTriangles_s *)*/ R_ClearedFrameAlloc(sizeof(tri));
-            tri.numIndexes = surf.numIndexes;
+            tri.setNumIndexes(surf.numIndexes);
             tri.numVerts = surf.numVerts;//TODO:see if we can get rid of these single element arrays. EDIT:done.
-            tri.indexes = new int[tri.numIndexes];///*(glIndex_t *)*/ R_FrameAlloc(tri.numIndexes * sizeof(tri.indexes[0]));
+            tri.setIndexes(new int[tri.getNumIndexes()]);///*(glIndex_t *)*/ R_FrameAlloc(tri.numIndexes * sizeof(tri.indexes[0]));
 //            memcpy(tri.indexes, indexes[surf.firstIndex], tri.numIndexes * sizeof(tri.indexes[0]));
-            for (int s = surf.firstIndex, d = 0; d < tri.numIndexes; s++, d++) {
-                tri.indexes[d] = this.indexes.oGet(s);
+            for (int s = surf.firstIndex, d = 0; d < tri.getNumIndexes(); s++, d++) {
+                tri.getIndexes()[d] = this.indexes.oGet(s);
             }
 
             // we might be able to avoid copying these and just let them reference the list vars

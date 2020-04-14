@@ -82,7 +82,7 @@ public class ModelDecal {
         public idRenderModelDecal() {
 //	memset( &tri, 0, sizeof( tri ) );
             this.tri.verts = this.verts;
-            this.tri.indexes = this.indexes;
+            this.tri.setIndexes(this.indexes);
             this.material = null;
             this.nextDecal = null;
         }
@@ -241,10 +241,10 @@ public class ModelDecal {
                 SIMDProcessor.DecalPointCull(cullBits, localInfo.boundingPlanes, stri.verts, stri.numVerts);
 
                 // find triangles inside the projection volume
-                for (int triNum = 0, index = 0; index < stri.numIndexes; index += 3, triNum++) {
-                    final int v1 = stri.indexes[index + 0];
-                    final int v2 = stri.indexes[index + 1];
-                    final int v3 = stri.indexes[index + 2];
+                for (int triNum = 0, index = 0; index < stri.getNumIndexes(); index += 3, triNum++) {
+                    final int v1 = stri.getIndexes()[index + 0];
+                    final int v2 = stri.getIndexes()[index + 1];
+                    final int v3 = stri.getIndexes()[index + 2];
 
                     // skip triangles completely off one side
                     if ((cullBits[v1] & cullBits[v2] & cullBits[v3]) != 0) {
@@ -262,7 +262,7 @@ public class ModelDecal {
                     fw.SetNumPoints(3);
                     if (localInfo.parallel) {
                         for (int j = 0; j < 3; j++) {
-                            fw.oGet(j).oSet(stri.verts[stri.indexes[index + j]].xyz);
+                            fw.oGet(j).oSet(stri.verts[stri.getIndexes()[index + j]].xyz);
                             fw.oGet(j).s = localInfo.textureAxis[0].Distance(fw.oGet(j).ToVec3());
                             fw.oGet(j).t = localInfo.textureAxis[1].Distance(fw.oGet(j).ToVec3());
                         }
@@ -271,7 +271,7 @@ public class ModelDecal {
                             idVec3 dir;
                             final float[] scale = new float[1];
 
-                            fw.oGet(j).oSet(stri.verts[stri.indexes[index + j]].xyz);
+                            fw.oGet(j).oSet(stri.verts[stri.getIndexes()[index + j]].xyz);
                             dir = fw.oGet(j).ToVec3().oMinus(localInfo.projectionOrigin);
                             localInfo.boundingPlanes[NUM_DECAL_BOUNDING_PLANES - 1].RayIntersection(fw.oGet(j).ToVec3(), dir, scale);
                             dir = fw.oGet(j).ToVec3().oPlus(dir.oMultiply(scale[0]));
@@ -325,12 +325,12 @@ public class ModelDecal {
             minTime = time - (decalInfo.stayTime + decalInfo.fadeTime);
 
             newNumIndexes = 0;
-            for (i = 0; i < decals.tri.numIndexes; i += 3) {
+            for (i = 0; i < decals.tri.getNumIndexes(); i += 3) {
                 if (decals.indexStartTime[i] > minTime) {
                     // keep this triangle
                     if (newNumIndexes != i) {
                         for (j = 0; j < 3; j++) {
-                            decals.tri.indexes[newNumIndexes + j] = decals.tri.indexes[i + j];
+                            decals.tri.getIndexes()[newNumIndexes + j] = decals.tri.getIndexes()[i + j];
                             decals.indexStartTime[newNumIndexes + j] = decals.indexStartTime[i + j];
                         }
                     }
@@ -345,12 +345,12 @@ public class ModelDecal {
                 return nextDecal;
             }
 
-            decals.tri.numIndexes = newNumIndexes;
+            decals.tri.setNumIndexes(newNumIndexes);
 
 //	memset( inUse, 0, sizeof( inUse ) );
             Arrays.fill(inUse, 0);
-            for (i = 0; i < decals.tri.numIndexes; i++) {
-                inUse[decals.tri.indexes[i]] = 1;
+            for (i = 0; i < decals.tri.getNumIndexes(); i++) {
+                inUse[decals.tri.getIndexes()[i]] = 1;
             }
 
             newNumVerts = 0;
@@ -365,8 +365,8 @@ public class ModelDecal {
             }
             decals.tri.numVerts = newNumVerts;
 
-            for (i = 0; i < decals.tri.numIndexes; i++) {
-                decals.tri.indexes[i] = inUse[decals.tri.indexes[i]];
+            for (i = 0; i < decals.tri.getNumIndexes(); i++) {
+                decals.tri.getIndexes()[i] = inUse[decals.tri.getIndexes()[i]];
             }
 
             return decals;
@@ -379,7 +379,7 @@ public class ModelDecal {
             float f;
             decalInfo_t decalInfo;
 
-            if (this.tri.numIndexes == 0) {
+            if (this.tri.getNumIndexes() == 0) {
                 return;
             }
 
@@ -388,7 +388,7 @@ public class ModelDecal {
             maxTime = decalInfo.stayTime + decalInfo.fadeTime;
 
             // set vertex colors and remove faded triangles
-            for (i = 0; i < this.tri.numIndexes; i += 3) {
+            for (i = 0; i < this.tri.getNumIndexes(); i += 3) {
                 int deltaTime = tr.viewDef.renderView.time - this.indexStartTime[i];
 
                 if (deltaTime > maxTime) {
@@ -403,7 +403,7 @@ public class ModelDecal {
                 f = (float) deltaTime / decalInfo.fadeTime;
 
                 for (j = 0; j < 3; j++) {
-                    final int ind = this.tri.indexes[i + j];
+                    final int ind = this.tri.getIndexes()[i + j];
 
                     for (int k = 0; k < 4; k++) {
                         final float fcolor = decalInfo.start[k] + ((decalInfo.end[k] - decalInfo.start[k]) * f);
@@ -453,7 +453,7 @@ public class ModelDecal {
 
             if (((this.material == null) || (this.material == decalMaterial))
                     && ((this.tri.numVerts + w.GetNumPoints()) < MAX_DECAL_VERTS)
-                    && ((this.tri.numIndexes + ((w.GetNumPoints() - 2) * 3)) < MAX_DECAL_INDEXES)) {
+                    && ((this.tri.getNumIndexes() + ((w.GetNumPoints() - 2) * 3)) < MAX_DECAL_INDEXES)) {
 
                 this.material = decalMaterial;
 
@@ -487,13 +487,13 @@ public class ModelDecal {
                     }
                 }
                 for (i = 2; i < w.GetNumPoints(); i++) {
-                    this.tri.indexes[this.tri.numIndexes + 0] = this.tri.numVerts;
-                    this.tri.indexes[this.tri.numIndexes + 1] = (this.tri.numVerts + i) - 1;
-                    this.tri.indexes[this.tri.numIndexes + 2] = this.tri.numVerts + i;
-                    this.indexStartTime[this.tri.numIndexes]
-                            = this.indexStartTime[this.tri.numIndexes + 1]
-                            = this.indexStartTime[this.tri.numIndexes + 2] = startTime;
-                    this.tri.numIndexes += 3;
+                    this.tri.getIndexes()[this.tri.getNumIndexes() + 0] = this.tri.numVerts;
+                    this.tri.getIndexes()[this.tri.getNumIndexes() + 1] = (this.tri.numVerts + i) - 1;
+                    this.tri.getIndexes()[this.tri.getNumIndexes() + 2] = this.tri.numVerts + i;
+                    this.indexStartTime[this.tri.getNumIndexes()]
+                            = this.indexStartTime[this.tri.getNumIndexes() + 1]
+                            = this.indexStartTime[this.tri.getNumIndexes() + 2] = startTime;
+                    this.tri.setNumIndexes(this.tri.getNumIndexes() + 3);
                 }
                 this.tri.numVerts += w.GetNumPoints();
                 return;

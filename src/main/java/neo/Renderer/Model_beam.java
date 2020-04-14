@@ -114,15 +114,15 @@ public class Model_beam {
                 tri.verts[3].st.oSet(0, 1);
                 tri.verts[3].st.oSet(1, 1);
 
-                tri.indexes[0] = 0;
-                tri.indexes[1] = 2;
-                tri.indexes[2] = 1;
-                tri.indexes[3] = 2;
-                tri.indexes[4] = 3;
-                tri.indexes[5] = 1;
+                tri.getIndexes()[0] = 0;
+                tri.getIndexes()[1] = 2;
+                tri.getIndexes()[2] = 1;
+                tri.getIndexes()[3] = 2;
+                tri.getIndexes()[4] = 3;
+                tri.getIndexes()[5] = 1;
 
                 tri.numVerts = 4;
-                tri.numIndexes = 6;
+                tri.setNumIndexes(6);
 
                 surf.geometry = tri;
                 surf.id = 0;

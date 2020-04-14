@@ -107,9 +107,9 @@ public class Interaction {
     static {
         final srfTriangles_s s = LIGHT_TRIS_DEFERRED = new srfTriangles_s();
         s.ambientViewCount = s.numDupVerts = s.numVerts =
-                s.numMirroredVerts = s.numIndexes = s.numShadowIndexesNoCaps =
+                s.numMirroredVerts = s.setNumIndexes(s.numShadowIndexesNoCaps =
                         s.numShadowIndexesNoFrontCaps = s.numSilEdges = s.shadowCapPlaneBits =
-                                -03146;
+                                -03146);
 
     }
 
@@ -566,7 +566,7 @@ public class Interaction {
                             }
 
                             if (NOT(lightTris.indexCache) && r_useIndexBuffers.GetBool()) {
-                                lightTris.indexCache = vertexCache.Alloc(lightTris.indexes, lightTris.numIndexes, true);
+                                lightTris.indexCache = vertexCache.Alloc(lightTris.getIndexes(), lightTris.getNumIndexes(), true);
                             }
                             if (lightTris.indexCache != null) {
                                 vertexCache.Touch(lightTris.indexCache);
@@ -644,7 +644,7 @@ public class Interaction {
                     vertexCache.Touch(shadowTris.shadowCache);
 
                     if (NOT(shadowTris.indexCache) && r_useIndexBuffers.GetBool()) {
-                        shadowTris.indexCache = vertexCache.Alloc(shadowTris.indexes, shadowTris.numIndexes, true);
+                        shadowTris.indexCache = vertexCache.Alloc(shadowTris.getIndexes(), shadowTris.getNumIndexes(), true);
 
                         vertexCache.Touch(shadowTris.indexCache);
                     }
@@ -773,8 +773,8 @@ public class Interaction {
                                 // if any surface is a shadow-casting perforated or translucent surface, or the
                                 // base surface is suppressed in the view (world weapon shadows) we can't use
                                 // the external shadow optimizations because we can see through some of the faces
-                                sint.shadowTris.numShadowIndexesNoCaps = sint.shadowTris.numIndexes;
-                                sint.shadowTris.numShadowIndexesNoFrontCaps = sint.shadowTris.numIndexes;
+                                sint.shadowTris.numShadowIndexesNoCaps = sint.shadowTris.getNumIndexes();
+                                sint.shadowTris.numShadowIndexesNoFrontCaps = sint.shadowTris.getNumIndexes();
                             }
                         }
                         interactionGenerated = true;
@@ -980,7 +980,7 @@ public class Interaction {
 
         R_GlobalPointToLocal(ent.modelMatrix, light.globalLightOrigin, localLightOrigin);
 
-        final int numFaces = tri.numIndexes / 3;
+        final int numFaces = tri.getNumIndexes() / 3;
 
         if (NOT(tri.facePlanes) || !tri.facePlanesCalculated) {
             R_DeriveFacePlanes( /*const_cast<srfTriangles_s *>*/(tri));
@@ -1251,26 +1251,26 @@ public class Interaction {
 
                 // the whole surface is lit so the light surface just references the indexes of the ambient surface
                 R_ReferenceStaticTriSurfIndexes(newTri, tri);
-                numIndexes = tri.numIndexes;
+                numIndexes = tri.getNumIndexes();
                 bounds = new idBounds(tri.bounds);
 
             } else {
 
                 // the light tris indexes are going to be a subset of the original indexes so we generally
                 // allocate too much memory here but we decrease the memory block when the number of indexes is known
-                R_AllocStaticTriSurfIndexes(newTri, tri.numIndexes);
+                R_AllocStaticTriSurfIndexes(newTri, tri.getNumIndexes());
 
                 // back face cull the individual triangles
-                indexes = newTri.indexes;
+                indexes = newTri.getIndexes();
                 final byte[] facing = cullInfo.facing;
-                for (faceNum = i = 0; i < tri.numIndexes; i += 3, faceNum++) {
+                for (faceNum = i = 0; i < tri.getNumIndexes(); i += 3, faceNum++) {
                     if (0 == facing[ faceNum]) {
                         c_backfaced++;
                         continue;
                     }
-                    indexes[numIndexes + 0] = tri.indexes[i + 0];
-                    indexes[numIndexes + 1] = tri.indexes[i + 1];
-                    indexes[numIndexes + 2] = tri.indexes[i + 2];
+                    indexes[numIndexes + 0] = tri.getIndexes()[i + 0];
+                    indexes[numIndexes + 1] = tri.getIndexes()[i + 1];
+                    indexes[numIndexes + 2] = tri.getIndexes()[i + 2];
                     numIndexes += 3;
                 }
 
@@ -1285,13 +1285,13 @@ public class Interaction {
 
             // the light tris indexes are going to be a subset of the original indexes so we generally
             // allocate too much memory here but we decrease the memory block when the number of indexes is known
-            R_AllocStaticTriSurfIndexes(newTri, tri.numIndexes);
+            R_AllocStaticTriSurfIndexes(newTri, tri.getNumIndexes());
 
             // cull individual triangles
-            indexes = newTri.indexes;
+            indexes = newTri.getIndexes();
             final byte[] facing = cullInfo.facing;
             final byte[] cullBits = cullInfo.cullBits;
-            for (faceNum = i = 0; i < tri.numIndexes; i += 3, faceNum++) {
+            for (faceNum = i = 0; i < tri.getNumIndexes(); i += 3, faceNum++) {
                 int i1, i2, i3;
 
                 // if we aren't self shadowing, let back facing triangles get
@@ -1304,9 +1304,9 @@ public class Interaction {
                     }
                 }
 
-                i1 = tri.indexes[i + 0];
-                i2 = tri.indexes[i + 1];
-                i3 = tri.indexes[i + 2];
+                i1 = tri.getIndexes()[i + 0];
+                i2 = tri.getIndexes()[i + 1];
+                i3 = tri.getIndexes()[i + 2];
 
                 // fast cull outside the frustum
                 // if all three points are off one plane side, it definately isn't visible
@@ -1345,7 +1345,7 @@ public class Interaction {
             return null;
         }
 
-        newTri.numIndexes = numIndexes;
+        newTri.setNumIndexes(numIndexes);
 
         newTri.bounds.oSet(bounds);
 
@@ -1411,12 +1411,12 @@ public class Interaction {
                         if ((srf.lightTris != null) && (srf.lightTris != LIGHT_TRIS_DEFERRED)) {
                             lightTris++;
                             lightTriVerts += srf.lightTris.numVerts;
-                            lightTriIndexes += srf.lightTris.numIndexes;
+                            lightTriIndexes += srf.lightTris.getNumIndexes();
                         }
                         if (srf.shadowTris != null) {
                             shadowTris++;
                             shadowTriVerts += srf.shadowTris.numVerts;
-                            shadowTriIndexes += srf.shadowTris.numIndexes;
+                            shadowTriIndexes += srf.shadowTris.getNumIndexes();
                         }
                     }
                 }

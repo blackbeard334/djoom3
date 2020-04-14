@@ -672,7 +672,7 @@ public class tr_stencilshadow {
         silEdge_t sil;
         int numPlanes;
 
-        numPlanes = tri.numIndexes / 3;
+        numPlanes = tri.getNumIndexes() / 3;
 
         // add sil edges for any true silhouette boundaries on the surface
         for (i = 0; i < tri.numSilEdges; i++) {
@@ -860,7 +860,7 @@ public class tr_stencilshadow {
 
         // decide which triangles front shadow volumes, clipping as needed
         numClipSilEdges = 0;
-        numTris = tri.numIndexes / 3;
+        numTris = tri.getNumIndexes() / 3;
         for (i = 0; i < numTris; i++) {
             int i1, i2, i3;
 
@@ -1246,12 +1246,12 @@ public class tr_stencilshadow {
             return null;
         }
 
-        if ((tri.numSilEdges == 0) || (tri.numIndexes == 0) || (tri.numVerts == 0)) {
+        if ((tri.numSilEdges == 0) || (tri.getNumIndexes() == 0) || (tri.numVerts == 0)) {
             return null;
         }
 
-        if (tri.numIndexes < 0) {
-            common.Error("R_CreateShadowVolume: tri.numIndexes = %d", tri.numIndexes);
+        if (tri.getNumIndexes() < 0) {
+            common.Error("R_CreateShadowVolume: tri.numIndexes = %d", tri.getNumIndexes());
         }
 
         if (tri.numVerts < 0) {
@@ -1273,7 +1273,7 @@ public class tr_stencilshadow {
 
         R_CalcInteractionFacing(ent, tri, light, cullInfo);
 
-        final int numFaces = tri.numIndexes / 3;
+        final int numFaces = tri.getNumIndexes() / 3;
         int allFront = 1;
         for (i = 0; (i < numFaces) && (allFront != 0); i++) {
             allFront &= cullInfo.facing[i];
@@ -1294,7 +1294,7 @@ public class tr_stencilshadow {
         // the facing information will be the same for all six projections
         // from a point light, as well as for any directed lights
         globalFacing = cullInfo.facing;
-        faceCastsShadow = new byte[(tri.numIndexes / 3) + 1];	// + 1 for fake dangling edge face
+        faceCastsShadow = new byte[(tri.getNumIndexes() / 3) + 1];	// + 1 for fake dangling edge face
         remap = new int[tri.numVerts];
 
         R_GlobalPointToLocal(ent.modelMatrix, light.globalLightOrigin, lightOrigin);
@@ -1365,14 +1365,14 @@ public class tr_stencilshadow {
 
         // copy off the verts and indexes
         newTri.numVerts = numShadowVerts;
-        newTri.numIndexes = numShadowIndexes;
+        newTri.setNumIndexes(numShadowIndexes);
 
         // the shadow verts will go into a main memory buffer as well as a vertex
         // cache buffer, so they can be copied back if they are purged
         R_AllocStaticTriSurfShadowVerts(newTri, newTri.numVerts);
         SIMDProcessor.Memcpy(newTri.shadowVertexes, shadowVerts, newTri.numVerts);
 
-        R_AllocStaticTriSurfIndexes(newTri, newTri.numIndexes);
+        R_AllocStaticTriSurfIndexes(newTri, newTri.getNumIndexes());
 
         if (true /* sortCapIndexes */) {
             newTri.shadowCapPlaneBits = capPlaneBits;
@@ -1381,27 +1381,27 @@ public class tr_stencilshadow {
             newTri.numShadowIndexesNoCaps = 0;
             for (i = 0; i < indexFrustumNumber; i++) {
                 final int c = indexRef[i].end - indexRef[i].silStart;
-                SIMDProcessor.Memcpy(newTri.indexes, newTri.numShadowIndexesNoCaps, shadowIndexes, indexRef[i].silStart, c);
+                SIMDProcessor.Memcpy(newTri.getIndexes(), newTri.numShadowIndexesNoCaps, shadowIndexes, indexRef[i].silStart, c);
                 newTri.numShadowIndexesNoCaps += c;
             }
             // copy rear cap indexes next
             newTri.numShadowIndexesNoFrontCaps = newTri.numShadowIndexesNoCaps;
             for (i = 0; i < indexFrustumNumber; i++) {
                 final int c = indexRef[i].silStart - indexRef[i].rearCapStart;
-                SIMDProcessor.Memcpy(newTri.indexes, newTri.numShadowIndexesNoFrontCaps, shadowIndexes, indexRef[i].rearCapStart, c);
+                SIMDProcessor.Memcpy(newTri.getIndexes(), newTri.numShadowIndexesNoFrontCaps, shadowIndexes, indexRef[i].rearCapStart, c);
                 newTri.numShadowIndexesNoFrontCaps += c;
             }
             // copy front cap indexes last
-            newTri.numIndexes = newTri.numShadowIndexesNoFrontCaps;
+            newTri.setNumIndexes(newTri.numShadowIndexesNoFrontCaps);
             for (i = 0; i < indexFrustumNumber; i++) {
                 final int c = indexRef[i].rearCapStart - indexRef[i].frontCapStart;
-                SIMDProcessor.Memcpy(newTri.indexes, newTri.numIndexes, shadowIndexes, indexRef[i].frontCapStart, c);
-                newTri.numIndexes += c;
+                SIMDProcessor.Memcpy(newTri.getIndexes(), newTri.getNumIndexes(), shadowIndexes, indexRef[i].frontCapStart, c);
+                newTri.setNumIndexes(newTri.getNumIndexes() + c);
             }
 
         } else {
             newTri.shadowCapPlaneBits = 63;	// we don't have optimized index lists
-            SIMDProcessor.Memcpy(newTri.indexes, shadowIndexes, newTri.numIndexes);
+            SIMDProcessor.Memcpy(newTri.getIndexes(), shadowIndexes, newTri.getNumIndexes());
         }
 
         if (optimize == SG_OFFLINE) {

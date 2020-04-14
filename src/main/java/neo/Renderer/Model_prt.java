@@ -221,7 +221,7 @@ public class Model_prt {
 
                 // build the indexes
                 int numIndexes = 0;
-                /*glIndex_t*/ final int[] indexes = surf.geometry.indexes;
+                /*glIndex_t*/ final int[] indexes = surf.geometry.getIndexes();
                 for (int i = 0; i < numVerts; i += 4) {
                     indexes[numIndexes + 0] = i;
                     indexes[numIndexes + 1] = i + 2;
@@ -235,7 +235,7 @@ public class Model_prt {
                 surf.geometry.tangentsCalculated = false;
                 surf.geometry.facePlanesCalculated = false;
                 surf.geometry.numVerts = numVerts;
-                surf.geometry.numIndexes = numIndexes;
+                surf.geometry.setNumIndexes(numIndexes);
                 surf.geometry.bounds.oSet(stage.bounds);// just always draw the particles
                 final int a = 0;
             }

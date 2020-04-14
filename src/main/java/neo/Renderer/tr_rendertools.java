@@ -740,10 +740,10 @@ public class tr_rendertools {
                     }
                     qglBegin(GL_LINES);
 
-                    for (int j = 0; j < tri.numIndexes; j += 3) {
-                        final int i1 = tri.indexes[j + 0];
-                        final int i2 = tri.indexes[j + 1];
-                        final int i3 = tri.indexes[j + 2];
+                    for (int j = 0; j < tri.getNumIndexes(); j += 3) {
+                        final int i1 = tri.getIndexes()[j + 0];
+                        final int i2 = tri.getIndexes()[j + 1];
+                        final int i3 = tri.getIndexes()[j + 2];
 
                         if (((i1 & 1) + (i2 & 1) + (i3 & 1)) == 1) {
                             if (((i1 & 1) + (i2 & 1)) == 0) {
@@ -812,13 +812,13 @@ public class tr_rendertools {
 
                     if (r_showShadowCount.GetInteger() == 3) {
                         // only show turboshadows
-                        if (tri.numShadowIndexesNoCaps != tri.numIndexes) {
+                        if (tri.numShadowIndexesNoCaps != tri.getNumIndexes()) {
                             continue;
                         }
                     }
                     if (r_showShadowCount.GetInteger() == 4) {
                         // only show static shadows
-                        if (tri.numShadowIndexesNoCaps == tri.numIndexes) {
+                        if (tri.numShadowIndexesNoCaps == tri.getNumIndexes()) {
                             continue;
                         }
                     }
@@ -863,7 +863,7 @@ public class tr_rendertools {
         }
 
         qglBegin(GL_LINES);
-        for (int i = 0; i < tri.numIndexes; i += 3) {
+        for (int i = 0; i < tri.getNumIndexes(); i += 3) {
             for (int j = 0; j < 3; j++) {
                 final int k = (j + 1) % 3;
                 qglVertex3fv(tri.verts[ tri.silIndexes[i + j]].xyz.toFloatBuffer());
@@ -1080,14 +1080,14 @@ public class tr_rendertools {
             RB_SimpleSurfaceSetup(drawSurf);
 
             qglBegin(GL_TRIANGLES);
-            for (j = 0; j < tri.numIndexes; j += 3) {
+            for (j = 0; j < tri.getNumIndexes(); j += 3) {
                 idDrawVert a, b, c;
                 final float[] d0 = new float[5], d1 = new float[5];
                 float area;
 
-                a = tri.verts[tri.indexes[j]];
-                b = tri.verts[tri.indexes[j + 1]];
-                c = tri.verts[tri.indexes[j + 2]];
+                a = tri.verts[tri.getIndexes()[j]];
+                b = tri.verts[tri.getIndexes()[j + 1]];
+                c = tri.verts[tri.getIndexes()[j + 2]];
 
                 // VectorSubtract( b.xyz, a.xyz, d0 );
                 d0[3] = b.st.oGet(0) - a.st.oGet(0);
@@ -1150,12 +1150,12 @@ public class tr_rendertools {
 
             tri = drawSurf.geo;
             qglBegin(GL_TRIANGLES);
-            for (j = 0; j < tri.numIndexes; j += 3) {
+            for (j = 0; j < tri.getNumIndexes(); j += 3) {
                 idDrawVert a, b, c;
 
-                a = tri.verts[tri.indexes[j]];
-                b = tri.verts[tri.indexes[j + 1]];
-                c = tri.verts[tri.indexes[j + 2]];
+                a = tri.verts[tri.getIndexes()[j]];
+                b = tri.verts[tri.getIndexes()[j + 1]];
+                c = tri.verts[tri.getIndexes()[j + 2]];
 
                 qglVertex3fv(a.xyz.toFloatBuffer());
                 qglVertex3fv(b.xyz.toFloatBuffer());
@@ -1202,10 +1202,10 @@ public class tr_rendertools {
                 continue;
             }
             qglBegin(GL_TRIANGLES);
-            for (j = 0; j < tri.numIndexes; j++) {
+            for (j = 0; j < tri.getNumIndexes(); j++) {
                 final idDrawVert v;
 
-                v = tri.verts[tri.indexes[j]];
+                v = tri.verts[tri.getIndexes()[j]];
 
                 if (r_showTangentSpace.GetInteger() == 1) {
                     qglColor4f(0.5f + (0.5f * v.tangents[0].oGet(0)),
@@ -1262,10 +1262,10 @@ public class tr_rendertools {
                 continue;
             }
             qglBegin(GL_TRIANGLES);
-            for (j = 0; j < tri.numIndexes; j++) {
+            for (j = 0; j < tri.getNumIndexes(); j++) {
                 final idDrawVert v;
 
-                v = tri.verts[tri.indexes[j]];
+                v = tri.verts[tri.getIndexes()[j]];
                 qglColor4ubv(v.getColor());
                 qglVertex3fv(v.xyz.toFloatBuffer());
             }
@@ -1358,9 +1358,9 @@ public class tr_rendertools {
                     RB_DrawText(va("%d", j), pos, 0.01f, colorWhite, backEnd.viewDef.renderView.viewaxis, 1);
                 }
 
-                for (j = 0; j < tri.numIndexes; j += 3) {
+                for (j = 0; j < tri.getNumIndexes(); j += 3) {
                     pos = R_LocalPointToGlobal(drawSurf.space.modelMatrix,
-                            (tri.verts[ tri.indexes[ j + 0]].xyz.oPlus(tri.verts[ tri.indexes[ j + 1]].xyz.oPlus(tri.verts[ tri.indexes[ j + 2]].xyz))).oMultiply(1.0f / 3.0f).oPlus(tri.verts[ tri.indexes[ j + 0]].normal.oMultiply(0.2f)));
+                            (tri.verts[ tri.getIndexes()[ j + 0]].xyz.oPlus(tri.verts[ tri.getIndexes()[ j + 1]].xyz.oPlus(tri.verts[ tri.getIndexes()[ j + 2]].xyz))).oMultiply(1.0f / 3.0f).oPlus(tri.verts[ tri.getIndexes()[ j + 0]].normal.oMultiply(0.2f)));
                     RB_DrawText(va("%d", j / 3), pos, 0.01f, colorCyan, backEnd.viewDef.renderView.viewaxis, 1);
                 }
             }
@@ -1401,13 +1401,13 @@ public class tr_rendertools {
 
             tri = drawSurf.geo;
             qglBegin(GL_LINES);
-            for (j = 0; j < tri.numIndexes; j += 3) {
+            for (j = 0; j < tri.getNumIndexes(); j += 3) {
                 final idDrawVert[] v = new idDrawVert[3];
                 idVec3 mid;
 
-                v[0] = tri.verts[tri.indexes[j + 0]];
-                v[1] = tri.verts[tri.indexes[j + 1]];
-                v[2] = tri.verts[tri.indexes[j + 2]];
+                v[0] = tri.verts[tri.getIndexes()[j + 0]];
+                v[1] = tri.verts[tri.getIndexes()[j + 1]];
+                v[2] = tri.verts[tri.getIndexes()[j + 2]];
 
                 // make the midpoint slightly above the triangle
                 mid = (v[0].xyz.oPlus(v[1].xyz).oPlus(v[2].xyz)).oMultiply(1.0f / 3.0f);
@@ -1484,7 +1484,7 @@ public class tr_rendertools {
             // draw non-shared edges in yellow
             qglBegin(GL_LINES);
 
-            for (j = 0; j < tri.numIndexes; j += 3) {
+            for (j = 0; j < tri.getNumIndexes(); j += 3) {
                 final idDrawVert a, b, c;
                 float area, inva;
                 final idVec3 temp = new idVec3();
@@ -1492,9 +1492,9 @@ public class tr_rendertools {
                 idVec3 mid;
                 final idVec3[] tangents = {new idVec3(), new idVec3()};
 
-                a = tri.verts[tri.indexes[j + 0]];
-                b = tri.verts[tri.indexes[j + 1]];
-                c = tri.verts[tri.indexes[j + 2]];
+                a = tri.verts[tri.getIndexes()[j + 0]];
+                b = tri.verts[tri.getIndexes()[j + 1]];
+                c = tri.verts[tri.getIndexes()[j + 2]];
 
                 // make the midpoint slightly above the triangle
                 mid = (a.xyz.oPlus(b.xyz).oPlus(c.xyz)).oMultiply(1.0f / 3.0f);
@@ -1643,18 +1643,18 @@ public class tr_rendertools {
             qglColor3f(1, 1, 0);
             qglBegin(GL_LINES);
 
-            for (j = 0; j < tri.numIndexes; j += 3) {
+            for (j = 0; j < tri.getNumIndexes(); j += 3) {
                 for (k = 0; k < 3; k++) {
                     int l, i1, i2;
                     l = (k == 2) ? 0 : k + 1;
-                    i1 = tri.indexes[j + k];
-                    i2 = tri.indexes[j + l];
+                    i1 = tri.getIndexes()[j + k];
+                    i2 = tri.getIndexes()[j + l];
 
                     // if these are used backwards, the edge is shared
-                    for (m = 0; m < tri.numIndexes; m += 3) {
+                    for (m = 0; m < tri.getNumIndexes(); m += 3) {
                         for (n = 0; n < 3; n++) {
                             o = (n == 2) ? 0 : n + 1;
-                            if ((tri.indexes[m + n] == i2) && (tri.indexes[m + o] == i1)) {
+                            if ((tri.getIndexes()[m + n] == i2) && (tri.getIndexes()[m + o] == i1)) {
                                 break;
                             }
                         }
@@ -1664,7 +1664,7 @@ public class tr_rendertools {
                     }
 
                     // if we didn't find a backwards listing, draw it in yellow
-                    if (m == tri.numIndexes) {
+                    if (m == tri.getNumIndexes()) {
                         qglVertex3fv(ac[ i1].xyz.toFloatBuffer());
                         qglVertex3fv(ac[ i2].xyz.toFloatBuffer());
                     }
@@ -1681,7 +1681,7 @@ public class tr_rendertools {
 
             // the plane number after all real planes
             // is the dangling edge
-            danglePlane = tri.numIndexes / 3;
+            danglePlane = tri.getNumIndexes() / 3;
 
             qglColor3f(1, 0, 0);
 
