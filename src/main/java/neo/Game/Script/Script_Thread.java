@@ -34,6 +34,7 @@ import neo.CM.CollisionModel.trace_s;
 import neo.Game.AFEntity.idAFEntity_Base;
 import neo.Game.Camera.idCamera;
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Player.idPlayer;
 import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.eventCallback_t;
@@ -302,8 +303,8 @@ public class Script_Thread {
         private static void Event_TerminateThread(idThread t, idEventArg<Integer> num) {
             idThread thread;
 
-            thread = t.GetThread(num.value);
-            t.KillThread(num.value);
+            thread = idThread.GetThread(num.value);
+            idThread.KillThread(num.value);
         }
 
         private void Event_Pause() {
@@ -607,13 +608,13 @@ public class Script_Thread {
             final idEntity passEntity = p.value;
 
             {
-                final trace_s[] trace = {t.trace};
+                final trace_s[] trace = {idThread.trace};
                 if (mins.equals(getVec3_origin()) && maxs.equals(getVec3_origin())) {
                     gameLocal.clip.TracePoint(trace, start, end, contents_mask, passEntity);
                 } else {
                     gameLocal.clip.TraceBounds(trace, start, end, new idBounds(mins, maxs), contents_mask, passEntity);
                 }
-                t.trace = trace[0];
+                idThread.trace = trace[0];
             }
             ReturnFloat(trace.fraction);
         }
@@ -624,9 +625,9 @@ public class Script_Thread {
             final int contents_mask = c.value;
             final idEntity passEntity = p.value;
             {
-                final trace_s[] trace = {t.trace};
+                final trace_s[] trace = {idThread.trace};
                 gameLocal.clip.TracePoint(trace, start, end, contents_mask, passEntity);
-                t.trace = trace[0];
+                idThread.trace = trace[0];
             }
             ReturnFloat(trace.fraction);
         }
@@ -852,7 +853,7 @@ public class Script_Thread {
         }
 
         private void Event_GetFrameTime() {
-            idThread.ReturnFloat(MS2SEC(gameLocal.msec));
+            idThread.ReturnFloat(MS2SEC(idGameLocal.msec));
         }
 
         private void Event_GetTicsPerSecond() {
@@ -1044,7 +1045,7 @@ public class Script_Thread {
             // manual control threads don't set waitingUntil so that they can be run again
             // that frame if necessary.
             if (!this.manualControl) {
-                this.waitingUntil = gameLocal.time + gameLocal.msec;
+                this.waitingUntil = gameLocal.time + idGameLocal.msec;
             }
         }
 
@@ -1287,7 +1288,7 @@ public class Script_Thread {
                 if (this.waitingUntil > this.lastExecuteTime) {
                     PostEventMS(EV_Thread_Execute, this.waitingUntil - this.lastExecuteTime);
                 } else if (this.interpreter.MultiFrameEventInProgress()) {
-                    PostEventMS(EV_Thread_Execute, gameLocal.msec);
+                    PostEventMS(EV_Thread_Execute, idGameLocal.msec);
                 }
             }
 
@@ -1428,14 +1429,14 @@ public class Script_Thread {
 
         public static boolean BeginMultiFrameEvent(idEntity ent, final idEventDef event) {
             if (null == currentThread) {
-                gameLocal.Error("idThread::BeginMultiFrameEvent called without a current thread");
+                idGameLocal.Error("idThread::BeginMultiFrameEvent called without a current thread");
             }
             return currentThread.interpreter.BeginMultiFrameEvent(ent, event);
         }
 
         public static void EndMultiFrameEvent(idEntity ent, final idEventDef event) {
             if (null == currentThread) {
-                gameLocal.Error("idThread::EndMultiFrameEvent called without a current thread");
+                idGameLocal.Error("idThread::EndMultiFrameEvent called without a current thread");
             }
             currentThread.interpreter.EndMultiFrameEvent(ent, event);
         }

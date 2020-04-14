@@ -2985,7 +2985,7 @@ public class Game_local {
 //	idStr::vsnPrintf( text, sizeof( text ), fmt, argptr );
 //	va_end( argptr );
 
-            gameLocal.Error("%s", String.format(fmt, args));
+            idGameLocal.Error("%s", String.format(fmt, args));
         }
 
         public void DWarning(final String fmt, final Object... args) {
@@ -4851,15 +4851,15 @@ public class Game_local {
 
             // make sure the index is valid
             if (this.clientDeclRemap[this.localClientNum][ type.ordinal()].Num() == 0) {
-                gameLocal.Error("client received decl index %d before %s decl remap was initialized", index, declManager.GetDeclNameFromType(type));
+                idGameLocal.Error("client received decl index %d before %s decl remap was initialized", index, declManager.GetDeclNameFromType(type));
                 return -1;
             }
             if (index >= this.clientDeclRemap[this.localClientNum][ type.ordinal()].Num()) {
-                gameLocal.Error("client received unmapped %s decl index %d from server", declManager.GetDeclNameFromType(type), index);
+                idGameLocal.Error("client received unmapped %s decl index %d from server", declManager.GetDeclNameFromType(type), index);
                 return -1;
             }
             if (this.clientDeclRemap[this.localClientNum][ type.ordinal()].oGet(index) == -1) {
-                gameLocal.Error("client received unmapped %s decl index %d from server", declManager.GetDeclNameFromType(type), index);
+                idGameLocal.Error("client received unmapped %s decl index %d from server", declManager.GetDeclNameFromType(type), index);
                 return -1;
             }
             return this.clientDeclRemap[this.localClientNum][type.ordinal()].oGet(index);
@@ -5718,7 +5718,7 @@ public class Game_local {
 
             final idDecl decl = declManager.DeclByIndex(type, index, false);
             if (decl == null) {
-                gameLocal.Error("server tried to remap bad %s decl index %d", declManager.GetDeclNameFromType(type), index);
+                idGameLocal.Error("server tried to remap bad %s decl index %d", declManager.GetDeclNameFromType(type), index);
                 return;
             }
 

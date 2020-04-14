@@ -15,6 +15,7 @@ import neo.Game.Actor;
 import neo.Game.Camera;
 import neo.Game.Entity;
 import neo.Game.FX;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Item;
 import neo.Game.Light;
 import neo.Game.Misc;
@@ -348,7 +349,7 @@ public class Event {
             final String materialName;
 
             if (FreeEvents.IsListEmpty()) {
-                gameLocal.Error("idEvent::Alloc : No more free events");
+                idGameLocal.Error("idEvent::Alloc : No more free events");
             }
 
             ev = FreeEvents.Next();
@@ -357,7 +358,7 @@ public class Event {
             ev.eventdef = evdef;
 
             if (numargs != evdef.GetNumArgs()) {
-                gameLocal.Error("idEvent::Alloc : Wrong number of args for '%s' event.", evdef.GetName());
+                idGameLocal.Error("idEvent::Alloc : Wrong number of args for '%s' event.", evdef.GetName());
             }
 
             size = evdef.GetArgSize();
@@ -432,7 +433,7 @@ public class Event {
 
             format = evdef.GetArgFormat().toCharArray();
             if (numargs != evdef.GetNumArgs()) {
-                gameLocal.Error("idEvent::CopyArgs : Wrong number of args for '%s' event.", evdef.GetName());
+                idGameLocal.Error("idEvent::CopyArgs : Wrong number of args for '%s' event.", evdef.GetName());
             }
 
             for (i = 0; i < numargs; i++) {
@@ -440,7 +441,7 @@ public class Event {
                 if (format[i] != arg.type) {
                     // when NULL is passed in for an entity, it gets cast as an integer 0, so don't give an error when it happens
                     if (!(((format[i] == D_EVENT_TRACE) || (format[i] == D_EVENT_ENTITY)) && (arg.type == 'd') && (arg.value == Integer.valueOf(0)))) {
-                        gameLocal.Error("idEvent::CopyArgs : Wrong type passed in for arg # %d on '%s' event.", i, evdef.GetName());
+                        idGameLocal.Error("idEvent::CopyArgs : Wrong type passed in for arg # %d on '%s' event.", i, evdef.GetName());
                     }
                 }
 
@@ -572,7 +573,7 @@ public class Event {
                             args[i] = event.data[i];
                             break;
                         default:
-                            gameLocal.Error("idEvent::ServiceEvents : Invalid arg format '%s' string for '%s' event.", formatspec, ev.GetName());
+                            idGameLocal.Error("idEvent::ServiceEvents : Invalid arg format '%s' string for '%s' event.", formatspec, ev.GetName());
                     }//TODO:S ^^^^^^^^^^^^^^^^^^^^^
                 }
 
@@ -597,7 +598,7 @@ public class Event {
                 // of events being processed is evidence of an infinite loop of events.
                 num++;
                 if (num > MAX_EVENTSPERFRAME) {
-                    gameLocal.Error("Event overflow.  Possible infinite loop in script.");
+                    idGameLocal.Error("Event overflow.  Possible infinite loop in script.");
                 }
             }
         }
@@ -606,7 +607,7 @@ public class Event {
             gameLocal.Printf("Initializing event system\n");
 
             if (eventError) {
-                gameLocal.Error("%s", eventErrorMsg);
+                idGameLocal.Error("%s", eventErrorMsg);
             }
 
 // #ifdef CREATE_EVENT_CODE
@@ -719,7 +720,7 @@ public class Event {
 
             for (i = 0; i < num[0]; i++) {
                 if (FreeEvents.IsListEmpty()) {
-                    gameLocal.Error("idEvent::Restore : No more free events");
+                    idGameLocal.Error("idEvent::Restore : No more free events");
                 }
 
                 event = FreeEvents.Next();

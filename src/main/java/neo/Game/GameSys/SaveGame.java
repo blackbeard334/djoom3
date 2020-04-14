@@ -29,6 +29,7 @@ import neo.CM.CollisionModel.contactType_t;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
 import neo.Game.Game.refSound_t;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Animation.Anim_Blend.idDeclModelDef;
 import neo.Game.GameSys.Class.idClass;
 import neo.Game.GameSys.Class.idTypeInfo;
@@ -351,7 +352,7 @@ public class SaveGame {
                 WriteString(name);
                 WriteBool(unique);
                 if (ui.WriteToSaveGame(this.file) == false) {
-                    gameLocal.Error("idSaveGame::WriteUserInterface: ui failed to write properly\n");
+                    idGameLocal.Error("idSaveGame::WriteUserInterface: ui failed to write properly\n");
                 }
             }
         }

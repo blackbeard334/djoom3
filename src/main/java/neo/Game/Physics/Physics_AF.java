@@ -84,6 +84,7 @@ import neo.CM.CollisionModel.contactInfo_t;
 import neo.CM.CollisionModel.trace_s;
 import neo.CM.CollisionModel_local;
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.GameSys.Class.idClass;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -4455,7 +4456,7 @@ public class Physics_AF {
             }
 
             if (i >= this.sortedBodies.Num()) {
-                gameLocal.Error("Articulated figure tree has no root.");
+                idGameLocal.Error("Articulated figure tree has no root.");
             }
 
             body = this.sortedBodies.oGet(i);
@@ -4799,15 +4800,15 @@ public class Physics_AF {
             int id = 0;
 
             if (null == body.clipModel) {
-                gameLocal.Error("idPhysics_AF::AddBody: body '%s' has no clip model.", body.name);
+                idGameLocal.Error("idPhysics_AF::AddBody: body '%s' has no clip model.", body.name);
             }
 
             if (this.bodies.Find(body) != null) {
-                gameLocal.Error("idPhysics_AF::AddBody: body '%s' added twice.", body.name);
+                idGameLocal.Error("idPhysics_AF::AddBody: body '%s' added twice.", body.name);
             }
 
             if (GetBody(body.name.getData()) != null) {
-                gameLocal.Error("idPhysics_AF::AddBody: a body with the name '%s' already exists.", body.name);
+                idGameLocal.Error("idPhysics_AF::AddBody: a body with the name '%s' already exists.", body.name);
             }
 
             id = this.bodies.Num();
@@ -4834,22 +4835,22 @@ public class Physics_AF {
         public void AddConstraint(idAFConstraint constraint) {
 
             if (this.constraints.Find(constraint) != null) {
-                gameLocal.Error("idPhysics_AF::AddConstraint: constraint '%s' added twice.", constraint.name);
+                idGameLocal.Error("idPhysics_AF::AddConstraint: constraint '%s' added twice.", constraint.name);
             }
             if (GetConstraint(constraint.name.getData()) != null) {
-                gameLocal.Error("idPhysics_AF::AddConstraint: a constraint with the name '%s' already exists.", constraint.name);
+                idGameLocal.Error("idPhysics_AF::AddConstraint: a constraint with the name '%s' already exists.", constraint.name);
             }
             if (null == constraint.body1) {
-                gameLocal.Error("idPhysics_AF::AddConstraint: body1 == NULL on constraint '%s'.", constraint.name);
+                idGameLocal.Error("idPhysics_AF::AddConstraint: body1 == NULL on constraint '%s'.", constraint.name);
             }
             if (null == this.bodies.Find(constraint.body1)) {
-                gameLocal.Error("idPhysics_AF::AddConstraint: body1 of constraint '%s' is not part of the articulated figure.", constraint.name);
+                idGameLocal.Error("idPhysics_AF::AddConstraint: body1 of constraint '%s' is not part of the articulated figure.", constraint.name);
             }
             if ((constraint.body2 != null) && (null == this.bodies.Find(constraint.body2))) {
-                gameLocal.Error("idPhysics_AF::AddConstraint: body2 of constraint '%s' is not part of the articulated figure.", constraint.name);
+                idGameLocal.Error("idPhysics_AF::AddConstraint: body2 of constraint '%s' is not part of the articulated figure.", constraint.name);
             }
             if (constraint.body1.equals(constraint.body2)) {
-                gameLocal.Error("idPhysics_AF::AddConstraint: body1 and body2 of constraint '%s' are the same.", constraint.name);
+                idGameLocal.Error("idPhysics_AF::AddConstraint: body1 and body2 of constraint '%s' are the same.", constraint.name);
             }
 
             this.constraints.Append(constraint);
@@ -4869,7 +4870,7 @@ public class Physics_AF {
 
             id = this.bodies.FindIndex(body);
             if (id == -1) {
-                gameLocal.Error("ForceBodyId: body '%s' is not part of the articulated figure.\n", body.name);
+                idGameLocal.Error("ForceBodyId: body '%s' is not part of the articulated figure.\n", body.name);
             }
             if (id != newId) {
                 final idAFBody b = this.bodies.oGet(newId);
@@ -4885,7 +4886,7 @@ public class Physics_AF {
 
             id = this.bodies.FindIndex(body);
             if ((id == -1) && (body != null)) {//TODO:can't be null
-                gameLocal.Error("GetBodyId: body '%s' is not part of the articulated figure.\n", body.name);
+                idGameLocal.Error("GetBodyId: body '%s' is not part of the articulated figure.\n", body.name);
             }
             return id;
         }
@@ -4898,7 +4899,7 @@ public class Physics_AF {
                     return i;
                 }
             }
-            gameLocal.Error("GetBodyId: no body with the name '%s' is not part of the articulated figure.\n", bodyName);
+            idGameLocal.Error("GetBodyId: no body with the name '%s' is not part of the articulated figure.\n", bodyName);
             return 0;
         }
 
@@ -4907,7 +4908,7 @@ public class Physics_AF {
 
             id = this.constraints.FindIndex(constraint);
             if ((id == -1) && (constraint != null)) {//TODO:can't be null
-                gameLocal.Error("GetConstraintId: constraint '%s' is not part of the articulated figure.\n", constraint.name);
+                idGameLocal.Error("GetConstraintId: constraint '%s' is not part of the articulated figure.\n", constraint.name);
             }
             return id;
         }
@@ -4920,7 +4921,7 @@ public class Physics_AF {
                     return i;
                 }
             }
-            gameLocal.Error("GetConstraintId: no constraint with the name '%s' is not part of the articulated figure.\n", constraintName);
+            idGameLocal.Error("GetConstraintId: no constraint with the name '%s' is not part of the articulated figure.\n", constraintName);
             return 0;
         }
 
@@ -4952,7 +4953,7 @@ public class Physics_AF {
 
         public idAFBody GetBody(final int id) {
             if ((id < 0) || (id >= this.bodies.Num())) {
-                gameLocal.Error("GetBody: no body with id %d exists\n", id);
+                idGameLocal.Error("GetBody: no body with id %d exists\n", id);
                 return null;
             }
             return this.bodies.oGet(id);
@@ -4976,7 +4977,7 @@ public class Physics_AF {
 
         public idAFConstraint GetConstraint(final int id) {
             if ((id < 0) || (id >= this.constraints.Num())) {
-                gameLocal.Error("GetConstraint: no constraint with id %d exists\n", id);
+                idGameLocal.Error("GetConstraint: no constraint with id %d exists\n", id);
                 return null;
             }
             return this.constraints.oGet(id);
@@ -5006,7 +5007,7 @@ public class Physics_AF {
             int j;
 
             if ((id < 0) || (id > this.bodies.Num())) {
-                gameLocal.Error("DeleteBody: no body with id %d.", id);
+                idGameLocal.Error("DeleteBody: no body with id %d.", id);
                 return;
             }
 
@@ -5053,7 +5054,7 @@ public class Physics_AF {
         public void DeleteConstraint(final int id) {
 
             if ((id < 0) || (id >= this.constraints.Num())) {
-                gameLocal.Error("DeleteConstraint: no constraint with id %d.", id);
+                idGameLocal.Error("DeleteConstraint: no constraint with id %d.", id);
                 return;
             }
 

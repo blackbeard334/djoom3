@@ -482,7 +482,7 @@ public class Str {
         // case sensitive compare
         public int Cmp(final String text) {
             assert (text != null);
-            return this.Cmp(getData(), text);
+            return idStr.Cmp(getData(), text);
         }
 
         public int Cmp(final idStr text) {
@@ -491,18 +491,18 @@ public class Str {
 
         public int Cmpn(final String text, int n) {
             assert (text != null);
-            return this.Cmpn(getData(), text, n);
+            return idStr.Cmpn(getData(), text, n);
         }
 
         public int CmpPrefix(final String text) {
             assert (null != text);
-            return this.Cmpn(getData(), text, /*strlen( text )*/ text.length());
+            return idStr.Cmpn(getData(), text, /*strlen( text )*/ text.length());
         }
 
         // case insensitive compare
         public int Icmp(final String text) {
             assert (text != null);
-            return this.Icmp(getData(), text);
+            return idStr.Icmp(getData(), text);
         }
 
         public int Icmp(final idStr text) {
@@ -511,18 +511,18 @@ public class Str {
 
         public int Icmpn(final String text, int n) {
             assert (text != null);
-            return this.Icmpn(getData(), text, n);
+            return idStr.Icmpn(getData(), text, n);
         }
 
         public int IcmpPrefix(final String text) {
             assert (text != null);
-            return this.Icmpn(getData(), text, text.length());
+            return idStr.Icmpn(getData(), text, text.length());
         }
 
         // case insensitive compare ignoring color
         public int IcmpNoColor(final String text) {
             assert (text != null);
-            return this.IcmpNoColor(getData(), text);
+            return idStr.IcmpNoColor(getData(), text);
         }
 
         public int IcmpNoColor(final idStr text) {
@@ -533,17 +533,17 @@ public class Str {
         // compares paths and makes sure folders come first
         public int IcmpPath(final String text) {
             assert (text != null);
-            return this.IcmpPath(getData(), text);
+            return idStr.IcmpPath(getData(), text);
         }
 
         public int IcmpnPath(final String text, int n) {
             assert (text != null);
-            return this.IcmpnPath(getData(), text, n);
+            return idStr.IcmpnPath(getData(), text, n);
         }
 
         public int IcmpPrefixPath(final String text) {
             assert (text != null);
-            return this.IcmpnPath(getData(), text, text.length());
+            return idStr.IcmpnPath(getData(), text, text.length());
         }
 
         public int Length() {
@@ -684,27 +684,27 @@ public class Str {
         }
 
         public boolean IsNumeric() {
-            return this.IsNumeric(getData());
+            return idStr.IsNumeric(getData());
         }
 
         public boolean IsColor() {
-            return this.IsColor(getData());
+            return idStr.IsColor(getData());
         }
 
         public boolean HasLower() {
-            return this.HasLower(getData());
+            return idStr.HasLower(getData());
         }
 
         public boolean HasUpper() {
-            return this.HasUpper(getData());
+            return idStr.HasUpper(getData());
         }
 
         public int LengthWithoutColors() {
-            return this.LengthWithoutColors(getData());
+            return idStr.LengthWithoutColors(getData());
         }
 
         public idStr RemoveColors() {
-            setData(this.RemoveColors(getData()));
+            setData(idStr.RemoveColors(getData()));
 //            len = Length( data );
             // setLen(getData().length());
             return this;
@@ -743,7 +743,7 @@ public class Str {
             if (end == -1) {
                 end = Length();
             }
-            return this.FindChar(getData(), c, start, end);
+            return idStr.FindChar(getData(), c, start, end);
         }
 
         public int Find(final String text) {
@@ -762,7 +762,7 @@ public class Str {
             if (end == -1) {
                 end = Length();
             }
-            return this.FindText(getData(), text, casesensitive, start, end);
+            return idStr.FindText(getData(), text, casesensitive, start, end);
         }
 
         public boolean Filter(final String filter, boolean casesensitive) {
@@ -1040,7 +1040,7 @@ public class Str {
             i = 0;
 //	while( data[i] != '\0' ) {
             while (i < getData().length()) {
-                letter = this.ToLower(getData().charAt(i));
+                letter = idStr.ToLower(getData().charAt(i));
                 if (letter == '.') {
                     break;				// don't include extension
                 }
@@ -1277,7 +1277,7 @@ public class Str {
         }
 
         public boolean CheckExtension(final String ext) {
-            return this.CheckExtension(getData(), ext);
+            return idStr.CheckExtension(getData(), ext);
         }
 
         // char * methods to replace library functions
@@ -2250,7 +2250,7 @@ public class Str {
             int l;
             final String[] buffer = {null};//new char[32000];
 
-            l = this.vsnPrintf(buffer, 32000, fmt, args);
+            l = idStr.vsnPrintf(buffer, 32000, fmt, args);
 //	buffer[buffer.length-1] = '\0';
 
 //	string = buffer;

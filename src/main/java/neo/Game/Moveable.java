@@ -51,6 +51,7 @@ import neo.CM.CollisionModel.trace_s;
 import neo.CM.CollisionModel_local;
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Player.idPlayer;
 import neo.Game.Projectile.idDebris;
 import neo.Game.Animation.Anim_Blend.idDeclModelDef;
@@ -177,7 +178,7 @@ public class Moveable {
             }
 
             if (!CollisionModel_local.collisionModelManager.TrmFromModel(clipModelName, trm)) {
-                gameLocal.Error("idMoveable '%s': cannot load collision model %s", this.name, clipModelName);
+                idGameLocal.Error("idMoveable '%s': cannot load collision model %s", this.name, clipModelName);
                 return;
             }
 
@@ -213,7 +214,7 @@ public class Moveable {
 
             if (this.health != 0) {
                 if (!this.brokenModel.IsEmpty() && NOT(renderModelManager.CheckModel(this.brokenModel.getData()))) {
-                    gameLocal.Error("idMoveable '%s' at (%s): cannot load broken model '%s'", this.name, GetPhysics().GetOrigin().ToString(0), this.brokenModel);
+                    idGameLocal.Error("idMoveable '%s' at (%s): cannot load broken model '%s'", this.name, GetPhysics().GetOrigin().ToString(0), this.brokenModel);
                 }
             }
 
@@ -899,7 +900,7 @@ public class Moveable {
 
             final idDict damageDef = gameLocal.FindEntityDefDict(damageDefName);
             if (null == damageDef) {
-                gameLocal.Error("Unknown damageDef '%s'\n", damageDefName);
+                idGameLocal.Error("Unknown damageDef '%s'\n", damageDefName);
             }
             if ((damageDef.FindKey("radius") != null) && (GetPhysics().GetContents() != 0) && (GetBindMaster() == null)) {
                 PostEventMS(EV_Explode, 400);
@@ -966,7 +967,7 @@ public class Moveable {
 
                     gameLocal.SpawnEntityDef(debris_args, ent, false);
                     if ((null == ent[0]) || !ent[0].IsType(idDebris.class)) {
-                        gameLocal.Error("'projectile_debris' is not an idDebris");
+                        idGameLocal.Error("'projectile_debris' is not an idDebris");
                     }
 
                     debris = (idDebris) ent[0];

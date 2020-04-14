@@ -76,6 +76,7 @@ import neo.Game.AFEntity.idAFAttachment;
 import neo.Game.Actor.idActor;
 import neo.Game.Entity.idEntity;
 import neo.Game.Game_local.idEntityPtr;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Mover.idDoor;
 import neo.Game.Player.idPlayer;
 import neo.Game.AI.AI.idAI;
@@ -441,7 +442,7 @@ public class Projectile {
             this.projectileFlags.randomShaderSpin = this.spawnArgs.GetBool("random_shader_spin");
 
             if (mass <= 0) {
-                gameLocal.Error("Invalid mass on '%s'\n", GetEntityDefName());
+                idGameLocal.Error("Invalid mass on '%s'\n", GetEntityDefName());
             }
 
             this.thrust *= mass;
@@ -901,7 +902,7 @@ public class Projectile {
 
                         gameLocal.SpawnEntityDef(debris, ent, false);
                         if ((null == ent[0]) || !ent[0].IsType(idDebris.class)) {
-                            gameLocal.Error("'projectile_debris' is not an idDebris");
+                            idGameLocal.Error("'projectile_debris' is not an idDebris");
                         }
 
                         final idDebris debris2 = (idDebris) ent[0];
@@ -923,7 +924,7 @@ public class Projectile {
 
                         gameLocal.SpawnEntityDef(debris, ent, false);
                         if ((null == ent[0]) || !ent[0].IsType(idDebris.class)) {
-                            gameLocal.Error("'projectile_shrapnel' is not an idDebris");
+                            idGameLocal.Error("'projectile_shrapnel' is not an idDebris");
                         }
 
                         final idDebris debris2 = (idDebris) ent[0];
@@ -2188,7 +2189,7 @@ public class Projectile {
             randomVelocity = this.spawnArgs.GetBool("random_velocity");
 
             if (mass <= 0) {
-                gameLocal.Error("Invalid mass on '%s'\n", GetEntityDefName());
+                idGameLocal.Error("Invalid mass on '%s'\n", GetEntityDefName());
             }
 
             if (randomVelocity) {

@@ -10,6 +10,7 @@ import static neo.TempDump.NOT;
 import static neo.TempDump.etoi;
 
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
 import neo.Game.Physics.Clip.idClipModel;
@@ -223,7 +224,7 @@ public class Force_Field {
                         break;
                     }
                     default: {
-                        gameLocal.Error("idForce_Field: invalid type");
+                        idGameLocal.Error("idForce_Field: invalid type");
                         break;
                     }
                 }
@@ -263,7 +264,7 @@ public class Force_Field {
                         break;
                     }
                     default: {
-                        gameLocal.Error("idForce_Field: invalid apply type");
+                        idGameLocal.Error("idForce_Field: invalid apply type");
                         break;
                     }
                 }

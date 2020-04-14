@@ -89,6 +89,7 @@ import neo.Game.Actor.idActor;
 import neo.Game.Camera.idCamera;
 import neo.Game.Entity.idEntity;
 import neo.Game.Game_local.idEntityPtr;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Moveable.idMoveable;
 import neo.Game.Player.idPlayer;
 import neo.Game.Projectile.idProjectile;
@@ -638,7 +639,7 @@ public class Misc {
             // make sure the model gets cached
             this.spawnArgs.GetString("broken", "", broken);
             if ((broken.Length() != 0) && NOT(renderModelManager.CheckModel(broken.getData()))) {
-                gameLocal.Error("idDamagable '%s' at (%s): cannot load broken model '%s'", this.name, GetPhysics().GetOrigin().ToString(0), broken);
+                idGameLocal.Error("idDamagable '%s' at (%s): cannot load broken model '%s'", this.name, GetPhysics().GetOrigin().ToString(0), broken);
             }
 
             this.fl.takedamage = true;
@@ -910,7 +911,7 @@ public class Misc {
             if (name1.Length() != 0) {
                 this.ent1 = gameLocal.FindEntity(name1.getData());
                 if (null == this.ent1) {
-                    gameLocal.Error("idSpring '%s' at (%s): cannot find first entity '%s'", this.name, GetPhysics().GetOrigin().ToString(0), name1);
+                    idGameLocal.Error("idSpring '%s' at (%s): cannot find first entity '%s'", this.name, GetPhysics().GetOrigin().ToString(0), name1);
                 }
             } else {
                 this.ent1 = gameLocal.entities[ENTITYNUM_WORLD];
@@ -919,7 +920,7 @@ public class Misc {
             if (name2.Length() != 0) {
                 this.ent2 = gameLocal.FindEntity(name2.getData());
                 if (null == this.ent2) {
-                    gameLocal.Error("idSpring '%s' at (%s): cannot find second entity '%s'", this.name, GetPhysics().GetOrigin().ToString(0), name2);
+                    idGameLocal.Error("idSpring '%s' at (%s): cannot find second entity '%s'", this.name, GetPhysics().GetOrigin().ToString(0), name2);
                 }
             } else {
                 this.ent2 = gameLocal.entities[ENTITYNUM_WORLD];
@@ -1217,7 +1218,7 @@ public class Misc {
             } else {
                 this.anim = this.animator.GetAnim(animname[0]);
                 if (0 == this.anim) {
-                    gameLocal.Error("idAnimated '%s' at (%s): cannot find anim '%s'", this.name, GetPhysics().GetOrigin().ToString(0), animname[0]);
+                    idGameLocal.Error("idAnimated '%s' at (%s): cannot find anim '%s'", this.name, GetPhysics().GetOrigin().ToString(0), animname[0]);
                 }
             }
 
@@ -1230,7 +1231,7 @@ public class Misc {
             } else if (this.spawnArgs.GetString("start_anim", "", animname)) {
                 anim2 = this.animator.GetAnim(animname[0]);
                 if (0 == anim2) {
-                    gameLocal.Error("idAnimated '%s' at (%s): cannot find anim '%s'", this.name, GetPhysics().GetOrigin().ToString(0), animname[0]);
+                    idGameLocal.Error("idAnimated '%s' at (%s): cannot find anim '%s'", this.name, GetPhysics().GetOrigin().ToString(0), animname[0]);
                 }
                 this.animator.CycleAnim(ANIMCHANNEL_ALL, anim2, gameLocal.time, 0);
             } else if (this.anim != 0) {
@@ -1437,7 +1438,7 @@ public class Misc {
             launch = this.animator.GetJointHandle(launchjoint.value);
             if (launch == INVALID_JOINT) {
                 gameLocal.Warning("idAnimated '%s' at (%s): unknown launch joint '%s'", this.name, GetPhysics().GetOrigin().ToString(0), launchjoint.value);
-                gameLocal.Error("Unknown joint '%s'", launchjoint.value);
+                idGameLocal.Error("Unknown joint '%s'", launchjoint.value);
             }
 
             target = this.animator.GetJointHandle(targetjoint.value);
@@ -1482,7 +1483,7 @@ public class Misc {
 
             gameLocal.SpawnEntityDef(projectileDef, ent, false);
             if ((null == ent[0]) || !ent[0].IsType(idProjectile.class)) {
-                gameLocal.Error("idAnimated '%s' at (%s): in 'launchMissiles' call '%s' is not an idProjectile", this.name, GetPhysics().GetOrigin().ToString(0), projectilename);
+                idGameLocal.Error("idAnimated '%s' at (%s): in 'launchMissiles' call '%s' is not an idProjectile", this.name, GetPhysics().GetOrigin().ToString(0), projectilename);
             }
             projectile = (idProjectile) ent[0];
             projectile.Create(this, launchPos, dir);
@@ -2463,7 +2464,7 @@ public class Misc {
             }
 
             if (null == targetBeam) {
-                gameLocal.Error("Could not find valid beam target for '%s'", this.name);
+                idGameLocal.Error("Could not find valid beam target for '%s'", this.name);
             }
 
             this.target.oSet(targetBeam);

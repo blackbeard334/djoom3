@@ -169,6 +169,7 @@ import neo.Renderer.Cinematic.idCinematic;
 import neo.Renderer.Cinematic.idSndWindow;
 import neo.Renderer.Image.cubeFiles_t;
 import neo.Renderer.Image.idImage;
+import neo.Renderer.Image.idImageManager;
 import neo.Renderer.Image.textureDepth_t;
 import neo.Renderer.MegaTexture.idMegaTexture;
 import neo.Renderer.tr_local.viewDef_s;
@@ -2285,7 +2286,7 @@ public class Material {
                 }
 
                 if ((0 == token.Icmp("uncompressed")) || (0 == token.Icmp("highquality"))) {
-                    if (0 == globalImages.image_ignoreHighQuality.GetInteger()) {
+                    if (0 == idImageManager.image_ignoreHighQuality.GetInteger()) {
                         td = TD_HIGH_QUALITY;
                     }
                     continue;
@@ -2505,7 +2506,7 @@ public class Material {
                     continue;
                 }
                 if ((0 == token.Icmp("uncompressed")) || (0 == token.Icmp("highquality"))) {
-                    if (0 == globalImages.image_ignoreHighQuality.GetInteger()) {
+                    if (0 == idImageManager.image_ignoreHighQuality.GetInteger()) {
                         td = TD_HIGH_QUALITY;
                     }
                     continue;

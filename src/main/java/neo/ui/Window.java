@@ -1831,13 +1831,13 @@ public class Window {
             }
 
             if ((this.flags & WIN_SHOWTIME) != 0) {
-                this.dc.DrawText(va(" %0.1f seconds\n%s", (float) (time - this.timeLine) / 1000, this.gui.State().GetString("name")), 0.35f, 0, this.dc.colorWhite, new idRectangle(100, 0, 80, 80), false);
+                this.dc.DrawText(va(" %0.1f seconds\n%s", (float) (time - this.timeLine) / 1000, this.gui.State().GetString("name")), 0.35f, 0, idDeviceContext.colorWhite, new idRectangle(100, 0, 80, 80), false);
             }
 
             if ((this.flags & WIN_SHOWCOORDS) != 0) {
                 this.dc.EnableClipping(false);
                 str = new idStr(String.format("x: %d y: %d  cursorx: %d cursory: %d", (int) this.rect.x(), (int) this.rect.y(), (int) this.gui.CursorX(), (int) this.gui.CursorY()));
-                this.dc.DrawText(str.getData(), 0.25f, 0, this.dc.colorWhite, new idRectangle(0, 0, 100, 20), false);
+                this.dc.DrawText(str.getData(), 0.25f, 0, idDeviceContext.colorWhite, new idRectangle(0, 0, 100, 20), false);
                 this.dc.EnableClipping(true);
             }
 
@@ -1913,8 +1913,8 @@ public class Window {
             if ((gui_debug.GetInteger() != 0) && ((this.flags & WIN_DESKTOP) != 0)) {
                 this.dc.EnableClipping(false);
                 str = new idStr(String.format("x: %.1f y: %.1f", this.gui.CursorX(), this.gui.CursorY()));
-                this.dc.DrawText(str.getData(), 0.25f, 0, this.dc.colorWhite, new idRectangle(0, 0, 100, 20), false);
-                this.dc.DrawText(this.gui.GetSourceFile(), 0.25f, 0, this.dc.colorWhite, new idRectangle(0, 20, 300, 20), false);
+                this.dc.DrawText(str.getData(), 0.25f, 0, idDeviceContext.colorWhite, new idRectangle(0, 0, 100, 20), false);
+                this.dc.DrawText(this.gui.GetSourceFile(), 0.25f, 0, idDeviceContext.colorWhite, new idRectangle(0, 20, 300, 20), false);
                 this.dc.EnableClipping(true);
             }
 
@@ -2017,8 +2017,8 @@ public class Window {
 
             if (gui_edit.GetBool()) {
                 this.dc.EnableClipping(false);
-                this.dc.DrawText(va("x: %d  y: %d", (int) this.rect.x(), (int) this.rect.y()), 0.25f, 0, this.dc.colorWhite, new idRectangle(this.rect.x(), this.rect.y() - 15, 100, 20), false);
-                this.dc.DrawText(va("w: %d  h: %d", (int) this.rect.w(), (int) this.rect.h()), 0.25f, 0, this.dc.colorWhite, new idRectangle(this.rect.x() + this.rect.w(), this.rect.w() + this.rect.h() + 5, 100, 20), false);
+                this.dc.DrawText(va("x: %d  y: %d", (int) this.rect.x(), (int) this.rect.y()), 0.25f, 0, idDeviceContext.colorWhite, new idRectangle(this.rect.x(), this.rect.y() - 15, 100, 20), false);
+                this.dc.DrawText(va("w: %d  h: %d", (int) this.rect.w(), (int) this.rect.h()), 0.25f, 0, idDeviceContext.colorWhite, new idRectangle(this.rect.x() + this.rect.w(), this.rect.w() + this.rect.h() + 5, 100, 20), false);
                 this.dc.EnableClipping(true);
             }
 

@@ -659,7 +659,7 @@ public class Model_md5 {
         public int Memory() {
             int total;
 
-            total = this.BYTES;
+            total = idRenderModelMD5.BYTES;
             total += this.joints.MemoryUsed() + this.defaultPose.MemoryUsed() + this.meshes.MemoryUsed();
 
             // count up strings
@@ -673,7 +673,7 @@ public class Model_md5 {
                 total += mesh.texCoords.MemoryUsed() + (mesh.numWeights * idVec4.BYTES) + (Integer.BYTES * 2);
 
                 // sum up deform info
-                total += mesh.deformInfo.BYTES;
+                total += deformInfo_s.BYTES;
                 total += R_DeformInfoMemoryUsed(mesh.deformInfo);
             }
             return total;

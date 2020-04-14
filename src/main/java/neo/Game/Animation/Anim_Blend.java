@@ -122,6 +122,7 @@ import java.util.stream.Stream;
 
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Animation.Anim.AFJointModType_t;
 import neo.Game.Animation.Anim.animFlags_t;
 import neo.Game.Animation.Anim.frameBlend_t;
@@ -1359,7 +1360,7 @@ public class Anim_Blend {
             num = this.modelHandle.NumJoints();
 
             if (0 == num) {
-                gameLocal.Error("model '%s' has no joints", this.modelHandle.Name());
+                idGameLocal.Error("model '%s' has no joints", this.modelHandle.Name());
             }
 
             // set up initial pose for model (with no pose, model is just a jumbled mess)
@@ -1593,7 +1594,7 @@ public class Anim_Blend {
 
         public jointInfo_t GetJoint(int jointHandle) {
             if ((jointHandle < 0) || (jointHandle > this.joints.Num())) {
-                gameLocal.Error("idDeclModelDef::GetJoint : joint handle out of range");
+                idGameLocal.Error("idDeclModelDef::GetJoint : joint handle out of range");
             }
             return this.joints.oGet(jointHandle);
         }
@@ -1606,7 +1607,7 @@ public class Anim_Blend {
             }
 
             if ((jointHandle < 0) || (jointHandle > this.joints.Num())) {
-                gameLocal.Error("idDeclModelDef::GetJointName : joint handle out of range");
+                idGameLocal.Error("idDeclModelDef::GetJointName : joint handle out of range");
             }
 
             joint = this.modelHandle.GetJoints();
@@ -1615,14 +1616,14 @@ public class Anim_Blend {
 
         public int NumJointsOnChannel(int channel) {
             if ((channel < 0) || (channel >= ANIM_NumAnimChannels)) {
-                gameLocal.Error("idDeclModelDef::NumJointsOnChannel : channel out of range");
+                idGameLocal.Error("idDeclModelDef::NumJointsOnChannel : channel out of range");
             }
             return this.channelJoints[ channel].Num();
         }
 
         public Integer[] GetChannelJoints(int channel) {
             if ((channel < 0) || (channel >= ANIM_NumAnimChannels)) {
-                gameLocal.Error("idDeclModelDef::GetChannelJoints : channel out of range");
+                idGameLocal.Error("idDeclModelDef::GetChannelJoints : channel out of range");
             }
             return this.channelJoints[channel].Ptr(Integer[].class);
         }
@@ -3613,7 +3614,7 @@ public class Anim_Blend {
 
                 public idAnimBlend CurrentAnim(int channelNum) {
                     if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels)) {
-                        gameLocal.Error("idAnimator::CurrentAnim : channel out of range");
+                        idGameLocal.Error("idAnimator::CurrentAnim : channel out of range");
                     }
 
                     return this.channels[ channelNum][ 0];
@@ -3624,7 +3625,7 @@ public class Anim_Blend {
                     idAnimBlend[] blend;
 
                     if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels)) {
-                        gameLocal.Error("idAnimator::Clear : channel out of range");
+                        idGameLocal.Error("idAnimator::Clear : channel out of range");
                     }
 
                     blend = this.channels[channelNum];
@@ -3636,7 +3637,7 @@ public class Anim_Blend {
 
                 public void SetFrame(int channelNum, int animNum, int frame, int currentTime, int blendTime) {
                     if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels)) {
-                        gameLocal.Error("idAnimator::SetFrame : channel out of range");
+                        idGameLocal.Error("idAnimator::SetFrame : channel out of range");
                     }
 
                     if ((null == this.modelDef) || (null == this.modelDef.GetAnim(animNum))) {
@@ -3652,7 +3653,7 @@ public class Anim_Blend {
 
                 public void CycleAnim(int channelNum, int animNum, int currentTime, int blendTime) {
                     if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels)) {
-                        gameLocal.Error("idAnimator::CycleAnim : channel out of range");
+                        idGameLocal.Error("idAnimator::CycleAnim : channel out of range");
                     }
 
                     if ((null == this.modelDef) || (null == this.modelDef.GetAnim(animNum))) {
@@ -3668,7 +3669,7 @@ public class Anim_Blend {
 
                 public void PlayAnim(int channelNum, int animNum, int currentTime, int blendTime) {
                     if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels)) {
-                        gameLocal.Error("idAnimator::PlayAnim : channel out of range");
+                        idGameLocal.Error("idAnimator::PlayAnim : channel out of range");
                     }
 
                     if ((null == this.modelDef) || (null == this.modelDef.GetAnim(animNum))) {
@@ -3686,7 +3687,7 @@ public class Anim_Blend {
                 // the copied anim will have frame commands disabled to avoid executing them twice.
                 public void SyncAnimChannels(int channelNum, int fromChannelNum, int currentTime, int blendTime) {
                     if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels) || (fromChannelNum < 0) || (fromChannelNum >= ANIM_NumAnimChannels)) {
-                        gameLocal.Error("idAnimator::SyncToChannel : channel out of range");
+                        idGameLocal.Error("idAnimator::SyncToChannel : channel out of range");
                     }
 
                     final idAnimBlend fromBlend = this.channels[ fromChannelNum][ 0];
@@ -4032,11 +4033,11 @@ public class Anim_Blend {
 
                 public int GetChannelForJoint(int/*jointHandle_t*/ joint) {
                     if (null == this.modelDef) {
-                        gameLocal.Error("idAnimator::GetChannelForJoint: NULL model");
+                        idGameLocal.Error("idAnimator::GetChannelForJoint: NULL model");
                     }
 
                     if ((joint < 0) || (joint >= this.numJoints)) {
-                        gameLocal.Error("idAnimator::GetChannelForJoint: invalid joint num (%d)", joint);
+                        idGameLocal.Error("idAnimator::GetChannelForJoint: invalid joint num (%d)", joint);
                     }
 
                     return this.modelDef.GetJoint(joint).channel;

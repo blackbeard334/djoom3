@@ -68,6 +68,7 @@ import java.util.Map;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
 import neo.Game.Game_local.idEntityPtr;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Player.idPlayer;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
@@ -1114,7 +1115,7 @@ public class Mover {
 
         private void Event_SetMoveSpeed(idEventArg<Float> speed) {
             if (speed.value <= 0) {
-                gameLocal.Error("Cannot set speed less than or equal to 0.");
+                idGameLocal.Error("Cannot set speed less than or equal to 0.");
             }
 
             this.move_speed = speed.value;
@@ -1123,7 +1124,7 @@ public class Mover {
 
         private void Event_SetMoveTime(idEventArg<Float> time) {
             if (time.value <= 0) {
-                gameLocal.Error("Cannot set time less than or equal to 0.");
+                idGameLocal.Error("Cannot set time less than or equal to 0.");
             }
 
             this.move_speed = 0;
@@ -1132,7 +1133,7 @@ public class Mover {
 
         private void Event_SetDecelerationTime(idEventArg<Float> time) {
             if (time.value < 0) {
-                gameLocal.Error("Cannot set deceleration time less than 0.");
+                idGameLocal.Error("Cannot set deceleration time less than 0.");
             }
 
             this.deceltime = (int) SEC2MS(time.value);
@@ -1140,7 +1141,7 @@ public class Mover {
 
         private void Event_SetAccellerationTime(idEventArg<Float> time) {
             if (time.value < 0) {
-                gameLocal.Error("Cannot set acceleration time less than 0.");
+                idGameLocal.Error("Cannot set acceleration time less than 0.");
             }
 
             this.acceltime = (int) SEC2MS(time.value);
@@ -1178,7 +1179,7 @@ public class Mover {
             int at;
 
             if (time.value < 0) {
-                gameLocal.Error("idMover::Event_MoveAccelerateTo: cannot set acceleration time less than 0.");
+                idGameLocal.Error("idMover::Event_MoveAccelerateTo: cannot set acceleration time less than 0.");
             }
 
             dir = this.physicsObj.GetLinearVelocity();
@@ -1186,7 +1187,7 @@ public class Mover {
 
             // if not moving already
             if (v == 0.0f) {
-                gameLocal.Error("idMover::Event_MoveAccelerateTo: not moving.");
+                idGameLocal.Error("idMover::Event_MoveAccelerateTo: not moving.");
             }
 
             // if already moving faster than the desired speed
@@ -1217,7 +1218,7 @@ public class Mover {
             int dt;
 
             if (time.value < 0) {
-                gameLocal.Error("idMover::Event_MoveDecelerateTo: cannot set deceleration time less than 0.");
+                idGameLocal.Error("idMover::Event_MoveDecelerateTo: cannot set deceleration time less than 0.");
             }
 
             dir = this.physicsObj.GetLinearVelocity();
@@ -1225,7 +1226,7 @@ public class Mover {
 
             // if not moving already
             if (v == 0.0f) {
-                gameLocal.Error("idMover::Event_MoveDecelerateTo: not moving.");
+                idGameLocal.Error("idMover::Event_MoveDecelerateTo: not moving.");
             }
 
             // if already moving slower than the desired speed
@@ -1254,7 +1255,7 @@ public class Mover {
             final idAngles ang = new idAngles();
 
             if ((axis < 0) || (axis > 2)) {
-                gameLocal.Error("Invalid axis");
+                idGameLocal.Error("Invalid axis");
             }
 
             this.physicsObj.GetLocalAngles(ang);
@@ -1272,7 +1273,7 @@ public class Mover {
             final idAngles ang = new idAngles();
 
             if ((axis < 0) || (axis > 2)) {
-                gameLocal.Error("Invalid axis");
+                idGameLocal.Error("Invalid axis");
             }
 
             this.physicsObj.GetLocalAngles(ang);
@@ -2776,7 +2777,7 @@ public class Mover {
 
                 SetBlocked(false);
             } else {
-                gameLocal.Error("Event_Reached_BinaryMover: bad moverState");
+                idGameLocal.Error("Event_Reached_BinaryMover: bad moverState");
             }
         }
 
@@ -4201,7 +4202,7 @@ public class Mover {
 
             if (this.spawnArgs.GetFloat("freq", "", freq)) {
                 if (freq[0] <= 0.0f) {
-                    gameLocal.Error("Invalid frequency on entity '%s'", GetName());
+                    idGameLocal.Error("Invalid frequency on entity '%s'", GetName());
                 }
             } else {
                 // find pendulum length
