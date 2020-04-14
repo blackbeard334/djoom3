@@ -364,7 +364,7 @@ public class draw_common {
         qglEnable(GL_TEXTURE_GEN_Q);
 
         final float[] mat = new float[16]; //, plane = new float[4];
-        myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.projectionMatrix, mat);
+        myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.getProjectionMatrix(), mat);
 
 //        plane[0] = mat[0];
 //        plane[1] = mat[4];

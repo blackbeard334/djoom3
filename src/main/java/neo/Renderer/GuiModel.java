@@ -235,13 +235,13 @@ public class GuiModel {
             viewDef.floatTime = tr.frameShaderTime;
 
             // TODO: qglOrtho( 0, 640, 480, 0, 0, 1 );		// always assume 640x480 virtual coordinates
-            viewDef.projectionMatrix[ 0] = +2.0f / 640.0f;
-            viewDef.projectionMatrix[ 5] = -2.0f / 480.0f;
-            viewDef.projectionMatrix[10] = -2.0f / 1.0f;
-            viewDef.projectionMatrix[12] = -1.0f;
-            viewDef.projectionMatrix[13] = +1.0f;
-            viewDef.projectionMatrix[14] = -1.0f;
-            viewDef.projectionMatrix[15] = +1.0f;
+            viewDef.getProjectionMatrix()[ 0] = +2.0f / 640.0f;
+            viewDef.getProjectionMatrix()[ 5] = -2.0f / 480.0f;
+            viewDef.getProjectionMatrix()[10] = -2.0f / 1.0f;
+            viewDef.getProjectionMatrix()[12] = -1.0f;
+            viewDef.getProjectionMatrix()[13] = +1.0f;
+            viewDef.getProjectionMatrix()[14] = -1.0f;
+            viewDef.getProjectionMatrix()[15] = +1.0f;
 
             viewDef.worldSpace.modelViewMatrix[ 0] = 1.0f;
             viewDef.worldSpace.modelViewMatrix[ 5] = 1.0f;
