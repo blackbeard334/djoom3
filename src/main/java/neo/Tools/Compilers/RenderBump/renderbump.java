@@ -558,7 +558,7 @@ public class renderbump {
         for (int i = 0; i < 4; i++) {
             float color = 0.0f;
             for (j = 0; j < 3; j++) {
-                color += bary[j] * highMesh.verts[ highMesh.indexes[ (faceNum * 3) + j]].color[i];
+                color += bary[j] * highMesh.verts[ highMesh.indexes[ (faceNum * 3) + j]].getColor().get(i);
             }
             sampledColor[i] = (byte) color;
         }
@@ -1555,7 +1555,7 @@ public class renderbump {
                                     float[] a;
 
                                     v = mesh.indexes[j + k];
-                                    qglColor3ubv(Nio.wrap(mesh.verts[v].color));
+                                    qglColor3ubv(mesh.verts[v].getColor());
                                     a = mesh.verts[v].xyz.ToFloatPtr();
                                     qglVertex3f(a[0] + xOff, a[2] + yOff, a[1]);
                                 }

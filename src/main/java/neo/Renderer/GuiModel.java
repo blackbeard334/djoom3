@@ -79,16 +79,19 @@ public class GuiModel {
 
             i = this.verts.Num();
             demo.WriteInt(i);
+            byte[] color;
             for (j = 0; j < i; j++) {
                 demo.WriteVec3(this.verts.oGet(j).xyz);
                 demo.WriteVec2(this.verts.oGet(j).st);
                 demo.WriteVec3(this.verts.oGet(j).normal);
                 demo.WriteVec3(this.verts.oGet(j).tangents[0]);
                 demo.WriteVec3(this.verts.oGet(j).tangents[1]);
-                demo.WriteUnsignedChar((char) this.verts.oGet(j).color[0]);
-                demo.WriteUnsignedChar((char) this.verts.oGet(j).color[1]);
-                demo.WriteUnsignedChar((char) this.verts.oGet(j).color[2]);
-                demo.WriteUnsignedChar((char) this.verts.oGet(j).color[3]);
+                
+                color = this.verts.oGet(j).getColor().array();
+                demo.WriteUnsignedChar((char) color[0]);
+                demo.WriteUnsignedChar((char) color[1]);
+                demo.WriteUnsignedChar((char) color[2]);
+                demo.WriteUnsignedChar((char) color[3]);
             }
 
             i = this.indexes.Num();
@@ -125,20 +128,23 @@ public class GuiModel {
             i[0] = this.verts.Num();
             demo.ReadInt(i);
             this.verts.SetNum(i[0], false);
+            byte[] bcolor;
             for (j = 0; j < i[0]; j++) {
                 demo.ReadVec3(this.verts.oGet(j).xyz);
                 demo.ReadVec2(this.verts.oGet(j).st);
                 demo.ReadVec3(this.verts.oGet(j).normal);
                 demo.ReadVec3(this.verts.oGet(j).tangents[0]);
                 demo.ReadVec3(this.verts.oGet(j).tangents[1]);
+                
+                bcolor = this.verts.oGet(j).getColor().array();
                 demo.ReadUnsignedChar(color);
-                this.verts.oGet(j).color[0] = (byte) color[0];
+                bcolor[0] = (byte) color[0];
                 demo.ReadUnsignedChar(color);
-                this.verts.oGet(j).color[1] = (byte) color[0];
+                bcolor[1] = (byte) color[0];
                 demo.ReadUnsignedChar(color);
-                this.verts.oGet(j).color[2] = (byte) color[0];
+                bcolor[2] = (byte) color[0];
                 demo.ReadUnsignedChar(color);
-                this.verts.oGet(j).color[3] = (byte) color[0];
+                bcolor[3] = (byte) color[0];
             }
 
             i[0] = this.indexes.Num();

@@ -280,7 +280,7 @@ public class draw_arb {
                 qglColor4fv(din.diffuseColor.toFloatBuffer());
             } else {
                 // FIXME: does this not get diffuseColor blended in?
-                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ Nio.wrap(ac.color));
+                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.getColor());
                 qglEnableClientState(GL_COLOR_ARRAY);
 
                 if (din.vertexColor == SVC_INVERSE_MODULATE) {
@@ -425,7 +425,7 @@ public class draw_arb {
                 qglColor4fv(din.diffuseColor.toFloatBuffer());
             } else {
                 // FIXME: does this not get diffuseColor blended in?
-                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ Nio.wrap(ac.color));
+                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.getColor());
                 qglEnableClientState(GL_COLOR_ARRAY);
 
                 if (din.vertexColor == SVC_INVERSE_MODULATE) {

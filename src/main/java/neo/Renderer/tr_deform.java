@@ -32,6 +32,7 @@ import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.ColorUtil;
 
 /**
  *
@@ -595,8 +596,7 @@ public class tr_deform {
         }
         for (j = 0; j < newTri.numVerts; j++) {
             ac[j] = new idDrawVert();
-            ac[j].color[0] = ac[j].color[1] = ac[j].color[2] = (byte) color;
-            ac[j].color[3] = (byte) 255;
+            ColorUtil.setElementsWith(ac[j].getColor(), (byte) 255);
         }
 
         final float spread = surf.shaderRegisters[ surf.material.GetDeformRegister(0)] * RenderSystem_init.r_flareSize.GetFloat();

@@ -25,6 +25,7 @@ import neo.Renderer.tr_local.viewDef_s;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.ColorUtil;
 
 /**
  *
@@ -156,28 +157,16 @@ public class Model_beam {
             final byte alpha = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_ALPHA] * 255.0f);
 
             tri.verts[0].xyz = minor;
-            tri.verts[0].color[0] = red;
-            tri.verts[0].color[1] = green;
-            tri.verts[0].color[2] = blue;
-            tri.verts[0].color[3] = alpha;
 
             tri.verts[1].xyz = minor.oNegative();
-            tri.verts[1].color[0] = red;
-            tri.verts[1].color[1] = green;
-            tri.verts[1].color[2] = blue;
-            tri.verts[1].color[3] = alpha;
 
             tri.verts[2].xyz = localTarget.oPlus(minor);
-            tri.verts[2].color[0] = red;
-            tri.verts[2].color[1] = green;
-            tri.verts[2].color[2] = blue;
-            tri.verts[2].color[3] = alpha;
 
             tri.verts[3].xyz = localTarget.oMinus(minor);
-            tri.verts[3].color[0] = red;
-            tri.verts[3].color[1] = green;
-            tri.verts[3].color[2] = blue;
-            tri.verts[3].color[3] = alpha;
+
+            for (int i = 0; i < 4; i++) {
+                ColorUtil.setColors(tri.verts[i].getColor(), red, green, blue, alpha);
+			}
 
             R_BoundTriSurf(tri);
 

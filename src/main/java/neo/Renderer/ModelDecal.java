@@ -413,7 +413,7 @@ public class ModelDecal {
                         } else if (icolor > 255) {
                             icolor = 255;
                         }
-                        this.tri.verts[ind].color[k] = (byte) icolor;
+                        this.tri.verts[ind].getColor().put(k, (byte) icolor);
                     }
                 }
             }
@@ -483,7 +483,7 @@ public class ModelDecal {
                         } else if (icolor > 255) {
                             icolor = 255;
                         }
-                        this.tri.verts[this.tri.numVerts + i].color[k] = (byte) icolor;
+                        this.tri.verts[this.tri.numVerts + i].getColor().put(k, (byte) icolor);
                     }
                 }
                 for (i = 2; i < w.GetNumPoints(); i++) {

@@ -1266,7 +1266,7 @@ public class tr_rendertools {
                 final idDrawVert v;
 
                 v = tri.verts[tri.indexes[j]];
-                qglColor4ubv(Nio.wrap(v.color));
+                qglColor4ubv(v.getColor());
                 qglVertex3fv(v.xyz.toFloatBuffer());
             }
             qglEnd();
