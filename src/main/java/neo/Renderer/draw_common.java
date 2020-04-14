@@ -538,7 +538,7 @@ public class draw_common {
             }
 
             // some deforms may disable themselves by setting numIndexes = 0
-            if (0 == tri.getNumIndexes()) {
+            if (0 == tri.getIndexes().getNumValues()) {
                 return;
             }
 
@@ -881,7 +881,7 @@ public class draw_common {
         }
 
         // some deforms may disable themselves by setting numIndexes = 0
-        if (0 == tri.getNumIndexes()) {
+        if (0 == tri.getIndexes().getNumValues()) {
             return;
         }
 
@@ -1246,7 +1246,7 @@ public class draw_common {
             boolean external = false;
 
             if (0 == r_useExternalShadows.GetInteger()) {
-                numIndexes = tri.getNumIndexes();
+                numIndexes = tri.getIndexes().getNumValues();
             } else if (r_useExternalShadows.GetInteger() == 2) { // force to no caps for testing
                 numIndexes = tri.numShadowIndexesNoCaps;
             } else if (0 == (surf.dsFlags & DSF_VIEW_INSIDE_SHADOW)) {
@@ -1267,7 +1267,7 @@ public class draw_common {
                 external = true;
             } else {
                 // must draw everything
-                numIndexes = tri.getNumIndexes();
+                numIndexes = tri.getIndexes().getNumValues();
             }
 
             // set depth bounds
@@ -1287,13 +1287,13 @@ public class draw_common {
                 } else {
                     // draw different color for turboshadows
                     if ((surf.geo.shadowCapPlaneBits & SHADOW_CAP_INFINITE) != 0) {
-                        if (numIndexes == tri.getNumIndexes()) {
+                        if (numIndexes == tri.getIndexes().getNumValues()) {
                             qglColor3f(1 / backEnd.overBright, 0.1f / backEnd.overBright, 0.1f / backEnd.overBright);
                         } else {
                             qglColor3f(1 / backEnd.overBright, 0.4f / backEnd.overBright, 0.1f / backEnd.overBright);
                         }
                     } else {
-                        if (numIndexes == tri.getNumIndexes()) {
+                        if (numIndexes == tri.getIndexes().getNumValues()) {
                             qglColor3f(0.1f / backEnd.overBright, 1 / backEnd.overBright, 0.1f / backEnd.overBright);
                         } else if (numIndexes == tri.numShadowIndexesNoFrontCaps) {
                             qglColor3f(0.1f / backEnd.overBright, 1 / backEnd.overBright, 0.6f / backEnd.overBright);

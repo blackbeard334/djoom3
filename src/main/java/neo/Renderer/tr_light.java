@@ -144,7 +144,7 @@ public class tr_light {
 
         if (true) {
 
-            SIMDProcessor.CreateTextureSpaceLightVectors(cache[0].localLightVector, localLightOrigin, tri.ambientSurface.verts, tri.ambientSurface.numVerts, tri.getIndexes(), tri.getNumIndexes());
+            SIMDProcessor.CreateTextureSpaceLightVectors(cache[0].localLightVector, localLightOrigin, tri.ambientSurface.verts, tri.ambientSurface.numVerts, tri.getIndexes().getValues(), tri.getIndexes().getNumValues());
 
         } else {
 //	boolean []used = new boolean[tri.ambientSurface.numVerts];
@@ -358,7 +358,7 @@ public class tr_light {
         if (true) {
 
             SIMDProcessor.CreateSpecularTextureCoords(texCoords, localLightOrigin, localViewOrigin,
-                    tri.verts, tri.numVerts, tri.getIndexes(), tri.getNumIndexes());
+                    tri.verts, tri.numVerts, tri.getIndexes().getValues(), tri.getIndexes().getNumValues());
 
         } else {
 //	bool *used = (bool *)_alloca16( tri.numVerts * sizeof( used[0] ) );
@@ -958,7 +958,7 @@ public class tr_light {
                 vertexCache.Touch(tri.shadowCache);
 
                 if (NOT(tri.indexCache) && r_useIndexBuffers.GetBool()) {
-                    tri.indexCache = vertexCache.Alloc(tri.getIndexes(), tri.getNumIndexes(), true);
+                    tri.indexCache = vertexCache.Alloc(tri.getIndexes().getValues(), tri.getIndexes().getNumValues(), true);
                 }
                 if (tri.indexCache != null) {
                     vertexCache.Touch(tri.indexCache);
@@ -1290,7 +1290,7 @@ public class tr_light {
             if (null == tri) {
                 continue;
             }
-            if (0 == tri.getNumIndexes()) {
+            if (0 == tri.getIndexes().getNumValues()) {
                 continue;
             }
             shader[0] = surf.shader = R_RemapShaderBySkin(surf.shader, def.parms.customSkin, def.parms.customShader);
@@ -1339,7 +1339,7 @@ public class tr_light {
                 vertexCache.Touch(tri.ambientCache);
 
                 if (r_useIndexBuffers.GetBool() && NOT(tri.indexCache)) {
-                    tri.indexCache = vertexCache.Alloc(tri.getIndexes(), tri.getNumIndexes(), true);
+                    tri.indexCache = vertexCache.Alloc(tri.getIndexes().getValues(), tri.getIndexes().getNumValues(), true);
                 }
                 if (tri.indexCache != null) {
                     vertexCache.Touch(tri.indexCache);

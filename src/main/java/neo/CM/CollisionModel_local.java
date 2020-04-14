@@ -6914,7 +6914,7 @@ public class CollisionModel_local {
                 }
                 // get max verts and edges
                 model.maxVertices += surf.geometry.numVerts;
-                model.maxEdges += surf.geometry.getNumIndexes();
+                model.maxEdges += surf.geometry.getIndexes().getNumValues();
             }
 
             model.vertices = cm_vertex_s.generateArray(model.maxVertices);
@@ -6939,11 +6939,11 @@ public class CollisionModel_local {
                     continue;
                 }
 
-                for (j = 0; j < surf.geometry.getNumIndexes(); j += 3) {
+                for (j = 0; j < surf.geometry.getIndexes().getNumValues(); j += 3) {
                     w.Clear();
-                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes()[j + 2]].xyz);
-                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes()[j + 1]].xyz);
-                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes()[j + 0]].xyz);
+                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes().getValues()[j + 2]].xyz);
+                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes().getValues()[j + 1]].xyz);
+                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes().getValues()[j + 0]].xyz);
                     w.GetPlane(plane);
                     plane = plane.oNegative();
                     PolygonFromWinding(model, w, plane, surf.shader, 1);

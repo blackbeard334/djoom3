@@ -238,12 +238,12 @@ public class output {
                     uTri.verts[j].st.oSet(1, dv.st.oGet(1));
                 }
 
-                uTri.getIndexes()[numIndexes++] = j;
+                uTri.getIndexes().getValues()[numIndexes++] = j;
             }
         }
 
         uTri.numVerts = numVerts;
-        uTri.setNumIndexes(numIndexes);
+        uTri.getIndexes().setNumValues(numIndexes);
 
         return uTri;
     }
@@ -278,7 +278,7 @@ public class output {
 
         // emit this chain
         procFile.WriteFloatString("/* numVerts = */ %d /* numIndexes = */ %d\n",
-                uTris.numVerts, uTris.getNumIndexes());
+                uTris.numVerts, uTris.getIndexes().getNumValues());
 
         // verts
         col = 0;
@@ -309,8 +309,8 @@ public class output {
 
         // indexes
         col = 0;
-        for (i = 0; i < uTris.getNumIndexes(); i++) {
-            procFile.WriteFloatString("%d ", uTris.getIndexes()[i]);
+        for (i = 0; i < uTris.getIndexes().getNumValues(); i++) {
+            procFile.WriteFloatString("%d ", uTris.getIndexes().getValues()[i]);
 
             if (++col == 18) {
                 col = 0;
@@ -336,7 +336,7 @@ public class output {
 
         // emit this chain
         procFile.WriteFloatString("/* numVerts = */ %d /* noCaps = */ %d /* noFrontCaps = */ %d /* numIndexes = */ %d /* planeBits = */ %d\n",
-                tri.numVerts, tri.numShadowIndexesNoCaps, tri.numShadowIndexesNoFrontCaps, tri.getNumIndexes(), tri.shadowCapPlaneBits);
+                tri.numVerts, tri.numShadowIndexesNoCaps, tri.numShadowIndexesNoFrontCaps, tri.getIndexes().getNumValues(), tri.shadowCapPlaneBits);
 
         // verts
         col = 0;
@@ -354,8 +354,8 @@ public class output {
 
         // indexes
         col = 0;
-        for (i = 0; i < tri.getNumIndexes(); i++) {
-            procFile.WriteFloatString("%d ", tri.getIndexes()[i]);
+        for (i = 0; i < tri.getIndexes().getNumValues(); i++) {
+            procFile.WriteFloatString("%d ", tri.getIndexes().getValues()[i]);
 
             if (++col == 18) {
                 col = 0;

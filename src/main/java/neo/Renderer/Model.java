@@ -218,30 +218,10 @@ public class Model {
             this.shadowCache = null;
         }
 
-		public int /*glIndex_t*/[] getIndexes() {
-			return this.indexes.getIndexes();
+		public NeoIntArray getIndexes() {
+			return this.indexes;
 		}
 
-		public void setIndexes(int /*glIndex_t*/[] indexes) {
-			this.indexes.setIndexes(indexes);
-		}
-
-		public int getNumIndexes() {
-			return this.indexes.getNumIndexes();
-		}
-
-		public int decNumIndexes() {
-			return this.indexes.decNumIndexes();
-		}
-
-		public int incNumIndexes() {
-			return this.indexes.incNumIndexes();
-		}
-
-		public int setNumIndexes(int numIndexes) {
-			this.indexes.setNumIndexes(numIndexes);
-			return this.indexes.getNumIndexes();
-		}
     }
 
     static class idTriList extends idList<srfTriangles_s> {

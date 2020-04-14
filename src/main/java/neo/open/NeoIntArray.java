@@ -16,27 +16,27 @@ public class NeoIntArray {
 		this.numValues = 0;
 	}
 
-	public int decNumIndexes() {
+	public int decNumValues() {
 		return --numValues;
 	}
 
-	public int[] getIndexes() {
+	public int[] getValues() {
 		return values;
 	}
 
-	public int getNumIndexes() {
+	public int getNumValues() {
 		return numValues;
 	}
 
-	public int incNumIndexes() {
+	public int incNumValues() {
 		return ++numValues;
 	}
 
-	public void setIndexes(int[] indexes) {
+	public void setValues(int[] indexes) {
 		this.values = indexes;
 	}
 
-	public void setNumIndexes(int numIndexes) {
-		this.numValues = numIndexes;
+	public int setNumValues(int numIndexes) {
+		return this.numValues = numIndexes;
 	}
 }

@@ -107,7 +107,7 @@ public class tr_trace {
             R_DeriveFacePlanes(tri);
         }
 
-        for (i = 0, j = 0; i < tri.getNumIndexes(); i += 3, j++) {
+        for (i = 0, j = 0; i < tri.getIndexes().getNumValues(); i += 3, j++) {
             float d1, d2, f, d;
             float edgeLengthSqr;
             idPlane plane;
@@ -118,9 +118,9 @@ public class tr_trace {
             byte triOr;
 
             // get sidedness info for the triangle
-            triOr = cullBits[tri.getIndexes()[i + 0]];
-            triOr |= cullBits[tri.getIndexes()[i + 1]];
-            triOr |= cullBits[tri.getIndexes()[i + 2]];
+            triOr = cullBits[tri.getIndexes().getValues()[i + 0]];
+            triOr |= cullBits[tri.getIndexes().getValues()[i + 1]];
+            triOr |= cullBits[tri.getIndexes().getValues()[i + 2]];
 
             // if we don't have points on both sides of both the ray planes, no intersection
             if (((triOr ^ (triOr >> 4)) & 3) != 0) {
@@ -167,8 +167,8 @@ public class tr_trace {
 
             // see if the point is within the three edges
             // if radius > 0 the triangle is expanded with a circle in the triangle plane
-            dir[0] = tri.verts[tri.getIndexes()[i + 0]].xyz.oMinus(point);
-            dir[1] = tri.verts[tri.getIndexes()[i + 1]].xyz.oMinus(point);
+            dir[0] = tri.verts[tri.getIndexes().getValues()[i + 0]].xyz.oMinus(point);
+            dir[1] = tri.verts[tri.getIndexes().getValues()[i + 1]].xyz.oMinus(point);
 
             cross = dir[0].Cross(dir[1]);
             d = plane.Normal().oMultiply(cross);
@@ -176,14 +176,14 @@ public class tr_trace {
                 if (radiusSqr <= 0.0f) {
                     continue;
                 }
-                edge = tri.verts[tri.getIndexes()[i + 0]].xyz.oMinus(tri.verts[tri.getIndexes()[i + 1]].xyz);
+                edge = tri.verts[tri.getIndexes().getValues()[i + 0]].xyz.oMinus(tri.verts[tri.getIndexes().getValues()[i + 1]].xyz);
                 edgeLengthSqr = edge.LengthSqr();
                 if (cross.LengthSqr() > (edgeLengthSqr * radiusSqr)) {
                     continue;
                 }
                 d = dir[0].oMultiply(edge);
                 if (d < 0.0f) {
-                    edge = tri.verts[tri.getIndexes()[i + 0]].xyz.oMinus(tri.verts[tri.getIndexes()[i + 2]].xyz);
+                    edge = tri.verts[tri.getIndexes().getValues()[i + 0]].xyz.oMinus(tri.verts[tri.getIndexes().getValues()[i + 2]].xyz);
                     d = dir[0].oMultiply(edge);
                     if (d < 0.0f) {
                         if (dir[0].LengthSqr() > radiusSqr) {
@@ -191,7 +191,7 @@ public class tr_trace {
                         }
                     }
                 } else if (d > edgeLengthSqr) {
-                    edge = tri.verts[tri.getIndexes()[i + 1]].xyz.oMinus(tri.verts[tri.getIndexes()[i + 2]].xyz);
+                    edge = tri.verts[tri.getIndexes().getValues()[i + 1]].xyz.oMinus(tri.verts[tri.getIndexes().getValues()[i + 2]].xyz);
                     d = dir[1].oMultiply(edge);
                     if (d < 0.0f) {
                         if (dir[1].LengthSqr() > radiusSqr) {
@@ -201,7 +201,7 @@ public class tr_trace {
                 }
             }
 
-            dir[2] = tri.verts[tri.getIndexes()[i + 2]].xyz.oMinus(point);
+            dir[2] = tri.verts[tri.getIndexes().getValues()[i + 2]].xyz.oMinus(point);
 
             cross = dir[1].Cross(dir[2]);
             d = plane.Normal().oMultiply(cross);
@@ -209,14 +209,14 @@ public class tr_trace {
                 if (radiusSqr <= 0.0f) {
                     continue;
                 }
-                edge = tri.verts[tri.getIndexes()[i + 1]].xyz.oMinus(tri.verts[tri.getIndexes()[i + 2]].xyz);
+                edge = tri.verts[tri.getIndexes().getValues()[i + 1]].xyz.oMinus(tri.verts[tri.getIndexes().getValues()[i + 2]].xyz);
                 edgeLengthSqr = edge.LengthSqr();
                 if (cross.LengthSqr() > (edgeLengthSqr * radiusSqr)) {
                     continue;
                 }
                 d = dir[1].oMultiply(edge);
                 if (d < 0.0f) {
-                    edge = tri.verts[tri.getIndexes()[i + 1]].xyz.oMinus(tri.verts[tri.getIndexes()[i + 0]].xyz);
+                    edge = tri.verts[tri.getIndexes().getValues()[i + 1]].xyz.oMinus(tri.verts[tri.getIndexes().getValues()[i + 0]].xyz);
                     d = dir[1].oMultiply(edge);
                     if (d < 0.0f) {
                         if (dir[1].LengthSqr() > radiusSqr) {
@@ -224,7 +224,7 @@ public class tr_trace {
                         }
                     }
                 } else if (d > edgeLengthSqr) {
-                    edge = tri.verts[tri.getIndexes()[i + 2]].xyz.oMinus(tri.verts[tri.getIndexes()[i + 0]].xyz);
+                    edge = tri.verts[tri.getIndexes().getValues()[i + 2]].xyz.oMinus(tri.verts[tri.getIndexes().getValues()[i + 0]].xyz);
                     d = dir[2].oMultiply(edge);
                     if (d < 0.0f) {
                         if (dir[2].LengthSqr() > radiusSqr) {
@@ -240,14 +240,14 @@ public class tr_trace {
                 if (radiusSqr <= 0.0f) {
                     continue;
                 }
-                edge = tri.verts[tri.getIndexes()[i + 2]].xyz.oMinus(tri.verts[tri.getIndexes()[i + 0]].xyz);
+                edge = tri.verts[tri.getIndexes().getValues()[i + 2]].xyz.oMinus(tri.verts[tri.getIndexes().getValues()[i + 0]].xyz);
                 edgeLengthSqr = edge.LengthSqr();
                 if (cross.LengthSqr() > (edgeLengthSqr * radiusSqr)) {
                     continue;
                 }
                 d = dir[2].oMultiply(edge);
                 if (d < 0.0f) {
-                    edge = tri.verts[tri.getIndexes()[i + 2]].xyz.oMinus(tri.verts[tri.getIndexes()[i + 1]].xyz);
+                    edge = tri.verts[tri.getIndexes().getValues()[i + 2]].xyz.oMinus(tri.verts[tri.getIndexes().getValues()[i + 1]].xyz);
                     d = dir[2].oMultiply(edge);
                     if (d < 0.0f) {
                         if (dir[2].LengthSqr() > radiusSqr) {
@@ -255,7 +255,7 @@ public class tr_trace {
                         }
                     }
                 } else if (d > edgeLengthSqr) {
-                    edge = tri.verts[tri.getIndexes()[i + 0]].xyz.oMinus(tri.verts[tri.getIndexes()[i + 1]].xyz);
+                    edge = tri.verts[tri.getIndexes().getValues()[i + 0]].xyz.oMinus(tri.verts[tri.getIndexes().getValues()[i + 1]].xyz);
                     d = dir[0].oMultiply(edge);
                     if (d < 0.0f) {
                         if (dir[0].LengthSqr() > radiusSqr) {
@@ -271,9 +271,9 @@ public class tr_trace {
             hit.fraction = f;
             hit.normal = plane.Normal();
             hit.point = point;
-            hit.indexes[0] = tri.getIndexes()[i];
-            hit.indexes[1] = tri.getIndexes()[i + 1];
-            hit.indexes[2] = tri.getIndexes()[i + 2];
+            hit.indexes[0] = tri.getIndexes().getValues()[i];
+            hit.indexes[1] = tri.getIndexes().getValues()[i + 1];
+            hit.indexes[2] = tri.getIndexes().getValues()[i + 2];
         }
 
         if (TEST_TRACE) {
@@ -295,12 +295,12 @@ public class tr_trace {
         final idVec3[] dir = new idVec3[6];
         idVec3 normal, point;
 
-        for (i = 0; i < tri.getNumIndexes(); i += 3) {
+        for (i = 0; i < tri.getIndexes().getNumValues(); i += 3) {
 
             final idVec3[] p/*[3]*/ = {
-                        tri.verts[tri.getIndexes()[i + 0]].xyz,
-                        tri.verts[tri.getIndexes()[i + 1]].xyz,
-                        tri.verts[tri.getIndexes()[i + 2]].xyz};
+                        tri.verts[tri.getIndexes().getValues()[i + 0]].xyz,
+                        tri.verts[tri.getIndexes().getValues()[i + 1]].xyz,
+                        tri.verts[tri.getIndexes().getValues()[i + 2]].xyz};
 
             dir[0] = p[0].oMinus(p[1]);
             dir[1] = p[1].oMinus(p[2]);

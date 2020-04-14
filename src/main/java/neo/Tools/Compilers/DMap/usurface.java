@@ -682,14 +682,14 @@ public class usurface {
                     if (mapTri.material.IsDiscrete()) {
                         mapTri.mergeGroup = surface;
                     }
-                    for (int j = 0; j < tri2.getNumIndexes(); j += 3) {
+                    for (int j = 0; j < tri2.getIndexes().getNumValues(); j += 3) {
                         for (int k = 0; k < 3; k++) {
-                            final idVec3 v = tri2.verts[tri2.getIndexes()[j + k]].xyz;
+                            final idVec3 v = tri2.verts[tri2.getIndexes().getValues()[j + k]].xyz;
 
                             mapTri.v[k].xyz = v.oMultiply(axis).oPlus(origin);
 
-                            mapTri.v[k].normal = tri2.verts[tri2.getIndexes()[j + k]].normal.oMultiply(axis);
-                            mapTri.v[k].st = tri2.verts[tri2.getIndexes()[j + k]].st;
+                            mapTri.v[k].normal = tri2.verts[tri2.getIndexes().getValues()[j + k]].normal.oMultiply(axis);
+                            mapTri.v[k].st = tri2.verts[tri2.getIndexes().getValues()[j + k]].st;
                         }
                         AddMapTriToAreas(mapTri, e);
                     }
@@ -901,7 +901,7 @@ public class usurface {
         if ((light.shadowTris != null) && hasPerforatedSurface) {
             // can't ever remove front faces, because we can see through some of them
             light.shadowTris.numShadowIndexesNoCaps = light.shadowTris.numShadowIndexesNoFrontCaps
-                    = light.shadowTris.getNumIndexes();
+                    = light.shadowTris.getIndexes().getNumValues();
         }
 
         // we don't need the original shadower triangles for anything else

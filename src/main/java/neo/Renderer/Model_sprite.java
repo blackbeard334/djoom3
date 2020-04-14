@@ -123,15 +123,15 @@ public class Model_sprite {
                 tri.verts[ 3].st.oSet(0, 0.0f);
                 tri.verts[ 3].st.oSet(1, 1.0f);
 
-                tri.getIndexes()[ 0] = 0;
-                tri.getIndexes()[ 1] = 1;
-                tri.getIndexes()[ 2] = 3;
-                tri.getIndexes()[ 3] = 1;
-                tri.getIndexes()[ 4] = 2;
-                tri.getIndexes()[ 5] = 3;
+                tri.getIndexes().getValues()[ 0] = 0;
+                tri.getIndexes().getValues()[ 1] = 1;
+                tri.getIndexes().getValues()[ 2] = 3;
+                tri.getIndexes().getValues()[ 3] = 1;
+                tri.getIndexes().getValues()[ 4] = 2;
+                tri.getIndexes().getValues()[ 5] = 3;
 
                 tri.numVerts = 4;
-                tri.setNumIndexes(6);
+                tri.getIndexes().setNumValues(6);
 
                 surf.geometry = tri;
                 surf.id = 0;
