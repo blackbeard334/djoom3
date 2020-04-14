@@ -672,10 +672,10 @@ public class tr_main {
 
             for (i = 0; i < 4; i++) {
                 view.oSet(i,
-                        (global.oGet(0) * tr.primaryView.worldSpace.modelViewMatrix[i + (0 * 4)])
-                        + (global.oGet(1) * tr.primaryView.worldSpace.modelViewMatrix[i + (1 * 4)])
-                        + (global.oGet(2) * tr.primaryView.worldSpace.modelViewMatrix[i + (2 * 4)])
-                        + tr.primaryView.worldSpace.modelViewMatrix[i + (3 * 4)]);
+                        (global.oGet(0) * tr.primaryView.worldSpace.getModelViewMatrix()[i + (0 * 4)])
+                        + (global.oGet(1) * tr.primaryView.worldSpace.getModelViewMatrix()[i + (1 * 4)])
+                        + (global.oGet(2) * tr.primaryView.worldSpace.getModelViewMatrix()[i + (2 * 4)])
+                        + tr.primaryView.worldSpace.getModelViewMatrix()[i + (3 * 4)]);
             }
 
             for (i = 0; i < 4; i++) {
@@ -690,10 +690,10 @@ public class tr_main {
 
             for (i = 0; i < 4; i++) {
                 view.oSet(i,
-                        (global.oGet(0) * tr.viewDef.worldSpace.modelViewMatrix[i + (0 * 4)])
-                        + (global.oGet(1) * tr.viewDef.worldSpace.modelViewMatrix[i + (1 * 4)])
-                        + (global.oGet(2) * tr.viewDef.worldSpace.modelViewMatrix[i + (2 * 4)])
-                        + tr.viewDef.worldSpace.modelViewMatrix[i + (3 * 4)]);
+                        (global.oGet(0) * tr.viewDef.worldSpace.getModelViewMatrix()[i + (0 * 4)])
+                        + (global.oGet(1) * tr.viewDef.worldSpace.getModelViewMatrix()[i + (1 * 4)])
+                        + (global.oGet(2) * tr.viewDef.worldSpace.getModelViewMatrix()[i + (2 * 4)])
+                        + tr.viewDef.worldSpace.getModelViewMatrix()[i + (3 * 4)]);
             }
 
             for (i = 0; i < 4; i++) {
@@ -835,7 +835,7 @@ public class tr_main {
 
         // convert from our coordinate system (looking down X)
         // to OpenGL's coordinate system (looking down -Z)
-        myGlMultMatrix(viewerMatrix, s_flipMatrix, world.modelViewMatrix);
+        myGlMultMatrix(viewerMatrix, s_flipMatrix, world.getModelViewMatrix());
     }
     /*
      ===============

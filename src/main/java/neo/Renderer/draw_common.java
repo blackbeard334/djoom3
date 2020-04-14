@@ -352,7 +352,7 @@ public class draw_common {
 
                 qglMatrixMode(GL_TEXTURE);
 
-                qglLoadMatrixf(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.modelViewMatrix));
+                qglLoadMatrixf(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.getModelViewMatrix()));
                 qglMatrixMode(GL_MODELVIEW);
             }
         }
@@ -364,7 +364,7 @@ public class draw_common {
         qglEnable(GL_TEXTURE_GEN_Q);
 
         final float[] mat = new float[16]; //, plane = new float[4];
-        myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.getProjectionMatrix(), mat);
+        myGlMultMatrix(surf.space.getModelViewMatrix(), backEnd.viewDef.getProjectionMatrix(), mat);
 
 //        plane[0] = mat[0];
 //        plane[1] = mat[4];
@@ -587,8 +587,7 @@ public class draw_common {
                 color.put(0, colorValue)
                 .put(1, colorValue)
                 .put(2, colorValue)
-                .put(3, 1)
-                .flip();
+                .put(3, 1);
             }
 
             final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
@@ -626,7 +625,7 @@ public class draw_common {
                     didDraw = true;
 
                     // set the alpha modulate
-                    color.put(3, regs[ pStage.color.registers[3]]).flip();
+                    color.put(3, regs[ pStage.color.registers[3]]);
 
                     // skip the entire stage if alpha would be black
                     if (color.get(3) <= 0) {
@@ -655,7 +654,7 @@ public class draw_common {
 
             // draw the entire surface solid
             if (drawSolid) {
-                qglColor4fv(color);
+            	qglColor4fv(color);
                 globalImages.whiteImage.Bind();
 
                 // draw it
@@ -872,7 +871,7 @@ public class draw_common {
 
         // change the matrix if needed
         if (surf.space != backEnd.currentSpace) {
-            qglLoadMatrixf(Nio.wrap(surf.space.modelViewMatrix));
+            qglLoadMatrixf(Nio.wrap(surf.space.getModelViewMatrix()));
             backEnd.currentSpace = surf.space;
             RB_SetProgramEnvironmentSpace();
         }
@@ -1522,11 +1521,11 @@ public class draw_common {
             }
 
             // get the modulate values from the light, including alpha, unlike normal lights
-            backEnd.lightColor[0] = regs[ stage.color.registers[0]];
-            backEnd.lightColor[1] = regs[ stage.color.registers[1]];
-            backEnd.lightColor[2] = regs[ stage.color.registers[2]];
-            backEnd.lightColor[3] = regs[ stage.color.registers[3]];
-            qglColor4fv(Nio.wrap(backEnd.lightColor));
+            backEnd.getLightColor()[0] = regs[ stage.color.registers[0]];
+            backEnd.getLightColor()[1] = regs[ stage.color.registers[1]];
+            backEnd.getLightColor()[2] = regs[ stage.color.registers[2]];
+            backEnd.getLightColor()[3] = regs[ stage.color.registers[3]];
+            qglColor4fv(Nio.wrap(backEnd.getLightColor()));
 
             RB_RenderDrawSurfChainWithFunction(drawSurfs, RB_T_BlendLight.INSTANCE);
             RB_RenderDrawSurfChainWithFunction(drawSurfs2, RB_T_BlendLight.INSTANCE);
@@ -1626,22 +1625,22 @@ public class draw_common {
         // assume fog shaders have only a single stage
         stage = lightShader.GetStage(0);
 
-        backEnd.lightColor[0] = regs[ stage.color.registers[0]];
-        backEnd.lightColor[1] = regs[ stage.color.registers[1]];
-        backEnd.lightColor[2] = regs[ stage.color.registers[2]];
-        backEnd.lightColor[3] = regs[ stage.color.registers[3]];
+        backEnd.getLightColor()[0] = regs[ stage.color.registers[0]];
+        backEnd.getLightColor()[1] = regs[ stage.color.registers[1]];
+        backEnd.getLightColor()[2] = regs[ stage.color.registers[2]];
+        backEnd.getLightColor()[3] = regs[ stage.color.registers[3]];
 
-        qglColor3fv(Nio.wrap(backEnd.lightColor));
+        qglColor3fv(Nio.wrap(backEnd.getLightColor()));
 
         // calculate the falloff planes
         float a;
 
         // if they left the default value on, set a fog distance of 500
-        if (backEnd.lightColor[3] <= 1.0) {
+        if (backEnd.getLightColor()[3] <= 1.0) {
             a = -0.5f / DEFAULT_FOG_DISTANCE;
         } else {
             // otherwise, distance = alpha color
-            a = -0.5f / backEnd.lightColor[3];
+            a = -0.5f / backEnd.getLightColor()[3];
         }
 
         GL_State(GLS_DEPTHMASK | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_DEPTHFUNC_EQUAL);
@@ -1655,15 +1654,15 @@ public class draw_common {
         qglEnable(GL_TEXTURE_GEN_T);
         qglTexCoord2f(0.5f, 0.5f);		// make sure Q is set
 
-        fogPlanes[0].oSet(0, a * backEnd.viewDef.worldSpace.modelViewMatrix[2]);
-        fogPlanes[0].oSet(1, a * backEnd.viewDef.worldSpace.modelViewMatrix[6]);
-        fogPlanes[0].oSet(2, a * backEnd.viewDef.worldSpace.modelViewMatrix[10]);
-        fogPlanes[0].oSet(3, a * backEnd.viewDef.worldSpace.modelViewMatrix[14]);
+        fogPlanes[0].oSet(0, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[2]);
+        fogPlanes[0].oSet(1, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[6]);
+        fogPlanes[0].oSet(2, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[10]);
+        fogPlanes[0].oSet(3, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[14]);
 
-        fogPlanes[1].oSet(0, a * backEnd.viewDef.worldSpace.modelViewMatrix[0]);
-        fogPlanes[1].oSet(1, a * backEnd.viewDef.worldSpace.modelViewMatrix[4]);
-        fogPlanes[1].oSet(2, a * backEnd.viewDef.worldSpace.modelViewMatrix[8]);
-        fogPlanes[1].oSet(3, a * backEnd.viewDef.worldSpace.modelViewMatrix[12]);
+        fogPlanes[1].oSet(0, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[0]);
+        fogPlanes[1].oSet(1, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[4]);
+        fogPlanes[1].oSet(2, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[8]);
+        fogPlanes[1].oSet(3, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[12]);
 
         // texture 1 is the entering plane fade correction
         GL_SelectTexture(1);

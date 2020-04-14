@@ -341,7 +341,7 @@ public class tr_render {
 
             // change the matrix if needed
             if (drawSurf.space != backEnd.currentSpace) {
-                qglLoadMatrixf(Nio.wrap(drawSurf.space.modelViewMatrix));
+                qglLoadMatrixf(Nio.wrap(drawSurf.space.getModelViewMatrix()));
             }
 
             if (drawSurf.space.weaponDepthHack) {
@@ -385,7 +385,7 @@ public class tr_render {
         for (drawSurf = drawSurfs; drawSurf != null; drawSurf = drawSurf.nextOnLight) {
             // change the matrix if needed
             if (drawSurf.space != backEnd.currentSpace) {
-                qglLoadMatrixf(Nio.wrap(drawSurf.space.modelViewMatrix));
+                qglLoadMatrixf(Nio.wrap(drawSurf.space.getModelViewMatrix()));
             }
 
             if (drawSurf.space.weaponDepthHack) {
@@ -555,7 +555,7 @@ public class tr_render {
 
             qglMatrixMode(GL_TEXTURE);
 
-            qglLoadMatrixf(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.modelViewMatrix));
+            qglLoadMatrixf(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.getModelViewMatrix()));
             qglMatrixMode(GL_MODELVIEW);
         }
 
@@ -822,7 +822,7 @@ public class tr_render {
         // change the matrix and light projection vectors if needed
         if (surf.space != backEnd.currentSpace) {
             backEnd.currentSpace = surf.space;
-            qglLoadMatrixf(Nio.wrap(surf.space.modelViewMatrix));
+            qglLoadMatrixf(Nio.wrap(surf.space.getModelViewMatrix()));
         }
 
         // change the scissor if needed

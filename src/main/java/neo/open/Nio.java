@@ -125,25 +125,25 @@ public class Nio {
 		return (FloatBuffer) newFloatBuffer(floatArray.length).put(floatArray).flip();
 	}
 
-	/**
-	 * @deprecated the calling functions should send FloatBuffers instead.
-	 */
-	public static FloatBuffer wrap(final float[] floatArray, int length) {
-
-		if (floatArray.length == length) {
-			return wrap(floatArray);
-		} else {
-			FloatBuffer buffer = newFloatBuffer(length);
-			int len = length;
-			if (length > floatArray.length) {
-				len = floatArray.length;
-			}
-			for (int i = 0; i < len; i++) {
-				buffer.put(floatArray[i]);
-			}
-			return (FloatBuffer) buffer.flip();
-		}
-	}
+//	/**
+//	 * @deprecated the calling functions should send FloatBuffers instead.
+//	 */
+//	public static FloatBuffer wrap(final float[] floatArray, int length) {
+//
+//		if (floatArray.length == length) {
+//			return wrap(floatArray);
+//		} else {
+//			FloatBuffer buffer = newFloatBuffer(length);
+//			int len = length;
+//			if (length > floatArray.length) {
+//				len = floatArray.length;
+//			}
+//			for (int i = 0; i < len; i++) {
+//				buffer.put(floatArray[i]);
+//			}
+//			return (FloatBuffer) buffer.flip();
+//		}
+//	}
 
 	/**
 	 * @deprecated the calling functions should send IntBuffers instead.

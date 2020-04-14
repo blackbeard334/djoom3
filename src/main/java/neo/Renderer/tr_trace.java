@@ -412,7 +412,7 @@ public class tr_trace {
                 continue;
             }
 
-            qglLoadMatrixf(Nio.wrap(surf.space.modelViewMatrix));
+            qglLoadMatrixf(Nio.wrap(surf.space.getModelViewMatrix()));
 
             // highlight the surface
             GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);

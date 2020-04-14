@@ -178,7 +178,7 @@ public class GuiModel {
         public void EmitToCurrentView(float[] modelMatrix/*[16]*/, boolean depthHack) {
             final float[] modelViewMatrix = new float[16];
 
-            myGlMultMatrix(modelMatrix, tr.viewDef.worldSpace.modelViewMatrix,
+            myGlMultMatrix(modelMatrix, tr.viewDef.worldSpace.getModelViewMatrix(),
                     modelViewMatrix);
 
             for (int i = 0; i < this.surfaces.Num(); i++) {
@@ -243,10 +243,10 @@ public class GuiModel {
             viewDef.getProjectionMatrix()[14] = -1.0f;
             viewDef.getProjectionMatrix()[15] = +1.0f;
 
-            viewDef.worldSpace.modelViewMatrix[ 0] = 1.0f;
-            viewDef.worldSpace.modelViewMatrix[ 5] = 1.0f;
-            viewDef.worldSpace.modelViewMatrix[10] = 1.0f;
-            viewDef.worldSpace.modelViewMatrix[15] = 1.0f;
+            viewDef.worldSpace.getModelViewMatrix()[ 0] = 1.0f;
+            viewDef.worldSpace.getModelViewMatrix()[ 5] = 1.0f;
+            viewDef.worldSpace.getModelViewMatrix()[10] = 1.0f;
+            viewDef.worldSpace.getModelViewMatrix()[15] = 1.0f;
 
             viewDef.maxDrawSurfs = this.surfaces.Num();
             viewDef.drawSurfs = new drawSurf_s[viewDef.maxDrawSurfs];///*(drawSurf_t **)*/ R_FrameAlloc(viewDef.maxDrawSurfs * sizeof(viewDef.drawSurfs[0]));
@@ -260,7 +260,7 @@ public class GuiModel {
                 if (i == 33) {
                     this.surfaces.oGet(i).material.DBG_BALLS = i;
                 }
-                EmitSurface(this.surfaces.oGet(i), viewDef.worldSpace.modelMatrix, viewDef.worldSpace.modelViewMatrix, false);
+                EmitSurface(this.surfaces.oGet(i), viewDef.worldSpace.modelMatrix, viewDef.worldSpace.getModelViewMatrix(), false);
             }
 
             tr.viewDef = oldViewDef;
@@ -701,7 +701,7 @@ public class GuiModel {
 //            memcpy(guiSpace.modelMatrix, modelMatrix, sizeof(guiSpace.modelMatrix));
             System.arraycopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.length);
 //            memcpy(guiSpace.modelViewMatrix, modelViewMatrix, sizeof(guiSpace.modelViewMatrix));
-            System.arraycopy(modelViewMatrix, 0, guiSpace.modelViewMatrix, 0, guiSpace.modelViewMatrix.length);
+            System.arraycopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().length);
             guiSpace.weaponDepthHack = depthHack;
 
             // add the surface, which might recursively create another gui

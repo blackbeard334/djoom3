@@ -439,7 +439,7 @@ public class tr_light {
 
         // we may not have a viewDef if we are just creating shadows at entity creation time
         if (tr.viewDef != null) {
-            myGlMultMatrix(vModel.modelMatrix, tr.viewDef.worldSpace.modelViewMatrix, vModel.modelViewMatrix);
+            myGlMultMatrix(vModel.modelMatrix, tr.viewDef.worldSpace.getModelViewMatrix(), vModel.getModelViewMatrix());
 
             vModel.next = tr.viewDef.viewEntitys;
             tr.viewDef.viewEntitys = vModel;
@@ -652,7 +652,7 @@ public class tr_light {
                 final idPlane eye = new idPlane(), clip = new idPlane();
                 final idVec3 ndc = new idVec3();
 
-                R_TransformModelToClip(w.oGet(j).ToVec3(), tr.viewDef.worldSpace.modelViewMatrix, tr.viewDef.getProjectionMatrix(), eye, clip);
+                R_TransformModelToClip(w.oGet(j).ToVec3(), tr.viewDef.worldSpace.getModelViewMatrix(), tr.viewDef.getProjectionMatrix(), eye, clip);
 
                 if (clip.oGet(3) <= 0.01f) {
                     clip.oSet(3, 0.01f);
@@ -715,7 +715,7 @@ public class tr_light {
 
         tri = vLight.lightDef.frustumTris;
         for (int i = 0; i < tri.numVerts; i++) {
-            R_TransformModelToClip(tri.verts[i].xyz, tr.viewDef.worldSpace.modelViewMatrix,
+            R_TransformModelToClip(tri.verts[i].xyz, tr.viewDef.worldSpace.getModelViewMatrix(),
                     tr.viewDef.getProjectionMatrix(), eye, clip);
 
             // if it is near clipped, clip the winding polygons to the view frustum
@@ -1085,7 +1085,7 @@ public class tr_light {
         if ((def.dynamicModel != null) && (model.DepthHack() != 0.0f) && (tr.viewDef != null)) {
             final idPlane eye = new idPlane(), clip = new idPlane();
             final idVec3 ndc = new idVec3();
-            R_TransformModelToClip(def.parms.origin, tr.viewDef.worldSpace.modelViewMatrix, tr.viewDef.getProjectionMatrix(), eye, clip);
+            R_TransformModelToClip(def.parms.origin, tr.viewDef.worldSpace.getModelViewMatrix(), tr.viewDef.getProjectionMatrix(), eye, clip);
             R_TransformClipToDevice(clip, tr.viewDef, ndc);
             def.parms.modelDepthHack = model.DepthHack() * (1.0f - ndc.z);
         }

@@ -130,7 +130,7 @@ public class tr_subview {
 //		int j;
             int pointFlags;
 
-            R_TransformModelToClip(tri.verts[i].xyz, drawSurf.space.modelViewMatrix,
+            R_TransformModelToClip(tri.verts[i].xyz, drawSurf.space.getModelViewMatrix(),
                     tr.viewDef.getProjectionMatrix(), eye, clip);
 
             pointFlags = 0;

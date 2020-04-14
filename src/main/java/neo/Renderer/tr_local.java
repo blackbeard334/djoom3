@@ -712,7 +712,7 @@ public class tr_local {
         public float               modelDepthHack;
         //
         public float[]             modelMatrix     = new float[16];         // local coords to global coords
-        public float[]             modelViewMatrix = new float[16];         // local coords to eye coords
+        private final float[]             modelViewMatrix = new float[16];         // local coords to eye coords
 
         private static int DBG_COUNTER = 0;
         private final  int DBG_COUNT   = DBG_COUNTER++;
@@ -728,7 +728,7 @@ public class tr_local {
             this.weaponDepthHack = v.weaponDepthHack;
             this.modelDepthHack = v.modelDepthHack;
             System.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
-            System.arraycopy(v.modelViewMatrix, 0, this.modelViewMatrix, 0, 16);
+            System.arraycopy(v.getModelViewMatrix(), 0, this.getModelViewMatrix(), 0, 16);
         }
 
         public void memSetZero() {
@@ -738,6 +738,11 @@ public class tr_local {
             this.weaponDepthHack = false;
             this.modelDepthHack = 0;
         }
+
+		public float[] getModelViewMatrix() {
+			return modelViewMatrix;
+		}
+
     }
     static final int MAX_CLIP_PLANES = 1;				// we may expand this to six for some subview issues
 
@@ -747,7 +752,7 @@ public class tr_local {
 
         public renderView_s       renderView;
 //
-        private float[]            projectionMatrix = new float[16];
+        private final float[]            projectionMatrix = new float[16];
         public viewEntity_s       worldSpace;
 //
         public idRenderWorldLocal renderWorld;
@@ -1076,7 +1081,7 @@ public class tr_local {
         viewLight_s vLight;
         int depthFunc;			// GLS_DEPTHFUNC_EQUAL, or GLS_DEPTHFUNC_LESS for translucent
         float[] lightTextureMatrix = new float[16];	// only if lightStage->texture.hasMatrix
-        float[] lightColor = new float[4];		// evaluation of current light's color stage
+        private final float[] lightColor = new float[4];		// evaluation of current light's color stage
 //
         float lightScale;			// Every light color calaculation will be multiplied by this,
         // which will guarantee that the result is < tr.backEndRendererMaxLight
@@ -1096,6 +1101,11 @@ public class tr_local {
             this.pc = new backEndCounters_t();
             this.glState = new glstate_t();
         }
+
+		float[] getLightColor() {
+			return lightColor;
+		}
+
     }
     static final int MAX_GUI_SURFACES = 1024;		// default size of the drawSurfs list for guis, will be automatically expanded as needed
 
