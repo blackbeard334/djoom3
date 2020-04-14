@@ -515,7 +515,7 @@ public class draw_common {
             idMaterial shader;
             shaderStage_t pStage;
             float[] regs;
-            final float[] color = new float[4];
+            final FloatBuffer color = Nio.newFloatBuffer(4);
             srfTriangles_s tri;
 
             tri = surf.geo;
@@ -574,15 +574,21 @@ public class draw_common {
                 qglPolygonOffset(r_offsetFactor.GetFloat(), r_offsetUnits.GetFloat() * shader.GetPolygonOffset());
             }
 
-            // subviews will just down-modulate the color buffer by overbright
-            if (shader.GetSort() == SS_SUBVIEW) {
-                GL_State(GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO | GLS_DEPTHFUNC_LESS);
-                color[0] = color[1] = color[2] = (1.0f / backEnd.overBright);
-                color[3] = 1;
-            } else {
-                // others just draw black
-                color[0] = color[1] = color[2] = 0;
-                color[3] = 1;
+            {
+                float colorValue;
+            	// subviews will just down-modulate the color buffer by overbright
+                if (shader.GetSort() == SS_SUBVIEW) {
+                    GL_State(GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO | GLS_DEPTHFUNC_LESS);
+                    colorValue = (1.0f / backEnd.overBright);
+                } else {
+                    // others just draw black
+                    colorValue = 0;
+                }
+                color.put(0, colorValue)
+                .put(1, colorValue)
+                .put(2, colorValue)
+                .put(3, 1)
+                .flip();
             }
 
             final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
@@ -620,13 +626,13 @@ public class draw_common {
                     didDraw = true;
 
                     // set the alpha modulate
-                    color[3] = regs[ pStage.color.registers[3]];
+                    color.put(3, regs[ pStage.color.registers[3]]).flip();
 
                     // skip the entire stage if alpha would be black
-                    if (color[3] <= 0) {
+                    if (color.get(3) <= 0) {
                         continue;
                     }
-                    qglColor4fv(Nio.wrap(color));
+                    qglColor4fv(color);
 
                     qglAlphaFunc(GL_GREATER, regs[ pStage.alphaTestRegister]);
 
@@ -649,7 +655,7 @@ public class draw_common {
 
             // draw the entire surface solid
             if (drawSolid) {
-                qglColor4fv(Nio.wrap(color));
+                qglColor4fv(color);
                 globalImages.whiteImage.Bind();
 
                 // draw it
