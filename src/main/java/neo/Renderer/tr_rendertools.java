@@ -131,6 +131,7 @@ import static neo.ui.DeviceContext.idDeviceContext.colorRed;
 import static neo.ui.DeviceContext.idDeviceContext.colorWhite;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 
 import neo.TempDump;
 import neo.Renderer.Cinematic.cinData_t;
@@ -154,6 +155,7 @@ import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.ColorUtil;
 import neo.open.Nio;
 import neo.idlib.math.Matrix.idMat3;
 
@@ -414,15 +416,15 @@ public class tr_rendertools {
      3 = blue, ..., 7+ = white
      ===================
      */
-    private static final float[][] colors/*[8][3]*/ = {
-                {0, 0, 0},
-                {1, 0, 0},
-                {0, 1, 0},
-                {0, 0, 1},
-                {0, 1, 1},
-                {1, 0, 1},
-                {1, 1, 0},
-                {1, 1, 1}
+    private static final FloatBuffer[] colors/*[8][3]*/ = {
+                ColorUtil.newColorFloatBuffer(0, 0, 0),
+                ColorUtil.newColorFloatBuffer(1, 0, 0),
+                ColorUtil.newColorFloatBuffer(0, 1, 0),
+                ColorUtil.newColorFloatBuffer(0, 0, 1),
+                ColorUtil.newColorFloatBuffer(0, 1, 1),
+                ColorUtil.newColorFloatBuffer(1, 0, 1),
+                ColorUtil.newColorFloatBuffer(1, 1, 0),
+                ColorUtil.newColorFloatBuffer(1, 1, 1)
             };
 
     public static void R_ColorByStencilBuffer() {
@@ -436,7 +438,7 @@ public class tr_rendertools {
         // now draw color for each stencil value
         qglStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
         for (i = 0; i < 6; i++) {
-            qglColor3fv(Nio.wrap(colors[i]));
+            qglColor3fv(colors[i]);
             qglStencilFunc(GL_EQUAL, i, 255);
             RB_PolygonClear();
         }
