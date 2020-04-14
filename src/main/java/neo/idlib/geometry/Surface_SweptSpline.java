@@ -127,7 +127,7 @@ public class Surface_SweptSpline {
                     v.tangents[1] = splineD1.ToVec3();
                     v.normal = v.tangents[1].Cross(v.tangents[0]);
                     v.normal.Normalize();
-                    ColorUtil.setElementsWith(v.getColor(), (byte) 0);
+                    ColorUtil.setElements(v.getColor(), (byte) 0);
                 }
             }
 

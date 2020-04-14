@@ -133,7 +133,7 @@ public class DrawVert {
             this.normal.Zero();
             this.tangents[0].Zero();
             this.tangents[1].Zero();
-            ColorUtil.setElementsWith(this.getColor(), (byte) 0);
+            ColorUtil.setElements(this.getColor(), (byte) 0);
         }
 
         public void Lerp(final idDrawVert a, final idDrawVert b, final float f) {
@@ -219,7 +219,7 @@ public class DrawVert {
                 tan.oSet(2, buffer.getFloat());
             }
 
-            ColorUtil.setElementsWith(this.getColor(), buffer.get());
+            ColorUtil.setElements(this.getColor(), buffer.get());
         }
 
         @Override
@@ -244,7 +244,7 @@ public class DrawVert {
                 data.putFloat(tan.oGet(2));
             }
 
-            ColorUtil.putElementsTo(this.getColor(), data);
+            ColorUtil.setElements(this.getColor(), data);
 
             return data;
         }

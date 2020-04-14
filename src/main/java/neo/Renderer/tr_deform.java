@@ -596,7 +596,7 @@ public class tr_deform {
         }
         for (j = 0; j < newTri.numVerts; j++) {
             ac[j] = new idDrawVert();
-            ColorUtil.setElementsWith(ac[j].getColor(), (byte) 255);
+            ColorUtil.setElements(ac[j].getColor(), (byte) 255);
         }
 
         final float spread = surf.shaderRegisters[ surf.material.GetDeformRegister(0)] * RenderSystem_init.r_flareSize.GetFloat();

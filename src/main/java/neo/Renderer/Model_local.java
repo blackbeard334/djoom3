@@ -1347,7 +1347,7 @@ public class Model_local {
                     tri.verts[ j].xyz.oSet(mesh.vertexes[ mv.v]);
                     tri.verts[ j].normal.oSet(mv.normal);
                     //System.arraycopy(mv.color, 0, tri.verts[j].color = mv.color, 0, mv.color.length);
-                    ColorUtil.putElements(tri.verts[j].getColor(), mv.getColor());
+                    ColorUtil.setElements(tri.verts[j].getColor(), mv.getColor());
                     if ((mesh.numTVFaces == mesh.numFaces) && (mesh.numTVertexes != 0)) {
                         final idVec2 tv2 = mesh.tvertexes[ mv.tv];
                         final float u = (tv2.x * uTiling) + uOffset;
@@ -1703,7 +1703,7 @@ public class Model_local {
                     tri.verts[j].st = tvList[mv.tv];
                     tri.verts[j].normal = mv.normal;
                     //tri.verts[j].setColor(mv.getColor());
-                    ColorUtil.putElements(tri.verts[j].getColor(), mv.getColor());
+                    ColorUtil.setElements(tri.verts[j].getColor(), mv.getColor());
                 }
 //
 //                R_StaticFree(mvTable);
@@ -2022,7 +2022,7 @@ public class Model_local {
                     tri.verts[ j].xyz = mesh.vertexes[ mv.v];
                     tri.verts[ j].normal = mv.normal;
                     //tri.verts[j].setColor(mv.getColor());
-                    ColorUtil.putElements(tri.verts[j].getColor(), mv.getColor());
+                    ColorUtil.setElements(tri.verts[j].getColor(), mv.getColor());
                     if (mesh.numTVertexes != 0) {
                         final idVec2 tv2 = mesh.tvertexes[ mv.tv];
                         final float U = (tv2.x * uTiling) + uOffset;
