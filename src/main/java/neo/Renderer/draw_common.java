@@ -245,7 +245,7 @@ public class draw_common {
         genMatrix[11] = lightProject[2].oGet(2);
         genMatrix[15] = lightProject[2].oGet(3);
 
-        myGlMultMatrix(genMatrix, backEnd.lightTextureMatrix, finale);
+        myGlMultMatrix(genMatrix, backEnd.getLightTextureMatrix(), finale);
 
         lightProject[0].oSet(0, finale[0]);
         lightProject[0].oSet(1, finale[4]);

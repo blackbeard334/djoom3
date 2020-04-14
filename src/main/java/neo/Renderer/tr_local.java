@@ -1080,7 +1080,7 @@ public class tr_local {
 //
         viewLight_s vLight;
         int depthFunc;			// GLS_DEPTHFUNC_EQUAL, or GLS_DEPTHFUNC_LESS for translucent
-        float[] lightTextureMatrix = new float[16];	// only if lightStage->texture.hasMatrix
+        private final float[] lightTextureMatrix = new float[16];	// only if lightStage->texture.hasMatrix
         private final float[] lightColor = new float[4];		// evaluation of current light's color stage
 //
         float lightScale;			// Every light color calaculation will be multiplied by this,
@@ -1104,6 +1104,10 @@ public class tr_local {
 
 		float[] getLightColor() {
 			return lightColor;
+		}
+
+		float[] getLightTextureMatrix() {
+			return lightTextureMatrix;
 		}
 
     }

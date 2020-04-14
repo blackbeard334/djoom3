@@ -874,8 +874,8 @@ public class tr_render {
             }
             // now multiply the texgen by the light texture matrix
             if (lightStage.texture.hasMatrix) {
-                RB_GetShaderTextureMatrix(lightRegs, lightStage.texture, backEnd.lightTextureMatrix);
-                RB_BakeTextureMatrixIntoTexgen( /*reinterpret_cast<class idPlane *>*/inter.lightProjection, backEnd.lightTextureMatrix);
+                RB_GetShaderTextureMatrix(lightRegs, lightStage.texture, backEnd.getLightTextureMatrix());
+                RB_BakeTextureMatrixIntoTexgen( /*reinterpret_cast<class idPlane *>*/inter.lightProjection, backEnd.getLightTextureMatrix());
             }
 
             inter.bumpImage = null;
