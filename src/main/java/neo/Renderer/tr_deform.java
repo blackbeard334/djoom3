@@ -33,6 +33,7 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector.idVec3;
 import neo.open.ColorUtil;
+import neo.open.Nio;
 
 /**
  *
@@ -206,7 +207,8 @@ public class tr_deform {
         newTri.numVerts = tri.numVerts;
         newTri.getIndexes().setNumValues(tri.getIndexes().getNumValues());
         newTri.getIndexes().createValues(newTri.getIndexes().getNumValues());// R_FrameAlloc(newTri.numIndexes);
-        System.arraycopy(tri.getIndexes().getValues(), 0, newTri.getIndexes().getValues(), 0, newTri.getIndexes().getNumValues());//memcpy( newTri.indexes, tri.indexes, newTri.numIndexes * sizeof( newTri.indexes[0] ) );
+        //System.arraycopy(tri.getIndexes().getValues(), 0, newTri.getIndexes().getValues(), 0, newTri.getIndexes().getNumValues());//memcpy( newTri.indexes, tri.indexes, newTri.numIndexes * sizeof( newTri.indexes[0] ) );
+        Nio.buffercopy(tri.getIndexes().getValues(), 0, newTri.getIndexes().getValues(), 0, newTri.getIndexes().getNumValues());//memcpy( newTri.indexes, tri.indexes, newTri.numIndexes * sizeof( newTri.indexes[0] ) );
 
         final idDrawVert[] ac = Stream.generate(idDrawVert::new).limit(newTri.numVerts).toArray(idDrawVert[]::new);//memset( ac, 0, sizeof( idDrawVert ) * newTri.numVerts );
 
@@ -714,7 +716,8 @@ public class tr_deform {
 //	};
 //}
 //        memcpy(newTri.indexes, triIndexes, sizeof(triIndexes));
-        System.arraycopy(triIndexes, 0, newTri.getIndexes().getValues(), 0, triIndexes.length);
+        //System.arraycopy(triIndexes, 0, newTri.getIndexes().getValues(), 0, triIndexes.length);
+        Nio.arraycopy(triIndexes, 0, newTri.getIndexes().getValues(), 0, triIndexes.length);
 
         R_FinishDeform(surf, newTri, ac);
     }
