@@ -1789,7 +1789,7 @@ public class RenderWorld_local {
 
                 R_AllocStaticTriSurfIndexes(tri, tri.getIndexes().getNumValues());
                 for (j = 0; j < tri.getIndexes().getNumValues(); j++) {
-                    tri.getIndexes().getValues()[j] = src.ParseInt();
+                    tri.getIndexes().getValues().put(j, src.ParseInt());
                 }
                 src.ExpectTokenString("}");
 
@@ -1849,7 +1849,7 @@ public class RenderWorld_local {
 
             R_AllocStaticTriSurfIndexes(tri, tri.getIndexes().getNumValues());
             for (j = 0; j < tri.getIndexes().getNumValues(); j++) {
-                tri.getIndexes().getValues()[j] = src.ParseInt();
+                tri.getIndexes().getValues().put(j, src.ParseInt());
             }
 
             // add the completed surface to the model

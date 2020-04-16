@@ -418,12 +418,12 @@ public class SmokeParticles {
                     // build the index list
                     int indexes = 0;
                     for (int i = 0; i < tri.numVerts; i += 4) {
-                        tri.getIndexes().getValues()[indexes + 0] = i;
-                        tri.getIndexes().getValues()[indexes + 1] = i + 2;
-                        tri.getIndexes().getValues()[indexes + 2] = i + 3;
-                        tri.getIndexes().getValues()[indexes + 3] = i;
-                        tri.getIndexes().getValues()[indexes + 4] = i + 3;
-                        tri.getIndexes().getValues()[indexes + 5] = i + 1;
+                        tri.getIndexes().getValues().put(indexes + 0, i);
+                        tri.getIndexes().getValues().put(indexes + 1, i + 2);
+                        tri.getIndexes().getValues().put(indexes + 2, i + 3);
+                        tri.getIndexes().getValues().put(indexes + 3, i);
+                        tri.getIndexes().getValues().put(indexes + 4, i + 3);
+                        tri.getIndexes().getValues().put(indexes + 5, i + 1);
                         indexes += 6;
                     }
                     tri.getIndexes().setNumValues(indexes);

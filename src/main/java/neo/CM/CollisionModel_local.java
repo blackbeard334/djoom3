@@ -6941,9 +6941,9 @@ public class CollisionModel_local {
 
                 for (j = 0; j < surf.geometry.getIndexes().getNumValues(); j += 3) {
                     w.Clear();
-                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes().getValues()[j + 2]].xyz);
-                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes().getValues()[j + 1]].xyz);
-                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes().getValues()[j + 0]].xyz);
+                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes().getValues().get(j + 2)].xyz);
+                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes().getValues().get(j + 1)].xyz);
+                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes().getValues().get(j + 0)].xyz);
                     w.GetPlane(plane);
                     plane = plane.oNegative();
                     PolygonFromWinding(model, w, plane, surf.shader, 1);

@@ -84,6 +84,7 @@ import static neo.sys.win_glimp.GLimp_Shutdown;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -128,6 +129,8 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.NeoIntArray;
+import neo.open.NeoIntBuffer;
 import neo.open.Nio;
 
 /**
@@ -1080,8 +1083,8 @@ public class tr_local {
 //
         viewLight_s vLight;
         int depthFunc;			// GLS_DEPTHFUNC_EQUAL, or GLS_DEPTHFUNC_LESS for translucent
-        private final float[] lightTextureMatrix = new float[16];	// only if lightStage->texture.hasMatrix
-        private final float[] lightColor = new float[4];		// evaluation of current light's color stage
+        private final FloatBuffer lightTextureMatrix = Nio.newFloatBuffer(16);	// only if lightStage->texture.hasMatrix
+        private final FloatBuffer lightColor = Nio.newFloatBuffer(4);		// evaluation of current light's color stage
 //
         float lightScale;			// Every light color calaculation will be multiplied by this,
         // which will guarantee that the result is < tr.backEndRendererMaxLight
@@ -1102,11 +1105,11 @@ public class tr_local {
             this.glState = new glstate_t();
         }
 
-		float[] getLightColor() {
+        FloatBuffer getLightColor() {
 			return lightColor;
 		}
 
-		float[] getLightTextureMatrix() {
+		FloatBuffer getLightTextureMatrix() {
 			return lightTextureMatrix;
 		}
 
@@ -2654,8 +2657,9 @@ public class tr_local {
         int   numMirroredVerts;
         int[] mirroredVerts;
         //
-        int   numIndexes;
-        int[]/*glIndex_t */ indexes;
+        //int   numIndexes;
+        //int[]/*glIndex_t */ indexes;
+        private NeoIntBuffer indexes = new NeoIntBuffer();
         //
         int[]/*glIndex_t */ silIndexes;
         //
@@ -2666,6 +2670,10 @@ public class tr_local {
         silEdge_t[]     silEdges;
         //
         dominantTri_s[] dominantTris;
+
+        public NeoIntBuffer getIndexes() {
+			return this.indexes;
+		}
     }
 
     /*

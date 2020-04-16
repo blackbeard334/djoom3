@@ -32,11 +32,11 @@ public class NeoIntArray {
 		return ++numValues;
 	}
 
-	public void setValues(int[] indexes) {
-		this.values = indexes;
+	public void setValues(int[] values) {
+		this.values = values;
 	}
 
-	public int setNumValues(int numIndexes) {
-		return this.numValues = numIndexes;
+	public int setNumValues(int numValues) {
+		return this.numValues = numValues;
 	}
 }

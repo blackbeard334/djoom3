@@ -24,6 +24,7 @@ import static neo.open.gl.QGLConstantsIfc.GL_STATIC_DRAW_ARB;
 import static neo.open.gl.QGLConstantsIfc.GL_STREAM_DRAW_ARB;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -361,14 +362,14 @@ public class VertexCache {
 //            throw new Deprecation_Exception();
 //        }
 
-        /**
-         * 
-         * @param data int array
-         * @param size of int array
-         * @param indexBuffer
-         * @return
-         */
-        public vertCache_s Alloc(int[] data, int size, boolean indexBuffer) {
+//        public vertCache_s Alloc(int[] data, int size, boolean indexBuffer) {
+//            final ByteBuffer byteData = Nio.newByteBuffer(size * Integer.BYTES);
+//            byteData.asIntBuffer().put(data);
+//
+//            return Alloc(byteData, size, indexBuffer);
+//        }
+
+        public vertCache_s Alloc(IntBuffer data, int size, boolean indexBuffer) {
             final ByteBuffer byteData = Nio.newByteBuffer(size * Integer.BYTES);
             byteData.asIntBuffer().put(data);
 

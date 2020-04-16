@@ -61,6 +61,7 @@ import static neo.idlib.math.Plane.SIDE_BACK;
 import static neo.idlib.math.Plane.SIDE_FRONT;
 import static neo.idlib.math.Simd.SIMDProcessor;
 
+import java.nio.IntBuffer;
 import java.util.stream.Stream;
 
 import neo.Renderer.Material.idMaterial;
@@ -1202,7 +1203,7 @@ public class Interaction {
             final idMaterial shader, srfCullInfo_t cullInfo) {
         int i;
         int numIndexes;
-        int/*glIndex_t*/[] indexes;
+        IntBuffer/*glIndex_t*/ indexes;
         srfTriangles_s newTri;
         int c_backfaced;
         int c_distance;
@@ -1268,9 +1269,9 @@ public class Interaction {
                         c_backfaced++;
                         continue;
                     }
-                    indexes[numIndexes + 0] = tri.getIndexes().getValues()[i + 0];
-                    indexes[numIndexes + 1] = tri.getIndexes().getValues()[i + 1];
-                    indexes[numIndexes + 2] = tri.getIndexes().getValues()[i + 2];
+                    indexes.put(numIndexes + 0, tri.getIndexes().getValues().get(i + 0));
+                    indexes.put(numIndexes + 1, tri.getIndexes().getValues().get(i + 1));
+                    indexes.put(numIndexes + 2, tri.getIndexes().getValues().get(i + 2));
                     numIndexes += 3;
                 }
 
@@ -1304,9 +1305,9 @@ public class Interaction {
                     }
                 }
 
-                i1 = tri.getIndexes().getValues()[i + 0];
-                i2 = tri.getIndexes().getValues()[i + 1];
-                i3 = tri.getIndexes().getValues()[i + 2];
+                i1 = tri.getIndexes().getValues().get(i + 0);
+                i2 = tri.getIndexes().getValues().get(i + 1);
+                i3 = tri.getIndexes().getValues().get(i + 2);
 
                 // fast cull outside the frustum
                 // if all three points are off one plane side, it definately isn't visible
@@ -1327,9 +1328,9 @@ public class Interaction {
                 }
 
                 // add to the list
-                indexes[numIndexes + 0] = i1;
-                indexes[numIndexes + 1] = i2;
-                indexes[numIndexes + 2] = i3;
+                indexes.put(numIndexes + 0, i1);
+                indexes.put(numIndexes + 1, i2);
+                indexes.put(numIndexes + 2, i3);
                 numIndexes += 3;
             }
 

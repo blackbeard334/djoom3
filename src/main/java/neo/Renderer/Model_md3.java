@@ -463,7 +463,7 @@ public class Model_md3 {
                 for (final md3Triangle_t triangle : surface.triangles) {
 //                triangles = (int[]) ((byte[]) surface + surface.ofsTriangles);
                     for (/*j = 0*/; j < indexes; j++) {
-                        tri.getIndexes().getValues()[j] = triangle.indexes[j];
+                        tri.getIndexes().getValues().put(j, triangle.indexes[j]);
                     }
                     tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() + indexes);
                 }
