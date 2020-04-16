@@ -729,7 +729,7 @@ public class tr_main {
      myGlMultMatrix
      ==========================
      */
-    public static void myGlMultMatrix(final float[] a/*[16]*/, final FloatBuffer b/*[16]*/, float[] out/*[16]*/) {
+    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final FloatBuffer b/*[16]*/, FloatBuffer out/*[16]*/) {
         if (false) {
 //            int i, j;
 //
@@ -743,22 +743,22 @@ public class tr_main {
 //                }
 //            }
         } else {
-            out[(0 * 4) + 0] = (a[(0 * 4) + 0] * b.get((0 * 4) + 0)) + (a[(0 * 4) + 1] * b.get((1 * 4) + 0)) + (a[(0 * 4) + 2] * b.get((2 * 4) + 0)) + (a[(0 * 4) + 3] * b.get((3 * 4) + 0));
-            out[(0 * 4) + 1] = (a[(0 * 4) + 0] * b.get((0 * 4) + 1)) + (a[(0 * 4) + 1] * b.get((1 * 4) + 1)) + (a[(0 * 4) + 2] * b.get((2 * 4) + 1)) + (a[(0 * 4) + 3] * b.get((3 * 4) + 1));
-            out[(0 * 4) + 2] = (a[(0 * 4) + 0] * b.get((0 * 4) + 2)) + (a[(0 * 4) + 1] * b.get((1 * 4) + 2)) + (a[(0 * 4) + 2] * b.get((2 * 4) + 2)) + (a[(0 * 4) + 3] * b.get((3 * 4) + 2));
-            out[(0 * 4) + 3] = (a[(0 * 4) + 0] * b.get((0 * 4) + 3)) + (a[(0 * 4) + 1] * b.get((1 * 4) + 3)) + (a[(0 * 4) + 2] * b.get((2 * 4) + 3)) + (a[(0 * 4) + 3] * b.get((3 * 4) + 3));
-            out[(1 * 4) + 0] = (a[(1 * 4) + 0] * b.get((0 * 4) + 0)) + (a[(1 * 4) + 1] * b.get((1 * 4) + 0)) + (a[(1 * 4) + 2] * b.get((2 * 4) + 0)) + (a[(1 * 4) + 3] * b.get((3 * 4) + 0));
-            out[(1 * 4) + 1] = (a[(1 * 4) + 0] * b.get((0 * 4) + 1)) + (a[(1 * 4) + 1] * b.get((1 * 4) + 1)) + (a[(1 * 4) + 2] * b.get((2 * 4) + 1)) + (a[(1 * 4) + 3] * b.get((3 * 4) + 1));
-            out[(1 * 4) + 2] = (a[(1 * 4) + 0] * b.get((0 * 4) + 2)) + (a[(1 * 4) + 1] * b.get((1 * 4) + 2)) + (a[(1 * 4) + 2] * b.get((2 * 4) + 2)) + (a[(1 * 4) + 3] * b.get((3 * 4) + 2));
-            out[(1 * 4) + 3] = (a[(1 * 4) + 0] * b.get((0 * 4) + 3)) + (a[(1 * 4) + 1] * b.get((1 * 4) + 3)) + (a[(1 * 4) + 2] * b.get((2 * 4) + 3)) + (a[(1 * 4) + 3] * b.get((3 * 4) + 3));
-            out[(2 * 4) + 0] = (a[(2 * 4) + 0] * b.get((0 * 4) + 0)) + (a[(2 * 4) + 1] * b.get((1 * 4) + 0)) + (a[(2 * 4) + 2] * b.get((2 * 4) + 0)) + (a[(2 * 4) + 3] * b.get((3 * 4) + 0));
-            out[(2 * 4) + 1] = (a[(2 * 4) + 0] * b.get((0 * 4) + 1)) + (a[(2 * 4) + 1] * b.get((1 * 4) + 1)) + (a[(2 * 4) + 2] * b.get((2 * 4) + 1)) + (a[(2 * 4) + 3] * b.get((3 * 4) + 1));
-            out[(2 * 4) + 2] = (a[(2 * 4) + 0] * b.get((0 * 4) + 2)) + (a[(2 * 4) + 1] * b.get((1 * 4) + 2)) + (a[(2 * 4) + 2] * b.get((2 * 4) + 2)) + (a[(2 * 4) + 3] * b.get((3 * 4) + 2));
-            out[(2 * 4) + 3] = (a[(2 * 4) + 0] * b.get((0 * 4) + 3)) + (a[(2 * 4) + 1] * b.get((1 * 4) + 3)) + (a[(2 * 4) + 2] * b.get((2 * 4) + 3)) + (a[(2 * 4) + 3] * b.get((3 * 4) + 3));
-            out[(3 * 4) + 0] = (a[(3 * 4) + 0] * b.get((0 * 4) + 0)) + (a[(3 * 4) + 1] * b.get((1 * 4) + 0)) + (a[(3 * 4) + 2] * b.get((2 * 4) + 0)) + (a[(3 * 4) + 3] * b.get((3 * 4) + 0));
-            out[(3 * 4) + 1] = (a[(3 * 4) + 0] * b.get((0 * 4) + 1)) + (a[(3 * 4) + 1] * b.get((1 * 4) + 1)) + (a[(3 * 4) + 2] * b.get((2 * 4) + 1)) + (a[(3 * 4) + 3] * b.get((3 * 4) + 1));
-            out[(3 * 4) + 2] = (a[(3 * 4) + 0] * b.get((0 * 4) + 2)) + (a[(3 * 4) + 1] * b.get((1 * 4) + 2)) + (a[(3 * 4) + 2] * b.get((2 * 4) + 2)) + (a[(3 * 4) + 3] * b.get((3 * 4) + 2));
-            out[(3 * 4) + 3] = (a[(3 * 4) + 0] * b.get((0 * 4) + 3)) + (a[(3 * 4) + 1] * b.get((1 * 4) + 3)) + (a[(3 * 4) + 2] * b.get((2 * 4) + 3)) + (a[(3 * 4) + 3] * b.get((3 * 4) + 3));
+            out.put((0 * 4) + 0, (a.get((0 * 4) + 0) * b.get((0 * 4) + 0)) + (a.get((0 * 4) + 1) * b.get((1 * 4) + 0)) + (a.get((0 * 4) + 2) * b.get((2 * 4) + 0)) + (a.get((0 * 4) + 3) * b.get((3 * 4) + 0)));
+            out.put((0 * 4) + 1, (a.get((0 * 4) + 0) * b.get((0 * 4) + 1)) + (a.get((0 * 4) + 1) * b.get((1 * 4) + 1)) + (a.get((0 * 4) + 2) * b.get((2 * 4) + 1)) + (a.get((0 * 4) + 3) * b.get((3 * 4) + 1)));
+            out.put((0 * 4) + 2, (a.get((0 * 4) + 0) * b.get((0 * 4) + 2)) + (a.get((0 * 4) + 1) * b.get((1 * 4) + 2)) + (a.get((0 * 4) + 2) * b.get((2 * 4) + 2)) + (a.get((0 * 4) + 3) * b.get((3 * 4) + 2)));
+            out.put((0 * 4) + 3, (a.get((0 * 4) + 0) * b.get((0 * 4) + 3)) + (a.get((0 * 4) + 1) * b.get((1 * 4) + 3)) + (a.get((0 * 4) + 2) * b.get((2 * 4) + 3)) + (a.get((0 * 4) + 3) * b.get((3 * 4) + 3)));
+            out.put((1 * 4) + 0, (a.get((1 * 4) + 0) * b.get((0 * 4) + 0)) + (a.get((1 * 4) + 1) * b.get((1 * 4) + 0)) + (a.get((1 * 4) + 2) * b.get((2 * 4) + 0)) + (a.get((1 * 4) + 3) * b.get((3 * 4) + 0)));
+            out.put((1 * 4) + 1, (a.get((1 * 4) + 0) * b.get((0 * 4) + 1)) + (a.get((1 * 4) + 1) * b.get((1 * 4) + 1)) + (a.get((1 * 4) + 2) * b.get((2 * 4) + 1)) + (a.get((1 * 4) + 3) * b.get((3 * 4) + 1)));
+            out.put((1 * 4) + 2, (a.get((1 * 4) + 0) * b.get((0 * 4) + 2)) + (a.get((1 * 4) + 1) * b.get((1 * 4) + 2)) + (a.get((1 * 4) + 2) * b.get((2 * 4) + 2)) + (a.get((1 * 4) + 3) * b.get((3 * 4) + 2)));
+            out.put((1 * 4) + 3, (a.get((1 * 4) + 0) * b.get((0 * 4) + 3)) + (a.get((1 * 4) + 1) * b.get((1 * 4) + 3)) + (a.get((1 * 4) + 2) * b.get((2 * 4) + 3)) + (a.get((1 * 4) + 3) * b.get((3 * 4) + 3)));
+            out.put((2 * 4) + 0, (a.get((2 * 4) + 0) * b.get((0 * 4) + 0)) + (a.get((2 * 4) + 1) * b.get((1 * 4) + 0)) + (a.get((2 * 4) + 2) * b.get((2 * 4) + 0)) + (a.get((2 * 4) + 3) * b.get((3 * 4) + 0)));
+            out.put((2 * 4) + 1, (a.get((2 * 4) + 0) * b.get((0 * 4) + 1)) + (a.get((2 * 4) + 1) * b.get((1 * 4) + 1)) + (a.get((2 * 4) + 2) * b.get((2 * 4) + 1)) + (a.get((2 * 4) + 3) * b.get((3 * 4) + 1)));
+            out.put((2 * 4) + 2, (a.get((2 * 4) + 0) * b.get((0 * 4) + 2)) + (a.get((2 * 4) + 1) * b.get((1 * 4) + 2)) + (a.get((2 * 4) + 2) * b.get((2 * 4) + 2)) + (a.get((2 * 4) + 3) * b.get((3 * 4) + 2)));
+            out.put((2 * 4) + 3, (a.get((2 * 4) + 0) * b.get((0 * 4) + 3)) + (a.get((2 * 4) + 1) * b.get((1 * 4) + 3)) + (a.get((2 * 4) + 2) * b.get((2 * 4) + 3)) + (a.get((2 * 4) + 3) * b.get((3 * 4) + 3)));
+            out.put((3 * 4) + 0, (a.get((3 * 4) + 0) * b.get((0 * 4) + 0)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 0)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 0)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 0)));
+            out.put((3 * 4) + 1, (a.get((3 * 4) + 0) * b.get((0 * 4) + 1)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 1)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 1)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 1)));
+            out.put((3 * 4) + 2, (a.get((3 * 4) + 0) * b.get((0 * 4) + 2)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 2)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 2)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 2)));
+            out.put((3 * 4) + 3, (a.get((3 * 4) + 0) * b.get((0 * 4) + 3)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 3)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 3)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 3)));
         }
     }
 
@@ -770,37 +770,56 @@ public class tr_main {
      * 
      * @Deprecated use public static void myGlMultMatrix(final float[] a, final FloatBuffer b, float[] out) instead
      */
+    public static void myGlMultMatrix(final float[] a/*[16]*/, final float[] b/*[16]*/, FloatBuffer out/*[16]*/) {
+    	myGlMultMatrix(Nio.wrap(a), Nio.wrap(b), out);
+    }
+
+    /**
+     * 
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final float[] a, final FloatBuffer b, float[] out) instead
+     */
+    public static void myGlMultMatrix(final float[] a/*[16]*/, final FloatBuffer b/*[16]*/, float[] out/*[16]*/) {
+    	myGlMultMatrix(Nio.wrap(a), b, Nio.wrap(out));
+    }
+
+    /**
+     * 
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final float[] a, final FloatBuffer b, float[] out) instead
+     */
+    public static void myGlMultMatrix(final float[] a/*[16]*/, final FloatBuffer b/*[16]*/, FloatBuffer out/*[16]*/) {
+    	myGlMultMatrix(Nio.wrap(a), b, out);
+    }
+
+    /**
+     * 
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final float[] a, final FloatBuffer b, float[] out) instead
+     */
+    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final FloatBuffer b/*[16]*/, float[] out/*[16]*/) {
+    	myGlMultMatrix(a, b, Nio.wrap(out));
+    }
+
+    /**
+     * 
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final float[] a, final FloatBuffer b, float[] out) instead
+     */
     public static void myGlMultMatrix(final float[] a/*[16]*/, final float[] b/*[16]*/, float[] out/*[16]*/) {
-        if (false) {
-//            int i, j;
-//
-//            for (i = 0; i < 4; i++) {
-//                for (j = 0; j < 4; j++) {
-//                    out[ i * 4 + j] =
-//                            a[ i * 4 + 0] * b[ 0 * 4 + j]
-//                            + a[ i * 4 + 1] * b[ 1 * 4 + j]
-//                            + a[ i * 4 + 2] * b[ 2 * 4 + j]
-//                            + a[ i * 4 + 3] * b[ 3 * 4 + j];
-//                }
-//            }
-        } else {
-            out[(0 * 4) + 0] = (a[(0 * 4) + 0] * b[(0 * 4) + 0]) + (a[(0 * 4) + 1] * b[(1 * 4) + 0]) + (a[(0 * 4) + 2] * b[(2 * 4) + 0]) + (a[(0 * 4) + 3] * b[(3 * 4) + 0]);
-            out[(0 * 4) + 1] = (a[(0 * 4) + 0] * b[(0 * 4) + 1]) + (a[(0 * 4) + 1] * b[(1 * 4) + 1]) + (a[(0 * 4) + 2] * b[(2 * 4) + 1]) + (a[(0 * 4) + 3] * b[(3 * 4) + 1]);
-            out[(0 * 4) + 2] = (a[(0 * 4) + 0] * b[(0 * 4) + 2]) + (a[(0 * 4) + 1] * b[(1 * 4) + 2]) + (a[(0 * 4) + 2] * b[(2 * 4) + 2]) + (a[(0 * 4) + 3] * b[(3 * 4) + 2]);
-            out[(0 * 4) + 3] = (a[(0 * 4) + 0] * b[(0 * 4) + 3]) + (a[(0 * 4) + 1] * b[(1 * 4) + 3]) + (a[(0 * 4) + 2] * b[(2 * 4) + 3]) + (a[(0 * 4) + 3] * b[(3 * 4) + 3]);
-            out[(1 * 4) + 0] = (a[(1 * 4) + 0] * b[(0 * 4) + 0]) + (a[(1 * 4) + 1] * b[(1 * 4) + 0]) + (a[(1 * 4) + 2] * b[(2 * 4) + 0]) + (a[(1 * 4) + 3] * b[(3 * 4) + 0]);
-            out[(1 * 4) + 1] = (a[(1 * 4) + 0] * b[(0 * 4) + 1]) + (a[(1 * 4) + 1] * b[(1 * 4) + 1]) + (a[(1 * 4) + 2] * b[(2 * 4) + 1]) + (a[(1 * 4) + 3] * b[(3 * 4) + 1]);
-            out[(1 * 4) + 2] = (a[(1 * 4) + 0] * b[(0 * 4) + 2]) + (a[(1 * 4) + 1] * b[(1 * 4) + 2]) + (a[(1 * 4) + 2] * b[(2 * 4) + 2]) + (a[(1 * 4) + 3] * b[(3 * 4) + 2]);
-            out[(1 * 4) + 3] = (a[(1 * 4) + 0] * b[(0 * 4) + 3]) + (a[(1 * 4) + 1] * b[(1 * 4) + 3]) + (a[(1 * 4) + 2] * b[(2 * 4) + 3]) + (a[(1 * 4) + 3] * b[(3 * 4) + 3]);
-            out[(2 * 4) + 0] = (a[(2 * 4) + 0] * b[(0 * 4) + 0]) + (a[(2 * 4) + 1] * b[(1 * 4) + 0]) + (a[(2 * 4) + 2] * b[(2 * 4) + 0]) + (a[(2 * 4) + 3] * b[(3 * 4) + 0]);
-            out[(2 * 4) + 1] = (a[(2 * 4) + 0] * b[(0 * 4) + 1]) + (a[(2 * 4) + 1] * b[(1 * 4) + 1]) + (a[(2 * 4) + 2] * b[(2 * 4) + 1]) + (a[(2 * 4) + 3] * b[(3 * 4) + 1]);
-            out[(2 * 4) + 2] = (a[(2 * 4) + 0] * b[(0 * 4) + 2]) + (a[(2 * 4) + 1] * b[(1 * 4) + 2]) + (a[(2 * 4) + 2] * b[(2 * 4) + 2]) + (a[(2 * 4) + 3] * b[(3 * 4) + 2]);
-            out[(2 * 4) + 3] = (a[(2 * 4) + 0] * b[(0 * 4) + 3]) + (a[(2 * 4) + 1] * b[(1 * 4) + 3]) + (a[(2 * 4) + 2] * b[(2 * 4) + 3]) + (a[(2 * 4) + 3] * b[(3 * 4) + 3]);
-            out[(3 * 4) + 0] = (a[(3 * 4) + 0] * b[(0 * 4) + 0]) + (a[(3 * 4) + 1] * b[(1 * 4) + 0]) + (a[(3 * 4) + 2] * b[(2 * 4) + 0]) + (a[(3 * 4) + 3] * b[(3 * 4) + 0]);
-            out[(3 * 4) + 1] = (a[(3 * 4) + 0] * b[(0 * 4) + 1]) + (a[(3 * 4) + 1] * b[(1 * 4) + 1]) + (a[(3 * 4) + 2] * b[(2 * 4) + 1]) + (a[(3 * 4) + 3] * b[(3 * 4) + 1]);
-            out[(3 * 4) + 2] = (a[(3 * 4) + 0] * b[(0 * 4) + 2]) + (a[(3 * 4) + 1] * b[(1 * 4) + 2]) + (a[(3 * 4) + 2] * b[(2 * 4) + 2]) + (a[(3 * 4) + 3] * b[(3 * 4) + 2]);
-            out[(3 * 4) + 3] = (a[(3 * 4) + 0] * b[(0 * 4) + 3]) + (a[(3 * 4) + 1] * b[(1 * 4) + 3]) + (a[(3 * 4) + 2] * b[(2 * 4) + 3]) + (a[(3 * 4) + 3] * b[(3 * 4) + 3]);
-        }
+    	myGlMultMatrix(Nio.wrap(a), Nio.wrap(b), Nio.wrap(out));
     }
 
     /*
