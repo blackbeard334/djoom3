@@ -672,36 +672,36 @@ public class tr_main {
 
             for (i = 0; i < 4; i++) {
                 view.oSet(i,
-                        (global.oGet(0) * tr.primaryView.worldSpace.getModelViewMatrix()[i + (0 * 4)])
-                        + (global.oGet(1) * tr.primaryView.worldSpace.getModelViewMatrix()[i + (1 * 4)])
-                        + (global.oGet(2) * tr.primaryView.worldSpace.getModelViewMatrix()[i + (2 * 4)])
-                        + tr.primaryView.worldSpace.getModelViewMatrix()[i + (3 * 4)]);
+                        (global.oGet(0) * tr.primaryView.worldSpace.getModelViewMatrix().get(i + (0 * 4)))
+                        + (global.oGet(1) * tr.primaryView.worldSpace.getModelViewMatrix().get(i + (1 * 4)))
+                        + (global.oGet(2) * tr.primaryView.worldSpace.getModelViewMatrix().get(i + (2 * 4)))
+                        + tr.primaryView.worldSpace.getModelViewMatrix().get(i + (3 * 4)));
             }
 
             for (i = 0; i < 4; i++) {
                 clip.oSet(i,
-                        (view.oGet(0) * tr.primaryView.getProjectionMatrix()[i + (0 * 4)])
-                        + (view.oGet(1) * tr.primaryView.getProjectionMatrix()[i + (1 * 4)])
-                        + (view.oGet(2) * tr.primaryView.getProjectionMatrix()[i + (2 * 4)])
-                        + (view.oGet(3) * tr.primaryView.getProjectionMatrix()[i + (3 * 4)]));
+                        (view.oGet(0) * tr.primaryView.getProjectionMatrix().get(i + (0 * 4)))
+                        + (view.oGet(1) * tr.primaryView.getProjectionMatrix().get(i + (1 * 4)))
+                        + (view.oGet(2) * tr.primaryView.getProjectionMatrix().get(i + (2 * 4)))
+                        + (view.oGet(3) * tr.primaryView.getProjectionMatrix().get(i + (3 * 4))));
             }
 
         } else {
 
             for (i = 0; i < 4; i++) {
                 view.oSet(i,
-                        (global.oGet(0) * tr.viewDef.worldSpace.getModelViewMatrix()[i + (0 * 4)])
-                        + (global.oGet(1) * tr.viewDef.worldSpace.getModelViewMatrix()[i + (1 * 4)])
-                        + (global.oGet(2) * tr.viewDef.worldSpace.getModelViewMatrix()[i + (2 * 4)])
-                        + tr.viewDef.worldSpace.getModelViewMatrix()[i + (3 * 4)]);
+                        (global.oGet(0) * tr.viewDef.worldSpace.getModelViewMatrix().get(i + (0 * 4)))
+                        + (global.oGet(1) * tr.viewDef.worldSpace.getModelViewMatrix().get(i + (1 * 4)))
+                        + (global.oGet(2) * tr.viewDef.worldSpace.getModelViewMatrix().get(i + (2 * 4)))
+                        + tr.viewDef.worldSpace.getModelViewMatrix().get(i + (3 * 4)));
             }
 
             for (i = 0; i < 4; i++) {
                 clip.oSet(i,
-                        (view.oGet(0) * tr.viewDef.getProjectionMatrix()[i + (0 * 4)])
-                        + (view.oGet(1) * tr.viewDef.getProjectionMatrix()[i + (1 * 4)])
-                        + (view.oGet(2) * tr.viewDef.getProjectionMatrix()[i + (2 * 4)])
-                        + (view.oGet(3) * tr.viewDef.getProjectionMatrix()[i + (3 * 4)]));
+                        (view.oGet(0) * tr.viewDef.getProjectionMatrix().get(i + (0 * 4)))
+                        + (view.oGet(1) * tr.viewDef.getProjectionMatrix().get(i + (1 * 4)))
+                        + (view.oGet(2) * tr.viewDef.getProjectionMatrix().get(i + (2 * 4)))
+                        + (view.oGet(3) * tr.viewDef.getProjectionMatrix().get(i + (3 * 4))));
             }
 
         }
@@ -927,28 +927,28 @@ public class tr_main {
         ymin += jittery;
         ymax += jittery;
 
-        tr.viewDef.getProjectionMatrix()[ 0] = (2 * zNear) / width;
-        tr.viewDef.getProjectionMatrix()[ 4] = 0;
-        tr.viewDef.getProjectionMatrix()[ 8] = (xmax + xmin) / width;	// normally 0
-        tr.viewDef.getProjectionMatrix()[12] = 0;
+        tr.viewDef.getProjectionMatrix().put( 0, (2 * zNear) / width);
+        tr.viewDef.getProjectionMatrix().put( 4, 0);
+        tr.viewDef.getProjectionMatrix().put( 8, (xmax + xmin) / width);	// normally 0
+        tr.viewDef.getProjectionMatrix().put(12, 0);
 
-        tr.viewDef.getProjectionMatrix()[ 1] = 0;
-        tr.viewDef.getProjectionMatrix()[ 5] = (2 * zNear) / height;
-        tr.viewDef.getProjectionMatrix()[ 9] = (ymax + ymin) / height;	// normally 0
-        tr.viewDef.getProjectionMatrix()[13] = 0;
+        tr.viewDef.getProjectionMatrix().put( 1, 0);
+        tr.viewDef.getProjectionMatrix().put( 5, (2 * zNear) / height);
+        tr.viewDef.getProjectionMatrix().put( 9, (ymax + ymin) / height);	// normally 0
+        tr.viewDef.getProjectionMatrix().put(13, 0);
 
         // this is the far-plane-at-infinity formulation, and
         // crunches the Z range slightly so w=0 vertexes do not
         // rasterize right at the wraparound point
-        tr.viewDef.getProjectionMatrix()[ 2] = 0;
-        tr.viewDef.getProjectionMatrix()[ 6] = 0;
-        tr.viewDef.getProjectionMatrix()[10] = -0.999f;
-        tr.viewDef.getProjectionMatrix()[14] = -2.0f * zNear;
+        tr.viewDef.getProjectionMatrix().put( 2, 0);
+        tr.viewDef.getProjectionMatrix().put( 6, 0);
+        tr.viewDef.getProjectionMatrix().put(10, -0.999f);
+        tr.viewDef.getProjectionMatrix().put(14, -2.0f * zNear);
 
-        tr.viewDef.getProjectionMatrix()[ 3] = 0;
-        tr.viewDef.getProjectionMatrix()[ 7] = 0;
-        tr.viewDef.getProjectionMatrix()[11] = -1;
-        tr.viewDef.getProjectionMatrix()[15] = 0;
+        tr.viewDef.getProjectionMatrix().put( 3, 0);
+        tr.viewDef.getProjectionMatrix().put( 7, 0);
+        tr.viewDef.getProjectionMatrix().put(11, -1);
+        tr.viewDef.getProjectionMatrix().put(15, 0);
     }
 
     /*

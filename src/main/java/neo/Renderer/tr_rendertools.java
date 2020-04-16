@@ -280,7 +280,7 @@ public class tr_rendertools {
     public static void RB_SimpleSurfaceSetup(final drawSurf_s drawSurf) {
         // change the matrix if needed
         if (drawSurf.space != backEnd.currentSpace) {
-            qglLoadMatrixf(Nio.wrap(drawSurf.space.getModelViewMatrix()));
+            qglLoadMatrixf(drawSurf.space.getModelViewMatrix());
             backEnd.currentSpace = drawSurf.space;
         }
 
@@ -301,7 +301,7 @@ public class tr_rendertools {
      */
     public static void RB_SimpleWorldSetup() {
         backEnd.currentSpace = backEnd.viewDef.worldSpace;
-        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.worldSpace.getModelViewMatrix()));
+        qglLoadMatrixf(backEnd.viewDef.worldSpace.getModelViewMatrix());
 
         backEnd.currentScissor = backEnd.viewDef.scissor;
         qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
@@ -1018,7 +1018,7 @@ public class tr_rendertools {
         for (; vModels != null; vModels = vModels.next) {
             idBounds b;
 
-            qglLoadMatrixf(Nio.wrap(vModels.getModelViewMatrix()));
+            qglLoadMatrixf(vModels.getModelViewMatrix());
 //            System.out.println("vModels.modelViewMatrix="+vModels.modelViewMatrix[0]);
 
             if (null == vModels.entityDef) {

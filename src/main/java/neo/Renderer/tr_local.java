@@ -714,8 +714,8 @@ public class tr_local {
         public boolean             weaponDepthHack;
         public float               modelDepthHack;
         //
-        public float[]             modelMatrix     = new float[16];         // local coords to global coords
-        private final float[]             modelViewMatrix = new float[16];         // local coords to eye coords
+        public float[]             modelMatrix     = new float[16];          // local coords to global coords
+        private final FloatBuffer  modelViewMatrix = Nio.newFloatBuffer(16); // local coords to eye coords
 
         private static int DBG_COUNTER = 0;
         private final  int DBG_COUNT   = DBG_COUNTER++;
@@ -742,7 +742,7 @@ public class tr_local {
             this.modelDepthHack = 0;
         }
 
-		public float[] getModelViewMatrix() {
+		public FloatBuffer getModelViewMatrix() {
 			return modelViewMatrix;
 		}
 
@@ -755,7 +755,7 @@ public class tr_local {
 
         public renderView_s       renderView;
 //
-        private final float[]            projectionMatrix = new float[16];
+        private final FloatBuffer projectionMatrix = Nio.newFloatBuffer(16);
         public viewEntity_s       worldSpace;
 //
         public idRenderWorldLocal renderWorld;
@@ -857,7 +857,7 @@ public class tr_local {
             }
         }
 
-		public float[] getProjectionMatrix() {
+		public FloatBuffer getProjectionMatrix() {
 			return projectionMatrix;
 		}
     }

@@ -235,18 +235,18 @@ public class GuiModel {
             viewDef.floatTime = tr.frameShaderTime;
 
             // TODO: qglOrtho( 0, 640, 480, 0, 0, 1 );		// always assume 640x480 virtual coordinates
-            viewDef.getProjectionMatrix()[ 0] = +2.0f / 640.0f;
-            viewDef.getProjectionMatrix()[ 5] = -2.0f / 480.0f;
-            viewDef.getProjectionMatrix()[10] = -2.0f / 1.0f;
-            viewDef.getProjectionMatrix()[12] = -1.0f;
-            viewDef.getProjectionMatrix()[13] = +1.0f;
-            viewDef.getProjectionMatrix()[14] = -1.0f;
-            viewDef.getProjectionMatrix()[15] = +1.0f;
+            viewDef.getProjectionMatrix().put( 0, +2.0f / 640.0f);
+            viewDef.getProjectionMatrix().put( 5, -2.0f / 480.0f);
+            viewDef.getProjectionMatrix().put(10, -2.0f / 1.0f);
+            viewDef.getProjectionMatrix().put(12, -1.0f);
+            viewDef.getProjectionMatrix().put(13, +1.0f);
+            viewDef.getProjectionMatrix().put(14, -1.0f);
+            viewDef.getProjectionMatrix().put(15, +1.0f);
 
-            viewDef.worldSpace.getModelViewMatrix()[ 0] = 1.0f;
-            viewDef.worldSpace.getModelViewMatrix()[ 5] = 1.0f;
-            viewDef.worldSpace.getModelViewMatrix()[10] = 1.0f;
-            viewDef.worldSpace.getModelViewMatrix()[15] = 1.0f;
+            viewDef.worldSpace.getModelViewMatrix().put( 0, 1.0f);
+            viewDef.worldSpace.getModelViewMatrix().put( 5, 1.0f);
+            viewDef.worldSpace.getModelViewMatrix().put(10, 1.0f);
+            viewDef.worldSpace.getModelViewMatrix().put(15, 1.0f);
 
             viewDef.maxDrawSurfs = this.surfaces.Num();
             viewDef.drawSurfs = new drawSurf_s[viewDef.maxDrawSurfs];///*(drawSurf_t **)*/ R_FrameAlloc(viewDef.maxDrawSurfs * sizeof(viewDef.drawSurfs[0]));
@@ -702,7 +702,7 @@ public class GuiModel {
 //            memcpy(guiSpace.modelMatrix, modelMatrix, sizeof(guiSpace.modelMatrix));
             System.arraycopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.length);
 //            memcpy(guiSpace.modelViewMatrix, modelViewMatrix, sizeof(guiSpace.modelViewMatrix));
-            System.arraycopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().length);
+            System.arraycopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().limit());
             guiSpace.weaponDepthHack = depthHack;
 
             // add the surface, which might recursively create another gui

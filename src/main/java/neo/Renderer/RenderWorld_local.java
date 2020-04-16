@@ -2384,10 +2384,10 @@ public class RenderWorld_local {
                 a = -0.5f / alpha;
             }
 
-            forward.oSet(0, a * tr.viewDef.worldSpace.getModelViewMatrix()[2]);
-            forward.oSet(1, a * tr.viewDef.worldSpace.getModelViewMatrix()[6]);
-            forward.oSet(2, a * tr.viewDef.worldSpace.getModelViewMatrix()[10]);
-            forward.oSet(3, a * tr.viewDef.worldSpace.getModelViewMatrix()[14]);
+            forward.oSet(0, a * tr.viewDef.worldSpace.getModelViewMatrix().get(2));
+            forward.oSet(1, a * tr.viewDef.worldSpace.getModelViewMatrix().get(6));
+            forward.oSet(2, a * tr.viewDef.worldSpace.getModelViewMatrix().get(10));
+            forward.oSet(3, a * tr.viewDef.worldSpace.getModelViewMatrix().get(14));
 
             w = p.w;
             for (i = 0; i < w.GetNumPoints(); i++) {

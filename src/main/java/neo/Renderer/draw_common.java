@@ -893,7 +893,7 @@ public class draw_common {
 
         // change the matrix if needed
         if (surf.space != backEnd.currentSpace) {
-            qglLoadMatrixf(Nio.wrap(surf.space.getModelViewMatrix()));
+            qglLoadMatrixf(surf.space.getModelViewMatrix());
             backEnd.currentSpace = surf.space;
             RB_SetProgramEnvironmentSpace();
         }
@@ -1676,15 +1676,15 @@ public class draw_common {
         qglEnable(GL_TEXTURE_GEN_T);
         qglTexCoord2f(0.5f, 0.5f);		// make sure Q is set
 
-        fogPlanes[0].oSet(0, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[2]);
-        fogPlanes[0].oSet(1, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[6]);
-        fogPlanes[0].oSet(2, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[10]);
-        fogPlanes[0].oSet(3, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[14]);
+        fogPlanes[0].oSet(0, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(2));
+        fogPlanes[0].oSet(1, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(6));
+        fogPlanes[0].oSet(2, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(10));
+        fogPlanes[0].oSet(3, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(14));
 
-        fogPlanes[1].oSet(0, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[0]);
-        fogPlanes[1].oSet(1, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[4]);
-        fogPlanes[1].oSet(2, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[8]);
-        fogPlanes[1].oSet(3, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[12]);
+        fogPlanes[1].oSet(0, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(0));
+        fogPlanes[1].oSet(1, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(4));
+        fogPlanes[1].oSet(2, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(8));
+        fogPlanes[1].oSet(3, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(12));
 
         // texture 1 is the entering plane fade correction
         GL_SelectTexture(1);
