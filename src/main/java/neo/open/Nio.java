@@ -116,16 +116,19 @@ public class Nio {
 //		return (DoubleBuffer) newDoubleBuffer(doubleArray.length).put(doubleArray).flip();
 //	}
 
+//	/**
+//	 * @deprecated the calling functions should send FloatBuffers instead.
+//	 */
+//	public static FloatBuffer wrap(final float floatValue) {
+//
+//		return (FloatBuffer) newFloatBuffer(1).put(floatValue).flip();
+//	}
+
 	/**
 	 * @deprecated the calling functions should send FloatBuffers instead.
-	 */
-	public static FloatBuffer wrap(final float floatValue) {
-
-		return (FloatBuffer) newFloatBuffer(1).put(floatValue).flip();
-	}
-
-	/**
-	 * @deprecated the calling functions should send FloatBuffers instead.
+	 *
+	 * @see neo.idlib.math.Vector.idVec6#toFloatBuffer()
+	 * @see neo.idlib.math.Vector.idVecX#toFloatBuffer()
 	 */
 	public static FloatBuffer wrap(final float[] floatArray) {
 
@@ -152,20 +155,20 @@ public class Nio {
 //		}
 //	}
 
-	/**
-	 * @deprecated the calling functions should send IntBuffers instead.
-	 */
-	public static IntBuffer wrap(final int intValue) {
+//	/**
+//	 * @deprecated the calling functions should send IntBuffers instead.
+//	 */
+//	public static IntBuffer wrap(final int intValue) {
+//
+//		return (IntBuffer) newIntBuffer(1).put(intValue).flip();
+//	}
 
-		return (IntBuffer) newIntBuffer(1).put(intValue).flip();
-	}
-
-	/**
-	 * @deprecated the calling functions should send IntBuffers instead.
-	 */
-	public static IntBuffer wrap(final int[] intArray) {
-
-		return (IntBuffer) newIntBuffer(intArray.length).put(intArray).flip();
-	}
+//	/**
+//	 * @deprecated the calling functions should send IntBuffers instead.
+//	 */
+//	public static IntBuffer wrap(final int[] intArray) {
+//
+//		return (IntBuffer) newIntBuffer(intArray.length).put(intArray).flip();
+//	}
 
 }

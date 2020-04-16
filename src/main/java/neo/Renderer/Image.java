@@ -128,6 +128,8 @@ import static neo.sys.win_shared.Sys_Milliseconds;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import neo.TempDump.CPP_class;
 import neo.TempDump.CPP_class.Bool;
@@ -650,8 +652,9 @@ public class Image {
             }
 
             if (com_purgeAll.GetBool()) {
-                final float/*GLclampf*/ priority = 1.0f;
-                qglPrioritizeTextures(Nio.wrap(this.texNum), Nio.wrap(priority));
+                final FloatBuffer/*GLclampf*/ priority = (FloatBuffer) Nio.newFloatBuffer(1).put(1.0f);
+                final IntBuffer/*GLuint*/       texNum = (IntBuffer) Nio.newIntBuffer(1).put(this.texNum);
+                qglPrioritizeTextures(texNum, priority);
             }
         }
         private static int DBG_Bind = 0;
