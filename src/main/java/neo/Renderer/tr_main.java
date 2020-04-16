@@ -502,12 +502,12 @@ public class tr_main {
     }
 
     // transform Z in eye coordinates to window coordinates
-    public static void R_TransformEyeZToWin(float src_z, final float[] projectionMatrix, float[] dst_z) {
+    public static void R_TransformEyeZToWin(float src_z, final FloatBuffer projectionMatrix, float[] dst_z) {
         final float clip_z, clip_w;
 
         // projection
-        clip_z = (src_z * projectionMatrix[2 + (2 * 4)]) + projectionMatrix[2 + (3 * 4)];
-        clip_w = (src_z * projectionMatrix[3 + (2 * 4)]) + projectionMatrix[3 + (3 * 4)];
+        clip_z = (src_z * projectionMatrix.get(2 + (2 * 4))) + projectionMatrix.get(2 + (3 * 4));
+        clip_w = (src_z * projectionMatrix.get(3 + (2 * 4))) + projectionMatrix.get(3 + (3 * 4));
 
         if (clip_w <= 0.0f) {
             dst_z[0] = 0.0f;					// clamp to near plane
