@@ -1377,24 +1377,29 @@ public class tr_stencilshadow {
         if (true /* sortCapIndexes */) {
             newTri.shadowCapPlaneBits = capPlaneBits;
 
+            int c = 0;
+            
             // copy the sil indexes first
             newTri.numShadowIndexesNoCaps = 0;
             for (i = 0; i < indexFrustumNumber; i++) {
-                final int c = indexRef[i].end - indexRef[i].silStart;
+                //final int - no need for in Java, 'cause primitive types are value-copied into methods, by reference is only used for objects/arrays   
+                c = indexRef[i].end - indexRef[i].silStart;
                 SIMDProcessor.Memcpy(newTri.getIndexes().getValues(), newTri.numShadowIndexesNoCaps, shadowIndexes, indexRef[i].silStart, c);
                 newTri.numShadowIndexesNoCaps += c;
             }
             // copy rear cap indexes next
             newTri.numShadowIndexesNoFrontCaps = newTri.numShadowIndexesNoCaps;
             for (i = 0; i < indexFrustumNumber; i++) {
-                final int c = indexRef[i].silStart - indexRef[i].rearCapStart;
+                //final int - no need for in Java, 'cause primitive types are value-copied into methods, by reference is only used for objects/arrays   
+                c = indexRef[i].silStart - indexRef[i].rearCapStart;
                 SIMDProcessor.Memcpy(newTri.getIndexes().getValues(), newTri.numShadowIndexesNoFrontCaps, shadowIndexes, indexRef[i].rearCapStart, c);
                 newTri.numShadowIndexesNoFrontCaps += c;
             }
             // copy front cap indexes last
             newTri.getIndexes().setNumValues(newTri.numShadowIndexesNoFrontCaps);
             for (i = 0; i < indexFrustumNumber; i++) {
-                final int c = indexRef[i].rearCapStart - indexRef[i].frontCapStart;
+                //final int - no need for in Java, 'cause primitive types are value-copied into methods, by reference is only used for objects/arrays   
+                c = indexRef[i].rearCapStart - indexRef[i].frontCapStart;
                 SIMDProcessor.Memcpy(newTri.getIndexes().getValues(), newTri.getIndexes().getNumValues(), shadowIndexes, indexRef[i].frontCapStart, c);
                 newTri.getIndexes().setNumValues(newTri.getIndexes().getNumValues() + c);
             }

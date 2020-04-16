@@ -381,8 +381,8 @@ public class Model_local {
                 final srfTriangles_s tri = surf.geometry;
 
                 for (int j = 0; j < tri.getIndexes().getNumValues(); j += 3) {
-                    final float area = idWinding.TriangleArea(tri.verts[tri.getIndexes().getValues()[j]].xyz,
-                            tri.verts[tri.getIndexes().getValues()[j + 1]].xyz, tri.verts[tri.getIndexes().getValues()[j + 2]].xyz);
+                    final float area = idWinding.TriangleArea(tri.verts[tri.getIndexes().getValues().get(j)].xyz,
+                            tri.verts[tri.getIndexes().getValues().get(j + 1)].xyz, tri.verts[tri.getIndexes().getValues().get(j + 2)].xyz);
                     surf.shader.AddToSurfaceArea(area);
                 }
             }
@@ -692,7 +692,7 @@ public class Model_local {
                 R_AllocStaticTriSurfIndexes(tri, tri.getIndexes().getNumValues());
                 for (j = 0; j < tri.getIndexes().getNumValues(); ++j) {
                     f.ReadInt(index);
-                    tri.getIndexes().getValues()[j] = index[0];
+                    tri.getIndexes().getValues().put(j, index[0]);
                 }
 
                 f.ReadInt(vert);
@@ -738,7 +738,7 @@ public class Model_local {
                 final srfTriangles_s tri = surf.geometry;
                 f.WriteInt(tri.getIndexes().getNumValues());
                 for (j = 0; j < tri.getIndexes().getNumValues(); ++j) {
-                    f.WriteInt(tri.getIndexes().getValues()[j]);
+                    f.WriteInt(tri.getIndexes().getValues().get(j));
                 }
                 f.WriteInt(tri.numVerts);
                 for (j = 0; j < tri.numVerts; ++j) {
@@ -962,12 +962,12 @@ public class Model_local {
 //			tri.indexes[ v + 5 ] = i * width + j + 1;
 //}else
                     {
-                        tri.getIndexes().getValues()[ v + 0] = (i * width) + j;
-                        tri.getIndexes().getValues()[ v + 1] = (i * width) + j + 1;
-                        tri.getIndexes().getValues()[ v + 2] = ((i + 1) * width) + j + 1;
-                        tri.getIndexes().getValues()[ v + 3] = (i * width) + j;
-                        tri.getIndexes().getValues()[ v + 4] = ((i + 1) * width) + j + 1;
-                        tri.getIndexes().getValues()[ v + 5] = ((i + 1) * width) + j;
+                        tri.getIndexes().getValues().put( v + 0, (i * width) + j);
+                        tri.getIndexes().getValues().put( v + 1, (i * width) + j + 1);
+                        tri.getIndexes().getValues().put( v + 2, ((i + 1) * width) + j + 1);
+                        tri.getIndexes().getValues().put( v + 3, (i * width) + j);
+                        tri.getIndexes().getValues().put( v + 4, ((i + 1) * width) + j + 1);
+                        tri.getIndexes().getValues().put( v + 5, ((i + 1) * width) + j);
                     }
                 }
             }
@@ -1310,7 +1310,7 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.getIndexes().getValues()[tri.getIndexes().getNumValues()] = mv.index;
+                        tri.getIndexes().getValues().put(tri.getIndexes().getNumValues(), mv.index);
                         tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() + 1);
                     }
                 }
@@ -1681,7 +1681,7 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.getIndexes().getValues()[tri.getIndexes().getNumValues()] = mv.index;
+                        tri.getIndexes().getValues().put(tri.getIndexes().getNumValues(), mv.index);
                         tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() + 1);
                     }
                 }
@@ -1984,7 +1984,7 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.getIndexes().getValues()[tri.getIndexes().getNumValues()] = mv.index;
+                        tri.getIndexes().getValues().put(tri.getIndexes().getNumValues(), mv.index);
                         tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() + 1);
                     }
                 }
@@ -2294,12 +2294,12 @@ public class Model_local {
         tri.verts[tri.numVerts + 3].st.oSet(0, 0);
         tri.verts[tri.numVerts + 3].st.oSet(1, 1);
 
-        tri.getIndexes().getValues()[tri.getIndexes().getNumValues() + 0] = tri.numVerts + 0;
-        tri.getIndexes().getValues()[tri.getIndexes().getNumValues() + 1] = tri.numVerts + 1;
-        tri.getIndexes().getValues()[tri.getIndexes().getNumValues() + 2] = tri.numVerts + 2;
-        tri.getIndexes().getValues()[tri.getIndexes().getNumValues() + 3] = tri.numVerts + 0;
-        tri.getIndexes().getValues()[tri.getIndexes().getNumValues() + 4] = tri.numVerts + 2;
-        tri.getIndexes().getValues()[tri.getIndexes().getNumValues() + 5] = tri.numVerts + 3;
+        tri.getIndexes().getValues().put(tri.getIndexes().getNumValues() + 0, tri.numVerts + 0);
+        tri.getIndexes().getValues().put(tri.getIndexes().getNumValues() + 1, tri.numVerts + 1);
+        tri.getIndexes().getValues().put(tri.getIndexes().getNumValues() + 2, tri.numVerts + 2);
+        tri.getIndexes().getValues().put(tri.getIndexes().getNumValues() + 3, tri.numVerts + 0);
+        tri.getIndexes().getValues().put(tri.getIndexes().getNumValues() + 4, tri.numVerts + 2);
+        tri.getIndexes().getValues().put(tri.getIndexes().getNumValues() + 5, tri.numVerts + 3);
 
         tri.numVerts += 4;
         tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() + 6);

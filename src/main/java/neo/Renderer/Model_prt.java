@@ -12,6 +12,7 @@ import static neo.TempDump.sizeof;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_PARTICLE;
 
+import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import neo.Renderer.Model.dynamicModel_t;
@@ -221,14 +222,14 @@ public class Model_prt {
 
                 // build the indexes
                 int numIndexes = 0;
-                /*glIndex_t*/ final int[] indexes = surf.geometry.getIndexes().getValues();
+                /*glIndex_t*/ final IntBuffer indexes = surf.geometry.getIndexes().getValues();
                 for (int i = 0; i < numVerts; i += 4) {
-                    indexes[numIndexes + 0] = i;
-                    indexes[numIndexes + 1] = i + 2;
-                    indexes[numIndexes + 2] = i + 3;
-                    indexes[numIndexes + 3] = i;
-                    indexes[numIndexes + 4] = i + 3;
-                    indexes[numIndexes + 5] = i + 1;
+                    indexes.put(numIndexes + 0, i);
+                    indexes.put(numIndexes + 1, i + 2);
+                    indexes.put(numIndexes + 2, i + 3);
+                    indexes.put(numIndexes + 3, i);
+                    indexes.put(numIndexes + 4, i + 3);
+                    indexes.put(numIndexes + 5, i + 1);
                     numIndexes += 6;
                 }
 

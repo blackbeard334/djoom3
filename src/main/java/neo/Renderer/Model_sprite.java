@@ -123,12 +123,12 @@ public class Model_sprite {
                 tri.verts[ 3].st.oSet(0, 0.0f);
                 tri.verts[ 3].st.oSet(1, 1.0f);
 
-                tri.getIndexes().getValues()[ 0] = 0;
-                tri.getIndexes().getValues()[ 1] = 1;
-                tri.getIndexes().getValues()[ 2] = 3;
-                tri.getIndexes().getValues()[ 3] = 1;
-                tri.getIndexes().getValues()[ 4] = 2;
-                tri.getIndexes().getValues()[ 5] = 3;
+                tri.getIndexes().getValues().put( 0, 0);
+                tri.getIndexes().getValues().put( 1, 1);
+                tri.getIndexes().getValues().put( 2, 3);
+                tri.getIndexes().getValues().put( 3, 1);
+                tri.getIndexes().getValues().put( 4, 2);
+                tri.getIndexes().getValues().put( 5, 3);
 
                 tri.numVerts = 4;
                 tri.getIndexes().setNumValues(6);

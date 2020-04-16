@@ -130,6 +130,7 @@ import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.open.NeoIntArray;
+import neo.open.NeoIntBuffer;
 import neo.open.Nio;
 
 /**
@@ -2658,7 +2659,7 @@ public class tr_local {
         //
         //int   numIndexes;
         //int[]/*glIndex_t */ indexes;
-        private NeoIntArray indexes = new NeoIntArray();
+        private NeoIntBuffer indexes = new NeoIntBuffer();
         //
         int[]/*glIndex_t */ silIndexes;
         //
@@ -2670,7 +2671,7 @@ public class tr_local {
         //
         dominantTri_s[] dominantTris;
 
-        public NeoIntArray getIndexes() {
+        public NeoIntBuffer getIndexes() {
 			return this.indexes;
 		}
     }
