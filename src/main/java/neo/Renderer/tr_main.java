@@ -808,7 +808,7 @@ public class tr_main {
      R_TransposeGLMatrix
      ================
      */
-    public static FloatBuffer R_TransposeGLMatrix(final float[] in/*[16]*/) { //, float[] out/*[16]*/) {
+    public static FloatBuffer R_TransposeGLMatrix(final FloatBuffer in/*[16]*/) { //, float[] out/*[16]*/) {
         int i, j;
 
         FloatBuffer out = Nio.newFloatBuffer(16);
@@ -816,7 +816,7 @@ public class tr_main {
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
                 //out[(i * 4) + j] = in[(j * 4) + i];
-                out.put(in[(j * 4) + i]);
+                out.put(in.get((j * 4) + i));
             }
         }
         
