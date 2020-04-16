@@ -21,28 +21,6 @@ import static neo.Renderer.RenderSystem_init.r_useScissor;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.draw_common.RB_BakeTextureMatrixIntoTexgen;
 import static neo.Renderer.draw_common.RB_STD_DrawView;
-import static neo.Renderer.qgl.qglBegin;
-import static neo.Renderer.qgl.qglClear;
-import static neo.Renderer.qgl.qglClearStencil;
-import static neo.Renderer.qgl.qglDepthRange;
-import static neo.Renderer.qgl.qglDisable;
-import static neo.Renderer.qgl.qglDisableClientState;
-import static neo.Renderer.qgl.qglDrawElements;
-import static neo.Renderer.qgl.qglEnable;
-import static neo.Renderer.qgl.qglEnableClientState;
-import static neo.Renderer.qgl.qglEnd;
-import static neo.Renderer.qgl.qglLoadIdentity;
-import static neo.Renderer.qgl.qglLoadMatrixf;
-import static neo.Renderer.qgl.qglMatrixMode;
-import static neo.Renderer.qgl.qglNormalPointer;
-import static neo.Renderer.qgl.qglScissor;
-import static neo.Renderer.qgl.qglStencilMask;
-import static neo.Renderer.qgl.qglTexCoord2fv;
-import static neo.Renderer.qgl.qglTexCoordPointer;
-import static neo.Renderer.qgl.qglTexGenf;
-import static neo.Renderer.qgl.qglVertex3fv;
-import static neo.Renderer.qgl.qglVertexPointer;
-import static neo.Renderer.qgl.qglViewport;
 import static neo.Renderer.tr_backend.GL_Cull;
 import static neo.Renderer.tr_backend.GL_State;
 import static neo.Renderer.tr_backend.RB_LogComment;
@@ -57,6 +35,28 @@ import static neo.Renderer.tr_main.R_TransposeGLMatrix;
 import static neo.Renderer.tr_rendertools.RB_ShowOverdraw;
 import static neo.TempDump.NOT;
 import static neo.TempDump.btoi;
+import static neo.open.gl.QGL.qglBegin;
+import static neo.open.gl.QGL.qglClear;
+import static neo.open.gl.QGL.qglClearStencil;
+import static neo.open.gl.QGL.qglDepthRange;
+import static neo.open.gl.QGL.qglDisable;
+import static neo.open.gl.QGL.qglDisableClientState;
+import static neo.open.gl.QGL.qglDrawElements;
+import static neo.open.gl.QGL.qglEnable;
+import static neo.open.gl.QGL.qglEnableClientState;
+import static neo.open.gl.QGL.qglEnd;
+import static neo.open.gl.QGL.qglLoadIdentity;
+import static neo.open.gl.QGL.qglLoadMatrixf;
+import static neo.open.gl.QGL.qglMatrixMode;
+import static neo.open.gl.QGL.qglNormalPointer;
+import static neo.open.gl.QGL.qglScissor;
+import static neo.open.gl.QGL.qglStencilMask;
+import static neo.open.gl.QGL.qglTexCoord2fv;
+import static neo.open.gl.QGL.qglTexCoordPointer;
+import static neo.open.gl.QGL.qglTexGenf;
+import static neo.open.gl.QGL.qglVertex3fv;
+import static neo.open.gl.QGL.qglVertexPointer;
+import static neo.open.gl.QGL.qglViewport;
 import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_BUFFER_BIT;
 import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_TEST;
 import static neo.open.gl.QGLConstantsIfc.GL_FLOAT;
@@ -277,7 +277,7 @@ public class tr_render {
 //        	System.err.println("tr_render.RB_EnterWeaponDepthHack length != 16 "+backEnd.viewDef.getProjectionMatrix().length);
 //        }
 //        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix(), 16));
-        qglLoadMatrixf(backEnd.viewDef.getProjectionMatrix());
+        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix()));
         qglMatrixMode(GL_MODELVIEW);
     }
 
@@ -298,7 +298,7 @@ public class tr_render {
 
 //      // projectionMatrix has per definition length of 16! 
 //        FloatBuffer matrix = Nio.wrap(backEnd.viewDef.getProjectionMatrix(), 16);
-        FloatBuffer matrix = backEnd.viewDef.getProjectionMatrix();
+        FloatBuffer matrix = Nio.wrap(backEnd.viewDef.getProjectionMatrix());
 
         matrix.put(14, matrix.get(14)- depth);
 
@@ -316,7 +316,7 @@ public class tr_render {
         qglDepthRange(0, 1);
 
         qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(backEnd.viewDef.getProjectionMatrix());
+        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix()));
         qglMatrixMode(GL_MODELVIEW);
     }
 
@@ -341,7 +341,7 @@ public class tr_render {
 
             // change the matrix if needed
             if (drawSurf.space != backEnd.currentSpace) {
-                qglLoadMatrixf(drawSurf.space.getModelViewMatrix());
+                qglLoadMatrixf(Nio.wrap(drawSurf.space.getModelViewMatrix()));
             }
 
             if (drawSurf.space.weaponDepthHack) {
@@ -385,7 +385,7 @@ public class tr_render {
         for (drawSurf = drawSurfs; drawSurf != null; drawSurf = drawSurf.nextOnLight) {
             // change the matrix if needed
             if (drawSurf.space != backEnd.currentSpace) {
-                qglLoadMatrixf(drawSurf.space.getModelViewMatrix());
+                qglLoadMatrixf(Nio.wrap(drawSurf.space.getModelViewMatrix()));
             }
 
             if (drawSurf.space.weaponDepthHack) {
@@ -721,7 +721,7 @@ public class tr_render {
     public static void RB_BeginDrawingView() {
         // set the modelview matrix for the viewer
         qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(backEnd.viewDef.getProjectionMatrix());
+        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix()));
         qglMatrixMode(GL_MODELVIEW);
 
         // set the window clipping
@@ -869,7 +869,7 @@ public class tr_render {
         // change the matrix and light projection vectors if needed
         if (surf.space != backEnd.currentSpace) {
             backEnd.currentSpace = surf.space;
-            qglLoadMatrixf(surf.space.getModelViewMatrix());
+            qglLoadMatrixf(Nio.wrap(surf.space.getModelViewMatrix()));
         }
 
         // change the scissor if needed

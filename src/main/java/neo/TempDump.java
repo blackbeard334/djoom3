@@ -44,8 +44,8 @@ import neo.idlib.containers.LinkList.idLinkList;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.math.Curve;
 import neo.idlib.math.Vector.idVec3;
-import neo.open.Nio;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 import neo.ui.UserInterface.idUserInterface;
 
 /**

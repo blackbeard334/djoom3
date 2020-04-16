@@ -33,9 +33,6 @@ import static neo.Renderer.RenderSystem_init.r_renderer;
 import static neo.Renderer.RenderSystem_init.r_screenFraction;
 import static neo.Renderer.RenderSystem_init.r_showDemo;
 import static neo.Renderer.VertexCache.vertexCache;
-import static neo.Renderer.qgl.qglGetError;
-import static neo.Renderer.qgl.qglReadBuffer;
-import static neo.Renderer.qgl.qglReadPixels;
 import static neo.Renderer.tr_backend.RB_ShowImages;
 import static neo.Renderer.tr_font.BUILD_FREETYPE;
 import static neo.Renderer.tr_font.R_DoneFreeType;
@@ -75,6 +72,9 @@ import static neo.framework.Session.session;
 import static neo.idlib.Lib.colorWhite;
 import static neo.idlib.Text.Str.C_COLOR_DEFAULT;
 import static neo.idlib.math.Vector.getVec3_zero;
+import static neo.open.gl.QGL.qglGetError;
+import static neo.open.gl.QGL.qglReadBuffer;
+import static neo.open.gl.QGL.qglReadPixels;
 import static neo.open.gl.QGLConstantsIfc.GL_BACK;
 import static neo.open.gl.QGLConstantsIfc.GL_FRONT;
 import static neo.open.gl.QGLConstantsIfc.GL_NO_ERROR;
@@ -129,7 +129,6 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.open.NeoIntArray;
 import neo.open.NeoIntBuffer;
 import neo.open.Nio;
 
@@ -714,8 +713,8 @@ public class tr_local {
         public boolean             weaponDepthHack;
         public float               modelDepthHack;
         //
-        public float[]             modelMatrix     = new float[16];          // local coords to global coords
-        private final FloatBuffer  modelViewMatrix = Nio.newFloatBuffer(16); // local coords to eye coords
+        public float[]             modelMatrix     = new float[16];         // local coords to global coords
+        private final float[]             modelViewMatrix = new float[16];         // local coords to eye coords
 
         private static int DBG_COUNTER = 0;
         private final  int DBG_COUNT   = DBG_COUNTER++;
@@ -742,7 +741,7 @@ public class tr_local {
             this.modelDepthHack = 0;
         }
 
-		public FloatBuffer getModelViewMatrix() {
+		public float[] getModelViewMatrix() {
 			return modelViewMatrix;
 		}
 
@@ -755,7 +754,7 @@ public class tr_local {
 
         public renderView_s       renderView;
 //
-        private final FloatBuffer projectionMatrix = Nio.newFloatBuffer(16);
+        private final float[]            projectionMatrix = new float[16];
         public viewEntity_s       worldSpace;
 //
         public idRenderWorldLocal renderWorld;
@@ -857,7 +856,7 @@ public class tr_local {
             }
         }
 
-		public FloatBuffer getProjectionMatrix() {
+		public float[] getProjectionMatrix() {
 			return projectionMatrix;
 		}
     }

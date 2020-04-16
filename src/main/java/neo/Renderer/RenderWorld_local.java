@@ -32,10 +32,6 @@ import static neo.Renderer.RenderWorld.R_RemapShaderBySkin;
 import static neo.Renderer.RenderWorld.portalConnection_t.PS_BLOCK_NONE;
 import static neo.Renderer.RenderWorld.portalConnection_t.PS_BLOCK_VIEW;
 import static neo.Renderer.RenderWorld_portals.MAX_PORTAL_PLANES;
-import static neo.Renderer.qgl.qglBegin;
-import static neo.Renderer.qgl.qglColor3f;
-import static neo.Renderer.qgl.qglEnd;
-import static neo.Renderer.qgl.qglVertex3fv;
 import static neo.Renderer.tr_guisurf.R_SurfaceToTextureAxis;
 import static neo.Renderer.tr_light.R_EntityDefDynamicModel;
 import static neo.Renderer.tr_light.R_IssueEntityDefCallback;
@@ -102,6 +98,10 @@ import static neo.idlib.math.Plane.PLANESIDE_BACK;
 import static neo.idlib.math.Plane.PLANESIDE_CROSS;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import static neo.idlib.math.Plane.SIDE_BACK;
+import static neo.open.gl.QGL.qglBegin;
+import static neo.open.gl.QGL.qglColor3f;
+import static neo.open.gl.QGL.qglEnd;
+import static neo.open.gl.QGL.qglVertex3fv;
 import static neo.open.gl.QGLConstantsIfc.GL_LINE_LOOP;
 import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.ui.UserInterface.uiManager;
@@ -2384,10 +2384,10 @@ public class RenderWorld_local {
                 a = -0.5f / alpha;
             }
 
-            forward.oSet(0, a * tr.viewDef.worldSpace.getModelViewMatrix().get(2));
-            forward.oSet(1, a * tr.viewDef.worldSpace.getModelViewMatrix().get(6));
-            forward.oSet(2, a * tr.viewDef.worldSpace.getModelViewMatrix().get(10));
-            forward.oSet(3, a * tr.viewDef.worldSpace.getModelViewMatrix().get(14));
+            forward.oSet(0, a * tr.viewDef.worldSpace.getModelViewMatrix()[2]);
+            forward.oSet(1, a * tr.viewDef.worldSpace.getModelViewMatrix()[6]);
+            forward.oSet(2, a * tr.viewDef.worldSpace.getModelViewMatrix()[10]);
+            forward.oSet(3, a * tr.viewDef.worldSpace.getModelViewMatrix()[14]);
 
             w = p.w;
             for (i = 0; i < w.GetNumPoints(); i++) {
