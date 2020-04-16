@@ -30,6 +30,12 @@ public class Nio {
 		}
 	}
 
+	public static void buffercopy(final FloatBuffer src, int srcPos, final FloatBuffer dest, int destPos, int length) {
+		for (int i = 0; i < length; i++) {
+			dest.put(destPos + i, src.get(srcPos + i));
+		}
+	}
+
 	public static void buffercopy(final IntBuffer src, int srcPos, final IntBuffer dest, int destPos, int length) {
 		for (int i = 0; i < length; i++) {
 			dest.put(destPos + i, src.get(srcPos + i));

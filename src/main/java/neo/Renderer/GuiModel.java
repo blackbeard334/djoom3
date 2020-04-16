@@ -710,7 +710,8 @@ public class GuiModel {
 //            memcpy(guiSpace.modelMatrix, modelMatrix, sizeof(guiSpace.modelMatrix));
             System.arraycopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.length);
 //            memcpy(guiSpace.modelViewMatrix, modelViewMatrix, sizeof(guiSpace.modelViewMatrix));
-            System.arraycopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().limit());
+            //System.arraycopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().limit());
+            Nio.buffercopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().limit());
             guiSpace.weaponDepthHack = depthHack;
 
             // add the surface, which might recursively create another gui
