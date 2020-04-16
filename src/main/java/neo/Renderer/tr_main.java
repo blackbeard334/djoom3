@@ -635,23 +635,23 @@ public class tr_main {
      R_TransformModelToClip
      ==========================
      */
-    public static void R_TransformModelToClip(final idVec3 src, final float[] modelMatrix, final float[] projectionMatrix, idPlane eye, idPlane dst) {
+    public static void R_TransformModelToClip(final idVec3 src, final FloatBuffer modelMatrix, final FloatBuffer projectionMatrix, idPlane eye, idPlane dst) {
         int i;
 
         for (i = 0; i < 4; i++) {
             eye.oSet(i,
-                    (src.oGet(0) * modelMatrix[i + (0 * 4)])
-                    + (src.oGet(1) * modelMatrix[i + (1 * 4)])
-                    + (src.oGet(2) * modelMatrix[i + (2 * 4)])
-                    + (1 * modelMatrix[i + (3 * 4)]));
+                    (src.oGet(0) * modelMatrix.get(i + (0 * 4)))
+                    + (src.oGet(1) * modelMatrix.get(i + (1 * 4)))
+                    + (src.oGet(2) * modelMatrix.get(i + (2 * 4)))
+                    + (1 * modelMatrix.get(i + (3 * 4))));
         }
 
         for (i = 0; i < 4; i++) {
             dst.oSet(i,
-                    (eye.oGet(0) * projectionMatrix[i + (0 * 4)])
-                    + (eye.oGet(1) * projectionMatrix[i + (1 * 4)])
-                    + (eye.oGet(2) * projectionMatrix[i + (2 * 4)])
-                    + (eye.oGet(3) * projectionMatrix[i + (3 * 4)]));
+                    (eye.oGet(0) * projectionMatrix.get(i + (0 * 4)))
+                    + (eye.oGet(1) * projectionMatrix.get(i + (1 * 4)))
+                    + (eye.oGet(2) * projectionMatrix.get(i + (2 * 4)))
+                    + (eye.oGet(3) * projectionMatrix.get(i + (3 * 4))));
         }
     }
 
