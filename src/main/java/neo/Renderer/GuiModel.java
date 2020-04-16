@@ -11,6 +11,8 @@ import static neo.Renderer.tr_main.myGlMultMatrix;
 import static neo.TempDump.NOT;
 import static neo.framework.DeclManager.declManager;
 
+import java.nio.FloatBuffer;
+
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.RenderWorld.renderEntity_s;
@@ -24,6 +26,7 @@ import neo.idlib.geometry.Winding.idFixedWinding;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec5;
+import neo.open.Nio;
 
 /**
  *
@@ -655,7 +658,12 @@ public class GuiModel {
         }
         static int bla555 = 0;
 
+        @Deprecated
         private void EmitSurface(guiModelSurface_t surf, float[] modelMatrix/*[16]*/, float[] modelViewMatrix/*[16]*/, boolean depthHack) {
+        	EmitSurface(surf, modelMatrix, Nio.wrap(modelViewMatrix), depthHack);
+        }
+
+        private void EmitSurface(guiModelSurface_t surf, float[] modelMatrix/*[16]*/, FloatBuffer modelViewMatrix/*[16]*/, boolean depthHack) {
             srfTriangles_s tri;
 
             if (surf.numVerts == 0) {
