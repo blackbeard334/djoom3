@@ -13,6 +13,7 @@ import static neo.framework.Common.common;
 import static neo.idlib.math.Simd.SIMDProcessor;
 import static neo.idlib.math.Vector.getVec3_origin;
 
+import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -31,6 +32,7 @@ import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.Nio;
 
 /**
  *
@@ -2456,19 +2458,21 @@ public class tr_trisurf {
         return newArray;
     }
 
-    private static int[] Resize(int[] indexes, int numIndexes) {
+    private static IntBuffer Resize(IntBuffer indexes, int numIndexes) {
         if (indexes == null) {
-            return new int[numIndexes];
+            return Nio.newIntBuffer(numIndexes);
         }
 
         if (numIndexes <= 0) {
             return null;
         }
 
-        final int size = numIndexes > indexes.length ? indexes.length : numIndexes;
-        final int[] newIndexes = new int[numIndexes];
+        final int size = numIndexes > indexes.limit() ? indexes.limit() : numIndexes;
+        final IntBuffer newIndexes = Nio.newIntBuffer(numIndexes);
 
-        System.arraycopy(indexes, 0, newIndexes, 0, size);
+        for (int i = 0; i < size; i++) {
+			newIndexes.put(i, indexes.get(i));
+		}
 
         return newIndexes;
     }
