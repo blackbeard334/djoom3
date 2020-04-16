@@ -50,8 +50,8 @@ import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector.idVec;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.open.Nio;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 
 /**
  *

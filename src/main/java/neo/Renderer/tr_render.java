@@ -21,28 +21,6 @@ import static neo.Renderer.RenderSystem_init.r_useScissor;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.draw_common.RB_BakeTextureMatrixIntoTexgen;
 import static neo.Renderer.draw_common.RB_STD_DrawView;
-import static neo.Renderer.qgl.qglBegin;
-import static neo.Renderer.qgl.qglClear;
-import static neo.Renderer.qgl.qglClearStencil;
-import static neo.Renderer.qgl.qglDepthRange;
-import static neo.Renderer.qgl.qglDisable;
-import static neo.Renderer.qgl.qglDisableClientState;
-import static neo.Renderer.qgl.qglDrawElements;
-import static neo.Renderer.qgl.qglEnable;
-import static neo.Renderer.qgl.qglEnableClientState;
-import static neo.Renderer.qgl.qglEnd;
-import static neo.Renderer.qgl.qglLoadIdentity;
-import static neo.Renderer.qgl.qglLoadMatrixf;
-import static neo.Renderer.qgl.qglMatrixMode;
-import static neo.Renderer.qgl.qglNormalPointer;
-import static neo.Renderer.qgl.qglScissor;
-import static neo.Renderer.qgl.qglStencilMask;
-import static neo.Renderer.qgl.qglTexCoord2fv;
-import static neo.Renderer.qgl.qglTexCoordPointer;
-import static neo.Renderer.qgl.qglTexGenf;
-import static neo.Renderer.qgl.qglVertex3fv;
-import static neo.Renderer.qgl.qglVertexPointer;
-import static neo.Renderer.qgl.qglViewport;
 import static neo.Renderer.tr_backend.GL_Cull;
 import static neo.Renderer.tr_backend.GL_State;
 import static neo.Renderer.tr_backend.RB_LogComment;
@@ -57,6 +35,28 @@ import static neo.Renderer.tr_main.R_TransposeGLMatrix;
 import static neo.Renderer.tr_rendertools.RB_ShowOverdraw;
 import static neo.TempDump.NOT;
 import static neo.TempDump.btoi;
+import static neo.open.gl.QGL.qglBegin;
+import static neo.open.gl.QGL.qglClear;
+import static neo.open.gl.QGL.qglClearStencil;
+import static neo.open.gl.QGL.qglDepthRange;
+import static neo.open.gl.QGL.qglDisable;
+import static neo.open.gl.QGL.qglDisableClientState;
+import static neo.open.gl.QGL.qglDrawElements;
+import static neo.open.gl.QGL.qglEnable;
+import static neo.open.gl.QGL.qglEnableClientState;
+import static neo.open.gl.QGL.qglEnd;
+import static neo.open.gl.QGL.qglLoadIdentity;
+import static neo.open.gl.QGL.qglLoadMatrixf;
+import static neo.open.gl.QGL.qglMatrixMode;
+import static neo.open.gl.QGL.qglNormalPointer;
+import static neo.open.gl.QGL.qglScissor;
+import static neo.open.gl.QGL.qglStencilMask;
+import static neo.open.gl.QGL.qglTexCoord2fv;
+import static neo.open.gl.QGL.qglTexCoordPointer;
+import static neo.open.gl.QGL.qglTexGenf;
+import static neo.open.gl.QGL.qglVertex3fv;
+import static neo.open.gl.QGL.qglVertexPointer;
+import static neo.open.gl.QGL.qglViewport;
 import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_BUFFER_BIT;
 import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_TEST;
 import static neo.open.gl.QGLConstantsIfc.GL_FLOAT;
@@ -147,8 +147,8 @@ public class tr_render {
 
         qglBegin(GL_TRIANGLES);
         for (int i = 0; i < tri.getIndexes().getNumValues(); i++) {
-            qglTexCoord2fv(tri.verts[tri.getIndexes().getValues()[i]].st.toFloatBuffer());
-            qglVertex3fv(tri.verts[tri.getIndexes().getValues()[i]].xyz.toFloatBuffer());
+            qglTexCoord2fv(tri.verts[tri.getIndexes().getValues().get(i)].st.toFloatBuffer());
+            qglVertex3fv(tri.verts[tri.getIndexes().getValues().get(i)].xyz.toFloatBuffer());
         }
         qglEnd();
     }
@@ -185,7 +185,7 @@ public class tr_render {
                 vertexCache.UnbindIndex();
             }
 //            if(tri.DBG_count!=11)
-            qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE/*GL_UNSIGNED_INT*/, Nio.wrap(tri.getIndexes().getValues()));
+            qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE/*GL_UNSIGNED_INT*/, tri.getIndexes().getValues());
         }
     }
 
@@ -214,7 +214,7 @@ public class tr_render {
             qglDrawElements(GL_TRIANGLES,
                     r_singleTriangle.GetBool() ? 3 : numIndexes,
                     GL_INDEX_TYPE,
-                    Nio.wrap(tri.getIndexes().getValues()));
+                    tri.getIndexes().getValues());
         }
     }
 
@@ -421,6 +421,53 @@ public class tr_render {
      RB_GetShaderTextureMatrix
      ======================
      */private static int DBG_RB_GetShaderTextureMatrix = 0;
+    public static void RB_GetShaderTextureMatrix(final float[] shaderRegisters, final textureStage_t texture, FloatBuffer matrix/*[16]*/) {
+        matrix.put(0, shaderRegisters[texture.matrix[0][0]]);
+        matrix.put(4, shaderRegisters[texture.matrix[0][1]]);
+        matrix.put(8, 0);
+        float temp = shaderRegisters[texture.matrix[0][2]];
+        matrix.put(12, temp);
+        
+        DBG_RB_GetShaderTextureMatrix++;
+//        System.out.println(">>>>>>" + DBG_RB_GetShaderTextureMatrix);
+//        System.out.println("0:" + Arrays.toString(texture.matrix[0]));
+//        System.out.println("1:" + Arrays.toString(texture.matrix[1]));
+//        System.out.println("<<<<<<" + DBG_RB_GetShaderTextureMatrix);
+
+        // we attempt to keep scrolls from generating incredibly large texture values, but
+        // center rotations and center scales can still generate offsets that need to be > 1
+        if ((temp < -40) || (temp > 40)) {
+            matrix.put(12, temp - ((int) temp));
+        }
+
+        matrix.put(1, shaderRegisters[texture.matrix[1][0]]);
+        matrix.put(5, shaderRegisters[texture.matrix[1][1]]);
+        matrix.put(9, 0);
+        temp = shaderRegisters[texture.matrix[1][2]];
+        matrix.put(13, temp);
+        if ((temp < -40) || (temp > 40)) {
+            matrix.put(13, temp - ((int) temp));
+        }
+
+        matrix.put(2, 0);
+        matrix.put(6, 0);
+        matrix.put(10, 1);
+        matrix.put(14, 0);
+
+        matrix.put(3, 0);
+        matrix.put(7, 0);
+        matrix.put(11, 0);
+        matrix.put(15, 1);
+    }
+
+    /**
+     * 
+     * @param shaderRegisters
+     * @param texture
+     * @param matrix
+     * 
+     * @Deprecated use public static void RB_GetShaderTextureMatrix(final float[] shaderRegisters, final textureStage_t texture, FloatBuffer matrix) instead
+     */
     public static void RB_GetShaderTextureMatrix(final float[] shaderRegisters, final textureStage_t texture, float[] matrix/*[16]*/) {
         matrix[0] = shaderRegisters[texture.matrix[0][0]];
         matrix[4] = shaderRegisters[texture.matrix[0][1]];
@@ -464,7 +511,7 @@ public class tr_render {
      ======================
      */
     public static void RB_LoadShaderTextureMatrix(final float[] shaderRegisters, final textureStage_t texture) {
-        final float[] matrix = new float[16];
+        final FloatBuffer matrix = Nio.newFloatBuffer(16);
 
         RB_GetShaderTextureMatrix(shaderRegisters, texture, matrix);
 //        final float[] m = matrix;
@@ -474,7 +521,7 @@ public class tr_render {
         
 //        TempDump.printCallStack("------->" + (DBG_RB_LoadShaderTextureMatrix++));
         qglMatrixMode(GL_TEXTURE);
-        qglLoadMatrixf(Nio.wrap(matrix));
+        qglLoadMatrixf(matrix);
         qglMatrixMode(GL_MODELVIEW);
     }
     

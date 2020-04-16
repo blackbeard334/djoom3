@@ -5,7 +5,6 @@ import static neo.TempDump.isNotNullOrEmpty;
 import static neo.framework.Common.common;
 import static neo.framework.Licensee.GAME_NAME;
 import static neo.sys.RC.doom_resource.IDI_ICON1;
-import static neo.sys.win_local.win32;
 import static neo.sys.win_main.Sys_Error;
 
 import java.awt.Color;

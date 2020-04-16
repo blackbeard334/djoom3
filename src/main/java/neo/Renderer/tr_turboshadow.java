@@ -13,6 +13,8 @@ import static neo.Renderer.tr_trisurf.R_ResizeStaticTriSurfIndexes;
 import static neo.Renderer.tr_trisurf.R_ResizeStaticTriSurfShadowVerts;
 import static neo.idlib.math.Simd.SIMDProcessor;
 
+import java.nio.IntBuffer;
+
 import neo.Renderer.Interaction.srfCullInfo_t;
 import neo.Renderer.Model.shadowCache_s;
 import neo.Renderer.Model.silEdge_t;
@@ -21,6 +23,7 @@ import neo.Renderer.tr_local.idRenderEntityLocal;
 import neo.Renderer.tr_local.idRenderLightLocal;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.Nio;
 
 /**
  *
@@ -54,7 +57,7 @@ public class tr_turboshadow {
         int i, j;
         srfTriangles_s newTri;
         int sil;
-        int/* glIndex_t */[] indexes;
+        IntBuffer/* glIndex_t */ indexes;
         byte[] facing;
 
         R_CalcInteractionFacing(ent, tri, light, cullInfo);
@@ -83,9 +86,9 @@ public class tr_turboshadow {
             final byte[] cullBits = cullInfo.cullBits;
             for (j = i = 0; i < tri.getIndexes().getNumValues(); i += 3, j++) {
                 if (0 == modifyFacing[j]) {
-                    final int i1 = indexes[i + 0];
-                    final int i2 = indexes[i + 1];
-                    final int i3 = indexes[i + 2];
+                    final int i1 = indexes.get(i + 0);
+                    final int i2 = indexes.get(i + 1);
+                    final int i3 = indexes.get(i + 2);
                     if ((cullBits[i1] & cullBits[i2] & cullBits[i3]) != 0) {
                         modifyFacing[j] = 1;
                     } else {
@@ -106,14 +109,14 @@ public class tr_turboshadow {
         newTri.numVerts = tri.numVerts * 2;
 
         // alloc the max possible size
-        int/*glIndex_t */[] tempIndexes;
-        int/*glIndex_t */[] shadowIndexes;
+        IntBuffer/*glIndex_t */ tempIndexes;
+        IntBuffer/*glIndex_t */ shadowIndexes;
         if (USE_TRI_DATA_ALLOCATOR) {
             R_AllocStaticTriSurfIndexes(newTri, (numShadowingFaces + tri.numSilEdges) * 6);
             tempIndexes = newTri.getIndexes().getValues();
             shadowIndexes = newTri.getIndexes().getValues();
         } else {
-            tempIndexes = new int[tri.numSilEdges * 6];
+            tempIndexes = Nio.newIntBuffer(tri.numSilEdges * 6);
             shadowIndexes = tempIndexes;
         }
 
@@ -133,12 +136,12 @@ public class tr_turboshadow {
 
             // set the two triangle winding orders based on facing
             // without using a poorly-predictable branch
-            shadowIndexes[shadowIndex + 0] = v1;
-            shadowIndexes[shadowIndex + 1] = v2 ^ f1;
-            shadowIndexes[shadowIndex + 2] = v2 ^ f2;
-            shadowIndexes[shadowIndex + 3] = v1 ^ f2;
-            shadowIndexes[shadowIndex + 4] = v1 ^ f1;
-            shadowIndexes[shadowIndex + 5] = v2 ^ 1;
+            shadowIndexes.put(shadowIndex + 0, v1);
+            shadowIndexes.put(shadowIndex + 1, v2 ^ f1);
+            shadowIndexes.put(shadowIndex + 2, v2 ^ f2);
+            shadowIndexes.put(shadowIndex + 3, v1 ^ f2);
+            shadowIndexes.put(shadowIndex + 4, v1 ^ f1);
+            shadowIndexes.put(shadowIndex + 5, v2 ^ 1);
 
             shadowIndex += 6;
         }
@@ -172,15 +175,15 @@ public class tr_turboshadow {
                 continue;
             }
 
-            final int i0 = indexes[i + 0] << 1;
-            shadowIndexes[shadowIndex + 2] = i0;
-            shadowIndexes[shadowIndex + 3] = i0 ^ 1;
-            final int i1 = indexes[i + 1] << 1;
-            shadowIndexes[shadowIndex + 1] = i1;
-            shadowIndexes[shadowIndex + 4] = i1 ^ 1;
-            final int i2 = indexes[i + 2] << 1;
-            shadowIndexes[shadowIndex + 0] = i2;
-            shadowIndexes[shadowIndex + 5] = i2 ^ 1;
+            final int i0 = indexes.get(i + 0) << 1;
+            shadowIndexes.put(shadowIndex + 2, i0);
+            shadowIndexes.put(shadowIndex + 3, i0 ^ 1);
+            final int i1 = indexes.get(i + 1) << 1;
+            shadowIndexes.put(shadowIndex + 1, i1);
+            shadowIndexes.put(shadowIndex + 4, i1 ^ 1);
+            final int i2 = indexes.get(i + 2) << 1;
+            shadowIndexes.put(shadowIndex + 0, i2);
+            shadowIndexes.put(shadowIndex + 5, i2 ^ 1);
 
             shadowIndex += 6;
         }
@@ -198,7 +201,7 @@ public class tr_turboshadow {
         final idVec3 localLightOrigin = new idVec3();
         srfTriangles_s newTri;
         silEdge_t sil;
-        int /*glIndex_t */[] indexes;
+        IntBuffer /*glIndex_t */ indexes;
         final byte[] facing;
 
         R_CalcInteractionFacing(ent, tri, light, cullInfo);
@@ -227,9 +230,9 @@ public class tr_turboshadow {
             final byte[] cullBits = cullInfo.cullBits;
             for (j = i = 0; i < tri.getIndexes().getNumValues(); i += 3, j++) {
                 if (0 == modifyFacing[j]) {
-                    final int i1 = indexes[i + 0];
-                    final int i2 = indexes[i + 1];
-                    final int i3 = indexes[i + 2];
+                    final int i1 = indexes.get(i + 0);
+                    final int i2 = indexes.get(i + 1);
+                    final int i3 = indexes.get(i + 2);
                     if ((cullBits[i1] & cullBits[i2] & cullBits[i3]) != 0) {
                         modifyFacing[j] = 1;
                     } else {
@@ -291,14 +294,14 @@ public class tr_turboshadow {
         }
 
         // alloc the max possible size
-        int/*glIndex_t */[] tempIndexes;
-        int/*glIndex_t */[] shadowIndexes;
+        IntBuffer/*glIndex_t */ tempIndexes;
+        IntBuffer/*glIndex_t */ shadowIndexes;
         if (USE_TRI_DATA_ALLOCATOR) {
             R_AllocStaticTriSurfIndexes(newTri, (numShadowingFaces + tri.numSilEdges) * 6);
             tempIndexes = newTri.getIndexes().getValues();
             shadowIndexes = newTri.getIndexes().getValues();
         } else {
-            tempIndexes = new int[tri.numSilEdges * 6];
+            tempIndexes = Nio.newIntBuffer(tri.numSilEdges * 6);
             shadowIndexes = tempIndexes;
         }
 
@@ -319,12 +322,12 @@ public class tr_turboshadow {
 
             // set the two triangle winding orders based on facing
             // without using a poorly-predictable branch
-            shadowIndexes[shadowIndex + 0] = v1;
-            shadowIndexes[shadowIndex + 1] = v2 ^ f1;
-            shadowIndexes[shadowIndex + 2] = v2 ^ f2;
-            shadowIndexes[shadowIndex + 3] = v1 ^ f2;
-            shadowIndexes[shadowIndex + 4] = v1 ^ f1;
-            shadowIndexes[shadowIndex + 5] = v2 ^ 1;
+            shadowIndexes.put(shadowIndex + 0, v1);
+            shadowIndexes.put(shadowIndex + 1, v2 ^ f1);
+            shadowIndexes.put(shadowIndex + 2, v2 ^ f2);
+            shadowIndexes.put(shadowIndex + 3, v1 ^ f2);
+            shadowIndexes.put(shadowIndex + 4, v1 ^ f1);
+            shadowIndexes.put(shadowIndex + 5, v2 ^ 1);
 
             shadowIndex += 6;
         }
@@ -350,7 +353,7 @@ public class tr_turboshadow {
         newTri.bounds.Clear();
 
         // put some faces on the model and some on the distant projection
-        indexes = tri.silIndexes;
+        int[] silIndexes = tri.silIndexes;
         shadowIndex = numShadowIndexes;
         shadowIndexes = newTri.getIndexes().getValues();
         for (i = 0, j = 0; i < tri.getIndexes().getNumValues(); i += 3, j++) {
@@ -358,15 +361,15 @@ public class tr_turboshadow {
                 continue;
             }
 
-            final int i0 = vertRemap[indexes[i + 0]];
-            shadowIndexes[shadowIndex + 2] = i0;
-            shadowIndexes[shadowIndex + 3] = i0 ^ 1;
-            final int i1 = vertRemap[indexes[i + 1]];
-            shadowIndexes[shadowIndex + 1] = i1;
-            shadowIndexes[shadowIndex + 4] = i1 ^ 1;
-            final int i2 = vertRemap[indexes[i + 2]];
-            shadowIndexes[shadowIndex + 0] = i2;
-            shadowIndexes[shadowIndex + 5] = i2 ^ 1;
+            final int i0 = vertRemap[silIndexes[i + 0]];
+            shadowIndexes.put(shadowIndex + 2, i0);
+            shadowIndexes.put(shadowIndex + 3, i0 ^ 1);
+            final int i1 = vertRemap[silIndexes[i + 1]];
+            shadowIndexes.put(shadowIndex + 1, i1);
+            shadowIndexes.put(shadowIndex + 4, i1 ^ 1);
+            final int i2 = vertRemap[silIndexes[i + 2]];
+            shadowIndexes.put(shadowIndex + 0, i2);
+            shadowIndexes.put(shadowIndex + 5, i2 ^ 1);
 
             shadowIndex += 6;
         }

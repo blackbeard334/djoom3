@@ -17,6 +17,31 @@ public class Nio {
 	public static final int SIZEOF_FLOAT = 4;
 	public static final int SIZEOF_INT = 4;
 
+//	public static FloatBuffer arrayCopy(final FloatBuffer buffer, final float[] floatArray) {
+//		for (int i = 0; i < floatArray.length; i++) {
+//			buffer.put(i, floatArray[i]);
+//		}
+//		return buffer;
+//	}
+
+	public static void arraycopy(final int[] src, int srcPos, final IntBuffer dest, int destPos, int length) {
+		for (int i = 0; i < length; i++) {
+			dest.put(destPos + i, src[srcPos + i]);
+		}
+	}
+
+	public static void buffercopy(final FloatBuffer src, int srcPos, final FloatBuffer dest, int destPos, int length) {
+		for (int i = 0; i < length; i++) {
+			dest.put(destPos + i, src.get(srcPos + i));
+		}
+	}
+
+	public static void buffercopy(final IntBuffer src, int srcPos, final IntBuffer dest, int destPos, int length) {
+		for (int i = 0; i < length; i++) {
+			dest.put(destPos + i, src.get(srcPos + i));
+		}
+	}
+
 	public static ByteBuffer newByteBuffer(int numElements) {
 		ByteBuffer bb = ByteBuffer.allocateDirect(numElements);
 		bb.order(ByteOrder.nativeOrder());
@@ -109,16 +134,19 @@ public class Nio {
 //		return (DoubleBuffer) newDoubleBuffer(doubleArray.length).put(doubleArray).flip();
 //	}
 
+//	/**
+//	 * @deprecated the calling functions should send FloatBuffers instead.
+//	 */
+//	public static FloatBuffer wrap(final float floatValue) {
+//
+//		return (FloatBuffer) newFloatBuffer(1).put(floatValue).flip();
+//	}
+
 	/**
 	 * @deprecated the calling functions should send FloatBuffers instead.
-	 */
-	public static FloatBuffer wrap(final float floatValue) {
-
-		return (FloatBuffer) newFloatBuffer(1).put(floatValue).flip();
-	}
-
-	/**
-	 * @deprecated the calling functions should send FloatBuffers instead.
+	 *
+	 * @see neo.idlib.math.Vector.idVec6#toFloatBuffer()
+	 * @see neo.idlib.math.Vector.idVecX#toFloatBuffer()
 	 */
 	public static FloatBuffer wrap(final float[] floatArray) {
 
@@ -145,20 +173,20 @@ public class Nio {
 //		}
 //	}
 
-	/**
-	 * @deprecated the calling functions should send IntBuffers instead.
-	 */
-	public static IntBuffer wrap(final int intValue) {
+//	/**
+//	 * @deprecated the calling functions should send IntBuffers instead.
+//	 */
+//	public static IntBuffer wrap(final int intValue) {
+//
+//		return (IntBuffer) newIntBuffer(1).put(intValue).flip();
+//	}
 
-		return (IntBuffer) newIntBuffer(1).put(intValue).flip();
-	}
-
-	/**
-	 * @deprecated the calling functions should send IntBuffers instead.
-	 */
-	public static IntBuffer wrap(final int[] intArray) {
-
-		return (IntBuffer) newIntBuffer(intArray.length).put(intArray).flip();
-	}
+//	/**
+//	 * @deprecated the calling functions should send IntBuffers instead.
+//	 */
+//	public static IntBuffer wrap(final int[] intArray) {
+//
+//		return (IntBuffer) newIntBuffer(intArray.length).put(intArray).flip();
+//	}
 
 }

@@ -6,10 +6,6 @@ import static neo.Renderer.VertexCache.vertBlockTag_t.TAG_FIXED;
 import static neo.Renderer.VertexCache.vertBlockTag_t.TAG_FREE;
 import static neo.Renderer.VertexCache.vertBlockTag_t.TAG_TEMP;
 import static neo.Renderer.VertexCache.vertBlockTag_t.TAG_USED;
-import static neo.Renderer.qgl.qglBindBufferARB;
-import static neo.Renderer.qgl.qglBufferDataARB;
-import static neo.Renderer.qgl.qglBufferSubDataARB;
-import static neo.Renderer.qgl.qglGenBuffersARB;
 import static neo.Renderer.tr_local.glConfig;
 import static neo.Renderer.tr_local.tr;
 import static neo.framework.CVarSystem.CVAR_INTEGER;
@@ -18,17 +14,21 @@ import static neo.framework.CmdSystem.CMD_FL_RENDERER;
 import static neo.framework.CmdSystem.cmdSystem;
 import static neo.framework.Common.common;
 import static neo.idlib.math.Simd.SIMDProcessor;
+import static neo.open.gl.QGL.qglBindBufferARB;
+import static neo.open.gl.QGL.qglBufferDataARB;
+import static neo.open.gl.QGL.qglBufferSubDataARB;
+import static neo.open.gl.QGL.qglGenBuffersARB;
 import static neo.open.gl.QGLConstantsIfc.GL_ARRAY_BUFFER_ARB;
 import static neo.open.gl.QGLConstantsIfc.GL_ELEMENT_ARRAY_BUFFER_ARB;
 import static neo.open.gl.QGLConstantsIfc.GL_STATIC_DRAW_ARB;
 import static neo.open.gl.QGLConstantsIfc.GL_STREAM_DRAW_ARB;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import neo.TempDump.Deprecation_Exception;
 import neo.Renderer.Model.lightingCache_s;
 import neo.Renderer.Model.shadowCache_s;
 import neo.framework.CVarSystem.idCVar;
@@ -361,14 +361,14 @@ public class VertexCache {
 //            throw new Deprecation_Exception();
 //        }
 
-        /**
-         * 
-         * @param data int array
-         * @param size of int array
-         * @param indexBuffer
-         * @return
-         */
-        public vertCache_s Alloc(int[] data, int size, boolean indexBuffer) {
+//        public vertCache_s Alloc(int[] data, int size, boolean indexBuffer) {
+//            final ByteBuffer byteData = Nio.newByteBuffer(size * Integer.BYTES);
+//            byteData.asIntBuffer().put(data);
+//
+//            return Alloc(byteData, size, indexBuffer);
+//        }
+
+        public vertCache_s Alloc(IntBuffer data, int size, boolean indexBuffer) {
             final ByteBuffer byteData = Nio.newByteBuffer(size * Integer.BYTES);
             byteData.asIntBuffer().put(data);
 

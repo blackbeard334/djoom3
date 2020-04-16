@@ -5,6 +5,7 @@ import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import neo.TempDump;
@@ -783,11 +784,11 @@ public class Simd_Generic {
         }
 
         @Override
-        public void MinMax(idVec3 min, idVec3 max, idDrawVert[] src, int[] indexes, int count) {
+        public void MinMax(idVec3 min, idVec3 max, idDrawVert[] src, IntBuffer indexes, int count) {
             min.x = min.y = min.z = idMath.INFINITY;
             max.x = max.y = max.z = -idMath.INFINITY;
             for (int _IX = 0; _IX < count; _IX++) {
-                final idVec3 v = src[indexes[_IX]].xyz;
+                final idVec3 v = src[indexes.get(_IX)].xyz;
                 if (v.oGet(0) < min.x) {
 					min.x = v.oGet(0);
 				}
@@ -2721,7 +2722,7 @@ public class Simd_Generic {
          ============
          */
         @Override
-        public void DeriveTriPlanes(idPlane[] planes, idDrawVert[] verts, int numVerts, int[] indexes, int numIndexes) {
+        public void DeriveTriPlanes(idPlane[] planes, idDrawVert[] verts, int numVerts, IntBuffer indexes, int numIndexes) {
             int i, planePtr;
 
             for (i = planePtr = 0; i < numIndexes; i += 3) {
@@ -2730,9 +2731,9 @@ public class Simd_Generic {
                 float f;
                 idVec3 n;
 
-                a = verts[indexes[i + 0]];
-                b = verts[indexes[i + 1]];
-                c = verts[indexes[i + 2]];
+                a = verts[indexes.get(i + 0)];
+                b = verts[indexes.get(i + 1)];
+                c = verts[indexes.get(i + 2)];
 
                 d0[0] = b.xyz.oGet(0) - a.xyz.oGet(0);
                 d0[1] = b.xyz.oGet(1) - a.xyz.oGet(1);
@@ -2770,7 +2771,7 @@ public class Simd_Generic {
          ============
          */
         @Override
-        public void DeriveTangents(idPlane[] planes, idDrawVert[] verts, int numVerts, int[] indexes, int numIndexes) {
+        public void DeriveTangents(idPlane[] planes, idDrawVert[] verts, int numVerts, IntBuffer indexes, int numIndexes) {
             int i, planesPtr;
 
             final boolean[] used = new boolean[numVerts];
@@ -2784,9 +2785,9 @@ public class Simd_Generic {
                 idVec3 n;
 				final idVec3 t0 = new idVec3(), t1 = new idVec3();
 
-                final int v0 = indexes[i + 0];
-                final int v1 = indexes[i + 1];
-                final int v2 = indexes[i + 2];
+                final int v0 = indexes.get(i + 0);
+                final int v1 = indexes.get(i + 1);
+                final int v2 = indexes.get(i + 2);
 
                 a = verts[v0];
                 b = verts[v1];
@@ -3033,13 +3034,13 @@ public class Simd_Generic {
          ============
          */
         @Override
-        public void CreateSpecularTextureCoords(idVec4[] texCoords, idVec3 lightOrigin, idVec3 viewOrigin, idDrawVert[] verts, int numVerts, int[] indexes, int numIndexes) {
+        public void CreateSpecularTextureCoords(idVec4[] texCoords, idVec3 lightOrigin, idVec3 viewOrigin, idDrawVert[] verts, int numVerts, IntBuffer indexes, int numIndexes) {
 
             final boolean[] used = new boolean[numVerts];
 //	memset( used, 0, numVerts * sizeof( used[0] ) );
 
             for (int i = numIndexes - 1; i >= 0; i--) {
-                used[indexes[i]] = true;
+                used[indexes.get(i)] = true;
             }
 
             for (int i = 0; i < numVerts; i++) {

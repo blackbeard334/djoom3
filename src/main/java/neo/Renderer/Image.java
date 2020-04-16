@@ -27,25 +27,6 @@ import static neo.Renderer.Material.textureRepeat_t.TR_CLAMP_TO_ZERO;
 import static neo.Renderer.Material.textureRepeat_t.TR_CLAMP_TO_ZERO_ALPHA;
 import static neo.Renderer.Material.textureRepeat_t.TR_REPEAT;
 import static neo.Renderer.RenderSystem_init.GL_CheckErrors;
-import static neo.Renderer.qgl.qglBindTexture;
-import static neo.Renderer.qgl.qglColorTableEXT;
-import static neo.Renderer.qgl.qglCompressedTexImage2DARB;
-import static neo.Renderer.qgl.qglCopyTexImage2D;
-import static neo.Renderer.qgl.qglCopyTexSubImage2D;
-import static neo.Renderer.qgl.qglDeleteTextures;
-import static neo.Renderer.qgl.qglDisable;
-import static neo.Renderer.qgl.qglEnable;
-import static neo.Renderer.qgl.qglGenTextures;
-import static neo.Renderer.qgl.qglGetCompressedTexImageARB;
-import static neo.Renderer.qgl.qglGetTexImage;
-import static neo.Renderer.qgl.qglPixelStorei;
-import static neo.Renderer.qgl.qglPrioritizeTextures;
-import static neo.Renderer.qgl.qglReadBuffer;
-import static neo.Renderer.qgl.qglTexImage2D;
-import static neo.Renderer.qgl.qglTexImage3D;
-import static neo.Renderer.qgl.qglTexParameterf;
-import static neo.Renderer.qgl.qglTexParameteri;
-import static neo.Renderer.qgl.qglTexSubImage2D;
 import static neo.Renderer.tr_backend.RB_LogComment;
 import static neo.Renderer.tr_local.MAX_MULTITEXTURE_UNITS;
 import static neo.Renderer.tr_local.backEnd;
@@ -76,6 +57,25 @@ import static neo.idlib.Lib.LittleLong;
 import static neo.idlib.Text.Str.FILE_HASH_SIZE;
 import static neo.idlib.Text.Str.va;
 import static neo.idlib.hashing.MD4.MD4_BlockChecksum;
+import static neo.open.gl.QGL.qglBindTexture;
+import static neo.open.gl.QGL.qglColorTableEXT;
+import static neo.open.gl.QGL.qglCompressedTexImage2DARB;
+import static neo.open.gl.QGL.qglCopyTexImage2D;
+import static neo.open.gl.QGL.qglCopyTexSubImage2D;
+import static neo.open.gl.QGL.qglDeleteTextures;
+import static neo.open.gl.QGL.qglDisable;
+import static neo.open.gl.QGL.qglEnable;
+import static neo.open.gl.QGL.qglGenTextures;
+import static neo.open.gl.QGL.qglGetCompressedTexImageARB;
+import static neo.open.gl.QGL.qglGetTexImage;
+import static neo.open.gl.QGL.qglPixelStorei;
+import static neo.open.gl.QGL.qglPrioritizeTextures;
+import static neo.open.gl.QGL.qglReadBuffer;
+import static neo.open.gl.QGL.qglTexImage2D;
+import static neo.open.gl.QGL.qglTexImage3D;
+import static neo.open.gl.QGL.qglTexParameterf;
+import static neo.open.gl.QGL.qglTexParameteri;
+import static neo.open.gl.QGL.qglTexSubImage2D;
 import static neo.open.gl.QGLConstantsIfc.GL_ALPHA;
 import static neo.open.gl.QGLConstantsIfc.GL_ALPHA8;
 import static neo.open.gl.QGLConstantsIfc.GL_BACK;
@@ -128,6 +128,8 @@ import static neo.sys.win_shared.Sys_Milliseconds;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import neo.TempDump.CPP_class;
 import neo.TempDump.CPP_class.Bool;
@@ -650,8 +652,9 @@ public class Image {
             }
 
             if (com_purgeAll.GetBool()) {
-                final float/*GLclampf*/ priority = 1.0f;
-                qglPrioritizeTextures(Nio.wrap(this.texNum), Nio.wrap(priority));
+                final FloatBuffer/*GLclampf*/ priority = (FloatBuffer) Nio.newFloatBuffer(1).put(1.0f);
+                final IntBuffer/*GLuint*/       texNum = (IntBuffer) Nio.newIntBuffer(1).put(this.texNum);
+                qglPrioritizeTextures(texNum, priority);
             }
         }
         private static int DBG_Bind = 0;

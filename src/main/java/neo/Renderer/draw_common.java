@@ -41,45 +41,6 @@ import static neo.Renderer.RenderSystem_init.r_useShadowVertexProgram;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.draw_arb.RB_ARB_DrawInteractions;
 import static neo.Renderer.draw_arb2.RB_ARB2_DrawInteractions;
-import static neo.Renderer.qgl.qglAlphaFunc;
-import static neo.Renderer.qgl.qglBegin;
-import static neo.Renderer.qgl.qglBindProgramARB;
-import static neo.Renderer.qgl.qglColor3f;
-import static neo.Renderer.qgl.qglColor3fv;
-import static neo.Renderer.qgl.qglColor4f;
-import static neo.Renderer.qgl.qglColor4fv;
-import static neo.Renderer.qgl.qglColorPointer;
-import static neo.Renderer.qgl.qglDepthBoundsEXT;
-import static neo.Renderer.qgl.qglDisable;
-import static neo.Renderer.qgl.qglDisableClientState;
-import static neo.Renderer.qgl.qglDisableVertexAttribArrayARB;
-import static neo.Renderer.qgl.qglEnable;
-import static neo.Renderer.qgl.qglEnableClientState;
-import static neo.Renderer.qgl.qglEnableVertexAttribArrayARB;
-import static neo.Renderer.qgl.qglEnd;
-import static neo.Renderer.qgl.qglGetError;
-import static neo.Renderer.qgl.qglLoadIdentity;
-import static neo.Renderer.qgl.qglLoadMatrixf;
-import static neo.Renderer.qgl.qglMatrixMode;
-import static neo.Renderer.qgl.qglNormalPointer;
-import static neo.Renderer.qgl.qglOrtho;
-import static neo.Renderer.qgl.qglPolygonOffset;
-import static neo.Renderer.qgl.qglPopMatrix;
-import static neo.Renderer.qgl.qglProgramEnvParameter4fvARB;
-import static neo.Renderer.qgl.qglProgramLocalParameter4fvARB;
-import static neo.Renderer.qgl.qglPushMatrix;
-import static neo.Renderer.qgl.qglScissor;
-import static neo.Renderer.qgl.qglStencilFunc;
-import static neo.Renderer.qgl.qglStencilOp;
-import static neo.Renderer.qgl.qglTexCoord2f;
-import static neo.Renderer.qgl.qglTexCoordPointer;
-import static neo.Renderer.qgl.qglTexEnvfv;
-import static neo.Renderer.qgl.qglTexEnvi;
-import static neo.Renderer.qgl.qglTexGenf;
-import static neo.Renderer.qgl.qglTexGenfv;
-import static neo.Renderer.qgl.qglVertex2f;
-import static neo.Renderer.qgl.qglVertexAttribPointerARB;
-import static neo.Renderer.qgl.qglVertexPointer;
 import static neo.Renderer.tr_backend.GL_Cull;
 import static neo.Renderer.tr_backend.GL_SelectTexture;
 import static neo.Renderer.tr_backend.GL_State;
@@ -133,6 +94,45 @@ import static neo.Renderer.tr_render.RB_RenderDrawSurfListWithFunction;
 import static neo.Renderer.tr_rendertools.RB_RenderDebugTools;
 import static neo.TempDump.NOT;
 import static neo.framework.Common.common;
+import static neo.open.gl.QGL.qglAlphaFunc;
+import static neo.open.gl.QGL.qglBegin;
+import static neo.open.gl.QGL.qglBindProgramARB;
+import static neo.open.gl.QGL.qglColor3f;
+import static neo.open.gl.QGL.qglColor3fv;
+import static neo.open.gl.QGL.qglColor4f;
+import static neo.open.gl.QGL.qglColor4fv;
+import static neo.open.gl.QGL.qglColorPointer;
+import static neo.open.gl.QGL.qglDepthBoundsEXT;
+import static neo.open.gl.QGL.qglDisable;
+import static neo.open.gl.QGL.qglDisableClientState;
+import static neo.open.gl.QGL.qglDisableVertexAttribArrayARB;
+import static neo.open.gl.QGL.qglEnable;
+import static neo.open.gl.QGL.qglEnableClientState;
+import static neo.open.gl.QGL.qglEnableVertexAttribArrayARB;
+import static neo.open.gl.QGL.qglEnd;
+import static neo.open.gl.QGL.qglGetError;
+import static neo.open.gl.QGL.qglLoadIdentity;
+import static neo.open.gl.QGL.qglLoadMatrixf;
+import static neo.open.gl.QGL.qglMatrixMode;
+import static neo.open.gl.QGL.qglNormalPointer;
+import static neo.open.gl.QGL.qglOrtho;
+import static neo.open.gl.QGL.qglPolygonOffset;
+import static neo.open.gl.QGL.qglPopMatrix;
+import static neo.open.gl.QGL.qglProgramEnvParameter4fvARB;
+import static neo.open.gl.QGL.qglProgramLocalParameter4fvARB;
+import static neo.open.gl.QGL.qglPushMatrix;
+import static neo.open.gl.QGL.qglScissor;
+import static neo.open.gl.QGL.qglStencilFunc;
+import static neo.open.gl.QGL.qglStencilOp;
+import static neo.open.gl.QGL.qglTexCoord2f;
+import static neo.open.gl.QGL.qglTexCoordPointer;
+import static neo.open.gl.QGL.qglTexEnvfv;
+import static neo.open.gl.QGL.qglTexEnvi;
+import static neo.open.gl.QGL.qglTexGenf;
+import static neo.open.gl.QGL.qglTexGenfv;
+import static neo.open.gl.QGL.qglVertex2f;
+import static neo.open.gl.QGL.qglVertexAttribPointerARB;
+import static neo.open.gl.QGL.qglVertexPointer;
 import static neo.open.gl.QGLConstantsIfc.GL_ALPHA_SCALE;
 import static neo.open.gl.QGLConstantsIfc.GL_ALPHA_TEST;
 import static neo.open.gl.QGLConstantsIfc.GL_ALWAYS;
@@ -221,7 +221,7 @@ public class draw_common {
      =====================
      */
 
-    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/, final float[] textureMatrix) {
+    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/) {
         final float[] genMatrix = new float[16];
         final float[] finale = new float[16];
 
@@ -256,6 +256,28 @@ public class draw_common {
         lightProject[1].oSet(1, finale[5]);
         lightProject[1].oSet(2, finale[9]);
         lightProject[1].oSet(3, finale[13]);
+    }
+
+    /**
+     * 
+     * @param lightProject
+     * @param textureMatrix - why this ???
+     * 
+     * @deprecated use public static void RB_BakeTextureMatrixIntoTexgen(idVec4[] lightProject) instead
+     */
+    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/, final FloatBuffer textureMatrix) {
+    	RB_BakeTextureMatrixIntoTexgen(lightProject);
+    }
+
+    /**
+     * 
+     * @param lightProject
+     * @param textureMatrix - why this ???
+     * 
+     * @deprecated use public static void RB_BakeTextureMatrixIntoTexgen(idVec4[] lightProject) instead
+     */
+    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/, final float[] textureMatrix) {
+    	RB_BakeTextureMatrixIntoTexgen(lightProject);
     }
 
     /*
@@ -1521,11 +1543,11 @@ public class draw_common {
             }
 
             // get the modulate values from the light, including alpha, unlike normal lights
-            backEnd.getLightColor()[0] = regs[ stage.color.registers[0]];
-            backEnd.getLightColor()[1] = regs[ stage.color.registers[1]];
-            backEnd.getLightColor()[2] = regs[ stage.color.registers[2]];
-            backEnd.getLightColor()[3] = regs[ stage.color.registers[3]];
-            qglColor4fv(Nio.wrap(backEnd.getLightColor()));
+            backEnd.getLightColor().put(0, regs[ stage.color.registers[0]]);
+            backEnd.getLightColor().put(1, regs[ stage.color.registers[1]]);
+            backEnd.getLightColor().put(2, regs[ stage.color.registers[2]]);
+            backEnd.getLightColor().put(3, regs[ stage.color.registers[3]]);
+            qglColor4fv(backEnd.getLightColor());
 
             RB_RenderDrawSurfChainWithFunction(drawSurfs, RB_T_BlendLight.INSTANCE);
             RB_RenderDrawSurfChainWithFunction(drawSurfs2, RB_T_BlendLight.INSTANCE);
@@ -1625,22 +1647,22 @@ public class draw_common {
         // assume fog shaders have only a single stage
         stage = lightShader.GetStage(0);
 
-        backEnd.getLightColor()[0] = regs[ stage.color.registers[0]];
-        backEnd.getLightColor()[1] = regs[ stage.color.registers[1]];
-        backEnd.getLightColor()[2] = regs[ stage.color.registers[2]];
-        backEnd.getLightColor()[3] = regs[ stage.color.registers[3]];
+        backEnd.getLightColor().put(0, regs[ stage.color.registers[0]]);
+        backEnd.getLightColor().put(1, regs[ stage.color.registers[1]]);
+        backEnd.getLightColor().put(2, regs[ stage.color.registers[2]]);
+        backEnd.getLightColor().put(3, regs[ stage.color.registers[3]]);
 
-        qglColor3fv(Nio.wrap(backEnd.getLightColor()));
+        qglColor3fv(backEnd.getLightColor());
 
         // calculate the falloff planes
         float a;
 
         // if they left the default value on, set a fog distance of 500
-        if (backEnd.getLightColor()[3] <= 1.0) {
+        if (backEnd.getLightColor().get(3) <= 1.0) {
             a = -0.5f / DEFAULT_FOG_DISTANCE;
         } else {
             // otherwise, distance = alpha color
-            a = -0.5f / backEnd.getLightColor()[3];
+            a = -0.5f / backEnd.getLightColor().get(3);
         }
 
         GL_State(GLS_DEPTHMASK | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_DEPTHFUNC_EQUAL);

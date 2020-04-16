@@ -8,24 +8,6 @@ import static neo.Renderer.Image_process.R_MipMap;
 import static neo.Renderer.Image_process.R_VerticalFlip;
 import static neo.Renderer.Material.SURF_NULLNORMAL;
 import static neo.Renderer.ModelManager.renderModelManager;
-import static neo.Renderer.qgl.qglBegin;
-import static neo.Renderer.qgl.qglClear;
-import static neo.Renderer.qgl.qglClearColor;
-import static neo.Renderer.qgl.qglColor3f;
-import static neo.Renderer.qgl.qglColor3ubv;
-import static neo.Renderer.qgl.qglCullFace;
-import static neo.Renderer.qgl.qglDepthFunc;
-import static neo.Renderer.qgl.qglDepthMask;
-import static neo.Renderer.qgl.qglDisable;
-import static neo.Renderer.qgl.qglEnable;
-import static neo.Renderer.qgl.qglEnd;
-import static neo.Renderer.qgl.qglFlush;
-import static neo.Renderer.qgl.qglLoadIdentity;
-import static neo.Renderer.qgl.qglMatrixMode;
-import static neo.Renderer.qgl.qglOrtho;
-import static neo.Renderer.qgl.qglReadPixels;
-import static neo.Renderer.qgl.qglVertex3f;
-import static neo.Renderer.qgl.qglViewport;
 import static neo.Renderer.tr_local.glConfig;
 import static neo.Renderer.tr_local.tr;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurf;
@@ -39,6 +21,24 @@ import static neo.framework.Common.common;
 import static neo.idlib.math.Vector.DotProduct;
 import static neo.idlib.math.Vector.VectorSubtract;
 import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.open.gl.QGL.qglBegin;
+import static neo.open.gl.QGL.qglClear;
+import static neo.open.gl.QGL.qglClearColor;
+import static neo.open.gl.QGL.qglColor3f;
+import static neo.open.gl.QGL.qglColor3ubv;
+import static neo.open.gl.QGL.qglCullFace;
+import static neo.open.gl.QGL.qglDepthFunc;
+import static neo.open.gl.QGL.qglDepthMask;
+import static neo.open.gl.QGL.qglDisable;
+import static neo.open.gl.QGL.qglEnable;
+import static neo.open.gl.QGL.qglEnd;
+import static neo.open.gl.QGL.qglFlush;
+import static neo.open.gl.QGL.qglLoadIdentity;
+import static neo.open.gl.QGL.qglMatrixMode;
+import static neo.open.gl.QGL.qglOrtho;
+import static neo.open.gl.QGL.qglReadPixels;
+import static neo.open.gl.QGL.qglVertex3f;
+import static neo.open.gl.QGL.qglViewport;
 import static neo.open.gl.QGLConstantsIfc.GL_ALPHA_TEST;
 import static neo.open.gl.QGLConstantsIfc.GL_BLEND;
 import static neo.open.gl.QGLConstantsIfc.GL_COLOR_BUFFER_BIT;
@@ -60,6 +60,7 @@ import static neo.sys.win_glimp.GLimp_SwapBuffers;
 import static neo.sys.win_shared.Sys_Milliseconds;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 import neo.TempDump.TODO_Exception;
 import neo.Renderer.Model.idRenderModel;
@@ -75,8 +76,8 @@ import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
-import neo.open.Nio;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 
 /**
  *
@@ -417,7 +418,7 @@ public class renderbump {
             // determine which hash bins the triangle will need to be in
             triBounds.Clear();
             for (j = 0; j < 3; j++) {
-                triBounds.AddPoint(highMesh.verts[ highMesh.getIndexes().getValues()[i + j]].xyz);
+                triBounds.AddPoint(highMesh.verts[ highMesh.getIndexes().getValues().get(i + j)].xyz);
             }
             for (j = 0; j < 3; j++) {
                 iBounds[0][j] = (int) ((triBounds.oGet(0, j) - hash.bounds.oGet(0, j)) / hash.binSize[j]);
@@ -483,9 +484,9 @@ public class renderbump {
         final float[] bary = new float[3];
         idVec3 testVert;
 
-        v[0] = highMesh.verts[ highMesh.getIndexes().getValues()[ (faceNum * 3) + 0]].xyz;
-        v[1] = highMesh.verts[ highMesh.getIndexes().getValues()[ (faceNum * 3) + 1]].xyz;
-        v[2] = highMesh.verts[ highMesh.getIndexes().getValues()[ (faceNum * 3) + 2]].xyz;
+        v[0] = highMesh.verts[ highMesh.getIndexes().getValues().get( (faceNum * 3) + 0)].xyz;
+        v[1] = highMesh.verts[ highMesh.getIndexes().getValues().get( (faceNum * 3) + 1)].xyz;
+        v[2] = highMesh.verts[ highMesh.getIndexes().getValues().get( (faceNum * 3) + 2)].xyz;
 
         plane = highMesh.facePlanes[faceNum];
 
@@ -550,7 +551,7 @@ public class renderbump {
         // triangularly interpolate the normals to the sample point
         sampledNormal.oSet(getVec3_origin());
         for (j = 0; j < 3; j++) {
-            sampledNormal.oPluSet(highMesh.verts[ highMesh.getIndexes().getValues()[ (faceNum * 3) + j]].normal.oMultiply(bary[j]));
+            sampledNormal.oPluSet(highMesh.verts[ highMesh.getIndexes().getValues().get( (faceNum * 3) + j)].normal.oMultiply(bary[j]));
         }
         sampledNormal.Normalize();
 
@@ -558,7 +559,7 @@ public class renderbump {
         for (int i = 0; i < 4; i++) {
             float color = 0.0f;
             for (j = 0; j < 3; j++) {
-                color += bary[j] * highMesh.verts[ highMesh.getIndexes().getValues()[ (faceNum * 3) + j]].getColor().get(i);
+                color += bary[j] * highMesh.verts[ highMesh.getIndexes().getValues().get( (faceNum * 3) + j)].getColor().get(i);
             }
             sampledColor[i] = (byte) color;
         }
@@ -708,12 +709,12 @@ public class renderbump {
         // this is a brain-dead rasterizer, but compared to the ray trace,
         // nothing we do here is going to matter performance-wise
         // adjust for resolution and texel centers
-        verts[0][0] = (lowMesh.verts[ lowMesh.getIndexes().getValues()[(lowFaceNum * 3) + 0]].st.oGet(0) * rbs[0].width) - 0.5f;
-        verts[1][0] = (lowMesh.verts[ lowMesh.getIndexes().getValues()[(lowFaceNum * 3) + 1]].st.oGet(0) * rbs[0].width) - 0.5f;
-        verts[2][0] = (lowMesh.verts[ lowMesh.getIndexes().getValues()[(lowFaceNum * 3) + 2]].st.oGet(0) * rbs[0].width) - 0.5f;
-        verts[0][1] = (lowMesh.verts[ lowMesh.getIndexes().getValues()[(lowFaceNum * 3) + 0]].st.oGet(1) * rbs[0].width) - 0.5f;
-        verts[1][1] = (lowMesh.verts[ lowMesh.getIndexes().getValues()[(lowFaceNum * 3) + 1]].st.oGet(1) * rbs[0].width) - 0.5f;
-        verts[2][1] = (lowMesh.verts[ lowMesh.getIndexes().getValues()[(lowFaceNum * 3) + 2]].st.oGet(1) * rbs[0].width) - 0.5f;
+        verts[0][0] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 0)].st.oGet(0) * rbs[0].width) - 0.5f;
+        verts[1][0] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 1)].st.oGet(0) * rbs[0].width) - 0.5f;
+        verts[2][0] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 2)].st.oGet(0) * rbs[0].width) - 0.5f;
+        verts[0][1] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 0)].st.oGet(1) * rbs[0].width) - 0.5f;
+        verts[1][1] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 1)].st.oGet(1) * rbs[0].width) - 0.5f;
+        verts[2][1] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 2)].st.oGet(1) * rbs[0].width) - 0.5f;
 
         // find the texcoord bounding box
         bounds[0][0] = 99999;
@@ -827,7 +828,7 @@ public class renderbump {
                 for (k = 0; k < 3; k++) {
                     int index;
 
-                    index = lowMesh.getIndexes().getValues()[(lowFaceNum * 3) + k];
+                    index = lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + k);
                     point.oPluSet(lowMesh.verts[index].xyz.oMultiply(bary[k]));
 
                     // traceNormal will differ from normal if the surface uses unsmoothedTangents
@@ -938,7 +939,7 @@ public class renderbump {
         newTri.bounds.Clear();
 
         final idDrawVert[] verts = newTri.verts;
-        final int[]/*glIndex_t*/ indexes = newTri.getIndexes().getValues();
+        final IntBuffer/*glIndex_t*/ indexes = newTri.getIndexes().getValues();
         numIndexes = 0;
         numVerts = 0;
         for (i = 0; i < model.NumSurfaces(); i++) {
@@ -948,7 +949,7 @@ public class renderbump {
 //            memcpy(verts + numVerts, tri.verts, tri.numVerts * sizeof(tri.verts[0]));
             System.arraycopy(tri.verts, 0, verts, numVerts, tri.numVerts);
             for (j = 0; j < tri.getIndexes().getNumValues(); j++) {
-                indexes[numIndexes + j] = numVerts + tri.getIndexes().getValues()[j];
+            	indexes.put(numIndexes + j, numVerts + tri.getIndexes().getValues().get(j));
             }
             newTri.bounds.AddBounds(tri.bounds);
             numIndexes += tri.getIndexes().getNumValues();
@@ -1554,7 +1555,7 @@ public class renderbump {
                                     int v;
                                     float[] a;
 
-                                    v = mesh.getIndexes().getValues()[j + k];
+                                    v = mesh.getIndexes().getValues().get(j + k);
                                     qglColor3ubv(mesh.verts[v].getColor());
                                     a = mesh.verts[v].xyz.ToFloatPtr();
                                     qglVertex3f(a[0] + xOff, a[2] + yOff, a[1]);
@@ -1570,9 +1571,9 @@ public class renderbump {
                                     idVec3 a2, b2, c2;
                                     int v1, v2, v3;
 
-                                    v1 = mesh.getIndexes().getValues()[j + 0];
-                                    v2 = mesh.getIndexes().getValues()[j + 1];
-                                    v3 = mesh.getIndexes().getValues()[j + 2];
+                                    v1 = mesh.getIndexes().getValues().get(j + 0);
+                                    v2 = mesh.getIndexes().getValues().get(j + 1);
+                                    v3 = mesh.getIndexes().getValues().get(j + 2);
 
                                     a2 = mesh.verts[ v1].xyz;
                                     b2 = mesh.verts[ v2].xyz;
@@ -1600,7 +1601,7 @@ public class renderbump {
                                         float[] n;
                                         float[] a;
 
-                                        v = mesh.getIndexes().getValues()[j + k];
+                                        v = mesh.getIndexes().getValues().get(j + k);
                                         n = mesh.verts[v].normal.ToFloatPtr();
 
                                         // NULLNORMAL is used by the artists to force an area to reflect no

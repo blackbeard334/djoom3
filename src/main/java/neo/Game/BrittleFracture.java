@@ -753,15 +753,15 @@ public class BrittleFracture {
                     v.tangents[1] = tangents.oGet(2);
                     v.SetColor(packedColor);
 
-                    tris.getIndexes().getValues()[tris.getIndexes().incNumValues()] = tris.numVerts - 3;
-                    tris.getIndexes().getValues()[tris.getIndexes().incNumValues()] = tris.numVerts - 2;
-                    tris.getIndexes().getValues()[tris.getIndexes().incNumValues()] = tris.numVerts - 1;
+                    tris.getIndexes().getValues().put(tris.getIndexes().incNumValues(), tris.numVerts - 3);
+                    tris.getIndexes().getValues().put(tris.getIndexes().incNumValues(), tris.numVerts - 2);
+                    tris.getIndexes().getValues().put(tris.getIndexes().incNumValues(), tris.numVerts - 1);
 
                     if (this.material.ShouldCreateBackSides()) {
 
-                        tris.getIndexes().getValues()[tris.getIndexes().incNumValues()] = tris.numVerts - 2;
-                        tris.getIndexes().getValues()[tris.getIndexes().incNumValues()] = tris.numVerts - 3;
-                        tris.getIndexes().getValues()[tris.getIndexes().incNumValues()] = tris.numVerts - 1;
+                        tris.getIndexes().getValues().put(tris.getIndexes().incNumValues(), tris.numVerts - 2);
+                        tris.getIndexes().getValues().put(tris.getIndexes().incNumValues(), tris.numVerts - 3);
+                        tris.getIndexes().getValues().put(tris.getIndexes().incNumValues(), tris.numVerts - 1);
                     }
                 }
 
@@ -800,15 +800,15 @@ public class BrittleFracture {
                         v.tangents[1] = tangents.oGet(2);
                         v.SetColor(packedColor);
 
-                        decalTris.getIndexes().getValues()[decalTris.getIndexes().incNumValues()] = decalTris.numVerts - 3;
-                        decalTris.getIndexes().getValues()[decalTris.getIndexes().incNumValues()] = decalTris.numVerts - 2;
-                        decalTris.getIndexes().getValues()[decalTris.getIndexes().incNumValues()] = decalTris.numVerts - 1;
+                        decalTris.getIndexes().getValues().put(decalTris.getIndexes().incNumValues(), decalTris.numVerts - 3);
+                        decalTris.getIndexes().getValues().put(decalTris.getIndexes().incNumValues(), decalTris.numVerts - 2);
+                        decalTris.getIndexes().getValues().put(decalTris.getIndexes().incNumValues(), decalTris.numVerts - 1);
 
                         if (this.decalMaterial.ShouldCreateBackSides()) {
 
-                            decalTris.getIndexes().getValues()[decalTris.getIndexes().incNumValues()] = decalTris.numVerts - 2;
-                            decalTris.getIndexes().getValues()[decalTris.getIndexes().incNumValues()] = decalTris.numVerts - 3;
-                            decalTris.getIndexes().getValues()[decalTris.getIndexes().incNumValues()] = decalTris.numVerts - 1;
+                            decalTris.getIndexes().getValues().put(decalTris.getIndexes().incNumValues(), decalTris.numVerts - 2);
+                            decalTris.getIndexes().getValues().put(decalTris.getIndexes().incNumValues(), decalTris.numVerts - 3);
+                            decalTris.getIndexes().getValues().put(decalTris.getIndexes().incNumValues(), decalTris.numVerts - 1);
                         }
                     }
                 }
@@ -1181,7 +1181,7 @@ public class BrittleFracture {
                 for (j = 0; j < surf.geometry.getIndexes().getNumValues(); j += 3) {
                     w.Clear();
                     for (k = 0; k < 3; k++) {
-                        v = surf.geometry.verts[ surf.geometry.getIndexes().getValues()[ (j + 2) - k]];
+                        v = surf.geometry.verts[ surf.geometry.getIndexes().getValues().get( (j + 2) - k)];
                         w.AddPoint(v.xyz);
                         w.oGet(k).s = v.st.oGet(0);
                         w.oGet(k).t = v.st.oGet(1);

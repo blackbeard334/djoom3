@@ -20,7 +20,7 @@ import neo.idlib.geometry.JointTransform.idJointQuat;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.open.NeoIntArray;
+import neo.open.NeoIntBuffer;
 import neo.open.Nio;
 
 /**
@@ -144,7 +144,7 @@ public class Model {
 
         //public int                 numIndexes;  // for shadows, this has both front and rear end caps and silhouette planes
         //public int /*glIndex_t*/[] indexes;     // indexes, allocated with special allocator
-        private NeoIntArray         indexes;     // for shadows, this has both front and rear end caps and silhouette planes
+        private NeoIntBuffer         indexes;     // for shadows, this has both front and rear end caps and silhouette planes
 
         public int/*glIndex_t*/[]  silIndexes;  // indexes changed to be the first vertex with same XYZ, ignoring normal and texcoords
 
@@ -196,7 +196,7 @@ public class Model {
             this.deformedSurface = false;
             this.numVerts = 0;
             this.verts = null;
-            this.indexes = new NeoIntArray();
+            this.indexes = new NeoIntBuffer();
             this.silIndexes = null;
             this.numMirroredVerts = 0;
             this.mirroredVerts = null;
@@ -218,7 +218,7 @@ public class Model {
             this.shadowCache = null;
         }
 
-		public NeoIntArray getIndexes() {
+		public NeoIntBuffer getIndexes() {
 			return this.indexes;
 		}
 

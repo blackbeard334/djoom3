@@ -15,10 +15,10 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Rotation.idRotation;
-import neo.open.Nio;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Matrix.idMat4;
 import neo.idlib.math.Matrix.idMatX;
+import neo.open.Nio;
 
 /**
  *

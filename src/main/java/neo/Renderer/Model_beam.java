@@ -114,12 +114,12 @@ public class Model_beam {
                 tri.verts[3].st.oSet(0, 1);
                 tri.verts[3].st.oSet(1, 1);
 
-                tri.getIndexes().getValues()[0] = 0;
-                tri.getIndexes().getValues()[1] = 2;
-                tri.getIndexes().getValues()[2] = 1;
-                tri.getIndexes().getValues()[3] = 2;
-                tri.getIndexes().getValues()[4] = 3;
-                tri.getIndexes().getValues()[5] = 1;
+                tri.getIndexes().getValues().put(0, 0);
+                tri.getIndexes().getValues().put(1, 2);
+                tri.getIndexes().getValues().put(2, 1);
+                tri.getIndexes().getValues().put(3, 2);
+                tri.getIndexes().getValues().put(4, 3);
+                tri.getIndexes().getValues().put(5, 1);
 
                 tri.numVerts = 4;
                 tri.getIndexes().setNumValues(6);
