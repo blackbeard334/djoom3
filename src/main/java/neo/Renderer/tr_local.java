@@ -758,7 +758,7 @@ public class tr_local {
 
         public renderView_s       renderView;
 //
-        private final float[]            projectionMatrix = new float[16];
+        private final float[]     projectionMatrix = new float[16];
         public viewEntity_s       worldSpace;
 //
         public idRenderWorldLocal renderWorld;

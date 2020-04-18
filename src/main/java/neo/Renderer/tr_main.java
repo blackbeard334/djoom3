@@ -505,12 +505,12 @@ public class tr_main {
     }
 
     // transform Z in eye coordinates to window coordinates
-    public static void R_TransformEyeZToWin(float src_z, final float[] projectionMatrix, float[] dst_z) {
+    public static void R_TransformEyeZToWin(float src_z, final FloatBuffer projectionMatrix, float[] dst_z) {
         final float clip_z, clip_w;
 
         // projection
-        clip_z = (src_z * projectionMatrix[2 + (2 * 4)]) + projectionMatrix[2 + (3 * 4)];
-        clip_w = (src_z * projectionMatrix[3 + (2 * 4)]) + projectionMatrix[3 + (3 * 4)];
+        clip_z = (src_z * projectionMatrix.get(2 + (2 * 4))) + projectionMatrix.get(2 + (3 * 4));
+        clip_w = (src_z * projectionMatrix.get(3 + (2 * 4))) + projectionMatrix.get(3 + (3 * 4));
 
         if (clip_w <= 0.0f) {
             dst_z[0] = 0.0f;					// clamp to near plane
@@ -518,6 +518,18 @@ public class tr_main {
             dst_z[0] = clip_z / clip_w;
             dst_z[0] = (dst_z[0] * 0.5f) + 0.5f;	// convert to window coords
         }
+    }
+
+    /**
+     * 
+     * @param src_z
+     * @param projectionMatrix
+     * @param dst_z
+     * 
+     * @deprecated use R_TransformEyeZToWin(float src_z, final FloatBuffer projectionMatrix, float[] dst_z) instead
+     */
+    public static void R_TransformEyeZToWin(float src_z, final float[] projectionMatrix, float[] dst_z) {
+    	R_TransformEyeZToWin(src_z, Nio.wrap(projectionMatrix), dst_z);
     }
 
     /*
@@ -637,6 +649,20 @@ public class tr_main {
      ==========================
      R_TransformModelToClip
      ==========================
+     */
+    public static void R_TransformModelToClip(final idVec3 src, final FloatBuffer modelMatrix, final FloatBuffer projectionMatrix, idPlane eye, idPlane dst) {
+        MatrixUtil.matrixToClipGet3Set4(src, dst, eye, modelMatrix, projectionMatrix);
+    }
+
+    /**
+     * 
+     * @param src
+     * @param modelMatrix
+     * @param projectionMatrix
+     * @param eye
+     * @param dst
+     * 
+     * @deprecated use R_TransformModelToClip(final idVec3 src, final FloatBuffer modelMatrix, final FloatBuffer projectionMatrix, idPlane eye, idPlane dst) instead
      */
     public static void R_TransformModelToClip(final idVec3 src, final float[] modelMatrix, final float[] projectionMatrix, idPlane eye, idPlane dst) {
         MatrixUtil.matrixToClipGet3Set4(src, dst, eye, modelMatrix, projectionMatrix);
