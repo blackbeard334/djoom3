@@ -45,7 +45,6 @@ import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.open.Nio;
 
 /**
  *

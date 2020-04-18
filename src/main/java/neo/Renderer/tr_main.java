@@ -31,6 +31,8 @@ import static neo.idlib.math.Vector.VectorSubtract;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
@@ -397,7 +399,7 @@ public class tr_main {
     }
 
     // FIXME: these assume no skewing or scaling transforms
-    public static idVec3 R_LocalPointToGlobal(final FloatBuffer modelMatrix/*[16]*/, final idVec3 in) {
+    public static idVec3 R_LocalPointToGlobal(final float[] modelMatrix/*[16]*/, final idVec3 in) {
         idVec3 out;
 
 // if (MACOS_X && __i386__){
@@ -428,9 +430,9 @@ public class tr_main {
 // }else
         {
             out = new idVec3(
-                    ((in.oGet(0) * modelMatrix.get(0)) + (in.oGet(1) * modelMatrix.get(4)) + (in.oGet(2) * modelMatrix.get( 8)) + modelMatrix.get(12)),
-                    ((in.oGet(0) * modelMatrix.get(1)) + (in.oGet(1) * modelMatrix.get(5)) + (in.oGet(2) * modelMatrix.get( 9)) + modelMatrix.get(13)),
-                    ((in.oGet(0) * modelMatrix.get(2)) + (in.oGet(1) * modelMatrix.get(6)) + (in.oGet(2) * modelMatrix.get(10)) + modelMatrix.get(14))
+                    ((in.oGet(0) * modelMatrix[0]) + (in.oGet(1) * modelMatrix[4]) + (in.oGet(2) * modelMatrix[ 8]) + modelMatrix[12]),
+                    ((in.oGet(0) * modelMatrix[1]) + (in.oGet(1) * modelMatrix[5]) + (in.oGet(2) * modelMatrix[ 9]) + modelMatrix[13]),
+                    ((in.oGet(0) * modelMatrix[2]) + (in.oGet(1) * modelMatrix[6]) + (in.oGet(2) * modelMatrix[10]) + modelMatrix[14])
             );
         }
         return out;
@@ -525,7 +527,7 @@ public class tr_main {
      Returns true if the box is outside the given global frustum, (positive sides are out)
      =================
      */
-    public static boolean R_RadiusCullLocalBox(final idBounds bounds, final FloatBuffer modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
+    public static boolean R_RadiusCullLocalBox(final idBounds bounds, final float[] modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
         int i;
         float d;
         idVec3 worldOrigin;
@@ -563,7 +565,7 @@ public class tr_main {
      Returns true if the box is outside the given global frustum, (positive sides are out)
      =================
      */    private static int DBG_R_CornerCullLocalBox = 0;
-    public static boolean R_CornerCullLocalBox(final idBounds bounds, final FloatBuffer modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
+    public static boolean R_CornerCullLocalBox(final idBounds bounds, final float[] modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
         int i, j;
         final idVec3[] transformed = idVec3.generateArray(8);
         final float[] dists = new float[8];
@@ -623,7 +625,7 @@ public class tr_main {
      Returns true if the box is outside the given global frustum, (positive sides are out)
      =================
      */
-    public static boolean R_CullLocalBox(final idBounds bounds, final FloatBuffer modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
+    public static boolean R_CullLocalBox(final idBounds bounds, final float[] modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
         if (R_RadiusCullLocalBox(bounds, modelMatrix, numPlanes, planes)) {
             return true;
         }
@@ -635,15 +637,15 @@ public class tr_main {
      R_TransformModelToClip
      ==========================
      */
-    public static void R_TransformModelToClip(final idVec3 src, final FloatBuffer modelMatrix, final float[] projectionMatrix, idPlane eye, idPlane dst) {
+    public static void R_TransformModelToClip(final idVec3 src, final float[] modelMatrix, final float[] projectionMatrix, idPlane eye, idPlane dst) {
         int i;
 
         for (i = 0; i < 4; i++) {
             eye.oSet(i,
-                    (src.oGet(0) * modelMatrix.get(i + (0 * 4)))
-                    + (src.oGet(1) * modelMatrix.get(i + (1 * 4)))
-                    + (src.oGet(2) * modelMatrix.get(i + (2 * 4)))
-                    + (1 * modelMatrix.get(i + (3 * 4))));
+                    (src.oGet(0) * modelMatrix[i + (0 * 4)])
+                    + (src.oGet(1) * modelMatrix[i + (1 * 4)])
+                    + (src.oGet(2) * modelMatrix[i + (2 * 4)])
+                    + (1 * modelMatrix[i + (3 * 4)]));
         }
 
         for (i = 0; i < 4; i++) {
@@ -672,10 +674,10 @@ public class tr_main {
 
             for (i = 0; i < 4; i++) {
                 view.oSet(i,
-                        (global.oGet(0) * tr.primaryView.worldSpace.getModelViewMatrix().get(i + (0 * 4)))
-                        + (global.oGet(1) * tr.primaryView.worldSpace.getModelViewMatrix().get(i + (1 * 4)))
-                        + (global.oGet(2) * tr.primaryView.worldSpace.getModelViewMatrix().get(i + (2 * 4)))
-                        + tr.primaryView.worldSpace.getModelViewMatrix().get(i + (3 * 4)));
+                        (global.oGet(0) * tr.primaryView.worldSpace.getModelViewMatrix()[i + (0 * 4)])
+                        + (global.oGet(1) * tr.primaryView.worldSpace.getModelViewMatrix()[i + (1 * 4)])
+                        + (global.oGet(2) * tr.primaryView.worldSpace.getModelViewMatrix()[i + (2 * 4)])
+                        + tr.primaryView.worldSpace.getModelViewMatrix()[i + (3 * 4)]);
             }
 
             for (i = 0; i < 4; i++) {
@@ -690,10 +692,10 @@ public class tr_main {
 
             for (i = 0; i < 4; i++) {
                 view.oSet(i,
-                        (global.oGet(0) * tr.viewDef.worldSpace.getModelViewMatrix().get(i + (0 * 4)))
-                        + (global.oGet(1) * tr.viewDef.worldSpace.getModelViewMatrix().get(i + (1 * 4)))
-                        + (global.oGet(2) * tr.viewDef.worldSpace.getModelViewMatrix().get(i + (2 * 4)))
-                        + tr.viewDef.worldSpace.getModelViewMatrix().get(i + (3 * 4)));
+                        (global.oGet(0) * tr.viewDef.worldSpace.getModelViewMatrix()[i + (0 * 4)])
+                        + (global.oGet(1) * tr.viewDef.worldSpace.getModelViewMatrix()[i + (1 * 4)])
+                        + (global.oGet(2) * tr.viewDef.worldSpace.getModelViewMatrix()[i + (2 * 4)])
+                        + tr.viewDef.worldSpace.getModelViewMatrix()[i + (3 * 4)]);
             }
 
             for (i = 0; i < 4; i++) {
@@ -763,44 +765,100 @@ public class tr_main {
     }
 
     /**
+     * TBD - delete method after converting float[] to FloatBuffer
+     *  
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
+     */
+    public static void myGlMultMatrix(final float[] a/*[16]*/, final float[] b/*[16]*/, FloatBuffer out/*[16]*/) {
+    	myGlMultMatrix(Nio.wrap(a), Nio.wrap(b), out);
+    }
+
+    /**
+     * TBD - delete method after converting float[] to FloatBuffer
      * 
      * @param a
      * @param b
      * @param out
      * 
-     * @Deprecated use public static void myGlMultMatrix(final float[] a, final FloatBuffer b, float[] out) instead
+     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
      */
-    public static void myGlMultMatrix(final float[] a/*[16]*/, final float[] b/*[16]*/, float[] out/*[16]*/, int x) {
-        if (false) {
-//            int i, j;
-//
-//            for (i = 0; i < 4; i++) {
-//                for (j = 0; j < 4; j++) {
-//                    out[ i * 4 + j] =
-//                            a[ i * 4 + 0] * b[ 0 * 4 + j]
-//                            + a[ i * 4 + 1] * b[ 1 * 4 + j]
-//                            + a[ i * 4 + 2] * b[ 2 * 4 + j]
-//                            + a[ i * 4 + 3] * b[ 3 * 4 + j];
-//                }
-//            }
-        } else {
-            out[(0 * 4) + 0] = (a[(0 * 4) + 0] * b[(0 * 4) + 0]) + (a[(0 * 4) + 1] * b[(1 * 4) + 0]) + (a[(0 * 4) + 2] * b[(2 * 4) + 0]) + (a[(0 * 4) + 3] * b[(3 * 4) + 0]);
-            out[(0 * 4) + 1] = (a[(0 * 4) + 0] * b[(0 * 4) + 1]) + (a[(0 * 4) + 1] * b[(1 * 4) + 1]) + (a[(0 * 4) + 2] * b[(2 * 4) + 1]) + (a[(0 * 4) + 3] * b[(3 * 4) + 1]);
-            out[(0 * 4) + 2] = (a[(0 * 4) + 0] * b[(0 * 4) + 2]) + (a[(0 * 4) + 1] * b[(1 * 4) + 2]) + (a[(0 * 4) + 2] * b[(2 * 4) + 2]) + (a[(0 * 4) + 3] * b[(3 * 4) + 2]);
-            out[(0 * 4) + 3] = (a[(0 * 4) + 0] * b[(0 * 4) + 3]) + (a[(0 * 4) + 1] * b[(1 * 4) + 3]) + (a[(0 * 4) + 2] * b[(2 * 4) + 3]) + (a[(0 * 4) + 3] * b[(3 * 4) + 3]);
-            out[(1 * 4) + 0] = (a[(1 * 4) + 0] * b[(0 * 4) + 0]) + (a[(1 * 4) + 1] * b[(1 * 4) + 0]) + (a[(1 * 4) + 2] * b[(2 * 4) + 0]) + (a[(1 * 4) + 3] * b[(3 * 4) + 0]);
-            out[(1 * 4) + 1] = (a[(1 * 4) + 0] * b[(0 * 4) + 1]) + (a[(1 * 4) + 1] * b[(1 * 4) + 1]) + (a[(1 * 4) + 2] * b[(2 * 4) + 1]) + (a[(1 * 4) + 3] * b[(3 * 4) + 1]);
-            out[(1 * 4) + 2] = (a[(1 * 4) + 0] * b[(0 * 4) + 2]) + (a[(1 * 4) + 1] * b[(1 * 4) + 2]) + (a[(1 * 4) + 2] * b[(2 * 4) + 2]) + (a[(1 * 4) + 3] * b[(3 * 4) + 2]);
-            out[(1 * 4) + 3] = (a[(1 * 4) + 0] * b[(0 * 4) + 3]) + (a[(1 * 4) + 1] * b[(1 * 4) + 3]) + (a[(1 * 4) + 2] * b[(2 * 4) + 3]) + (a[(1 * 4) + 3] * b[(3 * 4) + 3]);
-            out[(2 * 4) + 0] = (a[(2 * 4) + 0] * b[(0 * 4) + 0]) + (a[(2 * 4) + 1] * b[(1 * 4) + 0]) + (a[(2 * 4) + 2] * b[(2 * 4) + 0]) + (a[(2 * 4) + 3] * b[(3 * 4) + 0]);
-            out[(2 * 4) + 1] = (a[(2 * 4) + 0] * b[(0 * 4) + 1]) + (a[(2 * 4) + 1] * b[(1 * 4) + 1]) + (a[(2 * 4) + 2] * b[(2 * 4) + 1]) + (a[(2 * 4) + 3] * b[(3 * 4) + 1]);
-            out[(2 * 4) + 2] = (a[(2 * 4) + 0] * b[(0 * 4) + 2]) + (a[(2 * 4) + 1] * b[(1 * 4) + 2]) + (a[(2 * 4) + 2] * b[(2 * 4) + 2]) + (a[(2 * 4) + 3] * b[(3 * 4) + 2]);
-            out[(2 * 4) + 3] = (a[(2 * 4) + 0] * b[(0 * 4) + 3]) + (a[(2 * 4) + 1] * b[(1 * 4) + 3]) + (a[(2 * 4) + 2] * b[(2 * 4) + 3]) + (a[(2 * 4) + 3] * b[(3 * 4) + 3]);
-            out[(3 * 4) + 0] = (a[(3 * 4) + 0] * b[(0 * 4) + 0]) + (a[(3 * 4) + 1] * b[(1 * 4) + 0]) + (a[(3 * 4) + 2] * b[(2 * 4) + 0]) + (a[(3 * 4) + 3] * b[(3 * 4) + 0]);
-            out[(3 * 4) + 1] = (a[(3 * 4) + 0] * b[(0 * 4) + 1]) + (a[(3 * 4) + 1] * b[(1 * 4) + 1]) + (a[(3 * 4) + 2] * b[(2 * 4) + 1]) + (a[(3 * 4) + 3] * b[(3 * 4) + 1]);
-            out[(3 * 4) + 2] = (a[(3 * 4) + 0] * b[(0 * 4) + 2]) + (a[(3 * 4) + 1] * b[(1 * 4) + 2]) + (a[(3 * 4) + 2] * b[(2 * 4) + 2]) + (a[(3 * 4) + 3] * b[(3 * 4) + 2]);
-            out[(3 * 4) + 3] = (a[(3 * 4) + 0] * b[(0 * 4) + 3]) + (a[(3 * 4) + 1] * b[(1 * 4) + 3]) + (a[(3 * 4) + 2] * b[(2 * 4) + 3]) + (a[(3 * 4) + 3] * b[(3 * 4) + 3]);
-        }
+    public static void myGlMultMatrix(final float[] a/*[16]*/, final FloatBuffer b/*[16]*/, FloatBuffer out/*[16]*/) {
+    	myGlMultMatrix(Nio.wrap(a), b, out);
+    }
+
+    /**
+     * TBD - delete method after converting float[] to FloatBuffer
+     * 
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
+     */
+    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final float[] b/*[16]*/, FloatBuffer out/*[16]*/) {
+    	myGlMultMatrix(a, Nio.wrap(b), out);
+    }
+
+    /**
+     * TBD - delete method after converting float[] to FloatBuffer
+     * 
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
+     */
+    public static void myGlMultMatrix(final float[] a/*[16]*/, final float[] b/*[16]*/, float[] out/*[16]*/) {
+    	myGlMultMatrix(Nio.wrap(a), Nio.wrap(b), out);
+    }
+
+    /**
+     * TBD - delete method after converting float[] to FloatBuffer
+     * 
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
+     */
+    public static void myGlMultMatrix(final float[] a/*[16]*/, final FloatBuffer b/*[16]*/, float[] out/*[16]*/) {
+    	myGlMultMatrix(Nio.wrap(a), b, out);
+    }
+
+    /**
+     * TBD - delete method after converting float[] to FloatBuffer
+     * 
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
+     */
+    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final float[] b/*[16]*/, float[] out/*[16]*/) {
+    	myGlMultMatrix(a, Nio.wrap(b), out);
+    }
+
+    /**
+     * TBD - delete method after converting float[] to FloatBuffer
+     * 
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
+     */
+    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final FloatBuffer b/*[16]*/, float[] out/*[16]*/) {
+		ByteBuffer bb = ByteBuffer.allocate(16 * Nio.SIZEOF_FLOAT);
+		bb.order(ByteOrder.nativeOrder());
+		FloatBuffer fb = bb.asFloatBuffer();
+		myGlMultMatrix(a, b, fb);
+		for (int i = 0; i < out.length; i++) {
+			out[i] = fb.get(i);
+		}
     }
 
     /*
@@ -808,7 +866,7 @@ public class tr_main {
      R_TransposeGLMatrix
      ================
      */
-    public static FloatBuffer R_TransposeGLMatrix(final FloatBuffer in/*[16]*/) { //, float[] out/*[16]*/) {
+    public static FloatBuffer R_TransposeGLMatrix(final float[] in/*[16]*/) { //, float[] out/*[16]*/) {
         int i, j;
 
         FloatBuffer out = Nio.newFloatBuffer(16);
@@ -816,7 +874,7 @@ public class tr_main {
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
                 //out[(i * 4) + j] = in[(j * 4) + i];
-                out.put(in.get((j * 4) + i));
+                out.put(in[(j * 4) + i]);
             }
         }
         
@@ -830,49 +888,49 @@ public class tr_main {
      Sets up the world to view matrix for a given viewParm
      =================
      */
-    private static final FloatBuffer s_flipMatrix/*[16]*/ = Nio.newFloatBuffer(16).put(new float[]{
+    private static final float[] s_flipMatrix/*[16]*/ = {
                 // convert from our coordinate system (looking down X)
                 // to OpenGL's coordinate system (looking down -Z)
                 -0, 0, -1, 0,
                 -1, 0, -0, 0,
                 -0, 1, -0, 0,
                 -0, 0, -0, 1
-            });
+            };
 
     public static void R_SetViewMatrix(viewDef_s viewDef) {
         idVec3 origin;
         viewEntity_s world;
-        final FloatBuffer viewerMatrix = Nio.newFloatBuffer(16);
+        final float[] viewerMatrix = new float[16];
 
         world = viewDef.worldSpace = new viewEntity_s();//memset(world, 0, sizeof(world));
 
         // the model matrix is an identity
-        world.modelMatrix.put((0 * 4) + 0, 1);
-        world.modelMatrix.put((1 * 4) + 1, 1);
-        world.modelMatrix.put((2 * 4) + 2, 1);
+        world.modelMatrix[(0 * 4) + 0] = 1;
+        world.modelMatrix[(1 * 4) + 1] = 1;
+        world.modelMatrix[(2 * 4) + 2] = 1;
 
         // transform by the camera placement
         origin = viewDef.renderView.vieworg;
 
-        viewerMatrix.put( 0, viewDef.renderView.viewaxis.oGet(0, 0));
-        viewerMatrix.put( 4, viewDef.renderView.viewaxis.oGet(0, 1));
-        viewerMatrix.put( 8, viewDef.renderView.viewaxis.oGet(0, 2));
-        viewerMatrix.put(12, (-origin.oGet(0) * viewerMatrix.get(0)) + (-origin.oGet(1) * viewerMatrix.get(4)) + (-origin.oGet(2) * viewerMatrix.get(8)));
+        viewerMatrix[ 0] = viewDef.renderView.viewaxis.oGet(0, 0);
+        viewerMatrix[ 4] = viewDef.renderView.viewaxis.oGet(0, 1);
+        viewerMatrix[ 8] = viewDef.renderView.viewaxis.oGet(0, 2);
+        viewerMatrix[12] = (-origin.oGet(0) * viewerMatrix[0]) + (-origin.oGet(1) * viewerMatrix[4]) + (-origin.oGet(2) * viewerMatrix[8]);
 
-        viewerMatrix.put( 1, viewDef.renderView.viewaxis.oGet(1, 0));
-        viewerMatrix.put( 5, viewDef.renderView.viewaxis.oGet(1, 1));
-        viewerMatrix.put( 9, viewDef.renderView.viewaxis.oGet(1, 2));
-        viewerMatrix.put(13, (-origin.oGet(0) * viewerMatrix.get(1)) + (-origin.oGet(1) * viewerMatrix.get(5)) + (-origin.oGet(2) * viewerMatrix.get(9)));
+        viewerMatrix[ 1] = viewDef.renderView.viewaxis.oGet(1, 0);
+        viewerMatrix[ 5] = viewDef.renderView.viewaxis.oGet(1, 1);
+        viewerMatrix[ 9] = viewDef.renderView.viewaxis.oGet(1, 2);
+        viewerMatrix[13] = (-origin.oGet(0) * viewerMatrix[1]) + (-origin.oGet(1) * viewerMatrix[5]) + (-origin.oGet(2) * viewerMatrix[9]);
 
-        viewerMatrix.put( 2, viewDef.renderView.viewaxis.oGet(2, 0));
-        viewerMatrix.put( 6, viewDef.renderView.viewaxis.oGet(2, 1));
-        viewerMatrix.put(10, viewDef.renderView.viewaxis.oGet(2, 2));
-        viewerMatrix.put(14, (-origin.oGet(0) * viewerMatrix.get(2)) + (-origin.oGet(1) * viewerMatrix.get(6)) + (-origin.oGet(2) * viewerMatrix.get(10)));
+        viewerMatrix[ 2] = viewDef.renderView.viewaxis.oGet(2, 0);
+        viewerMatrix[ 6] = viewDef.renderView.viewaxis.oGet(2, 1);
+        viewerMatrix[10] = viewDef.renderView.viewaxis.oGet(2, 2);
+        viewerMatrix[14] = (-origin.oGet(0) * viewerMatrix[2]) + (-origin.oGet(1) * viewerMatrix[6]) + (-origin.oGet(2) * viewerMatrix[10]);
 
-        viewerMatrix.put( 3, 0);
-        viewerMatrix.put( 7, 0);
-        viewerMatrix.put(11, 0);
-        viewerMatrix.put(15, 1);
+        viewerMatrix[ 3] = 0;
+        viewerMatrix[ 7] = 0;
+        viewerMatrix[11] = 0;
+        viewerMatrix[15] = 1;
 
         // convert from our coordinate system (looking down X)
         // to OpenGL's coordinate system (looking down -Z)

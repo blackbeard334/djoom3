@@ -8,8 +8,6 @@ import static neo.idlib.math.Vector.VectorMA;
 import static neo.idlib.math.Vector.VectorSubtract;
 import static neo.ui.UserInterface.uiManager;
 
-import java.nio.FloatBuffer;
-
 import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.tr_local.drawSurf_s;
 import neo.framework.CmdSystem.cmdFunction_t;
@@ -18,7 +16,6 @@ import neo.idlib.Text.Str.idStr;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
-import neo.open.Nio;
 import neo.ui.UserInterface.idUserInterface;
 
 /**
@@ -139,28 +136,28 @@ public class tr_guisurf {
         // create the new matrix to draw on this surface
         R_SurfaceToTextureAxis(drawSurf.geo, origin, axis);
 
-        final FloatBuffer guiModelMatrix = Nio.newFloatBuffer(16);
-        final FloatBuffer modelMatrix = Nio.newFloatBuffer(16);
+        final float[] guiModelMatrix = new float[16];
+        final float[] modelMatrix = new float[16];
 
-        guiModelMatrix.put(0, axis[0].oGet(0) / 640.0f);
-        guiModelMatrix.put(4, axis[1].oGet(0) / 480.0f);
-        guiModelMatrix.put(8, axis[2].oGet(0));
-        guiModelMatrix.put(12, origin.oGet(0));
+        guiModelMatrix[0] = axis[0].oGet(0) / 640.0f;
+        guiModelMatrix[4] = axis[1].oGet(0) / 480.0f;
+        guiModelMatrix[8] = axis[2].oGet(0);
+        guiModelMatrix[12] = origin.oGet(0);
 
-        guiModelMatrix.put(1, axis[0].oGet(1) / 640.0f);
-        guiModelMatrix.put(5, axis[1].oGet(1) / 480.0f);
-        guiModelMatrix.put(9, axis[2].oGet(1));
-        guiModelMatrix.put(13, origin.oGet(1));
+        guiModelMatrix[1] = axis[0].oGet(1) / 640.0f;
+        guiModelMatrix[5] = axis[1].oGet(1) / 480.0f;
+        guiModelMatrix[9] = axis[2].oGet(1);
+        guiModelMatrix[13] = origin.oGet(1);
 
-        guiModelMatrix.put(2, axis[0].oGet(2) / 640.0f);
-        guiModelMatrix.put(6, axis[1].oGet(2) / 480.0f);
-        guiModelMatrix.put(10, axis[2].oGet(2));
-        guiModelMatrix.put(14, origin.oGet(2));
+        guiModelMatrix[2] = axis[0].oGet(2) / 640.0f;
+        guiModelMatrix[6] = axis[1].oGet(2) / 480.0f;
+        guiModelMatrix[10] = axis[2].oGet(2);
+        guiModelMatrix[14] = origin.oGet(2);
 
-        guiModelMatrix.put(3, 0);
-        guiModelMatrix.put(7, 0);
-        guiModelMatrix.put(11, 0);
-        guiModelMatrix.put(15, 1);
+        guiModelMatrix[3] = 0;
+        guiModelMatrix[7] = 0;
+        guiModelMatrix[11] = 0;
+        guiModelMatrix[15] = 1;
 
         myGlMultMatrix(guiModelMatrix, drawSurf.space.modelMatrix,
                 modelMatrix);

@@ -222,40 +222,40 @@ public class draw_common {
      */
 
     public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/) {
-        final FloatBuffer genMatrix = Nio.newFloatBuffer(16);
-        final FloatBuffer finale = Nio.newFloatBuffer(16);
+        final float[] genMatrix = new float[16];
+        final float[] finale = new float[16];
 
-        genMatrix.put( 0, lightProject[0].oGet(0));
-        genMatrix.put( 4, lightProject[0].oGet(1));
-        genMatrix.put( 8, lightProject[0].oGet(2));
-        genMatrix.put(12, lightProject[0].oGet(3));
+        genMatrix[ 0] = lightProject[0].oGet(0);
+        genMatrix[ 4] = lightProject[0].oGet(1);
+        genMatrix[ 8] = lightProject[0].oGet(2);
+        genMatrix[12] = lightProject[0].oGet(3);
 
-        genMatrix.put( 1, lightProject[1].oGet(0));
-        genMatrix.put( 5, lightProject[1].oGet(1));
-        genMatrix.put( 9, lightProject[1].oGet(2));
-        genMatrix.put(13, lightProject[1].oGet(3));
+        genMatrix[ 1] = lightProject[1].oGet(0);
+        genMatrix[ 5] = lightProject[1].oGet(1);
+        genMatrix[ 9] = lightProject[1].oGet(2);
+        genMatrix[13] = lightProject[1].oGet(3);
 
-        genMatrix.put( 2, 0);
-        genMatrix.put( 6, 0);
-        genMatrix.put(10, 0);
-        genMatrix.put(14, 0);
+        genMatrix[ 2] = 0;
+        genMatrix[ 6] = 0;
+        genMatrix[10] = 0;
+        genMatrix[14] = 0;
 
-        genMatrix.put( 3, lightProject[2].oGet(0));
-        genMatrix.put( 7, lightProject[2].oGet(1));
-        genMatrix.put(11, lightProject[2].oGet(2));
-        genMatrix.put(15, lightProject[2].oGet(3));
+        genMatrix[ 3] = lightProject[2].oGet(0);
+        genMatrix[ 7] = lightProject[2].oGet(1);
+        genMatrix[11] = lightProject[2].oGet(2);
+        genMatrix[15] = lightProject[2].oGet(3);
 
         myGlMultMatrix(genMatrix, backEnd.getLightTextureMatrix(), finale);
 
-        lightProject[0].oSet(0, finale.get(0));
-        lightProject[0].oSet(1, finale.get(4));
-        lightProject[0].oSet(2, finale.get(8));
-        lightProject[0].oSet(3, finale.get(12));
+        lightProject[0].oSet(0, finale[0]);
+        lightProject[0].oSet(1, finale[4]);
+        lightProject[0].oSet(2, finale[8]);
+        lightProject[0].oSet(3, finale[12]);
 
-        lightProject[1].oSet(0, finale.get(1));
-        lightProject[1].oSet(1, finale.get(5));
-        lightProject[1].oSet(2, finale.get(9));
-        lightProject[1].oSet(3, finale.get(13));
+        lightProject[1].oSet(0, finale[1]);
+        lightProject[1].oSet(1, finale[5]);
+        lightProject[1].oSet(2, finale[9]);
+        lightProject[1].oSet(3, finale[13]);
     }
 
     /**
@@ -385,29 +385,29 @@ public class draw_common {
         qglEnable(GL_TEXTURE_GEN_T);
         qglEnable(GL_TEXTURE_GEN_Q);
 
-        final FloatBuffer mat = Nio.newFloatBuffer(16); //, plane = new float[4];
-        myGlMultMatrix(surf.space.getModelViewMatrix(), Nio.wrap(backEnd.viewDef.getProjectionMatrix()), mat);
+        final float[] mat = new float[16]; //, plane = new float[4];
+        myGlMultMatrix(surf.space.getModelViewMatrix(), backEnd.viewDef.getProjectionMatrix(), mat);
 
 //        plane[0] = mat[0];
 //        plane[1] = mat[4];
 //        plane[2] = mat[8];
 //        plane[3] = mat[12];
 //        qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
-        qglTexGenfv(GL_S, GL_OBJECT_PLANE, toFloatBuffer(mat.get(0), mat.get(4), mat.get(8), mat.get(12)));
+        qglTexGenfv(GL_S, GL_OBJECT_PLANE, toFloatBuffer(mat[0], mat[4], mat[8], mat[12]));
 
 //        plane[0] = mat[1];
 //        plane[1] = mat[5];
 //        plane[2] = mat[9];
 //        plane[3] = mat[13];
 //        qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
-        qglTexGenfv(GL_T, GL_OBJECT_PLANE, toFloatBuffer(mat.get(1), mat.get(5), mat.get(6), mat.get(13)));
+        qglTexGenfv(GL_T, GL_OBJECT_PLANE, toFloatBuffer(mat[1], mat[5], mat[6], mat[13]));
 
 //        plane[0] = mat[3];
 //        plane[1] = mat[7];
 //        plane[2] = mat[11];
 //        plane[3] = mat[15];
 //        qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
-        qglTexGenfv(GL_Q, GL_OBJECT_PLANE, toFloatBuffer(mat.get(3), mat.get(7), mat.get(11), mat.get(15)));
+        qglTexGenfv(GL_Q, GL_OBJECT_PLANE, toFloatBuffer(mat[3], mat[7], mat[11], mat[15]));
     }
 
     private static FloatBuffer toFloatBuffer(float x, float y, float z, float d) {
@@ -848,20 +848,20 @@ public class draw_common {
 
         // we need the model matrix without it being combined with the view matrix
         // so we can transform local vectors to global coordinates
-        parm.put(0, space.modelMatrix.get( 0));
-        parm.put(1, space.modelMatrix.get( 4));
-        parm.put(2, space.modelMatrix.get( 8));
-        parm.put(3, space.modelMatrix.get(12));
+        parm.put(0, space.modelMatrix[ 0]);
+        parm.put(1, space.modelMatrix[ 4]);
+        parm.put(2, space.modelMatrix[ 8]);
+        parm.put(3, space.modelMatrix[12]);
         qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 6, parm);
-        parm.put(0, space.modelMatrix.get( 1));
-        parm.put(1, space.modelMatrix.get( 5));
-        parm.put(2, space.modelMatrix.get( 9));
-        parm.put(3, space.modelMatrix.get(13));
+        parm.put(0, space.modelMatrix[ 1]);
+        parm.put(1, space.modelMatrix[ 5]);
+        parm.put(2, space.modelMatrix[ 9]);
+        parm.put(3, space.modelMatrix[13]);
         qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 7, parm);
-        parm.put(0, space.modelMatrix.get( 2));
-        parm.put(1, space.modelMatrix.get( 6));
-        parm.put(2, space.modelMatrix.get(10));
-        parm.put(3, space.modelMatrix.get(14));
+        parm.put(0, space.modelMatrix[ 2]);
+        parm.put(1, space.modelMatrix[ 6]);
+        parm.put(2, space.modelMatrix[10]);
+        parm.put(3, space.modelMatrix[14]);
         qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 8, parm);
     }
 
@@ -893,7 +893,7 @@ public class draw_common {
 
         // change the matrix if needed
         if (surf.space != backEnd.currentSpace) {
-            qglLoadMatrixf(surf.space.getModelViewMatrix());
+            qglLoadMatrixf(Nio.wrap(surf.space.getModelViewMatrix()));
             backEnd.currentSpace = surf.space;
             RB_SetProgramEnvironmentSpace();
         }
@@ -1676,15 +1676,15 @@ public class draw_common {
         qglEnable(GL_TEXTURE_GEN_T);
         qglTexCoord2f(0.5f, 0.5f);		// make sure Q is set
 
-        fogPlanes[0].oSet(0, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(2));
-        fogPlanes[0].oSet(1, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(6));
-        fogPlanes[0].oSet(2, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(10));
-        fogPlanes[0].oSet(3, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(14));
+        fogPlanes[0].oSet(0, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[2]);
+        fogPlanes[0].oSet(1, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[6]);
+        fogPlanes[0].oSet(2, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[10]);
+        fogPlanes[0].oSet(3, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[14]);
 
-        fogPlanes[1].oSet(0, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(0));
-        fogPlanes[1].oSet(1, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(4));
-        fogPlanes[1].oSet(2, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(8));
-        fogPlanes[1].oSet(3, a * backEnd.viewDef.worldSpace.getModelViewMatrix().get(12));
+        fogPlanes[1].oSet(0, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[0]);
+        fogPlanes[1].oSet(1, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[4]);
+        fogPlanes[1].oSet(2, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[8]);
+        fogPlanes[1].oSet(3, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[12]);
 
         // texture 1 is the entering plane fade correction
         GL_SelectTexture(1);

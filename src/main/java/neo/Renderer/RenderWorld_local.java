@@ -107,7 +107,6 @@ import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.ui.UserInterface.uiManager;
 
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -165,7 +164,6 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.open.Nio;
 import neo.idlib.math.Matrix.idMat3;
 
 /**
@@ -2386,10 +2384,10 @@ public class RenderWorld_local {
                 a = -0.5f / alpha;
             }
 
-            forward.oSet(0, a * tr.viewDef.worldSpace.getModelViewMatrix().get(2));
-            forward.oSet(1, a * tr.viewDef.worldSpace.getModelViewMatrix().get(6));
-            forward.oSet(2, a * tr.viewDef.worldSpace.getModelViewMatrix().get(10));
-            forward.oSet(3, a * tr.viewDef.worldSpace.getModelViewMatrix().get(14));
+            forward.oSet(0, a * tr.viewDef.worldSpace.getModelViewMatrix()[2]);
+            forward.oSet(1, a * tr.viewDef.worldSpace.getModelViewMatrix()[6]);
+            forward.oSet(2, a * tr.viewDef.worldSpace.getModelViewMatrix()[10]);
+            forward.oSet(3, a * tr.viewDef.worldSpace.getModelViewMatrix()[14]);
 
             w = p.w;
             for (i = 0; i < w.GetNumPoints(); i++) {
@@ -4459,13 +4457,13 @@ public class RenderWorld_local {
                     // do a check of the entity reference bounds against the light frustum,
                     // trying to avoid creating a viewEntity if it hasn't been already
                     final float[] modelMatrix = new float[16];
-                    FloatBuffer m;
+                    float[] m;
 
                     if (eDef.viewCount == tr.viewCount) {
                         m = eDef.viewEntity.modelMatrix;
                     } else {
                         R_AxisToModelMatrix(eDef.parms.axis, eDef.parms.origin, modelMatrix);
-                        m = Nio.wrap(modelMatrix);
+                        m = modelMatrix;
                     }
 
                     if (R_CullLocalBox(eDef.referenceBounds, m, 6, lDef.frustum)) {
