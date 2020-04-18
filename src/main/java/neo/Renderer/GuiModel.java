@@ -11,6 +11,8 @@ import static neo.Renderer.tr_main.myGlMultMatrix;
 import static neo.TempDump.NOT;
 import static neo.framework.DeclManager.declManager;
 
+import java.nio.ByteBuffer;
+
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.RenderWorld.renderEntity_s;
@@ -79,7 +81,7 @@ public class GuiModel {
 
             i = this.verts.Num();
             demo.WriteInt(i);
-            byte[] color;
+            ByteBuffer color;
             for (j = 0; j < i; j++) {
                 demo.WriteVec3(this.verts.oGet(j).xyz);
                 demo.WriteVec2(this.verts.oGet(j).st);
@@ -87,11 +89,10 @@ public class GuiModel {
                 demo.WriteVec3(this.verts.oGet(j).tangents[0]);
                 demo.WriteVec3(this.verts.oGet(j).tangents[1]);
                 
-                color = this.verts.oGet(j).getColor().array();
-                demo.WriteUnsignedChar((char) color[0]);
-                demo.WriteUnsignedChar((char) color[1]);
-                demo.WriteUnsignedChar((char) color[2]);
-                demo.WriteUnsignedChar((char) color[3]);
+                color = this.verts.oGet(j).getColor();
+                for (int l = 0; l < 4; l++) {
+                    demo.WriteUnsignedChar((char) color.get(0));
+				}
             }
 
             i = this.indexes.Num();
@@ -128,7 +129,7 @@ public class GuiModel {
             i[0] = this.verts.Num();
             demo.ReadInt(i);
             this.verts.SetNum(i[0], false);
-            byte[] bcolor;
+            ByteBuffer bcolor;
             for (j = 0; j < i[0]; j++) {
                 demo.ReadVec3(this.verts.oGet(j).xyz);
                 demo.ReadVec2(this.verts.oGet(j).st);
@@ -136,15 +137,11 @@ public class GuiModel {
                 demo.ReadVec3(this.verts.oGet(j).tangents[0]);
                 demo.ReadVec3(this.verts.oGet(j).tangents[1]);
                 
-                bcolor = this.verts.oGet(j).getColor().array();
-                demo.ReadUnsignedChar(color);
-                bcolor[0] = (byte) color[0];
-                demo.ReadUnsignedChar(color);
-                bcolor[1] = (byte) color[0];
-                demo.ReadUnsignedChar(color);
-                bcolor[2] = (byte) color[0];
-                demo.ReadUnsignedChar(color);
-                bcolor[3] = (byte) color[0];
+                bcolor = this.verts.oGet(j).getColor();
+                for (int l = 0; l < 4; l++) {
+                    demo.ReadUnsignedChar(color);
+                    bcolor.put(l, (byte) color[0]);
+				}
             }
 
             i[0] = this.indexes.Num();
