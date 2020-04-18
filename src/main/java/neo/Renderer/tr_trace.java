@@ -32,7 +32,6 @@ import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Math_h;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
-import neo.open.Nio;
 
 /**
  *

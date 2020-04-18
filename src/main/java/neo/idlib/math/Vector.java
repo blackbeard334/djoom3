@@ -18,7 +18,7 @@ import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Matrix.idMat4;
 import neo.idlib.math.Matrix.idMatX;
-import neo.open.FloatOSet;
+import neo.open.FloatOGetSet;
 import neo.open.Nio;
 
 /**
@@ -81,7 +81,7 @@ public class Vector {
         return new idVec6(vec6_infinity.p);
     }
 
-    public interface idVec<type extends Vector.idVec<?>> extends FloatOSet {
+    public interface idVec<type extends Vector.idVec<?>> extends FloatOGetSet {
         //reflection was too slow. 
         //never thought I would say this, but thank God for type erasure.
 
