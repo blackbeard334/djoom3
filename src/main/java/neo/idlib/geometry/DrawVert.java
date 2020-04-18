@@ -8,6 +8,7 @@ import neo.TempDump.SERiAL;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.open.ColorUtil;
+import neo.open.FloatOGet;
 import neo.open.Nio;
 
 /**
@@ -22,7 +23,7 @@ public class DrawVert {
 
      ===============================================================================
      */
-    public static class idDrawVert implements SERiAL {
+    public static class idDrawVert implements FloatOGet, SERiAL {
 
         /**
 		 * 

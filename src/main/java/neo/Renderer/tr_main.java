@@ -53,6 +53,7 @@ import neo.idlib.math.Vector.idVec;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.MatrixUtil;
 import neo.open.Nio;
 
 /**
@@ -638,23 +639,7 @@ public class tr_main {
      ==========================
      */
     public static void R_TransformModelToClip(final idVec3 src, final float[] modelMatrix, final float[] projectionMatrix, idPlane eye, idPlane dst) {
-        int i;
-
-        for (i = 0; i < 4; i++) {
-            eye.oSet(i,
-                    (src.oGet(0) * modelMatrix[i + (0 * 4)])
-                    + (src.oGet(1) * modelMatrix[i + (1 * 4)])
-                    + (src.oGet(2) * modelMatrix[i + (2 * 4)])
-                    + (1 * modelMatrix[i + (3 * 4)]));
-        }
-
-        for (i = 0; i < 4; i++) {
-            dst.oSet(i,
-                    (eye.oGet(0) * projectionMatrix[i + (0 * 4)])
-                    + (eye.oGet(1) * projectionMatrix[i + (1 * 4)])
-                    + (eye.oGet(2) * projectionMatrix[i + (2 * 4)])
-                    + (eye.oGet(3) * projectionMatrix[i + (3 * 4)]));
-        }
+        MatrixUtil.matrixToClipGet3Set4(src, dst, eye, modelMatrix, projectionMatrix);
     }
 
     /*
@@ -665,8 +650,6 @@ public class tr_main {
      ==========================
      */
     public static void R_GlobalToNormalizedDeviceCoordinates(final idVec3 global, idVec3 ndc) {
-        int i;
-        final idPlane view = new idPlane();
         final idPlane clip = new idPlane();
         float[] modelViewMatrix;
         float[] projectionMatrix;
@@ -675,44 +658,16 @@ public class tr_main {
         if (null == tr.viewDef) {
 
         	modelViewMatrix = tr.primaryView.worldSpace.getModelViewMatrix();
-        	for (i = 0; i < 4; i++) {
-                view.oSet(i,
-                        (global.oGet(0) * modelViewMatrix[i + (0 * 4)])
-                        + (global.oGet(1) * modelViewMatrix[i + (1 * 4)])
-                        + (global.oGet(2) * modelViewMatrix[i + (2 * 4)])
-                        + modelViewMatrix[i + (3 * 4)]);
-            }
-
         	projectionMatrix = tr.primaryView.getProjectionMatrix();
-        	for (i = 0; i < 4; i++) {
-                clip.oSet(i,
-                        (view.oGet(0) * projectionMatrix[i + (0 * 4)])
-                        + (view.oGet(1) * projectionMatrix[i + (1 * 4)])
-                        + (view.oGet(2) * projectionMatrix[i + (2 * 4)])
-                        + (view.oGet(3) * projectionMatrix[i + (3 * 4)]));
-            }
 
         } else {
 
         	modelViewMatrix = tr.viewDef.worldSpace.getModelViewMatrix();
-        	for (i = 0; i < 4; i++) {
-                view.oSet(i,
-                        (global.oGet(0) * modelViewMatrix[i + (0 * 4)])
-                        + (global.oGet(1) * modelViewMatrix[i + (1 * 4)])
-                        + (global.oGet(2) * modelViewMatrix[i + (2 * 4)])
-                        + modelViewMatrix[i + (3 * 4)]);
-            }
-
         	projectionMatrix = tr.viewDef.getProjectionMatrix();
-        	for (i = 0; i < 4; i++) {
-                clip.oSet(i,
-                        (view.oGet(0) * projectionMatrix[i + (0 * 4)])
-                        + (view.oGet(1) * projectionMatrix[i + (1 * 4)])
-                        + (view.oGet(2) * projectionMatrix[i + (2 * 4)])
-                        + (view.oGet(3) * projectionMatrix[i + (3 * 4)]));
-            }
 
         }
+
+        MatrixUtil.matrixToClipGet3Set4(global, clip, new idPlane(), modelViewMatrix, projectionMatrix);
 
         ndc.oSet(0, clip.oGet(0) / clip.oGet(3));
         ndc.oSet(1, clip.oGet(1) / clip.oGet(3));
@@ -872,7 +827,7 @@ public class tr_main {
      R_TransposeGLMatrix
      ================
      */
-    public static FloatBuffer R_TransposeGLMatrix(final float[] in/*[16]*/) { //, float[] out/*[16]*/) {
+    public static FloatBuffer R_TransposeGLMatrix(final FloatBuffer in/*[16]*/) { //, float[] out/*[16]*/) {
         int i, j;
 
         FloatBuffer out = Nio.newFloatBuffer(16);
@@ -880,11 +835,23 @@ public class tr_main {
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
                 //out[(i * 4) + j] = in[(j * 4) + i];
-                out.put(in[(j * 4) + i]);
+                out.put(in.get((j * 4) + i));
             }
         }
         
         return (FloatBuffer) out.flip();
+    }
+
+    /**
+     * TBD - remove method after float[] to FloatBuffer
+     * 
+     * @param in
+     * @return
+     * 
+     * @deprecated use public static FloatBuffer R_TransposeGLMatrix(final FloatBuffer in) instead
+     */
+    public static FloatBuffer R_TransposeGLMatrix(final float[] in/*[16]*/) { //, float[] out/*[16]*/) {
+        return R_TransposeGLMatrix(Nio.wrap(in));
     }
 
     /*

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.FloatOGet;
 
 /**
  *  Plücker
@@ -18,7 +19,7 @@ public class Pluecker {
 
      ===============================================================================
      */
-    public static class idPluecker {
+    public static class idPluecker implements FloatOGet {
         private final float[] p = new float[6];
         
 

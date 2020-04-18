@@ -8,6 +8,7 @@ import neo.TempDump.SERiAL;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.FloatOGet;
 
 /**
  *
@@ -18,7 +19,7 @@ public class Rectangle {
 // simple rectangle
 //
 //extern void RotateVector(idVec3 &v, idVec3 origin, float a, float c, float s);
-    public static class idRectangle implements SERiAL {
+    public static class idRectangle implements FloatOGet, SERiAL {
 
         /**
 		 * 

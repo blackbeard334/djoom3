@@ -731,8 +731,10 @@ public class tr_local {
             this.scissorRect = new idScreenRect(v.scissorRect);
             this.weaponDepthHack = v.weaponDepthHack;
             this.modelDepthHack = v.modelDepthHack;
-            System.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
-            System.arraycopy(v.getModelViewMatrix(), 0, this.getModelViewMatrix(), 0, 16);
+            //System.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
+            Nio.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
+            //System.arraycopy(v.getModelViewMatrix(), 0, this.getModelViewMatrix(), 0, 16);
+            Nio.arraycopy(v.getModelViewMatrix(), 0, this.getModelViewMatrix(), 0, 16);
         }
 
         public void memSetZero() {

@@ -17,18 +17,22 @@ public class Nio {
 	public static final int SIZEOF_FLOAT = 4;
 	public static final int SIZEOF_INT = 4;
 
-	public static FloatBuffer arrayCopy(final float[] src, final FloatBuffer dest) {
-		for (int i = 0; i < src.length; i++) {
-			dest.put(i, src[i]);
-		}
-		return dest;
-	}
+//	public static FloatBuffer arrayCopy(final float[] src, final FloatBuffer dest) {
+//		for (int i = 0; i < src.length; i++) {
+//			dest.put(i, src[i]);
+//		}
+//		return dest;
+//	}
+//
+//	public static float[] arrayCopy(final FloatBuffer src, final float[] dest) {
+//		for (int i = 0; i < src.limit(); i++) {
+//			dest[i] = src.get(i);
+//		}
+//		return dest;
+//	}
 
-	public static float[] arrayCopy(final FloatBuffer src, final float[] dest) {
-		for (int i = 0; i < src.limit(); i++) {
-			dest[i] = src.get(i);
-		}
-		return dest;
+	public static void arraycopy(final float[] src, int srcPos, final float[] dest, int destPos, int length) {
+		System.arraycopy(src, srcPos, dest, destPos, length);
 	}
 
 	public static void arraycopy(final float[] src, int srcPos, final FloatBuffer dest, int destPos, int length) {
@@ -37,9 +41,25 @@ public class Nio {
 		}
 	}
 
+	public static void arraycopy(final FloatBuffer src, int srcPos, final float[] dest, int destPos, int length) {
+		for (int i = 0; i < length; i++) {
+			dest[destPos + i] = src.get(srcPos + i);
+		}
+	}
+
+	public static void arraycopy(final int[] src, int srcPos, final int[] dest, int destPos, int length) {
+		System.arraycopy(src, srcPos, dest, destPos, length);
+	}
+
 	public static void arraycopy(final int[] src, int srcPos, final IntBuffer dest, int destPos, int length) {
 		for (int i = 0; i < length; i++) {
 			dest.put(destPos + i, src[srcPos + i]);
+		}
+	}
+
+	public static void arraycopy(final IntBuffer src, int srcPos, final int[] dest, int destPos, int length) {
+		for (int i = 0; i < length; i++) {
+			dest[destPos + i] = src.get(srcPos + i);
 		}
 	}
 
