@@ -31,6 +31,12 @@ public class Nio {
 		return dest;
 	}
 
+	public static void arraycopy(final float[] src, int srcPos, final FloatBuffer dest, int destPos, int length) {
+		for (int i = 0; i < length; i++) {
+			dest.put(destPos + i, src[srcPos + i]);
+		}
+	}
+
 	public static void arraycopy(final int[] src, int srcPos, final IntBuffer dest, int destPos, int length) {
 		for (int i = 0; i < length; i++) {
 			dest.put(destPos + i, src[srcPos + i]);
