@@ -714,9 +714,9 @@ public class tr_local {
         public float               modelDepthHack;
         //
         public float[]             modelMatrix     = new float[16];         // local coords to global coords
-        private final float[]      modelViewMatrix = new float[16];         // local coords to eye coords
+        //private final float[]      modelViewMatrix = new float[16];         // local coords to eye coords
         //public FloatBuffer         modelMatrix     = Nio.newFloatBuffer(16);         // local coords to global coords
-        //private final FloatBuffer  modelViewMatrix = Nio.newFloatBuffer(16);         // local coords to eye coords
+        private final FloatBuffer  modelViewMatrix = Nio.newFloatBuffer(16);         // local coords to eye coords
 
         private static int DBG_COUNTER = 0;
         private final  int DBG_COUNT   = DBG_COUNTER++;
@@ -734,7 +734,7 @@ public class tr_local {
             //System.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
             Nio.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
             //System.arraycopy(v.getModelViewMatrix(), 0, this.getModelViewMatrix(), 0, 16);
-            Nio.arraycopy(v.getModelViewMatrix(), 0, this.getModelViewMatrix(), 0, 16);
+            Nio.buffercopy(v.getModelViewMatrix(), 0, this.getModelViewMatrix(), 0, 16);
         }
 
         public void memSetZero() {
@@ -745,7 +745,7 @@ public class tr_local {
             this.modelDepthHack = 0;
         }
 
-		public float[] getModelViewMatrix() {
+		public FloatBuffer getModelViewMatrix() {
 			return modelViewMatrix;
 		}
 
@@ -758,7 +758,7 @@ public class tr_local {
 
         public renderView_s       renderView;
 //
-        private final FloatBuffer     projectionMatrix = Nio.newFloatBuffer(16);
+        private final float[]     projectionMatrix = new float[16];
         public viewEntity_s       worldSpace;
 //
         public idRenderWorldLocal renderWorld;
@@ -826,7 +826,7 @@ public class tr_local {
 
         public viewDef_s(final viewDef_s v) {
             this.renderView = new renderView_s(v.renderView);
-            Nio.buffercopy(v.getProjectionMatrix(), 0, this.getProjectionMatrix(), 0, 16);
+            Nio.arraycopy(v.getProjectionMatrix(), 0, this.getProjectionMatrix(), 0, 16);
             this.worldSpace = new viewEntity_s(v.worldSpace);
             this.renderWorld = v.renderWorld;
             this.floatTime = v.floatTime;
@@ -860,7 +860,7 @@ public class tr_local {
             }
         }
 
-		public FloatBuffer getProjectionMatrix() {
+		public float[] getProjectionMatrix() {
 			return projectionMatrix;
 		}
     }

@@ -277,7 +277,7 @@ public class tr_render {
 //        	System.err.println("tr_render.RB_EnterWeaponDepthHack length != 16 "+backEnd.viewDef.getProjectionMatrix().length);
 //        }
 //        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix(), 16));
-        qglLoadMatrixf(backEnd.viewDef.getProjectionMatrix().duplicate());
+        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix()));
         qglMatrixMode(GL_MODELVIEW);
     }
 
@@ -298,7 +298,7 @@ public class tr_render {
 
 //      // projectionMatrix has per definition length of 16! 
 //        FloatBuffer matrix = Nio.wrap(backEnd.viewDef.getProjectionMatrix(), 16);
-        FloatBuffer matrix = backEnd.viewDef.getProjectionMatrix().duplicate();
+        FloatBuffer matrix = Nio.wrap(backEnd.viewDef.getProjectionMatrix());
 
         matrix.put(14, matrix.get(14)- depth);
 
@@ -316,7 +316,7 @@ public class tr_render {
         qglDepthRange(0, 1);
 
         qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(backEnd.viewDef.getProjectionMatrix().duplicate());
+        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix()));
         qglMatrixMode(GL_MODELVIEW);
     }
 
@@ -341,7 +341,7 @@ public class tr_render {
 
             // change the matrix if needed
             if (drawSurf.space != backEnd.currentSpace) {
-                qglLoadMatrixf(Nio.wrap(drawSurf.space.getModelViewMatrix()));
+                qglLoadMatrixf(drawSurf.space.getModelViewMatrix());
             }
 
             if (drawSurf.space.weaponDepthHack) {
@@ -385,7 +385,7 @@ public class tr_render {
         for (drawSurf = drawSurfs; drawSurf != null; drawSurf = drawSurf.nextOnLight) {
             // change the matrix if needed
             if (drawSurf.space != backEnd.currentSpace) {
-                qglLoadMatrixf(Nio.wrap(drawSurf.space.getModelViewMatrix()));
+                qglLoadMatrixf(drawSurf.space.getModelViewMatrix());
             }
 
             if (drawSurf.space.weaponDepthHack) {
@@ -721,7 +721,7 @@ public class tr_render {
     public static void RB_BeginDrawingView() {
         // set the modelview matrix for the viewer
         qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(backEnd.viewDef.getProjectionMatrix().duplicate());
+        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix()));
         qglMatrixMode(GL_MODELVIEW);
 
         // set the window clipping
@@ -869,7 +869,7 @@ public class tr_render {
         // change the matrix and light projection vectors if needed
         if (surf.space != backEnd.currentSpace) {
             backEnd.currentSpace = surf.space;
-            qglLoadMatrixf(Nio.wrap(surf.space.getModelViewMatrix()));
+            qglLoadMatrixf(surf.space.getModelViewMatrix());
         }
 
         // change the scissor if needed

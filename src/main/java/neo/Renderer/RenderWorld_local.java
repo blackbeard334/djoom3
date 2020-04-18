@@ -2386,7 +2386,7 @@ public class RenderWorld_local {
                 a = -0.5f / alpha;
             }
 
-            FloatBuffer modelViewMatrix = Nio.wrap(tr.viewDef.worldSpace.getModelViewMatrix());
+            FloatBuffer modelViewMatrix = tr.viewDef.worldSpace.getModelViewMatrix();
             forward.oSet(0, a * modelViewMatrix.get(2));
             forward.oSet(1, a * modelViewMatrix.get(6));
             forward.oSet(2, a * modelViewMatrix.get(10));

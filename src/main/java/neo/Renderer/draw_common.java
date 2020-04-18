@@ -893,7 +893,7 @@ public class draw_common {
 
         // change the matrix if needed
         if (surf.space != backEnd.currentSpace) {
-            qglLoadMatrixf(Nio.wrap(surf.space.getModelViewMatrix()));
+            qglLoadMatrixf(surf.space.getModelViewMatrix());
             backEnd.currentSpace = surf.space;
             RB_SetProgramEnvironmentSpace();
         }
@@ -1676,7 +1676,7 @@ public class draw_common {
         qglEnable(GL_TEXTURE_GEN_T);
         qglTexCoord2f(0.5f, 0.5f);		// make sure Q is set
 
-        FloatBuffer modelViewMatrix = Nio.wrap(backEnd.viewDef.worldSpace.getModelViewMatrix());
+        FloatBuffer modelViewMatrix = backEnd.viewDef.worldSpace.getModelViewMatrix();
         fogPlanes[0].oSet(0, a * modelViewMatrix.get(2));
         fogPlanes[0].oSet(1, a * modelViewMatrix.get(6));
         fogPlanes[0].oSet(2, a * modelViewMatrix.get(10));
