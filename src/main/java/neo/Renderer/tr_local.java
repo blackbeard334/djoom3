@@ -758,8 +758,8 @@ public class tr_local {
 
         public renderView_s       renderView;
 //
-        //private final float[]     projectionMatrix = new float[16];
-        private final FloatBuffer     projectionMatrix = Nio.newFloatBuffer(16);
+        private final float[]     projectionMatrix = new float[16];
+        //private final FloatBuffer projectionMatrix = Nio.newFloatBuffer(16);
         public viewEntity_s       worldSpace;
 //
         public idRenderWorldLocal renderWorld;
@@ -827,7 +827,7 @@ public class tr_local {
 
         public viewDef_s(final viewDef_s v) {
             this.renderView = new renderView_s(v.renderView);
-            Nio.buffercopy(v.getProjectionMatrix(), 0, this.getProjectionMatrix(), 0, 16);
+            Nio.arraycopy(v.getProjectionMatrix(), 0, this.getProjectionMatrix(), 0, 16);
             this.worldSpace = new viewEntity_s(v.worldSpace);
             this.renderWorld = v.renderWorld;
             this.floatTime = v.floatTime;
@@ -861,7 +861,7 @@ public class tr_local {
             }
         }
 
-		public FloatBuffer getProjectionMatrix() {
+		public float[] getProjectionMatrix() {
 			return projectionMatrix;
 		}
     }
