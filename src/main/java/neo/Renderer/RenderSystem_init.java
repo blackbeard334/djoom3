@@ -2345,7 +2345,7 @@ public class RenderSystem_init {
                 for (int y = 0; y < h; y++) {
 //				memcpy( buffer + ( ( yo + y )* width + xo ) * 3,
 //					temp + y * row, w * 3 );
-                    System.arraycopy(temp, y * row, buffer, offset + ((((yo + y) * width) + xo) * 3), w * 3);
+                    Nio.arraycopy(temp, y * row, buffer, offset + ((((yo + y) * width) + xo) * 3), w * 3);
                 }
             }
         }

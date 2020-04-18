@@ -209,6 +209,7 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.MatrixUtil;
 import neo.open.Nio;
 
 /**
@@ -372,10 +373,7 @@ public class draw_common {
                 qglEnableClientState(GL_NORMAL_ARRAY);
                 qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, ac.normalOffset());
 
-                qglMatrixMode(GL_TEXTURE);
-
-                qglLoadMatrixf(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.getModelViewMatrix()));
-                qglMatrixMode(GL_MODELVIEW);
+                MatrixUtil.loadTextureMatrix(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.getModelViewMatrix()));
             }
         }
     }
@@ -893,7 +891,7 @@ public class draw_common {
 
         // change the matrix if needed
         if (surf.space != backEnd.currentSpace) {
-            qglLoadMatrixf(Nio.wrap(surf.space.getModelViewMatrix()));
+            qglLoadMatrixf(surf.space.getModelViewMatrix());
             backEnd.currentSpace = surf.space;
             RB_SetProgramEnvironmentSpace();
         }
@@ -1676,15 +1674,16 @@ public class draw_common {
         qglEnable(GL_TEXTURE_GEN_T);
         qglTexCoord2f(0.5f, 0.5f);		// make sure Q is set
 
-        fogPlanes[0].oSet(0, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[2]);
-        fogPlanes[0].oSet(1, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[6]);
-        fogPlanes[0].oSet(2, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[10]);
-        fogPlanes[0].oSet(3, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[14]);
+        FloatBuffer modelViewMatrix = backEnd.viewDef.worldSpace.getModelViewMatrix();
+        fogPlanes[0].oSet(0, a * modelViewMatrix.get(2));
+        fogPlanes[0].oSet(1, a * modelViewMatrix.get(6));
+        fogPlanes[0].oSet(2, a * modelViewMatrix.get(10));
+        fogPlanes[0].oSet(3, a * modelViewMatrix.get(14));
 
-        fogPlanes[1].oSet(0, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[0]);
-        fogPlanes[1].oSet(1, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[4]);
-        fogPlanes[1].oSet(2, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[8]);
-        fogPlanes[1].oSet(3, a * backEnd.viewDef.worldSpace.getModelViewMatrix()[12]);
+        fogPlanes[1].oSet(0, a * modelViewMatrix.get(0));
+        fogPlanes[1].oSet(1, a * modelViewMatrix.get(4));
+        fogPlanes[1].oSet(2, a * modelViewMatrix.get(8));
+        fogPlanes[1].oSet(3, a * modelViewMatrix.get(12));
 
         // texture 1 is the entering plane fade correction
         GL_SelectTexture(1);

@@ -178,7 +178,7 @@ public class MegaTexture {
                 for (int x = 0; x < 8; x++) {
                     for (int y = 0; y < 8; y++) {
 //				*(int *)&data[ ( ( y + TILE_SIZE/2 - 4 ) * TILE_SIZE + x + TILE_SIZE/2 - 4 ) * 4 ] = *(int *)color;
-                        System.arraycopy(color, 0, data.array(), (((((y + (TILE_SIZE / 2)) - 4) * TILE_SIZE) + x + (TILE_SIZE / 2)) - 4) * 4, 4);
+                        Nio.arraycopy(color, 0, data.array(), (((((y + (TILE_SIZE / 2)) - 4) * TILE_SIZE) + x + (TILE_SIZE / 2)) - 4) * 4, 4);
                     }
                 }
             }
@@ -204,9 +204,9 @@ public class MegaTexture {
 //			in = data + y * size * 16;
 //			in2 = in + size * 8;
 //			out = data + y * size * 4;
-                    System.arraycopy(data.array(), y * size * 16, in, 0, in.length);
-                    System.arraycopy(in, size * 8, in2, 0, in2.length);
-                    System.arraycopy(data.array(), y * size * 4, out, 0, out.length);
+                    Nio.arraycopy(data.array(), y * size * 16, in, 0, in.length);
+                    Nio.arraycopy(in, size * 8, in2, 0, in2.length);
+                    Nio.arraycopy(data.array(), y * size * 4, out, 0, out.length);
                     for (int x = 0; x < size; x++) {
                         out[(x * 4) + 0] = (byte) ((in[(x * 8) + 0] + in[(x * 8) + 4 + 0] + in2[(x * 8) + 0] + in2[(x * 8) + 4 + 0]) >> 2);
                         out[(x * 4) + 1] = (byte) ((in[(x * 8) + 1] + in[(x * 8) + 4 + 1] + in2[(x * 8) + 1] + in2[(x * 8) + 4 + 1]) >> 2);

@@ -48,6 +48,7 @@ import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 
 /**
  *
@@ -1109,7 +1110,7 @@ public class Physics_RigidBody {
                 d.force = s.linearMomentum.oMultiply(-p.linearFriction).oPlus(p.current.externalForce);
                 d.torque = s.angularMomentum.oMultiply(-p.angularFriction).oPlus(p.current.externalTorque);
 
-                System.arraycopy(d.toFloats(), 0, derivatives, 0 ,derivatives.length);
+                Nio.arraycopy(d.toFloats(), 0, derivatives, 0 ,derivatives.length);
             }
         }
 

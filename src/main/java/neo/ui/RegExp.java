@@ -16,6 +16,7 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.Nio;
 import neo.ui.Rectangle.idRectangle;
 import neo.ui.Window.idWindow;
 import neo.ui.Winvar.idWinBool;
@@ -42,7 +43,7 @@ public class RegExp {
 
         static {
             final int[] bv = {4, 1, 1, 1, 0, 2, 3, 4};
-            System.arraycopy(bv, 0, REGCOUNT, 0, REGCOUNT.length);
+            Nio.arraycopy(bv, 0, REGCOUNT, 0, REGCOUNT.length);
         }
         //
         public boolean enabled;

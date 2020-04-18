@@ -63,14 +63,14 @@ public class Queue {//TODO:test this
 //            final type[] tempQueue = queue;
 //            queue = (type[]) new Object[queue.length + QUEUE_BLOCK_SIZE];
 //
-//            System.arraycopy(tempQueue, 0, queue, 0, tempQueue.length);
+//            Nio.arraycopy(tempQueue, 0, queue, 0, tempQueue.length);
 //        }
 //
 //        private void shrinkQueue() {
 //            final type[] tempQueue = queue;
 //            queue = (type[]) new Object[queue.length - QUEUE_BLOCK_SIZE];
 //
-//            System.arraycopy(tempQueue, 0, queue, 0, queue.length);
+//            Nio.arraycopy(tempQueue, 0, queue, 0, queue.length);
 //        }
     }
 }

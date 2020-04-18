@@ -7281,7 +7281,11 @@ public class AI {
     }
 
     public static class idCombatNode extends idEntity {
-        // CLASS_PROTOTYPE( idCombatNode );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 3898158320225705910L;
+		// CLASS_PROTOTYPE( idCombatNode );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());

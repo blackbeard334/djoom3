@@ -109,6 +109,7 @@ import neo.idlib.math.Vector.idVec6;
 import neo.idlib.math.Vector.idVecX;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Matrix.idMatX;
+import neo.open.Nio;
 
 /**
  *
@@ -4042,7 +4043,7 @@ public class Physics_AF {
         }
 
         public void SetResponseForce(int index, final idVec6 v) {
-            System.arraycopy(v.p, 0, this.response, index * 8, 6);
+            Nio.arraycopy(v.p, 0, this.response, index * 8, 6);
         }
 
         public void Save(idSaveGame saveFile) {
@@ -4348,7 +4349,7 @@ public class Physics_AF {
                     child.J2.TransposeMultiplyAdd(force, child.lm);
                 }
 
-                System.arraycopy(force.p, 0, body.response, from, 6);
+                Nio.arraycopy(force.p, 0, body.response, from, 6);
                 body.responseIndex[body.numResponses++] = auxiliaryIndex;
             }
         }           private static int DBG_force = 0;

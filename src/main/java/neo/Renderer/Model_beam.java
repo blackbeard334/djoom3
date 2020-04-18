@@ -165,7 +165,7 @@ public class Model_beam {
             tri.verts[3].xyz = localTarget.oMinus(minor);
 
             for (int i = 0; i < 4; i++) {
-                ColorUtil.setColors(tri.verts[i].getColor(), red, green, blue, alpha);
+                ColorUtil.setElements(tri.verts[i].getColor(), red, green, blue, alpha);
 			}
 
             R_BoundTriSurf(tri);

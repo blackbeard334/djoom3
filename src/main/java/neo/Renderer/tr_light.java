@@ -78,6 +78,7 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.Nio;
 import neo.ui.UserInterface.idUserInterface;
 
 /**
@@ -1163,7 +1164,7 @@ public class tr_light {
                 pStage = renderEntity.referenceShader.GetStage(0);
 
 //			memcpy( generatedShaderParms, renderEntity.shaderParms, sizeof( generatedShaderParms ) );
-                System.arraycopy(renderEntity.shaderParms, 0, generatedShaderParms, 0, renderEntity.shaderParms.length);
+                Nio.arraycopy(renderEntity.shaderParms, 0, generatedShaderParms, 0, renderEntity.shaderParms.length);
                 generatedShaderParms[0] = refRegs[pStage.color.registers[0]];
                 generatedShaderParms[1] = refRegs[pStage.color.registers[1]];
                 generatedShaderParms[2] = refRegs[pStage.color.registers[2]];

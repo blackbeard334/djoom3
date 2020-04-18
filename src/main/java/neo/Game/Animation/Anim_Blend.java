@@ -155,6 +155,7 @@ import neo.idlib.geometry.JointTransform.idJointQuat;
 import neo.idlib.math.Quat.idQuat;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 
 /**
  *
@@ -212,7 +213,7 @@ public class Anim_Blend {
 
             this.frameLookup.SetNum(anim.frameLookup.Num());
             if (this.frameLookup.Num() > 0) {
-                System.arraycopy(anim.frameLookup.Ptr(), 0, this.frameLookup.Ptr(), 0, this.frameLookup.MemoryUsed());
+            	System.arraycopy(anim.frameLookup.Ptr(), 0, this.frameLookup.Ptr(), 0, this.frameLookup.MemoryUsed());
             }
 
             this.frameCommands.SetNum(anim.frameCommands.Num());
@@ -1651,6 +1652,9 @@ public class Anim_Blend {
             System.arraycopy(decl.joints.Ptr(), 0, this.joints.Ptr(), 0, decl.joints.Num());
             this.jointParents.SetNum(decl.jointParents.Num());
 //            memcpy(jointParents.Ptr(), decl.jointParents.Ptr(), decl.jointParents.Num() * sizeof(jointParents[0]));
+            // TODO FIXME: method Ptr() from the type List.idList<Integer> returns not always Integers!!!
+            // Nio.arraycopy(decl.jointParents.Ptr(), 0, this.jointParents.Ptr(), 0, decl.jointParents.Num());
+            // throws Exception in thread "main" java.lang.ClassCastException: class [Ljava.lang.Object; cannot be cast to class [Ljava.lang.Integer; ([Ljava.lang.Object; and [Ljava.lang.Integer; are in module java.base of loader 'bootstrap')
             System.arraycopy(decl.jointParents.Ptr(), 0, this.jointParents.Ptr(), 0, decl.jointParents.Num());
             for (i = 0; i < ANIM_NumAnimChannels; i++) {
                 this.channelJoints[i] = decl.channelJoints[i];
@@ -1876,7 +1880,7 @@ public class Anim_Blend {
             this.blendDuration = blend.blendDuration;
             this.blendStartValue = blend.blendStartValue;
             this.blendEndValue = blend.blendEndValue;
-            System.arraycopy(blend.animWeights, 0, this.animWeights, 0, ANIM_MaxSyncedAnims);
+            Nio.arraycopy(blend.animWeights, 0, this.animWeights, 0, ANIM_MaxSyncedAnims);
             this.cycle = blend.cycle;
             this.frame = blend.frame;
             this.animNum = blend.animNum;

@@ -60,6 +60,7 @@ import neo.idlib.Text.Lexer.punctuation_t;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.math.Math_h.idMath;
+import neo.open.Nio;
 import neo.sys.sys_public;
 
 /**
@@ -853,12 +854,12 @@ public class Parser {
 
             for (i = 0; i < y; i++) {
                 final float[] tempM = new float[m.length - (i * x)];
-                System.arraycopy(m, i * x, tempM, 0, tempM.length);
+                Nio.arraycopy(m, i * x, tempM, 0, tempM.length);
                 if (!this.Parse1DMatrix(x, tempM)) {
-                    System.arraycopy(tempM, 0, m, i * x, tempM.length);
+                    Nio.arraycopy(tempM, 0, m, i * x, tempM.length);
                     return false;
                 }
-                System.arraycopy(tempM, 0, m, i * x, tempM.length);
+                Nio.arraycopy(tempM, 0, m, i * x, tempM.length);
             }
 
             if (!this.ExpectTokenString(")")) {
@@ -876,12 +877,12 @@ public class Parser {
 
             for (i = 0; i < z; i++) {
                 final float[] tempM = new float[m.length - (i * x * y)];
-                System.arraycopy(m, i * x * y, tempM, 0, tempM.length);
+                Nio.arraycopy(m, i * x * y, tempM, 0, tempM.length);
                 if (!this.Parse2DMatrix(y, x, tempM)) {
-                    System.arraycopy(tempM, 0, m, i * x * y, tempM.length);
+                    Nio.arraycopy(tempM, 0, m, i * x * y, tempM.length);
                     return false;
                 }
-                System.arraycopy(tempM, 0, m, i * x * y, tempM.length);
+                Nio.arraycopy(tempM, 0, m, i * x * y, tempM.length);
             }
 
             if (!this.ExpectTokenString(")")) {

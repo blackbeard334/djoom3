@@ -111,6 +111,7 @@ import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.StrList.idStrList;
 import neo.idlib.math.Math_h.idMath;
+import neo.open.Nio;
 import neo.sys.sys_public.idPort;
 import neo.sys.sys_public.netadr_t;
 
@@ -2066,7 +2067,7 @@ public class AsyncServer {
                     // initialize
                     this.clients[clientNum].channel.Init(from, this.serverId);
                     this.clients[clientNum].OS = OS;
-                    System.arraycopy(guid, 0, this.clients[clientNum].guid, 0, 12);
+                    Nio.arraycopy(guid, 0, this.clients[clientNum].guid, 0, 12);
                     this.clients[clientNum].guid[11] = 0;
                     break;
                 }

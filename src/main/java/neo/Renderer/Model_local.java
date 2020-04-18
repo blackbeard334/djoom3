@@ -77,6 +77,7 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.open.ColorUtil;
+import neo.open.Nio;
 
 /**
  *
@@ -705,7 +706,7 @@ public class Model_local {
                     f.ReadVec3(tri.verts[j].tangents[0]);
                     f.ReadVec3(tri.verts[j].tangents[1]);
                     
-                    ColorUtil.readFile(tri.verts[j].getColor(), f);
+                    readFile(tri.verts[j].getColor(), f);
                 }
 
                 surf.geometry = tri;
@@ -714,6 +715,15 @@ public class Model_local {
             }
             this.FinishSurfaces();
         }
+
+    	private static void readFile(ByteBuffer bcolor, idDemoFile f) {
+    		final char[][] color = new char[4][1];
+    		for (int i = 0; i < 4; i++) {
+    			// TODO check if color[0] should be color[i]
+    			f.ReadUnsignedChar(color[0]);
+    			bcolor.put(i, (byte) color[i][0]);
+    		}
+    	}
 
         @Override
         public void WriteToDemoFile(idDemoFile f) {
@@ -747,10 +757,16 @@ public class Model_local {
                     f.WriteVec3(tri.verts[j].normal);
                     f.WriteVec3(tri.verts[j].tangents[0]);
                     f.WriteVec3(tri.verts[j].tangents[1]);
-                    ColorUtil.writeFile(tri.verts[j].getColor(), f);
+                    writeFile(tri.verts[j].getColor(), f);
                 }
             }
         }
+
+    	public static void writeFile(ByteBuffer color, idDemoFile f) {
+    		for (int i = 0; i < 4; i++) {
+    			f.WriteUnsignedChar((char) color.get(i));
+    		}
+    	}
 
         @Override
         public float DepthHack() {
@@ -1300,7 +1316,7 @@ public class Model_local {
                             mv.v = v;
                             mv.tv = tv;
                             mv.normal.oSet(normal);
-                            System.arraycopy(color, 0, mv.getColor(), 0, color.length);
+                            Nio.arraycopy(color, 0, mv.getColor(), 0, color.length);
                             mv.next = null;
                             if (lastmv != null) {
                                 lastmv.next = mv;
@@ -1671,7 +1687,7 @@ public class Model_local {
                             mv.v = v;
                             mv.tv = tv;
                             mv.normal.oSet(normal);
-                            System.arraycopy(color, 0, mv.getColor(), 0, color.length);
+                            Nio.arraycopy(color, 0, mv.getColor(), 0, color.length);
                             mv.next = null;
                             if (lastmv != null) {
                                 lastmv.next = mv;
@@ -1974,7 +1990,7 @@ public class Model_local {
                             mv.v = v;
                             mv.tv = tv;
                             mv.normal.oSet(normal);
-                            System.arraycopy(color, 0, mv.getColor(), 0, color.length);
+                            Nio.arraycopy(color, 0, mv.getColor(), 0, color.length);
                             mv.next = null;
                             if (lastmv != null) {
                                 lastmv.next = mv;
@@ -2070,7 +2086,7 @@ public class Model_local {
             for (lwSurface surf = obj.surf; surf != null; surf = surf.next) {
 
                 final aseMaterial_t mat = new aseMaterial_t();// Mem_ClearedAlloc(sizeof( * mat));
-                System.arraycopy(surf.name.toCharArray(), 0, mat.name, 0, surf.name.length());
+                Nio.arraycopy(surf.name.toCharArray(), 0, mat.name, 0, surf.name.length());
                 mat.uTiling = mat.vTiling = 1;
                 mat.angle = mat.uOffset = mat.vOffset = 0;
                 ase.materials.Append(mat);

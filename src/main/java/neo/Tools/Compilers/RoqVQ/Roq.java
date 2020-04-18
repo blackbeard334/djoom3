@@ -30,6 +30,7 @@ import neo.framework.File_h.idFile;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
+import neo.open.Nio;
 
 /**
  *
@@ -569,7 +570,7 @@ public class Roq {
 
         public void WriteCodeBook(byte[] codebook) {
 //	memcpy( codes, codebook, 4096 );
-            System.arraycopy(codebook, 0, this.codes, 0, 4096);
+            Nio.arraycopy(codebook, 0, this.codes, 0, 4096);
         }
 
         public void WriteCodeBookToStream(byte[] codebook, int csize, int/*word*/ cflags) {

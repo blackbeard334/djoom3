@@ -156,7 +156,6 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
-import neo.open.ColorUtil;
 import neo.open.Nio;
 
 /**
@@ -280,7 +279,7 @@ public class tr_rendertools {
     public static void RB_SimpleSurfaceSetup(final drawSurf_s drawSurf) {
         // change the matrix if needed
         if (drawSurf.space != backEnd.currentSpace) {
-            qglLoadMatrixf(Nio.wrap(drawSurf.space.getModelViewMatrix()));
+            qglLoadMatrixf(drawSurf.space.getModelViewMatrix());
             backEnd.currentSpace = drawSurf.space;
         }
 
@@ -301,7 +300,7 @@ public class tr_rendertools {
      */
     public static void RB_SimpleWorldSetup() {
         backEnd.currentSpace = backEnd.viewDef.worldSpace;
-        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.worldSpace.getModelViewMatrix()));
+        qglLoadMatrixf(backEnd.viewDef.worldSpace.getModelViewMatrix());
 
         backEnd.currentScissor = backEnd.viewDef.scissor;
         qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
@@ -417,15 +416,19 @@ public class tr_rendertools {
      ===================
      */
     private static final FloatBuffer[] colors/*[8][3]*/ = {
-                ColorUtil.newColorFloatBuffer(0, 0, 0),
-                ColorUtil.newColorFloatBuffer(1, 0, 0),
-                ColorUtil.newColorFloatBuffer(0, 1, 0),
-                ColorUtil.newColorFloatBuffer(0, 0, 1),
-                ColorUtil.newColorFloatBuffer(0, 1, 1),
-                ColorUtil.newColorFloatBuffer(1, 0, 1),
-                ColorUtil.newColorFloatBuffer(1, 1, 0),
-                ColorUtil.newColorFloatBuffer(1, 1, 1)
+                newColorFloatBuffer(0, 0, 0),
+                newColorFloatBuffer(1, 0, 0),
+                newColorFloatBuffer(0, 1, 0),
+                newColorFloatBuffer(0, 0, 1),
+                newColorFloatBuffer(0, 1, 1),
+                newColorFloatBuffer(1, 0, 1),
+                newColorFloatBuffer(1, 1, 0),
+                newColorFloatBuffer(1, 1, 1)
             };
+
+    private static FloatBuffer newColorFloatBuffer(float color1, float color2, float color3) {
+		return Nio.newFloatBuffer(3).put(0, color1).put(1, color2).put(2, color3).flip();
+	}
 
     public static void R_ColorByStencilBuffer() {
         int i;
@@ -1018,7 +1021,7 @@ public class tr_rendertools {
         for (; vModels != null; vModels = vModels.next) {
             idBounds b;
 
-            qglLoadMatrixf(Nio.wrap(vModels.getModelViewMatrix()));
+            qglLoadMatrixf(vModels.getModelViewMatrix());
 //            System.out.println("vModels.modelViewMatrix="+vModels.modelViewMatrix[0]);
 
             if (null == vModels.entityDef) {

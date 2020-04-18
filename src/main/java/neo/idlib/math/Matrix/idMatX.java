@@ -20,6 +20,7 @@ import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
 import neo.idlib.math.Vector.idVec6;
 import neo.idlib.math.Vector.idVecX;
+import neo.open.Nio;
 
 public class idMatX {
 //===============================================================
@@ -89,7 +90,7 @@ public class idMatX {
     public void Set(int rows, int columns, final float[] src) {
         SetSize(rows, columns);
 //	memcpy( this->mat, src, rows * columns * sizeof( float ) );
-        System.arraycopy(src, 0, this.mat, 0, src.length);
+        Nio.arraycopy(src, 0, this.mat, 0, src.length);
     }
 
     public void Set(final idMat3 m1, final idMat3 m2) {
@@ -134,7 +135,7 @@ public class idMatX {
 //	memcpy( mat, a.mat, a.numRows * a.numColumns * sizeof( float ) );
 //#endif
         idMatX.tempIndex = 0;
-        System.arraycopy(a.mat, 0, this.mat, 0, a.numRows * a.numColumns);
+        Nio.arraycopy(a.mat, 0, this.mat, 0, a.numRows * a.numColumns);
         return this;
     }
 //public	idMatX			operator*( const float a ) const;
@@ -381,7 +382,7 @@ public class idMatX {
                 final int minRow = Lib.Min(this.numRows, rows);
                 final int minColumn = Lib.Min(this.numColumns, columns);
                 for (int i = 0; i < minRow; i++) {
-                    System.arraycopy(oldMat, (i * this.numColumns) + 0, this.mat, (i * columns) + 0, minColumn);
+                    Nio.arraycopy(oldMat, (i * this.numColumns) + 0, this.mat, (i * columns) + 0, minColumn);
                 }
 //			Mem_Free16( oldMat );
             }
@@ -389,7 +390,7 @@ public class idMatX {
             if (columns < this.numColumns) {
                 final int minRow = Lib.Min(this.numRows, rows);
                 for (int i = 0; i < minRow; i++) {
-                    System.arraycopy(this.mat, (i * this.numColumns) + 0, this.mat, (i * columns) + 0, columns);
+                    Nio.arraycopy(this.mat, (i * this.numColumns) + 0, this.mat, (i * columns) + 0, columns);
                 }
             } else if (columns > this.numColumns) {
                 for (int i = Lib.Min(this.numRows, rows) - 1; i >= 0; i--) {
@@ -398,7 +399,7 @@ public class idMatX {
                             this.mat[ (i * columns) + j] = 0.0f;
                         }
                     }
-                    System.arraycopy(this.mat, (i * this.numColumns) + 0, this.mat, (i * columns) + 0, (this.numColumns - 1) + 1);
+                    Nio.arraycopy(this.mat, (i * this.numColumns) + 0, this.mat, (i * columns) + 0, (this.numColumns - 1) + 1);
                 }
             }
             if (makeZero && (rows > this.numRows)) {
@@ -548,11 +549,11 @@ public class idMatX {
 
 //	ptr = (float *) _alloca16( numColumns * sizeof( float ) );
 //	memcpy( ptr, mat + r1 * numColumns, numColumns * sizeof( float ) );
-        System.arraycopy(this.mat, r1 * this.numColumns, ptr, 0, this.numColumns);
+        Nio.arraycopy(this.mat, r1 * this.numColumns, ptr, 0, this.numColumns);
 //	memcpy( mat + r1 * numColumns, mat + r2 * numColumns, numColumns * sizeof( float ) );
-        System.arraycopy(this.mat, r2 * this.numColumns, this.mat, r1 * this.numColumns, this.numColumns);
+        Nio.arraycopy(this.mat, r2 * this.numColumns, this.mat, r1 * this.numColumns, this.numColumns);
 //	memcpy( mat + r2 * numColumns, ptr, numColumns * sizeof( float ) );
-        System.arraycopy(ptr, 0, this.mat, r2 * this.numColumns, this.numColumns);
+        Nio.arraycopy(ptr, 0, this.mat, r2 * this.numColumns, this.numColumns);
 
         return this;
     }
@@ -587,7 +588,7 @@ public class idMatX {
 //        this.SetSize(numRows, numColumns);
         for (i = r; i < this.numRows; i++) {//TODO:create new array to save memory?
 //		memcpy( &mat[i * numColumns], &mat[( i + 1 ) * numColumns], numColumns * sizeof( float ) );
-            System.arraycopy(this.mat, (i + 1) * this.numColumns, this.mat, i * this.numColumns, this.numColumns);
+            Nio.arraycopy(this.mat, (i + 1) * this.numColumns, this.mat, i * this.numColumns, this.numColumns);
         }
 
         return this;
@@ -602,10 +603,10 @@ public class idMatX {
 
         for (i = 0; i < (this.numRows - 1); i++) {
 //		memmove( &mat[i * numColumns + r], &mat[i * ( numColumns + 1 ) + r + 1], numColumns * sizeof( float ) );
-            System.arraycopy(this.mat, 1 + r + ((1 + this.numColumns) * i), this.mat, r + (this.numColumns * i), this.numColumns);
+            Nio.arraycopy(this.mat, 1 + r + ((1 + this.numColumns) * i), this.mat, r + (this.numColumns * i), this.numColumns);
         }
 //	memmove( &mat[i * numColumns + r], &mat[i * ( numColumns + 1 ) + r + 1], ( numColumns - r ) * sizeof( float ) );
-        System.arraycopy(this.mat, 1 + r + ((1 + this.numColumns) * i), this.mat, r + (this.numColumns * i), this.numColumns - r);
+        Nio.arraycopy(this.mat, 1 + r + ((1 + this.numColumns) * i), this.mat, r + (this.numColumns * i), this.numColumns - r);
 
         return this;
     }
@@ -621,21 +622,21 @@ public class idMatX {
 //            if (r > 0) {
 //                for (i = 0; i < r - 1; i++) {
 ////			memmove( &mat[i * numColumns + r], &mat[i * ( numColumns + 1 ) + r + 1], numColumns * sizeof( float ) );
-//                    System.arraycopy(mat, i * (numColumns + 1) + r + 1, mat, i * numColumns + r, numColumns);
+//                    Nio.arraycopy(mat, i * (numColumns + 1) + r + 1, mat, i * numColumns + r, numColumns);
 //                }
 ////		memmove( &mat[i * numColumns + r], &mat[i * ( numColumns + 1 ) + r + 1], ( numColumns - r ) * sizeof( float ) );
-//                System.arraycopy(mat, i * (numColumns + 1) + r + 1, mat, i * numColumns + r, numColumns - r);
+//                Nio.arraycopy(mat, i * (numColumns + 1) + r + 1, mat, i * numColumns + r, numColumns - r);
 //            }
 //
 ////	memcpy( &mat[r * numColumns], &mat[( r + 1 ) * ( numColumns + 1 )], r * sizeof( float ) );
-//            System.arraycopy(mat, (r + 1) * (numColumns + 1), mat, r * numColumns, r);
+//            Nio.arraycopy(mat, (r + 1) * (numColumns + 1), mat, r * numColumns, r);
 //
 //            for (i = r; i < numRows - 1; i++) {
 ////		memcpy( &mat[i * numColumns + r], &mat[( i + 1 ) * ( numColumns + 1 ) + r + 1], numColumns * sizeof( float ) );
-//                System.arraycopy(mat, (i + 1) * (numColumns + 1) + r + 1, mat, i * numColumns + r, numColumns);
+//                Nio.arraycopy(mat, (i + 1) * (numColumns + 1) + r + 1, mat, i * numColumns + r, numColumns);
 //            }
 ////	memcpy( &mat[i * numColumns + r], &mat[( i + 1 ) * ( numColumns + 1 ) + r + 1], ( numColumns - r ) * sizeof( float ) );
-//            System.arraycopy(mat, (i + 1) * (numColumns + 1) + r + 1, mat, i * numColumns + r, numColumns - r);
+//            Nio.arraycopy(mat, (i + 1) * (numColumns + 1) + r + 1, mat, i * numColumns + r, numColumns - r);
         this.RemoveRow(r);
         this.RemoveColumn(r);
 
@@ -669,7 +670,7 @@ public class idMatX {
         SetSize(size, size);
         for (i = 0; i < size; i++) {
 //		memcpy( mat + i * numColumns, m.mat + i * m.numColumns, size * sizeof( float ) );
-            System.arraycopy(m.mat, i * m.numColumns, this.mat, i * this.numColumns, size);
+            Nio.arraycopy(m.mat, i * m.numColumns, this.mat, i * this.numColumns, size);
         }
     }
 
@@ -1257,7 +1258,7 @@ public class idMatX {
         final idMatX invMat = new idMatX();
 
 	    invMat.SetTempSize( this.numRows, this.numColumns );
-        System.arraycopy(this.mat, 0, invMat.mat, 0, this.numRows * this.numColumns);
+        Nio.arraycopy(this.mat, 0, invMat.mat, 0, this.numRows * this.numColumns);
         final boolean r = invMat.InverseFastSelf();
         assert (r);
         return invMat;
@@ -1643,7 +1644,7 @@ public class idMatX {
         assert ((this.numColumns >= 6) && (row >= 0) && (row < this.numRows));
 //	return *reinterpret_cast<const idVec6 *>(mat + row * numColumns);
         final float[] temp = new float[6];
-        System.arraycopy(this.mat, (row * this.numColumns), temp, 0, 6);
+        Nio.arraycopy(this.mat, (row * this.numColumns), temp, 0, 6);
         return new idVec6(temp);
     }
 //public	idVec6 &		SubVec6( int row );												// interpret beginning of row as an idVec6
@@ -1652,7 +1653,7 @@ public class idMatX {
         final idVecX v = new idVecX();
         assert ((row >= 0) && (row < this.numRows));
         final float[] temp = new float[this.numColumns];
-        System.arraycopy(this.mat, (row * this.numColumns), temp, 0, this.numColumns);
+        Nio.arraycopy(this.mat, (row * this.numColumns), temp, 0, this.numColumns);
         v.SetData(this.numColumns, temp);
         return v;
     }
@@ -2204,7 +2205,7 @@ public class idMatX {
         }
 
 //	memcpy( z, w.ToFloatPtr(), w.GetSize() * sizeof( float ) );
-        System.arraycopy(w.ToFloatPtr(), 0, z, 0, w.GetSize());
+        Nio.arraycopy(w.ToFloatPtr(), 0, z, 0, w.GetSize());
 
         max = Lib.Min(this.numRows, this.numColumns);
         for (i = 0; i < max; i++) {
@@ -2286,7 +2287,7 @@ public class idMatX {
                 }
             }
         } else {
-            System.arraycopy(v.ToFloatPtr(), 0, y0, 0, v.GetSize());
+            Nio.arraycopy(v.ToFloatPtr(), 0, y0, 0, v.GetSize());
             rp = r;
         }
 
@@ -2297,7 +2298,7 @@ public class idMatX {
         z0[r] = 1.0f;
 
 //	memcpy( z1, w.ToFloatPtr(), w.GetSize() * sizeof( float ) );
-        System.arraycopy(w.ToFloatPtr(), 0, z1, 0, w.GetSize());
+        Nio.arraycopy(w.ToFloatPtr(), 0, z1, 0, w.GetSize());
 
         // update the beginning of the to be updated row and column
         min = Lib.Min(r, rp);
@@ -6230,7 +6231,7 @@ public class idMatX {
     }
 
     public void arraycopy(final float[] src, final int srcPos, final int destPos, final int length) {
-        System.arraycopy(src, srcPos, this.mat, destPos * this.numColumns, length);
+        Nio.arraycopy(src, srcPos, this.mat, destPos * this.numColumns, length);
     }
 
     public void arraycopy(final float[] src, final int destPos, final int length) {

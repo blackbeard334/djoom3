@@ -16,6 +16,7 @@ import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat4;
+import neo.open.MatrixUtil;
 
 /**
  *
@@ -528,24 +529,7 @@ public class tr_shadowbounds {
     }
 
     public static void world_to_hclip(final viewDef_s viewDef, final idVec4 global, idVec4 clip) {
-        int i;
-        final idVec4 view = new idVec4();
-
-        for (i = 0; i < 4; i++) {
-            view.oSet(i,
-                    (global.oGet(0) * viewDef.worldSpace.getModelViewMatrix()[ i + (0 * 4)])
-                    + (global.oGet(1) * viewDef.worldSpace.getModelViewMatrix()[ i + (1 * 4)])
-                    + (global.oGet(2) * viewDef.worldSpace.getModelViewMatrix()[ i + (2 * 4)])
-                    + (global.oGet(3) * viewDef.worldSpace.getModelViewMatrix()[ i + (3 * 4)]));
-        }
-
-        for (i = 0; i < 4; i++) {
-            clip.oSet(i,
-                    (view.oGet(0) * viewDef.getProjectionMatrix()[ i + (0 * 4)])
-                    + (view.oGet(1) * viewDef.getProjectionMatrix()[ i + (1 * 4)])
-                    + (view.oGet(2) * viewDef.getProjectionMatrix()[ i + (2 * 4)])
-                    + (view.oGet(3) * viewDef.getProjectionMatrix()[ i + (3 * 4)]));
-        }
+        MatrixUtil.matrixToClipGet4Set4(global, clip, new idVec4(), viewDef.worldSpace.getModelViewMatrix(), viewDef.getProjectionMatrix());
     }
 
     public static idScreenRect R_CalcIntersectionScissor(final idRenderLightLocal lightDef, final idRenderEntityLocal entityDef, final viewDef_s viewDef) {

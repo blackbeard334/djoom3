@@ -107,6 +107,7 @@ import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.ui.UserInterface.uiManager;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -2384,10 +2385,11 @@ public class RenderWorld_local {
                 a = -0.5f / alpha;
             }
 
-            forward.oSet(0, a * tr.viewDef.worldSpace.getModelViewMatrix()[2]);
-            forward.oSet(1, a * tr.viewDef.worldSpace.getModelViewMatrix()[6]);
-            forward.oSet(2, a * tr.viewDef.worldSpace.getModelViewMatrix()[10]);
-            forward.oSet(3, a * tr.viewDef.worldSpace.getModelViewMatrix()[14]);
+            FloatBuffer modelViewMatrix = tr.viewDef.worldSpace.getModelViewMatrix();
+            forward.oSet(0, a * modelViewMatrix.get(2));
+            forward.oSet(1, a * modelViewMatrix.get(6));
+            forward.oSet(2, a * modelViewMatrix.get(10));
+            forward.oSet(3, a * modelViewMatrix.get(14));
 
             w = p.w;
             for (i = 0; i < w.GetNumPoints(); i++) {

@@ -30,6 +30,7 @@ import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.Nio;
 
 /**
  *
@@ -273,7 +274,7 @@ public class Pvs {
 
             if (type != PVS_CONNECTED_AREAS) {
 //		memcpy( currentPVS[handle.i].pvs, areaPVS + sourceArea * areaVisBytes, areaVisBytes );
-                System.arraycopy(this.areaPVS, sourceArea * this.areaVisBytes, this.currentPVS[handle.i].pvs, 0, this.areaVisBytes);
+                Nio.arraycopy(this.areaPVS, sourceArea * this.areaVisBytes, this.currentPVS[handle.i].pvs, 0, this.areaVisBytes);
             } else {
 //		memset( currentPVS[handle.i].pvs, -1, areaVisBytes );
                 Arrays.fill(this.currentPVS[handle.i].pvs, 0, this.areaVisBytes, (byte) -1);
@@ -324,7 +325,7 @@ public class Pvs {
 
             if (type != PVS_CONNECTED_AREAS) {
                 // merge PVS of all areas the source is in
-                System.arraycopy(this.areaPVS, sourceAreas[0] * this.areaVisBytes, this.currentPVS[handle.i].pvs, 0, this.areaVisBytes);//		memcpy( currentPVS[handle.i].pvs, areaPVS + sourceAreas[0] * areaVisBytes, areaVisBytes );
+                Nio.arraycopy(this.areaPVS, sourceAreas[0] * this.areaVisBytes, this.currentPVS[handle.i].pvs, 0, this.areaVisBytes);//		memcpy( currentPVS[handle.i].pvs, areaPVS + sourceAreas[0] * areaVisBytes, areaVisBytes );
                 for (i = 1; i < numSourceAreas; i++) {
 
                     assert ((sourceAreas[i] >= 0) && (sourceAreas[i] < this.numAreas));
@@ -736,7 +737,7 @@ public class Pvs {
             for (i = 0; i < this.numPortals; i++) {
                 p = this.pvsPortals[i];
 //		memcpy( p.mightSee, p.vis, portalVisBytes );
-                System.arraycopy(p.vis, 0, p.mightSee, 0, this.portalVisBytes);
+                Nio.arraycopy(p.vis, 0, p.mightSee, 0, this.portalVisBytes);
             }
         }
 
@@ -951,7 +952,7 @@ public class Pvs {
                 source = this.pvsPortals[i];
                 Arrays.fill(source.vis, 0, this.portalVisBytes, (byte) 0);
 //		memcpy( stack.mightSee, source.mightSee, portalVisBytes );
-                System.arraycopy(source.mightSee, 0, stack.mightSee, 0, this.portalVisBytes);
+                Nio.arraycopy(source.mightSee, 0, stack.mightSee, 0, this.portalVisBytes);
                 FloodPassagePVS_r(source, source, stack);
                 source.done = true;
             }
