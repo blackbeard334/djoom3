@@ -180,6 +180,7 @@ import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
+import neo.open.Nio;
 import neo.ui.UserInterface.idUserInterface;
 
 /*
@@ -345,7 +346,7 @@ public class Material {
         }
 
         private colorStage_t(colorStage_t color) {
-            System.arraycopy(color.registers, 0, this.registers, 0, this.registers.length);
+            Nio.arraycopy(color.registers, 0, this.registers, 0, this.registers.length);
         }
     }
 
@@ -395,8 +396,8 @@ public class Material {
             this.image[0] = texture.image[0];//pointer
             this.texgen = texture.texgen;
             this.hasMatrix = texture.hasMatrix;
-            System.arraycopy(texture.matrix[0], 0, this.matrix[0], 0, this.matrix[0].length);
-            System.arraycopy(texture.matrix[1], 0, this.matrix[1], 0, this.matrix[1].length);
+            Nio.arraycopy(texture.matrix[0], 0, this.matrix[0], 0, this.matrix[0].length);
+            Nio.arraycopy(texture.matrix[1], 0, this.matrix[1], 0, this.matrix[1].length);
             this.dynamic = texture.dynamic;
             this.width = texture.width;
             this.height = texture.height;
@@ -1063,7 +1064,7 @@ public class Material {
             if (this.numRegisters != 0) {
                 this.expressionRegisters = new float[this.numRegisters];//R_StaticAlloc(numRegisters *sizeof( expressionRegisters[0] )
 //		memcpy( expressionRegisters, pd.shaderRegisters, numRegisters * sizeof( expressionRegisters[0] ) );
-                System.arraycopy(this.pd.shaderRegisters, 0, this.expressionRegisters, 0, this.numRegisters);
+                Nio.arraycopy(this.pd.shaderRegisters, 0, this.expressionRegisters, 0, this.numRegisters);
             }
 
             // see if the registers are completely constant, and don't need to be evaluated
@@ -3424,14 +3425,14 @@ public class Material {
             if (!ts.hasMatrix) {
                 ts.hasMatrix = true;
 //		memcpy( ts.matrix, registers, sizeof( ts.matrix ) );
-                System.arraycopy(registers[0], 0, ts.matrix[0], 0, ts.matrix[0].length);
-                System.arraycopy(registers[1], 0, ts.matrix[1], 0, ts.matrix[1].length);
+                Nio.arraycopy(registers[0], 0, ts.matrix[0], 0, ts.matrix[0].length);
+                Nio.arraycopy(registers[1], 0, ts.matrix[1], 0, ts.matrix[1].length);
                 return;
             }
 
 //	memcpy( old, ts.matrix, sizeof( old ) );
-            System.arraycopy(ts.matrix[0], 0, old[0], 0, old[0].length);
-            System.arraycopy(ts.matrix[1], 0, old[1], 0, old[1].length);
+            Nio.arraycopy(ts.matrix[0], 0, old[0], 0, old[0].length);
+            Nio.arraycopy(ts.matrix[1], 0, old[1], 0, old[1].length);
 
             // multiply the two maticies
             ts.matrix[0][0] = EmitOp(

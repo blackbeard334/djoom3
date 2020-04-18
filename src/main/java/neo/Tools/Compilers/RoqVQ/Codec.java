@@ -34,6 +34,7 @@ import java.util.Arrays;
 import neo.Tools.Compilers.RoqVQ.QuadDefs.quadcel;
 import neo.framework.File_h.idFile;
 import neo.idlib.math.Math_h.idMath;
+import neo.open.Nio;
 
 /**
  *
@@ -1457,7 +1458,7 @@ public class Codec {
                                     for (xx = x; xx < (x + 4); xx++) {
                                         s_p = (yy * (bpp * this.image.pixelsWide())) + (xx * bpp);
 //						memcpy( dst, src, 3); 
-                                        System.arraycopy(src, s_p, dst, d_p, 3);
+                                        Nio.arraycopy(src, s_p, dst, d_p, 3);
 //                                                dst += 3;
                                         d_p += 3;
                                     }
@@ -1854,7 +1855,7 @@ public class Codec {
             }
             if (this.whichFrame == 0) {
 //			memcpy( previousImage[1].bitmapData(), previousImage[0].bitmapData(), pWide*(pixelsHigh & 0xfff0)*4);
-                System.arraycopy(this.previousImage[0].bitmapData(), 0, this.previousImage[1].bitmapData(), 0, pWide * (this.pixelsHigh & 0xfff0) * 4);
+                Nio.arraycopy(this.previousImage[0].bitmapData(), 0, this.previousImage[1].bitmapData(), 0, pWide * (this.pixelsHigh & 0xfff0) * 4);
             }
 
             x = 0;

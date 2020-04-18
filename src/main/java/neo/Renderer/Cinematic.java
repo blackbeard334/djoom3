@@ -21,6 +21,7 @@ import java.nio.IntBuffer;
 import neo.TempDump.TODO_Exception;
 import neo.framework.File_h.idFile;
 import neo.idlib.Text.Str.idStr;
+import neo.open.Nio;
 
 /**
  *
@@ -289,7 +290,7 @@ public class Cinematic {
         private idCinematicLocal(idCinematicLocal local) {
             this();
 
-            System.arraycopy(local.mComp, 0, this.mComp, 0, this.mComp.length);
+            Nio.arraycopy(local.mComp, 0, this.mComp, 0, this.mComp.length);
             this.qStatus = local.qStatus;//pointer
             this.fileName = local.fileName;
             this.CIN_WIDTH = local.CIN_WIDTH;
@@ -315,7 +316,7 @@ public class Cinematic {
             this.roq_flags = local.roq_flags;
             this.roqF0 = local.roqF0;
             this.roqF1 = local.roqF1;
-            System.arraycopy(local.t, 0, this.t, 0, this.t.length);
+            Nio.arraycopy(local.t, 0, this.t, 0, this.t.length);
             this.roqFPS = local.roqFPS;
             this.drawX = local.drawX;
             this.drawY = local.drawY;
@@ -650,7 +651,7 @@ public class Cinematic {
                         }
                         if (this.numQuads == 0) {		// first frame
 //				memcpy(image+screenDelta, image, samplesPerLine*ysize);
-                            System.arraycopy(this.image.array(), 0, this.image.array(), this.screenDelta, (int) this.samplesPerLine * this.ySize);
+                            Nio.arraycopy(this.image.array(), 0, this.image.array(), this.screenDelta, (int) this.samplesPerLine * this.ySize);
                         }
                         this.numQuads++;
                         this.dirty = true;
@@ -684,7 +685,7 @@ public class Cinematic {
                             this.normalBuffer0 = this.t[0];
                             JPEGBlit(this.image, file, framedata, this.RoQFrameSize);
 //				memcpy(image+screenDelta, image, samplesPerLine*ysize);
-                            System.arraycopy(this.image, 0, this.image, this.screenDelta, (int) this.samplesPerLine * this.ySize);
+                            Nio.buffercopy(this.image, 0, this.image, this.screenDelta, (int) this.samplesPerLine * this.ySize);
                             this.numQuads++;
                         }
                         break;

@@ -208,7 +208,7 @@ public class draw_r200 {
 //                drawInteraction_t d;
 //                d = din;
 //                d.diffuseImage = globalImages.blackImage;
-//                System.arraycopy(d.specularMatrix, 0, d.diffuseMatrix, 0, d.specularMatrix.length);
+//                Nio.arraycopy(d.specularMatrix, 0, d.diffuseMatrix, 0, d.specularMatrix.length);
 //                run(d);
 //
 //                // now fall through and draw the diffuse pass with a black specular map

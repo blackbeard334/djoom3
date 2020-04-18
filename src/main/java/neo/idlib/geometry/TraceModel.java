@@ -25,6 +25,7 @@ import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 
 /**
  *
@@ -106,7 +107,7 @@ public class TraceModel {
             this.dist = t.dist;
             this.bounds.oSet(t.bounds);
             this.numEdges = t.numEdges;
-            System.arraycopy(t.edges, 0, this.edges, 0, MAX_TRACEMODEL_POLYEDGES);
+            Nio.arraycopy(t.edges, 0, this.edges, 0, MAX_TRACEMODEL_POLYEDGES);
         }
     }
 

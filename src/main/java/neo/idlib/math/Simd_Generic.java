@@ -22,6 +22,7 @@ import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Vector.idVecX;
 import neo.idlib.math.Matrix.idMatX;
+import neo.open.Nio;
 
 /**
  *
@@ -834,7 +835,7 @@ public class Simd_Generic {
         @Override
         public void Memcpy(Object[] dst, Object[] src, int count) {
 //            memcpy( dst, src, count );
-//            System.arraycopy(src, 0, dst, 0, count);
+//            Nio.arraycopy(src, 0, dst, 0, count);
             throw new TempDump.Deprecation_Exception();
         }
 
@@ -865,7 +866,7 @@ public class Simd_Generic {
 //            for (int _IX = 0; _IX < count; _IX++) {
 //                dst[_IX] = src[_IX];
 //            }
-            System.arraycopy(src, 0, dst, 0, count);
+            Nio.arraycopy(src, 0, dst, 0, count);
         }
 
         @Override

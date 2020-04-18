@@ -387,7 +387,7 @@ public class BitMsg {
         }
 
         public void WriteData(final ByteBuffer data, int offset, int length) throws idException {
-//            System.arraycopy(data, offset, GetByteSpace(length), 0, length);
+//            Nio.arraycopy(data, offset, GetByteSpace(length), 0, length);
             data.get(GetByteSpace(length), offset, length);
         }
 

@@ -863,7 +863,7 @@ public class DeclParticle {
                 } else if (icolor > 255) {
                     icolor = 255;
                 }
-                bcolor =  (byte) icolor;;
+                bcolor =  (byte) icolor;
                 verts[0].getColor().put(i, bcolor); 
                 verts[1].getColor().put(i, bcolor); 
                 verts[2].getColor().put(i, bcolor); 

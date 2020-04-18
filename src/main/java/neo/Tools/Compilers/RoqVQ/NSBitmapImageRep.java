@@ -56,7 +56,7 @@ public class NSBitmapImageRep {
         }
         this.bmap = new byte[a.width * a.height * 4];// Mem_Alloc(a.width * a.height * 4);
 //	memcpy( bmap, a.bmap, a.width * a.height * 4 );
-//        System.arraycopy(a.bmap, 0, this.bmap, 0, a.width * a.height * 4);
+//        Nio.arraycopy(a.bmap, 0, this.bmap, 0, a.width * a.height * 4);
         this.bmap = a.bmap;
         this.width = a.width;
         this.height = a.height;

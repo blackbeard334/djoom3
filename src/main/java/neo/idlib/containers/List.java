@@ -19,6 +19,7 @@ import neo.framework.CmdSystem.commandDef_s;
 import neo.idlib.Text.Str.idStr;
 //import neo.idlib.containers.StrList.idStrPtr;
 import neo.idlib.containers.StrPool.idPoolStr;
+import neo.open.Nio;
 
 /**
  *
@@ -1079,18 +1080,18 @@ public class List {
         final int length = a.length;
         final float[] c = new float[length];
 
-        System.arraycopy(a, 0, c, 0, length);
-        System.arraycopy(b, 0, a, 0, length);
-        System.arraycopy(c, 0, b, 0, length);
+        Nio.arraycopy(a, 0, c, 0, length);
+        Nio.arraycopy(b, 0, a, 0, length);
+        Nio.arraycopy(c, 0, b, 0, length);
     }
 
     public static void idSwap(final Float[] a, final Float[] b) {
         final int length = a.length;
         final Float[] c = new Float[length];
 
-        System.arraycopy(a, 0, c, 0, length);
-        System.arraycopy(b, 0, a, 0, length);
-        System.arraycopy(c, 0, b, 0, length);
+        Nio.arraycopy(a, 0, c, 0, length);
+        Nio.arraycopy(b, 0, a, 0, length);
+        Nio.arraycopy(c, 0, b, 0, length);
     }
 
     private static class idListSortCompare<type> implements cmp_t<type> {

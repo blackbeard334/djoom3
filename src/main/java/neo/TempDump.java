@@ -196,7 +196,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         final byte[] output = new byte[height * width];
 
         for (final byte[] anInput : input) {
-            System.arraycopy(anInput, 0, output, width, width);
+            Nio.arraycopy(anInput, 0, output, width, width);
         }
 
         return output;
@@ -212,7 +212,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             final int x = a * width * length;
             for (int b = 0; b < width; b++) {
                 final int y = b * length;
-                System.arraycopy(input[a][b], 0, output, x + y, length);
+                Nio.arraycopy(input[a][b], 0, output, x + y, length);
             }
         }
 

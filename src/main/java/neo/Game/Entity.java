@@ -137,6 +137,7 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 import neo.ui.UserInterface.idUserInterface;
 
 /**
@@ -956,7 +957,7 @@ public class Entity {
             this.renderView.viewaxis = new idMat3(GetPhysics().GetAxis());
 
             // copy global shader parms
-            System.arraycopy(gameLocal.globalShaderParms, 0, this.renderView.shaderParms, 0, MAX_GLOBAL_SHADER_PARMS);
+            Nio.arraycopy(gameLocal.globalShaderParms, 0, this.renderView.shaderParms, 0, MAX_GLOBAL_SHADER_PARMS);
 
             this.renderView.globalMaterial = gameLocal.GetGlobalMaterial();
 

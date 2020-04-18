@@ -5,6 +5,7 @@ import java.util.Arrays;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.Nio;
 
 /**
  *
@@ -88,9 +89,9 @@ public class HashIndex {
                     this.indexChain = new int[this.indexSize];
                 }
 //		memcpy( hash, other.hash, hashSize * sizeof( hash[0] ) );
-                System.arraycopy(other.hash, 0, this.hash, 0, this.hashSize);
+                Nio.arraycopy(other.hash, 0, this.hash, 0, this.hashSize);
 //		memcpy( indexChain, other.indexChain, indexSize * sizeof( indexChain[0] ) );
-                System.arraycopy(other.indexChain, 0, this.indexChain, 0, this.indexSize);
+                Nio.arraycopy(other.indexChain, 0, this.indexChain, 0, this.indexSize);
             }
 
             return this;
@@ -279,7 +280,7 @@ public class HashIndex {
             oldIndexChain = this.indexChain;
             this.indexChain = new int[newSize];
 //	memcpy( indexChain, oldIndexChain, indexSize * sizeof(int) );
-            System.arraycopy(oldIndexChain, 0, this.indexChain, 0, this.indexSize);
+            Nio.arraycopy(oldIndexChain, 0, this.indexChain, 0, this.indexSize);
 //	memset( indexChain + indexSize, 0xff, (newSize - indexSize) * sizeof(int) );
             Arrays.fill(this.indexChain, this.indexSize, newSize, -1);//0xff);
 //	delete[] oldIndexChain;

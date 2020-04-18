@@ -1823,7 +1823,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_Tip extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_Tip );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 2094155353115666956L;
+		// CLASS_PROTOTYPE( idTarget_Tip );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -1902,7 +1906,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_GiveSecurity extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_GiveSecurity );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 3913940394928897299L;
+		// CLASS_PROTOTYPE( idTarget_GiveSecurity );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -1937,7 +1945,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_RemoveWeapons extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_RemoveWeapons );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 2607166258106146719L;
+		// CLASS_PROTOTYPE( idTarget_RemoveWeapons );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -1979,7 +1991,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_LevelTrigger extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_LevelTrigger );//TODO:understand this fucking macro
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -5593521803491135026L;
+		// CLASS_PROTOTYPE( idTarget_LevelTrigger );//TODO:understand this fucking macro
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -2015,7 +2031,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_EnableStamina extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_EnableStamina );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -5439557550263933522L;
+		// CLASS_PROTOTYPE( idTarget_EnableStamina );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -2055,7 +2075,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_FadeSoundClass extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_FadeSoundClass );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -2562523365750867495L;
+		// CLASS_PROTOTYPE( idTarget_FadeSoundClass );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());

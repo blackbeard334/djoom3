@@ -122,7 +122,7 @@ public class MD4 extends MessageDigest implements Cloneable {
 		int partLen = BLOCK_LENGTH - bufferNdx;
 		int i = 0;
 		if (len >= partLen) {
-			System.arraycopy(input, offset, buffer, bufferNdx, partLen);
+			Nio.arraycopy(input, offset, buffer, bufferNdx, partLen);
 
 			transform(buffer, 0);
 
@@ -133,7 +133,7 @@ public class MD4 extends MessageDigest implements Cloneable {
 		}
 		// buffer remaining input
 		if (i < len) {
-			System.arraycopy(input, offset + i, buffer, bufferNdx, len - i);
+			Nio.arraycopy(input, offset + i, buffer, bufferNdx, len - i);
 		}
 	}
 

@@ -12,6 +12,7 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.FloatOGetSet;
 
 /**
  *
@@ -25,7 +26,7 @@ public class Sphere {
      ===============================================================================
      */
 
-    public static class idSphere {
+    public static class idSphere implements FloatOGetSet {
 
         private idVec3 origin;
         private float  radius;

@@ -2686,7 +2686,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idEarthQuake extends idEntity {
-        // CLASS_PROTOTYPE( idEarthQuake );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -5892291559148660706L;
+		// CLASS_PROTOTYPE( idEarthQuake );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -2863,7 +2867,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idFuncPortal extends idEntity {
-        // CLASS_PROTOTYPE( idFuncPortal );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 935062458871120297L;
+		// CLASS_PROTOTYPE( idFuncPortal );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -2941,7 +2949,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idFuncAASPortal extends idEntity {
-        // CLASS_PROTOTYPE( idFuncAASPortal );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 2352468639457188273L;
+		// CLASS_PROTOTYPE( idFuncAASPortal );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -3009,7 +3021,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idFuncAASObstacle extends idEntity {
-        // CLASS_PROTOTYPE( idFuncAASObstacle );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 2338709258716423473L;
+		// CLASS_PROTOTYPE( idFuncAASObstacle );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -3079,7 +3095,11 @@ public class Misc {
     public static final idEventDef EV_ResetRadioHud = new idEventDef("<resetradiohud>", "e");
 
     public static class idFuncRadioChatter extends idEntity {
-        // CLASS_PROTOTYPE( idFuncRadioChatter );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -8168694844528207578L;
+		// CLASS_PROTOTYPE( idFuncRadioChatter );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -3180,7 +3200,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idPhantomObjects extends idEntity {
-        // CLASS_PROTOTYPE( idPhantomObjects );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -3576149907834991213L;
+		// CLASS_PROTOTYPE( idPhantomObjects );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {

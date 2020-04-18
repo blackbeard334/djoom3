@@ -387,6 +387,7 @@ import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 import neo.sys.sys_public;
 import neo.ui.UserInterface;
 import neo.ui.UserInterface.idUserInterface;
@@ -4796,7 +4797,7 @@ public class Game_local {
             if (msg != null) {
                 event.paramsSize = msg.GetSize();
 //		memcpy( event.paramsBuf, msg.GetData(), msg.GetSize() );
-                System.arraycopy(msg.GetData().array(), 0, event.paramsBuf.array(), 0, msg.GetSize());
+                Nio.arraycopy(msg.GetData().array(), 0, event.paramsBuf.array(), 0, msg.GetSize());
             } else {
                 event.paramsSize = 0;
             }
@@ -5774,7 +5775,7 @@ public class Game_local {
                         this.clientEntityStates[clientNum][state.entityNumber] = state;
                     }
 //			memcpy( clientPVS[clientNum], snapshot.pvs, sizeof( snapshot.pvs ) );
-                    System.arraycopy(snapshot.pvs, 0, this.clientPVS[clientNum], 0, snapshot.pvs.length);
+                    Nio.arraycopy(snapshot.pvs, 0, this.clientPVS[clientNum], 0, snapshot.pvs.length);
                     if (lastSnapshot != null) {
                         lastSnapshot.next = nextSnapshot;
                     } else {
@@ -6168,7 +6169,7 @@ public class Game_local {
         @Override
         public void GetBestGameType(final String map, final String gametype, char[] buf/*[MAX_STRING_CHARS ]*/) {
 //	strncpy( buf, gametype, MAX_STRING_CHARS );
-            System.arraycopy(gametype.toCharArray(), 0, buf, 0, MAX_STRING_CHARS);
+            Nio.arraycopy(gametype.toCharArray(), 0, buf, 0, MAX_STRING_CHARS);
             buf[ MAX_STRING_CHARS - 1] = '\0';
         }
 

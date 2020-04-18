@@ -872,7 +872,7 @@ public class tr_trisurf {
 
         tri.dupVerts = new int[tri.numDupVerts * 2];// triDupVertAllocator.Alloc(tri.numDupVerts * 2);
 //	memcpy( tri.dupVerts, tempDupVerts, tri.numDupVerts * 2 * sizeof( tri.dupVerts[0] ) );
-        System.arraycopy(tempDupVerts, 0, tri.dupVerts, 0, tri.numDupVerts * 2);
+        Nio.arraycopy(tempDupVerts, 0, tri.dupVerts, 0, tri.numDupVerts * 2);
     }
 
     /*
@@ -1136,7 +1136,7 @@ public class tr_trisurf {
                 if (j == 3) {
                     // we can cull this sil edge
 //				memmove( &silEdges[i], &silEdges[i+1], (numSilEdges-i-1) * sizeof( silEdges[i] ) );
-                    System.arraycopy(silEdges, i + 1, silEdges, i, numSilEdges - i - 1);
+                	System.arraycopy(silEdges, i + 1, silEdges, i, numSilEdges - i - 1);
                     c_coplanarCulled++;
                     numSilEdges--;
                     i--;
@@ -1951,9 +1951,10 @@ public class tr_trisurf {
                     if ((tri.silIndexes[j] == a) && (tri.silIndexes[j + 1] == b) && (tri.silIndexes[j + 2] == c)) {
                         c_removed++;
 //					memmove( tri.indexes + j, tri.indexes + j + 3, ( tri.numIndexes - j - 3 ) * sizeof( tri.indexes[0] ) );
-                        System.arraycopy(tri.getIndexes().getValues(), j + 3, tri.getIndexes().getValues(), j, tri.getIndexes().getNumValues() - j - 3);
+                        //System.arraycopy(tri.getIndexes().getValues(), j + 3, tri.getIndexes().getValues(), j, tri.getIndexes().getNumValues() - j - 3);
+                        Nio.buffercopy(tri.getIndexes().getValues(), j + 3, tri.getIndexes().getValues(), j, tri.getIndexes().getNumValues() - j - 3);
 //					memmove( tri.silIndexes + j, tri.silIndexes + j + 3, ( tri.numIndexes - j - 3 ) * sizeof( tri.silIndexes[0] ) );
-                        System.arraycopy(tri.silIndexes, j + 3, tri.silIndexes, j, tri.getIndexes().getNumValues() - j - 3);
+                        Nio.arraycopy(tri.silIndexes, j + 3, tri.silIndexes, j, tri.getIndexes().getNumValues() - j - 3);
                         tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() - 3);
                         j -= 3;
                     }
@@ -1992,7 +1993,7 @@ public class tr_trisurf {
                 Nio.buffercopy(tri.getIndexes().getValues(), i + 3, tri.getIndexes().getValues(), i, tri.getIndexes().getNumValues() - i - 3);
                 if (tri.silIndexes != null) {
 //				memmove( tri.silIndexes + i, tri.silIndexes + i + 3, ( tri.numIndexes - i - 3 ) * sizeof( tri.silIndexes[0] ) );
-                    System.arraycopy(tri.silIndexes, i + 3, tri.silIndexes, i, tri.getIndexes().getNumValues() - i - 3);
+                    Nio.arraycopy(tri.silIndexes, i + 3, tri.silIndexes, i, tri.getIndexes().getNumValues() - i - 3);
                 }
                 tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() - 3);
                 i -= 3;

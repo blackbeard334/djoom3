@@ -19,6 +19,7 @@ import neo.framework.DemoFile.idDemoFile;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec2;
+import neo.open.Nio;
 
 /**
  *
@@ -191,7 +192,7 @@ public class ModelOverlay {
                 s.numVerts = numVerts;
                 s.indexes = new int[numIndexes];///*(glIndex_t *)*/Mem_Alloc(numIndexes);
 //                memcpy(s.indexes, overlayIndexes, numIndexes * sizeof(s.indexes[0]));
-                System.arraycopy(overlayIndexes, 0, s.indexes, 0, numIndexes);
+                Nio.arraycopy(overlayIndexes, 0, s.indexes, 0, numIndexes);
                 s.numIndexes = numIndexes;
 
                 for (i = 0; i < this.materials.Num(); i++) {

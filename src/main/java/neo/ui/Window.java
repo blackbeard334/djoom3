@@ -105,6 +105,7 @@ import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 import neo.sys.sys_public.sysEvent_s;
 import neo.ui.BindWindow.idBindWindow;
 import neo.ui.ChoiceWindow.idChoiceWindow;
@@ -4008,12 +4009,12 @@ public class Window {
         protected void SaveExpressionParseState() {
             this.saveTemps = new boolean[MAX_EXPRESSION_REGISTERS];
 //	memcpy(saveTemps, registerIsTemporary, MAX_EXPRESSION_REGISTERS * sizeof(bool));
-            System.arraycopy(registerIsTemporary, 0, this.saveTemps, 0, MAX_EXPRESSION_REGISTERS);
+            Nio.arraycopy(registerIsTemporary, 0, this.saveTemps, 0, MAX_EXPRESSION_REGISTERS);
         }
 
         protected void RestoreExpressionParseState() {
 //	memcpy(registerIsTemporary, saveTemps, MAX_EXPRESSION_REGISTERS * sizeof(bool));
-            System.arraycopy(this.saveTemps, 0, registerIsTemporary, 0, MAX_EXPRESSION_REGISTERS);
+            Nio.arraycopy(this.saveTemps, 0, registerIsTemporary, 0, MAX_EXPRESSION_REGISTERS);
 //            Mem_Free(saveTemps);
             this.saveTemps = null;
         }

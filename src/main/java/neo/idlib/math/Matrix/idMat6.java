@@ -8,6 +8,7 @@ import java.util.Arrays;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
+import neo.open.Nio;
 
 //===============================================================
 //
@@ -992,7 +993,7 @@ public class idMat6 {
         final float[] temp = new float[size * size];
 
         for (int x = 0; x < size; x++) {
-            System.arraycopy(this.mat[x].p, 0, temp, (x * 6) + 0, size);
+            Nio.arraycopy(this.mat[x].p, 0, temp, (x * 6) + 0, size);
         }
         return temp;
     }

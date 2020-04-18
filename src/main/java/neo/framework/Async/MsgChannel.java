@@ -14,6 +14,7 @@ import neo.framework.Compressor.idCompressor;
 import neo.framework.File_h.idFile_BitMsg;
 import neo.idlib.BitMsg.idBitMsg;
 import neo.idlib.Lib.idException;
+import neo.open.Nio;
 import neo.sys.sys_public.idPort;
 import neo.sys.sys_public.netadr_t;
 
@@ -138,12 +139,12 @@ public class MsgChannel {
         public void CopyToBuffer(byte[] buf) {
             if (this.startIndex <= this.endIndex) {
 //		memcpy( buf, buffer + startIndex, endIndex - startIndex );
-                System.arraycopy(this.buffer, this.startIndex, buf, 0, this.endIndex - this.startIndex);
+                Nio.arraycopy(this.buffer, this.startIndex, buf, 0, this.endIndex - this.startIndex);
             } else {
 //		memcpy( buf, buffer + startIndex, sizeof( buffer ) - startIndex );
-                System.arraycopy(this.buffer, this.startIndex, buf, 0, this.buffer.length - this.startIndex);
+                Nio.arraycopy(this.buffer, this.startIndex, buf, 0, this.buffer.length - this.startIndex);
 //		memcpy( buf + sizeof( buffer ) - startIndex, buffer, endIndex );
-                System.arraycopy(this.buffer, 0, buf, this.buffer.length - this.startIndex, this.endIndex);
+                Nio.arraycopy(this.buffer, 0, buf, this.buffer.length - this.startIndex, this.endIndex);
             }
         }
 
@@ -596,7 +597,7 @@ public class MsgChannel {
                 }
 
 //		memcpy( fragmentBuffer + fragmentLength, msg.GetData() + msg.GetReadCount(), fragLength );
-                System.arraycopy(msg.GetData().array(), msg.GetReadCount(),
+                Nio.arraycopy(msg.GetData().array(), msg.GetReadCount(),
                         this.fragmentBuffer.array(), this.fragmentLength, fragLength);
 
                 this.fragmentLength += fragLength;
@@ -610,7 +611,7 @@ public class MsgChannel {
 
             } else {
 //		memcpy( fragmentBuffer, msg.GetData() + msg.GetReadCount(), msg.GetRemaingData() );
-                System.arraycopy(msg.GetData().array(), msg.GetReadCount(),
+                Nio.arraycopy(msg.GetData().array(), msg.GetReadCount(),
                         this.fragmentBuffer.array(), 0, msg.GetRemaingData());
                 this.fragmentLength = msg.GetRemaingData();
                 UpdatePacketLoss(time, 1, 0);

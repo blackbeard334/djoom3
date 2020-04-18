@@ -30,6 +30,7 @@ import neo.framework.KeyInput.idKeyInput;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
+import neo.open.Nio;
 
 /**
  *
@@ -234,7 +235,7 @@ public class EditField {
             if ((ch == (('h' - 'a') + 1)) || (ch == K_BACKSPACE)) {	// ctrl-h is backspace
                 if (this.cursor > 0) {
 //			memmove( buffer + cursor - 1, buffer + cursor, len + 1 - cursor );
-                    System.arraycopy(this.buffer, this.cursor, this.buffer, this.cursor - 1, (len + 1) - this.cursor);
+                    Nio.arraycopy(this.buffer, this.cursor, this.buffer, this.cursor - 1, (len + 1) - this.cursor);
                     this.cursor--;
                     if (this.cursor < this.scroll) {
                         this.scroll--;
@@ -273,7 +274,7 @@ public class EditField {
                     return; // all full
                 }
 //		memmove( buffer + cursor + 1, buffer + cursor, len + 1 - cursor );
-                System.arraycopy(this.buffer, this.cursor, this.buffer, this.cursor + 1, (len + 1) - this.cursor);
+                Nio.arraycopy(this.buffer, this.cursor, this.buffer, this.cursor + 1, (len + 1) - this.cursor);
                 this.buffer[this.cursor] = (char) ch;
                 this.cursor++;
             }
@@ -304,7 +305,7 @@ public class EditField {
                     ClearAutoComplete();
                 } else if (this.cursor < len) {
 //			memmove( buffer + cursor, buffer + cursor + 1, len - cursor );
-                    System.arraycopy(this.buffer, this.cursor + 1, this.buffer, this.cursor, len - this.cursor);
+                    Nio.arraycopy(this.buffer, this.cursor + 1, this.buffer, this.cursor, len - this.cursor);
                 }
                 return;
             }
@@ -464,7 +465,7 @@ public class EditField {
             }
 
 //	memcpy( str, buffer + prestep, drawLen );
-            System.arraycopy(this.buffer, prestep, str, 0, drawLen);
+            Nio.arraycopy(this.buffer, prestep, str, 0, drawLen);
             str[drawLen] = 0;
 
             // draw it

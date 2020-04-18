@@ -5,6 +5,7 @@ import java.util.Arrays;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.Nio;
 
 /**
  *  Plücker
@@ -26,7 +27,7 @@ public class Pluecker {
         }
 
         public idPluecker(final float[] a) {
-            System.arraycopy(a, 0, this.p, 0, 6);//memcpy( p, a, 6 * sizeof( float ) );
+            Nio.arraycopy(a, 0, this.p, 0, 6);//memcpy( p, a, 6 * sizeof( float ) );
         }
 
         public idPluecker(final idVec3 start, final idVec3 end) {

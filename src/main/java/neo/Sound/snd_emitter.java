@@ -359,8 +359,8 @@ public class snd_emitter {
             this.lowpass.GetContinuitySamples(in_p1, in_p2, out_p1, out_p2);
             this.lowpass.SetParms(slowmoSpeed * 15000, 1.2f, 9);
 
-            System.arraycopy(src, 0, in, 2, (MIXBUFFER_SAMPLES + 3) - 2);
-            System.arraycopy(spline, 0, out, 2, (MIXBUFFER_SAMPLES + 3) - 2);
+            Nio.arraycopy(src, 0, in, 2, (MIXBUFFER_SAMPLES + 3) - 2);
+            Nio.arraycopy(spline, 0, out, 2, (MIXBUFFER_SAMPLES + 3) - 2);
             in[0] = in_p1[0];//FIXME:ugly block.
             in[1] = in_p2[0];
             out[0] = out_p1[0];
