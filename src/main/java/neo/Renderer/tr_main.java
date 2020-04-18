@@ -706,7 +706,7 @@ public class tr_main {
     public static void R_GlobalToNormalizedDeviceCoordinates(final idVec3 global, idVec3 ndc) {
         final idPlane clip = new idPlane();
         FloatBuffer modelViewMatrix;
-        float[] projectionMatrix;
+        FloatBuffer projectionMatrix;
 
         // _D3XP added work on primaryView when no viewDef
         if (null == tr.viewDef) {
@@ -776,6 +776,9 @@ public class tr_main {
             out.put((3 * 4) + 1, (a.get((3 * 4) + 0) * b.get((0 * 4) + 1)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 1)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 1)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 1)));
             out.put((3 * 4) + 2, (a.get((3 * 4) + 0) * b.get((0 * 4) + 2)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 2)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 2)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 2)));
             out.put((3 * 4) + 3, (a.get((3 * 4) + 0) * b.get((0 * 4) + 3)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 3)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 3)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 3)));
+
+            out.position(out.capacity());
+            out.flip();
         }
     }
 
@@ -977,7 +980,7 @@ public class tr_main {
         float width, height;
         float zNear;
         float jitterx, jittery;
-        float[] projectionMatrix = tr.viewDef.getProjectionMatrix();
+        FloatBuffer projectionMatrix = tr.viewDef.getProjectionMatrix();
 
         // random jittering is usefull when multiple
         // frames are going to be blended together
@@ -1013,7 +1016,7 @@ public class tr_main {
         ymin += jittery;
         ymax += jittery;
 
-        projectionMatrix[ 0] = (2 * zNear) / width;
+        /*projectionMatrix[ 0] = (2 * zNear) / width;
         projectionMatrix[ 4] = 0;
         projectionMatrix[ 8] = (xmax + xmin) / width;	// normally 0
         projectionMatrix[12] = 0;
@@ -1021,12 +1024,19 @@ public class tr_main {
         projectionMatrix[ 1] = 0;
         projectionMatrix[ 5] = (2 * zNear) / height;
         projectionMatrix[ 9] = (ymax + ymin) / height;	// normally 0
-        projectionMatrix[13] = 0;
+        projectionMatrix[13] = 0;*/
+
+        //projectionMatrix.clear();
+
+        projectionMatrix.put( 0, (2 * zNear) / width);
+        projectionMatrix.put( 4, 0);
+        projectionMatrix.put( 8, (xmax + xmin) / width);	// normally 0
+        projectionMatrix.put(12, 0);
 
         // this is the far-plane-at-infinity formulation, and
         // crunches the Z range slightly so w=0 vertexes do not
         // rasterize right at the wraparound point
-        projectionMatrix[ 2] = 0;
+        /*projectionMatrix[ 2] = 0;
         projectionMatrix[ 6] = 0;
         projectionMatrix[10] = -0.999f;
         projectionMatrix[14] = -2.0f * zNear;
@@ -1034,7 +1044,21 @@ public class tr_main {
         projectionMatrix[ 3] = 0;
         projectionMatrix[ 7] = 0;
         projectionMatrix[11] = -1;
-        projectionMatrix[15] = 0;
+        projectionMatrix[15] = 0;*/
+
+        projectionMatrix.put( 2, 0);
+        projectionMatrix.put( 6, 0);
+        projectionMatrix.put(10, -0.999f);
+        projectionMatrix.put(14, -2.0f * zNear);
+
+        projectionMatrix.put( 3, 0);
+        projectionMatrix.put( 7, 0);
+        projectionMatrix.put(11, -1);
+        projectionMatrix.put(15, 0);
+        
+        projectionMatrix.position(projectionMatrix.capacity());
+        projectionMatrix.flip();
+        //projectionMatrix.rewind();
     }
 
     /*

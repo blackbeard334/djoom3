@@ -175,7 +175,7 @@ public class GuiModel {
         }
 
         public void EmitToCurrentView(float[] modelMatrix/*[16]*/, boolean depthHack) {
-            final float[] modelViewMatrix = new float[16];
+            final FloatBuffer modelViewMatrix = Nio.newFloatBuffer(16);
 
             myGlMultMatrix(modelMatrix, tr.viewDef.worldSpace.getModelViewMatrix(),
                     modelViewMatrix);
@@ -234,23 +234,26 @@ public class GuiModel {
             viewDef.floatTime = tr.frameShaderTime;
 
             // TODO: qglOrtho( 0, 640, 480, 0, 0, 1 );		// always assume 640x480 virtual coordinates
-            float[] projectionMatrix = viewDef.getProjectionMatrix();
+            /*float[] projectionMatrix = viewDef.getProjectionMatrix();
             projectionMatrix[ 0] = +2.0f / 640.0f;
             projectionMatrix[ 5] = -2.0f / 480.0f;
             projectionMatrix[10] = -2.0f / 1.0f;
             projectionMatrix[12] = -1.0f;
             projectionMatrix[13] = +1.0f;
             projectionMatrix[14] = -1.0f;
-            projectionMatrix[15] = +1.0f;
-            /* TODO
-            FloatBuffer projectionMatrix = Nio.wrap(viewDef.getProjectionMatrix());
+            projectionMatrix[15] = +1.0f;*/
+
+            FloatBuffer projectionMatrix = viewDef.getProjectionMatrix();
             projectionMatrix.put( 0, +2.0f / 640.0f);
             projectionMatrix.put( 5, -2.0f / 480.0f);
             projectionMatrix.put(10, -2.0f / 1.0f);
             projectionMatrix.put(12, -1.0f);
             projectionMatrix.put(13, +1.0f);
             projectionMatrix.put(14, -1.0f);
-            projectionMatrix.put(15, +1.0f);*/
+            projectionMatrix.put(15, +1.0f);
+
+            projectionMatrix.position(projectionMatrix.capacity());
+            projectionMatrix.flip();
 
             /*float[] modelViewMatrix = viewDef.worldSpace.getModelViewMatrix();
             modelViewMatrix[ 0] = 1.0f;
@@ -264,8 +267,8 @@ public class GuiModel {
             modelViewMatrix.put(10, 1.0f);
             modelViewMatrix.put(15, 1.0f);
 
-            //modelViewMatrix.position(16);
-            //modelViewMatrix.flip();
+            modelViewMatrix.position(modelViewMatrix.capacity());
+            modelViewMatrix.flip();
 
             viewDef.maxDrawSurfs = this.surfaces.Num();
             viewDef.drawSurfs = new drawSurf_s[viewDef.maxDrawSurfs];///*(drawSurf_t **)*/ R_FrameAlloc(viewDef.maxDrawSurfs * sizeof(viewDef.drawSurfs[0]));
