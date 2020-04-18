@@ -1,13 +1,11 @@
 package neo.Renderer;
 
-import static neo.Renderer.tr_local.tr;
 import static neo.framework.Common.common;
 import static neo.idlib.Lib.colorBlue;
 import static neo.idlib.Lib.colorGreen;
 import static neo.idlib.Lib.colorRed;
 import static neo.idlib.Lib.colorYellow;
 
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import neo.Renderer.tr_local.idRenderEntityLocal;
@@ -532,23 +530,23 @@ public class tr_shadowbounds {
     public static void world_to_hclip(final viewDef_s viewDef, final idVec4 global, idVec4 clip) {
         int i;
         final idVec4 view = new idVec4();
-        FloatBuffer modelViewMatrix = viewDef.worldSpace.getModelViewMatrix();
-        float[] modelProjectionMatrix = viewDef.getProjectionMatrix();
+        float[] modelViewMatrix = viewDef.worldSpace.getModelViewMatrix();
+        float[] projectionMatrix = viewDef.getProjectionMatrix();
 
         for (i = 0; i < 4; i++) {
             view.oSet(i,
-                    (global.oGet(0) * modelViewMatrix.get( i + (0 * 4)))
-                    + (global.oGet(1) * modelViewMatrix.get( i + (1 * 4)))
-                    + (global.oGet(2) * modelViewMatrix.get( i + (2 * 4)))
-                    + (global.oGet(3) * modelViewMatrix.get( i + (3 * 4))));
+                    (global.oGet(0) * modelViewMatrix[ i + (0 * 4)])
+                    + (global.oGet(1) * modelViewMatrix[ i + (1 * 4)])
+                    + (global.oGet(2) * modelViewMatrix[ i + (2 * 4)])
+                    + (global.oGet(3) * modelViewMatrix[ i + (3 * 4)]));
         }
 
         for (i = 0; i < 4; i++) {
             clip.oSet(i,
-                    (view.oGet(0) * modelProjectionMatrix[ i + (0 * 4)])
-                    + (view.oGet(1) * modelProjectionMatrix[ i + (1 * 4)])
-                    + (view.oGet(2) * modelProjectionMatrix[ i + (2 * 4)])
-                    + (view.oGet(3) * modelProjectionMatrix[ i + (3 * 4)]));
+                    (view.oGet(0) * projectionMatrix[ i + (0 * 4)])
+                    + (view.oGet(1) * projectionMatrix[ i + (1 * 4)])
+                    + (view.oGet(2) * projectionMatrix[ i + (2 * 4)])
+                    + (view.oGet(3) * projectionMatrix[ i + (3 * 4)]));
         }
     }
 

@@ -637,15 +637,15 @@ public class tr_main {
      R_TransformModelToClip
      ==========================
      */
-    public static void R_TransformModelToClip(final idVec3 src, final FloatBuffer modelMatrix, final float[] projectionMatrix, idPlane eye, idPlane dst) {
+    public static void R_TransformModelToClip(final idVec3 src, final float[] modelMatrix, final float[] projectionMatrix, idPlane eye, idPlane dst) {
         int i;
 
         for (i = 0; i < 4; i++) {
             eye.oSet(i,
-                    (src.oGet(0) * modelMatrix.get(i + (0 * 4)))
-                    + (src.oGet(1) * modelMatrix.get(i + (1 * 4)))
-                    + (src.oGet(2) * modelMatrix.get(i + (2 * 4)))
-                    + (1 * modelMatrix.get(i + (3 * 4))));
+                    (src.oGet(0) * modelMatrix[i + (0 * 4)])
+                    + (src.oGet(1) * modelMatrix[i + (1 * 4)])
+                    + (src.oGet(2) * modelMatrix[i + (2 * 4)])
+                    + (1 * modelMatrix[i + (3 * 4)]));
         }
 
         for (i = 0; i < 4; i++) {
@@ -668,8 +668,8 @@ public class tr_main {
         int i;
         final idPlane view = new idPlane();
         final idPlane clip = new idPlane();
-        FloatBuffer modelViewMatrix;
-        float[] modelProjectionMatrix;
+        float[] modelViewMatrix;
+        float[] projectionMatrix;
 
         // _D3XP added work on primaryView when no viewDef
         if (null == tr.viewDef) {
@@ -677,19 +677,19 @@ public class tr_main {
         	modelViewMatrix = tr.primaryView.worldSpace.getModelViewMatrix();
         	for (i = 0; i < 4; i++) {
                 view.oSet(i,
-                        (global.oGet(0) * modelViewMatrix.get(i + (0 * 4)))
-                        + (global.oGet(1) * modelViewMatrix.get(i + (1 * 4)))
-                        + (global.oGet(2) * modelViewMatrix.get(i + (2 * 4)))
-                        + modelViewMatrix.get(i + (3 * 4)));
+                        (global.oGet(0) * modelViewMatrix[i + (0 * 4)])
+                        + (global.oGet(1) * modelViewMatrix[i + (1 * 4)])
+                        + (global.oGet(2) * modelViewMatrix[i + (2 * 4)])
+                        + modelViewMatrix[i + (3 * 4)]);
             }
 
-        	modelProjectionMatrix = tr.primaryView.getProjectionMatrix();
+        	projectionMatrix = tr.primaryView.getProjectionMatrix();
         	for (i = 0; i < 4; i++) {
                 clip.oSet(i,
-                        (view.oGet(0) * modelProjectionMatrix[i + (0 * 4)])
-                        + (view.oGet(1) * modelProjectionMatrix[i + (1 * 4)])
-                        + (view.oGet(2) * modelProjectionMatrix[i + (2 * 4)])
-                        + (view.oGet(3) * modelProjectionMatrix[i + (3 * 4)]));
+                        (view.oGet(0) * projectionMatrix[i + (0 * 4)])
+                        + (view.oGet(1) * projectionMatrix[i + (1 * 4)])
+                        + (view.oGet(2) * projectionMatrix[i + (2 * 4)])
+                        + (view.oGet(3) * projectionMatrix[i + (3 * 4)]));
             }
 
         } else {
@@ -697,19 +697,19 @@ public class tr_main {
         	modelViewMatrix = tr.viewDef.worldSpace.getModelViewMatrix();
         	for (i = 0; i < 4; i++) {
                 view.oSet(i,
-                        (global.oGet(0) * modelViewMatrix.get(i + (0 * 4)))
-                        + (global.oGet(1) * modelViewMatrix.get(i + (1 * 4)))
-                        + (global.oGet(2) * modelViewMatrix.get(i + (2 * 4)))
-                        + modelViewMatrix.get(i + (3 * 4)));
+                        (global.oGet(0) * modelViewMatrix[i + (0 * 4)])
+                        + (global.oGet(1) * modelViewMatrix[i + (1 * 4)])
+                        + (global.oGet(2) * modelViewMatrix[i + (2 * 4)])
+                        + modelViewMatrix[i + (3 * 4)]);
             }
 
-        	modelProjectionMatrix = tr.viewDef.getProjectionMatrix();
-            for (i = 0; i < 4; i++) {
+        	projectionMatrix = tr.viewDef.getProjectionMatrix();
+        	for (i = 0; i < 4; i++) {
                 clip.oSet(i,
-                        (view.oGet(0) * modelProjectionMatrix[i + (0 * 4)])
-                        + (view.oGet(1) * modelProjectionMatrix[i + (1 * 4)])
-                        + (view.oGet(2) * modelProjectionMatrix[i + (2 * 4)])
-                        + (view.oGet(3) * modelProjectionMatrix[i + (3 * 4)]));
+                        (view.oGet(0) * projectionMatrix[i + (0 * 4)])
+                        + (view.oGet(1) * projectionMatrix[i + (1 * 4)])
+                        + (view.oGet(2) * projectionMatrix[i + (2 * 4)])
+                        + (view.oGet(3) * projectionMatrix[i + (3 * 4)]));
             }
 
         }
@@ -872,7 +872,7 @@ public class tr_main {
      R_TransposeGLMatrix
      ================
      */
-    public static FloatBuffer R_TransposeGLMatrix(final FloatBuffer in/*[16]*/) { //, float[] out/*[16]*/) {
+    public static FloatBuffer R_TransposeGLMatrix(final float[] in/*[16]*/) { //, float[] out/*[16]*/) {
         int i, j;
 
         FloatBuffer out = Nio.newFloatBuffer(16);
@@ -880,7 +880,7 @@ public class tr_main {
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
                 //out[(i * 4) + j] = in[(j * 4) + i];
-                out.put(in.get((j * 4) + i));
+                out.put(in[(j * 4) + i]);
             }
         }
         
@@ -956,7 +956,7 @@ public class tr_main {
         float width, height;
         float zNear;
         float jitterx, jittery;
-        float[] modelProjectionMatrix;
+        float[] projectionMatrix = tr.viewDef.getProjectionMatrix();
 
         // random jittering is usefull when multiple
         // frames are going to be blended together
@@ -992,29 +992,28 @@ public class tr_main {
         ymin += jittery;
         ymax += jittery;
 
-        modelProjectionMatrix = tr.viewDef.getProjectionMatrix();
-        modelProjectionMatrix[ 0] = (2 * zNear) / width;
-        modelProjectionMatrix[ 4] = 0;
-        modelProjectionMatrix[ 8] = (xmax + xmin) / width;	// normally 0
-        modelProjectionMatrix[12] = 0;
+        projectionMatrix[ 0] = (2 * zNear) / width;
+        projectionMatrix[ 4] = 0;
+        projectionMatrix[ 8] = (xmax + xmin) / width;	// normally 0
+        projectionMatrix[12] = 0;
 
-        modelProjectionMatrix[ 1] = 0;
-        modelProjectionMatrix[ 5] = (2 * zNear) / height;
-        modelProjectionMatrix[ 9] = (ymax + ymin) / height;	// normally 0
-        modelProjectionMatrix[13] = 0;
+        projectionMatrix[ 1] = 0;
+        projectionMatrix[ 5] = (2 * zNear) / height;
+        projectionMatrix[ 9] = (ymax + ymin) / height;	// normally 0
+        projectionMatrix[13] = 0;
 
         // this is the far-plane-at-infinity formulation, and
         // crunches the Z range slightly so w=0 vertexes do not
         // rasterize right at the wraparound point
-        modelProjectionMatrix[ 2] = 0;
-        modelProjectionMatrix[ 6] = 0;
-        modelProjectionMatrix[10] = -0.999f;
-        modelProjectionMatrix[14] = -2.0f * zNear;
+        projectionMatrix[ 2] = 0;
+        projectionMatrix[ 6] = 0;
+        projectionMatrix[10] = -0.999f;
+        projectionMatrix[14] = -2.0f * zNear;
 
-        modelProjectionMatrix[ 3] = 0;
-        modelProjectionMatrix[ 7] = 0;
-        modelProjectionMatrix[11] = -1;
-        modelProjectionMatrix[15] = 0;
+        projectionMatrix[ 3] = 0;
+        projectionMatrix[ 7] = 0;
+        projectionMatrix[11] = -1;
+        projectionMatrix[15] = 0;
     }
 
     /*
