@@ -252,8 +252,8 @@ public class GuiModel {
             projectionMatrix.put(14, -1.0f);
             projectionMatrix.put(15, +1.0f);
 
-            //projectionMatrix.position(projectionMatrix.capacity());
-            //projectionMatrix.flip();
+            projectionMatrix.position(projectionMatrix.capacity());
+            projectionMatrix.flip();
 
             /*float[] modelViewMatrix = viewDef.worldSpace.getModelViewMatrix();
             modelViewMatrix[ 0] = 1.0f;
@@ -267,8 +267,8 @@ public class GuiModel {
             modelViewMatrix.put(10, 1.0f);
             modelViewMatrix.put(15, 1.0f);
 
-            //modelViewMatrix.position(modelViewMatrix.capacity());
-            //modelViewMatrix.flip();
+            modelViewMatrix.position(modelViewMatrix.capacity());
+            modelViewMatrix.flip();
 
             viewDef.maxDrawSurfs = this.surfaces.Num();
             viewDef.drawSurfs = new drawSurf_s[viewDef.maxDrawSurfs];///*(drawSurf_t **)*/ R_FrameAlloc(viewDef.maxDrawSurfs * sizeof(viewDef.drawSurfs[0]));
@@ -676,20 +676,6 @@ public class GuiModel {
             bla555++;
         }
         static int bla555 = 0;
-
-        /**
-         * TBD delete method after float[] to FloatBuffer
-         * 
-         * @param surf
-         * @param modelMatrix
-         * @param modelViewMatrix
-         * @param depthHack
-         * 
-         * @deprecated use private void EmitSurface(guiModelSurface_t surf, FloatBuffer modelMatrix, FloatBuffer modelViewMatrix, boolean depthHack) instead
-         */
-        private void EmitSurface(guiModelSurface_t surf, float[] modelMatrix/*[16]*/, float[] modelViewMatrix/*[16]*/, boolean depthHack) {
-        	EmitSurface(surf, Nio.wrap(modelMatrix), Nio.wrap(modelViewMatrix), depthHack);
-        }
 
         /**
          * TBD delete method after float[] to FloatBuffer

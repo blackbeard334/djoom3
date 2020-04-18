@@ -520,18 +520,6 @@ public class tr_main {
         }
     }
 
-    /**
-     * 
-     * @param src_z
-     * @param projectionMatrix
-     * @param dst_z
-     * 
-     * @deprecated use R_TransformEyeZToWin(float src_z, final FloatBuffer projectionMatrix, float[] dst_z) instead
-     */
-    public static void R_TransformEyeZToWin(float src_z, final float[] projectionMatrix, float[] dst_z) {
-    	R_TransformEyeZToWin(src_z, Nio.wrap(projectionMatrix), dst_z);
-    }
-
     /*
      =================
      R_RadiusCullLocalBox
@@ -777,8 +765,8 @@ public class tr_main {
             out.put((3 * 4) + 2, (a.get((3 * 4) + 0) * b.get((0 * 4) + 2)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 2)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 2)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 2)));
             out.put((3 * 4) + 3, (a.get((3 * 4) + 0) * b.get((0 * 4) + 3)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 3)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 3)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 3)));
 
-            //out.position(out.capacity());
-            //out.flip();
+            out.position(out.capacity());
+            out.flip();
         }
     }
 
@@ -808,18 +796,18 @@ public class tr_main {
     	myGlMultMatrix(Nio.wrap(a), b, out);
     }
 
-    /**
-     * TBD - delete method after converting float[] to FloatBuffer
-     * 
-     * @param a
-     * @param b
-     * @param out
-     * 
-     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
-     */
-    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final float[] b/*[16]*/, FloatBuffer out/*[16]*/) {
-    	myGlMultMatrix(a, Nio.wrap(b), out);
-    }
+//    /**
+//     * TBD - delete method after converting float[] to FloatBuffer
+//     * 
+//     * @param a
+//     * @param b
+//     * @param out
+//     * 
+//     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
+//     */
+//    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final float[] b/*[16]*/, FloatBuffer out/*[16]*/) {
+//    	myGlMultMatrix(a, Nio.wrap(b), out);
+//    }
 
     /**
      * TBD - delete method after converting float[] to FloatBuffer
@@ -847,18 +835,18 @@ public class tr_main {
     	myGlMultMatrix(Nio.wrap(a), b, out);
     }
 
-    /**
-     * TBD - delete method after converting float[] to FloatBuffer
-     * 
-     * @param a
-     * @param b
-     * @param out
-     * 
-     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
-     */
-    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final float[] b/*[16]*/, float[] out/*[16]*/) {
-    	myGlMultMatrix(a, Nio.wrap(b), out);
-    }
+//    /**
+//     * TBD - delete method after converting float[] to FloatBuffer
+//     * 
+//     * @param a
+//     * @param b
+//     * @param out
+//     * 
+//     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
+//     */
+//    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final float[] b/*[16]*/, float[] out/*[16]*/) {
+//    	myGlMultMatrix(a, Nio.wrap(b), out);
+//    }
 
     /**
      * TBD - delete method after converting float[] to FloatBuffer
@@ -897,18 +885,6 @@ public class tr_main {
         }
         
         return (FloatBuffer) out.flip();
-    }
-
-    /**
-     * TBD - remove method after float[] to FloatBuffer
-     * 
-     * @param in
-     * @return
-     * 
-     * @deprecated use public static FloatBuffer R_TransposeGLMatrix(final FloatBuffer in) instead
-     */
-    public static FloatBuffer R_TransposeGLMatrix(final float[] in/*[16]*/) { //, float[] out/*[16]*/) {
-        return R_TransposeGLMatrix(Nio.wrap(in));
     }
 
     /*
@@ -1062,8 +1038,8 @@ public class tr_main {
         projectionMatrix.put(11, -1);
         projectionMatrix.put(15, 0);
         
-        //projectionMatrix.position(projectionMatrix.capacity());
-        //projectionMatrix.flip();
+        projectionMatrix.position(projectionMatrix.capacity());
+        projectionMatrix.flip();
         //projectionMatrix.rewind();
     }
 

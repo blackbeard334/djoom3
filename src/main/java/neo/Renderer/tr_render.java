@@ -459,8 +459,8 @@ public class tr_render {
         matrix.put(11, 0);
         matrix.put(15, 1);
         
-        //matrix.position(matrix.capacity());
-        //matrix.flip();
+        matrix.position(matrix.capacity());
+        matrix.flip();
     }
 
     /**
