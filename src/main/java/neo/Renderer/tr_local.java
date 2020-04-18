@@ -713,8 +713,8 @@ public class tr_local {
         public boolean             weaponDepthHack;
         public float               modelDepthHack;
         //
-        public float[]             modelMatrix     = new float[16];         // local coords to global coords
-        private final float[]             modelViewMatrix = new float[16];         // local coords to eye coords
+        public FloatBuffer         modelMatrix     = Nio.newFloatBuffer(16);         // local coords to global coords
+        private final FloatBuffer  modelViewMatrix = Nio.newFloatBuffer(16);         // local coords to eye coords
 
         private static int DBG_COUNTER = 0;
         private final  int DBG_COUNT   = DBG_COUNTER++;
@@ -741,7 +741,7 @@ public class tr_local {
             this.modelDepthHack = 0;
         }
 
-		public float[] getModelViewMatrix() {
+		public FloatBuffer getModelViewMatrix() {
 			return modelViewMatrix;
 		}
 
@@ -1452,9 +1452,9 @@ public class tr_local {
             renderModelManager.Init();
 
             // set the identity space
-            this.identitySpace.modelMatrix[(0 * 4) + 0] = 1.0f;
-            this.identitySpace.modelMatrix[(1 * 4) + 1] = 1.0f;
-            this.identitySpace.modelMatrix[(2 * 4) + 2] = 1.0f;
+            this.identitySpace.modelMatrix.put((0 * 4) + 0, 1.0f);
+            this.identitySpace.modelMatrix.put((1 * 4) + 1, 1.0f);
+            this.identitySpace.modelMatrix.put((2 * 4) + 2, 1.0f);
 
             // determine which back end we will use
             // ??? this is invalid here as there is not enough information to set it up correctly

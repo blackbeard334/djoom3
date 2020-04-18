@@ -11,6 +11,8 @@ import static neo.Renderer.tr_main.myGlMultMatrix;
 import static neo.TempDump.NOT;
 import static neo.framework.DeclManager.declManager;
 
+import java.nio.FloatBuffer;
+
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.RenderWorld.renderEntity_s;
@@ -24,6 +26,7 @@ import neo.idlib.geometry.Winding.idFixedWinding;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec5;
+import neo.open.Nio;
 
 /**
  *
@@ -175,8 +178,8 @@ public class GuiModel {
             }
         }
 
-        public void EmitToCurrentView(float[] modelMatrix/*[16]*/, boolean depthHack) {
-            final float[] modelViewMatrix = new float[16];
+        public void EmitToCurrentView(FloatBuffer modelMatrix/*[16]*/, boolean depthHack) {
+            final FloatBuffer modelViewMatrix = Nio.newFloatBuffer(16);
 
             myGlMultMatrix(modelMatrix, tr.viewDef.worldSpace.getModelViewMatrix(),
                     modelViewMatrix);
@@ -235,18 +238,20 @@ public class GuiModel {
             viewDef.floatTime = tr.frameShaderTime;
 
             // TODO: qglOrtho( 0, 640, 480, 0, 0, 1 );		// always assume 640x480 virtual coordinates
-            viewDef.getProjectionMatrix()[ 0] = +2.0f / 640.0f;
-            viewDef.getProjectionMatrix()[ 5] = -2.0f / 480.0f;
-            viewDef.getProjectionMatrix()[10] = -2.0f / 1.0f;
-            viewDef.getProjectionMatrix()[12] = -1.0f;
-            viewDef.getProjectionMatrix()[13] = +1.0f;
-            viewDef.getProjectionMatrix()[14] = -1.0f;
-            viewDef.getProjectionMatrix()[15] = +1.0f;
+            float[] projectionMatrix = viewDef.getProjectionMatrix();
+            projectionMatrix[ 0] = +2.0f / 640.0f;
+            projectionMatrix[ 5] = -2.0f / 480.0f;
+            projectionMatrix[10] = -2.0f / 1.0f;
+            projectionMatrix[12] = -1.0f;
+            projectionMatrix[13] = +1.0f;
+            projectionMatrix[14] = -1.0f;
+            projectionMatrix[15] = +1.0f;
 
-            viewDef.worldSpace.getModelViewMatrix()[ 0] = 1.0f;
-            viewDef.worldSpace.getModelViewMatrix()[ 5] = 1.0f;
-            viewDef.worldSpace.getModelViewMatrix()[10] = 1.0f;
-            viewDef.worldSpace.getModelViewMatrix()[15] = 1.0f;
+            FloatBuffer modelViewMatrix = viewDef.worldSpace.getModelViewMatrix();
+            modelViewMatrix.put( 0, 1.0f);
+            modelViewMatrix.put( 5, 1.0f);
+            modelViewMatrix.put(10, 1.0f);
+            modelViewMatrix.put(15, 1.0f);
 
             viewDef.maxDrawSurfs = this.surfaces.Num();
             viewDef.drawSurfs = new drawSurf_s[viewDef.maxDrawSurfs];///*(drawSurf_t **)*/ R_FrameAlloc(viewDef.maxDrawSurfs * sizeof(viewDef.drawSurfs[0]));
@@ -260,7 +265,7 @@ public class GuiModel {
                 if (i == 33) {
                     this.surfaces.oGet(i).material.DBG_BALLS = i;
                 }
-                EmitSurface(this.surfaces.oGet(i), viewDef.worldSpace.modelMatrix, viewDef.worldSpace.getModelViewMatrix(), false);
+                EmitSurface(this.surfaces.oGet(i), viewDef.worldSpace.modelMatrix, modelViewMatrix, false);
             }
 
             tr.viewDef = oldViewDef;
@@ -655,7 +660,7 @@ public class GuiModel {
         }
         static int bla555 = 0;
 
-        private void EmitSurface(guiModelSurface_t surf, float[] modelMatrix/*[16]*/, float[] modelViewMatrix/*[16]*/, boolean depthHack) {
+        private void EmitSurface(guiModelSurface_t surf, FloatBuffer modelMatrix/*[16]*/, FloatBuffer modelViewMatrix/*[16]*/, boolean depthHack) {
             srfTriangles_s tri;
 
             if (surf.numVerts == 0) {
@@ -700,9 +705,11 @@ public class GuiModel {
 
             final viewEntity_s guiSpace = new viewEntity_s();///*(viewEntity_t *)*/ R_ClearedFrameAlloc(sizeof( * guiSpace));
 //            memcpy(guiSpace.modelMatrix, modelMatrix, sizeof(guiSpace.modelMatrix));
-            System.arraycopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.length);
+            //System.arraycopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.length);
+            Nio.buffercopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.limit());
 //            memcpy(guiSpace.modelViewMatrix, modelViewMatrix, sizeof(guiSpace.modelViewMatrix));
-            System.arraycopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().length);
+            //System.arraycopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().length);
+            Nio.buffercopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().limit());
             guiSpace.weaponDepthHack = depthHack;
 
             // add the surface, which might recursively create another gui

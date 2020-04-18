@@ -17,12 +17,19 @@ public class Nio {
 	public static final int SIZEOF_FLOAT = 4;
 	public static final int SIZEOF_INT = 4;
 
-//	public static FloatBuffer arrayCopy(final FloatBuffer buffer, final float[] floatArray) {
-//		for (int i = 0; i < floatArray.length; i++) {
-//			buffer.put(i, floatArray[i]);
-//		}
-//		return buffer;
-//	}
+	public static FloatBuffer arrayCopy(final float[] src, final FloatBuffer dest) {
+		for (int i = 0; i < src.length; i++) {
+			dest.put(i, src[i]);
+		}
+		return dest;
+	}
+
+	public static float[] arrayCopy(final FloatBuffer src, final float[] dest) {
+		for (int i = 0; i < src.limit(); i++) {
+			dest[i] = src.get(i);
+		}
+		return dest;
+	}
 
 	public static void arraycopy(final int[] src, int srcPos, final IntBuffer dest, int destPos, int length) {
 		for (int i = 0; i < length; i++) {

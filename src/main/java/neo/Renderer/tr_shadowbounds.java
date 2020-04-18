@@ -533,10 +533,10 @@ public class tr_shadowbounds {
 
         for (i = 0; i < 4; i++) {
             view.oSet(i,
-                    (global.oGet(0) * viewDef.worldSpace.getModelViewMatrix()[ i + (0 * 4)])
-                    + (global.oGet(1) * viewDef.worldSpace.getModelViewMatrix()[ i + (1 * 4)])
-                    + (global.oGet(2) * viewDef.worldSpace.getModelViewMatrix()[ i + (2 * 4)])
-                    + (global.oGet(3) * viewDef.worldSpace.getModelViewMatrix()[ i + (3 * 4)]));
+                    (global.oGet(0) * viewDef.worldSpace.getModelViewMatrix().get( i + (0 * 4)))
+                    + (global.oGet(1) * viewDef.worldSpace.getModelViewMatrix().get( i + (1 * 4)))
+                    + (global.oGet(2) * viewDef.worldSpace.getModelViewMatrix().get( i + (2 * 4)))
+                    + (global.oGet(3) * viewDef.worldSpace.getModelViewMatrix().get( i + (3 * 4))));
         }
 
         for (i = 0; i < 4; i++) {
