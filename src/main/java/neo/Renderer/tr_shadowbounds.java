@@ -15,8 +15,8 @@ import neo.Renderer.tr_local.viewDef_s;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.open.MatrixUtil;
 import neo.idlib.math.Matrix.idMat4;
+import neo.open.MatrixUtil;
 
 /**
  *

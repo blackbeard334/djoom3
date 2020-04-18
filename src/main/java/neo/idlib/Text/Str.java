@@ -18,6 +18,7 @@ import neo.idlib.Lib.idLib;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.math.Math_h;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.Nio;
 
 /**
  *
@@ -1694,7 +1695,7 @@ public class Str {
 
 //	strncpy( dest, src, destsize-1 );
             final int len = Math.min(destsize - 1, src.length());
-            System.arraycopy(src.toCharArray(), 0, dest, offset, len);
+            Nio.arraycopy(src.toCharArray(), 0, dest, offset, len);
             dest[offset + len] = 0;
 
             return dest;

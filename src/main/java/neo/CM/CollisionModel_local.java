@@ -131,6 +131,7 @@ import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 
 /**
  *
@@ -2267,7 +2268,7 @@ public class CollisionModel_local {
             tw.numPolys = trm.numPolys;
             for (i = 0; i < trm.numPolys; i++) {
                 tw.polys[i].numEdges = trm.polys[i].numEdges;
-                System.arraycopy(trm.polys[i].edges, 0, tw.polys[i].edges, 0, trm.polys[i].numEdges);
+                Nio.arraycopy(trm.polys[i].edges, 0, tw.polys[i].edges, 0, trm.polys[i].numEdges);
                 tw.polys[i].plane.SetNormal(trm.polys[i].normal);
                 tw.polys[i].used = 0;//false;
             }
@@ -4870,7 +4871,7 @@ public class CollisionModel_local {
 
             newp = AllocPolygon(model, newNumEdges);
             newp.oSet(p1);//memcpy( newp, p1, sizeof(cm_polygon_t) );
-            System.arraycopy(newEdges, 0, newp.edges, 0, newNumEdges);//memcpy( newp.edges, newEdges, newNumEdges * sizeof(int) );
+            Nio.arraycopy(newEdges, 0, newp.edges, 0, newNumEdges);//memcpy( newp.edges, newEdges, newNumEdges * sizeof(int) );
             newp.numEdges = newNumEdges;
             newp.checkcount = 0;
             // increase usage count for the edges of this polygon

@@ -77,6 +77,7 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.open.ColorUtil;
+import neo.open.Nio;
 
 /**
  *
@@ -1300,7 +1301,7 @@ public class Model_local {
                             mv.v = v;
                             mv.tv = tv;
                             mv.normal.oSet(normal);
-                            System.arraycopy(color, 0, mv.getColor(), 0, color.length);
+                            Nio.arraycopy(color, 0, mv.getColor(), 0, color.length);
                             mv.next = null;
                             if (lastmv != null) {
                                 lastmv.next = mv;
@@ -1671,7 +1672,7 @@ public class Model_local {
                             mv.v = v;
                             mv.tv = tv;
                             mv.normal.oSet(normal);
-                            System.arraycopy(color, 0, mv.getColor(), 0, color.length);
+                            Nio.arraycopy(color, 0, mv.getColor(), 0, color.length);
                             mv.next = null;
                             if (lastmv != null) {
                                 lastmv.next = mv;
@@ -1974,7 +1975,7 @@ public class Model_local {
                             mv.v = v;
                             mv.tv = tv;
                             mv.normal.oSet(normal);
-                            System.arraycopy(color, 0, mv.getColor(), 0, color.length);
+                            Nio.arraycopy(color, 0, mv.getColor(), 0, color.length);
                             mv.next = null;
                             if (lastmv != null) {
                                 lastmv.next = mv;
@@ -2070,7 +2071,7 @@ public class Model_local {
             for (lwSurface surf = obj.surf; surf != null; surf = surf.next) {
 
                 final aseMaterial_t mat = new aseMaterial_t();// Mem_ClearedAlloc(sizeof( * mat));
-                System.arraycopy(surf.name.toCharArray(), 0, mat.name, 0, surf.name.length());
+                Nio.arraycopy(surf.name.toCharArray(), 0, mat.name, 0, surf.name.length());
                 mat.uTiling = mat.vTiling = 1;
                 mat.angle = mat.uOffset = mat.vOffset = 0;
                 ase.materials.Append(mat);

@@ -9,6 +9,7 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.open.FloatOGet;
+import neo.open.Nio;
 
 /**
  *
@@ -235,7 +236,7 @@ public class Rectangle {
             // use an array so that multiple toString's won't collide
             s = String.format("%.2f %.2f %.2f %.2f", this.x, this.y, this.w, this.h);
             temp = s.toCharArray();
-            System.arraycopy(temp, 0, str[index], 0, temp.length);
+            Nio.arraycopy(temp, 0, str[index], 0, temp.length);
 
             index = (index + 1) & 7;
 

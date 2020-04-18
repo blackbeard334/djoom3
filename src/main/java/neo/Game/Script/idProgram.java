@@ -57,6 +57,7 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StaticList.idStaticList;
 import neo.idlib.containers.StrList.idStrList;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.Nio;
 
 /* **********************************************************************
 
@@ -270,7 +271,7 @@ public final class idProgram {
             statementList[i].lineNumber = this.statements.oGet(i).linenumber;
             statementList[i].file = this.statements.oGet(i).file;
 
-            System.arraycopy(statementList[i].toArray(), 0, statementIntArray, i * 6, 6);
+            Nio.arraycopy(statementList[i].toArray(), 0, statementIntArray, i * 6, 6);
         }
 
         result = new BigInteger(MD4_BlockChecksum(statementIntArray, /*sizeof(statementBlock_t)*/ this.statements.Num())).intValue();

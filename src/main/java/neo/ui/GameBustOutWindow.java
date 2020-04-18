@@ -29,6 +29,7 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.Nio;
 import neo.sys.sys_public.sysEvent_s;
 import neo.ui.DeviceContext.idDeviceContext;
 import neo.ui.SimpleWindow.drawWin_t;
@@ -795,7 +796,7 @@ public class GameBustOutWindow {
                     }
 
 //			memcpy( currentBoard, pic, boardSize );
-                    System.arraycopy(pic.array(), 0, currentBoard, boardIndex, boardSize);
+                    Nio.arraycopy(pic.array(), 0, currentBoard, boardIndex, boardSize);
                     pic = null;//Mem_Free(pic);
                 }
 

@@ -1522,7 +1522,7 @@ public class Winding {
             this.p = TempDump.allocArray(idVec5.class, n);
             if ((oldP != null) && keep) {
 //			memcpy( p, oldP, numPoints * sizeof(p[0]) );
-                System.arraycopy(oldP, 0, this.p, 0, this.numPoints);
+            	System.arraycopy(oldP, 0, this.p, 0, this.numPoints);
             }
             this.allocedSize = n;
 

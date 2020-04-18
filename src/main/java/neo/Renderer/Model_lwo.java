@@ -3589,7 +3589,7 @@ public class Model_lwo {
         }
         if (oldpt != null) {
 //            memcpy(point.pt, oldpt, point.offset * sizeof(lwPoint));
-            System.arraycopy(oldpt, 0, point.pt, 0, point.offset);
+        	System.arraycopy(oldpt, 0, point.pt, 0, point.offset);
 //            Mem_Free(oldpt);
             oldpt = null;
         }
@@ -3670,7 +3670,7 @@ public class Model_lwo {
 //        }
         if (oldpol != null) {
 //            memcpy(plist.pol, oldpol, plist.offset);
-            System.arraycopy(oldpol, 0, plist.pol, 0, plist.offset);
+        	System.arraycopy(oldpol, 0, plist.pol, 0, plist.offset);
 //            Mem_Free(oldpol);
             oldpol = null;
         }
@@ -3688,7 +3688,7 @@ public class Model_lwo {
         }
         if (oldpolv != null) {
 //            memcpy(plist.pol[0].v, oldpolv, plist.voffset);
-            System.arraycopy(oldpolv, 0, plist.pol[0].v, 0, plist.voffset);
+        	System.arraycopy(oldpolv, 0, plist.pol[0].v, 0, plist.voffset);
             oldpolv = null;//Mem_Free(oldpolv);
         }
 //        memset(plist.pol[ 0].v + plist.voffset, 0, nverts);
@@ -4054,7 +4054,7 @@ public class Model_lwo {
             return false;
         }
         if (oldtag != null) {
-            System.arraycopy(oldtag, 0, tList.tag, 0, tList.offset);
+        	System.arraycopy(oldtag, 0, tList.tag, 0, tList.offset);
         }
 
         /* copy the new tags to the tag array */

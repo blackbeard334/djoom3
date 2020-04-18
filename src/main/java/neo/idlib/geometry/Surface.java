@@ -21,6 +21,7 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Pluecker.idPluecker;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 
 /**
  *
@@ -95,7 +96,7 @@ public class Surface {
             System.arraycopy(verts, 0, this.verts.Ptr(), 0, numVerts);
             this.indexes.SetNum(numIndexes);
 //	memcpy( this.indexes.Ptr(), indexes, numIndexes * sizeof( indexes[0] ) );
-            System.arraycopy(indexes, 0, this.indexes.Ptr(), 0, numIndexes);
+            Nio.arraycopy(indexes, 0, this.indexes.Ptr(), 0, numIndexes);
             GenerateEdgeIndexes();
         }
 //public							~idSurface( void );
@@ -478,13 +479,13 @@ public class Surface {
 
             if (null != frontOnPlaneEdges) {
 //		memcpy( frontOnPlaneEdges, onPlaneEdges[0], numOnPlaneEdges[0] * sizeof( int ) );
-                System.arraycopy(onPlaneEdges[0], 0, frontOnPlaneEdges, 0, numOnPlaneEdges[0]);
+                Nio.arraycopy(onPlaneEdges[0], 0, frontOnPlaneEdges, 0, numOnPlaneEdges[0]);
                 frontOnPlaneEdges[numOnPlaneEdges[0]] = -1;
             }
 
             if (null != backOnPlaneEdges) {
 //		memcpy( backOnPlaneEdges, onPlaneEdges[1], numOnPlaneEdges[1] * sizeof( int ) );
-                System.arraycopy(onPlaneEdges[1], 0, backOnPlaneEdges, 0, numOnPlaneEdges[1]);
+                Nio.arraycopy(onPlaneEdges[1], 0, backOnPlaneEdges, 0, numOnPlaneEdges[1]);
                 backOnPlaneEdges[numOnPlaneEdges[1]] = -1;
             }
 

@@ -247,7 +247,7 @@ public class renderbump {
 
         orig = new byte[width * height * 4];// Mem_Alloc(width * height * 4);
 //	memcpy( orig, data, width * height * 4 );
-        System.arraycopy(orig, 0, data.array(), 0, width * height * 4);
+        Nio.arraycopy(orig, 0, data.array(), 0, width * height * 4);
 
         for (i = 0; i < width; i++) {
             for (j = 0; j < height; j++) {
@@ -307,7 +307,7 @@ public class renderbump {
 
         orig = new byte[width * height * 4];// Mem_Alloc(width * height * 4);
 //	memcpy( orig, data, width * height * 4 );
-        System.arraycopy(orig, 0, data, 0, width * height * 4);
+        Nio.arraycopy(orig, 0, data, 0, width * height * 4);
 
         for (i = 0; i < width; i++) {
             for (j = 0; j < height; j++) {

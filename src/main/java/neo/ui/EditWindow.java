@@ -45,6 +45,7 @@ import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.Nio;
 import neo.sys.sys_public.sysEvent_s;
 import neo.ui.DeviceContext.idDeviceContext;
 import neo.ui.Rectangle.idRectangle;
@@ -215,7 +216,7 @@ public class EditWindow {
                             this.cursorPos = len - 1;
                         } else {
 //					memmove( &buffer[ cursorPos - 1 ], &buffer[ cursorPos ], len + 1 - cursorPos);
-                            System.arraycopy(buffer, this.cursorPos, buffer, this.cursorPos - 1, (len + 1) - this.cursorPos);
+                            Nio.arraycopy(buffer, this.cursorPos, buffer, this.cursorPos - 1, (len + 1) - this.cursorPos);
                             this.cursorPos--;
                         }
 
@@ -250,7 +251,7 @@ public class EditWindow {
                         return "";
                     }
 //			memmove( &buffer[ cursorPos + 1 ], &buffer[ cursorPos ], len + 1 - cursorPos );
-                    System.arraycopy(buffer, this.cursorPos, buffer, this.cursorPos + 1, (len + 1) - this.cursorPos);
+                    Nio.arraycopy(buffer, this.cursorPos, buffer, this.cursorPos + 1, (len + 1) - this.cursorPos);
                 }
 
                 buffer[this.cursorPos] = (char) key;
@@ -276,7 +277,7 @@ public class EditWindow {
                     }
                     if (this.cursorPos < len) {
 //				memmove( &buffer[cursorPos], &buffer[cursorPos + 1], len - cursorPos);
-                        System.arraycopy(buffer, this.cursorPos + 1, buffer, this.cursorPos, len - this.cursorPos);
+                        Nio.arraycopy(buffer, this.cursorPos + 1, buffer, this.cursorPos, len - this.cursorPos);
                         this.text.data.oSet(buffer);
                         UpdateCvar(false);
                         RunScript(etoi(ON_ACTION));

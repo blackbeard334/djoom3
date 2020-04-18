@@ -38,6 +38,7 @@ import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.Nio;
 
 /**
  *
@@ -1127,7 +1128,7 @@ public class shadowopt3 {
             if ((a == b) || (a == c) || (b == c)) {
                 c_removed++;
 //			memmove( tri.indexes + i, tri.indexes + i + 3, ( tri.numIndexes - i - 3 ) * sizeof( tri.indexes[0] ) );
-                System.arraycopy(tri.getIndexes().getValues(), i + 3, tri.getIndexes().getValues(), i, tri.getIndexes().getNumValues() - i - 3);
+                Nio.buffercopy(tri.getIndexes().getValues(), i + 3, tri.getIndexes().getValues(), i, tri.getIndexes().getNumValues() - i - 3);
                 tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() - 3);
                 if (i < tri.numShadowIndexesNoCaps) {
                     tri.numShadowIndexesNoCaps -= 3;

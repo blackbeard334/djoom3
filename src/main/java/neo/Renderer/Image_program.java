@@ -411,7 +411,7 @@ public class Image_program {
 
         orig = new byte[width * height * 4];// R_StaticAlloc(width * height * 4);
 //	memcpy( orig, data, width * height * 4 );
-        System.arraycopy(data.array(), 0, orig, 0, width * height * 4);
+        Nio.arraycopy(data.array(), 0, orig, 0, width * height * 4);
 
         for (i = 0; i < width; i++) {
             for (j = 0; j < height; j++) {

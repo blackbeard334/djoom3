@@ -560,11 +560,11 @@ public class Simd {
 //        }
 
 //        public void Memcpy(int[] dst, int dstOffset, int[] src, int srcOffset, int count) {
-//            System.arraycopy(src, srcOffset, dst, dstOffset, count);
+//            Nio.arraycopy(src, srcOffset, dst, dstOffset, count);
 //        }
 
 		public void Memcpy(IntBuffer dst, int dstOffset, int[] src, int srcOffset, int count) {
-			// System.arraycopy(src, srcOffset, dst, dstOffset, count);
+			// Nio.arraycopy(src, srcOffset, dst, dstOffset, count);
 			for (int i = 0; i < count; i++) {
 				dst.put(dstOffset + i, src[srcOffset + i]);
 			}

@@ -2,9 +2,6 @@ package neo.open;
 
 import java.nio.FloatBuffer;
 
-import neo.idlib.math.Plane.idPlane;
-import neo.idlib.math.Vector.idVec;
-
 public class MatrixUtil {
 
 	public static void matrixToClipGet3Set4(final FloatOGet get, final FloatOSet set,

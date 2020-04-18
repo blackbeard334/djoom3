@@ -7,6 +7,7 @@ import neo.idlib.Lib;
 import neo.idlib.math.Complex.idComplex;
 import neo.idlib.math.Math_h.idMath;
 import neo.open.FloatOGet;
+import neo.open.Nio;
 
 /**
  *
@@ -87,7 +88,7 @@ public class Polynomial {
 
         public idPolynomial(idPolynomial p) {
             this.allocated = p.allocated;
-            System.arraycopy(p.coefficient, 0, this.coefficient, 0, p.coefficient.length);
+            Nio.arraycopy(p.coefficient, 0, this.coefficient, 0, p.coefficient.length);
             this.degree = p.degree;
         }
 //
@@ -112,7 +113,7 @@ public class Polynomial {
 
         public idPolynomial oSet(final idPolynomial p) {
             Resize(p.degree, false);
-            System.arraycopy(p.coefficient, 0, this.coefficient, 0, this.degree + 1);
+            Nio.arraycopy(p.coefficient, 0, this.coefficient, 0, this.degree + 1);
             return this;
         }
 
@@ -645,7 +646,7 @@ public class Polynomial {
                 final float[] ptr = new float[alloc];//float *ptr = (float *) Mem_Alloc16( alloc * sizeof( float ) );
                 if (this.coefficient != null) {
                     if (keep) {
-                        System.arraycopy(this.coefficient, 0, ptr, 0, this.degree + 1);
+                        Nio.arraycopy(this.coefficient, 0, ptr, 0, this.degree + 1);
                     }
 //			Mem_Free16( coefficient );
                 }

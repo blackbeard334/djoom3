@@ -2888,7 +2888,7 @@ public class Image {
             fileName[0] = "dds/";
             f = fileName[0].length();
 //            ff = fileName[0].toCharArray();
-            System.arraycopy(fileName[0].toCharArray(), 0, ff, 0, f);
+            Nio.arraycopy(fileName[0].toCharArray(), 0, ff, 0, f);
 
             int depth = 0;
 

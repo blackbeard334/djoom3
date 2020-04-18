@@ -826,7 +826,7 @@ public class tr_local {
 
         public viewDef_s(final viewDef_s v) {
             this.renderView = new renderView_s(v.renderView);
-            System.arraycopy(v.getProjectionMatrix(), 0, this.getProjectionMatrix(), 0, 16);
+            Nio.arraycopy(v.getProjectionMatrix(), 0, this.getProjectionMatrix(), 0, 16);
             this.worldSpace = new viewEntity_s(v.worldSpace);
             this.renderWorld = v.renderWorld;
             this.floatTime = v.floatTime;
@@ -856,7 +856,7 @@ public class tr_local {
             this.areaNum = v.areaNum;
             if (v.connectedAreas != null) {
                 this.connectedAreas = new boolean[v.connectedAreas.length];
-                System.arraycopy(v.connectedAreas, 0, this.connectedAreas, 0, v.connectedAreas.length);
+                Nio.arraycopy(v.connectedAreas, 0, this.connectedAreas, 0, v.connectedAreas.length);
             }
         }
 

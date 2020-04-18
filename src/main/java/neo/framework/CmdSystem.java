@@ -22,6 +22,7 @@ import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.cmp_t;
 import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrList.idStrList;
+import neo.open.Nio;
 
 /**
  *
@@ -573,7 +574,7 @@ public class CmdSystem {
                     i++;
                     this.textLength -= i;
                     this.textBuf = new byte[this.textBuf.length];//memmove(text, text + i, textLength);
-                    System.arraycopy(textBuf2, i, this.textBuf, 0, this.textLength);
+                    Nio.arraycopy(textBuf2, i, this.textBuf, 0, this.textLength);
                 }
 
                 // execute the command line that we have already tokenized
@@ -787,7 +788,7 @@ public class CmdSystem {
 
             // copy the new text in
 //            memcpy(textBuf, text, len - 1);
-            System.arraycopy(text.getBytes(), 0, this.textBuf, 0, len - 1);
+            Nio.arraycopy(text.getBytes(), 0, this.textBuf, 0, len - 1);
 
             // add a \n
             this.textBuf[len - 1] = '\n';
@@ -812,7 +813,7 @@ public class CmdSystem {
                 return;
             }
 //	memcpy( textBuf + textLength, text, l );
-            System.arraycopy(text.getBytes(), 0, this.textBuf, this.textLength, l);//TODO:check 1 at the end. EDIT: it was an L ya blind fool!
+            Nio.arraycopy(text.getBytes(), 0, this.textBuf, this.textLength, l);//TODO:check 1 at the end. EDIT: it was an L ya blind fool!
             this.textLength += l;
         }
 

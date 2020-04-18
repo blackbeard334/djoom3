@@ -18,7 +18,6 @@ import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Matrix.idMat4;
 import neo.idlib.math.Matrix.idMatX;
-import neo.open.FloatOGet;
 import neo.open.FloatOSet;
 import neo.open.Nio;
 
@@ -1859,11 +1858,11 @@ public class Vector {
 
         public idVec6(final float[] a) {
 //	memcpy( p, a, 6 * sizeof( float ) );
-            System.arraycopy(a, 0, this.p, 0, 6);
+            Nio.arraycopy(a, 0, this.p, 0, 6);
         }
 
         public idVec6(final idVec6 v) {
-            System.arraycopy(v.p, 0, this.p, 0, 6);
+            Nio.arraycopy(v.p, 0, this.p, 0, 6);
         }
 
         public idVec6(final float a1, final float a2, final float a3, final float a4, final float a5, final float a6) {
@@ -2080,7 +2079,7 @@ public class Vector {
         }
 
         public void SubVec3_oSet(final int i, final idVec3 v) {
-            System.arraycopy(v.ToFloatPtr(), 0, this.p, i * 3, 3);
+            Nio.arraycopy(v.ToFloatPtr(), 0, this.p, i * 3, 3);
         }
 
         public idVec3 SubVec3_oPluSet(final int i, final idVec3 v) {
@@ -2236,7 +2235,7 @@ public class Vector {
 //	SIMDProcessor->Copy16( p, a.p, a.size );
 //#else
 //	memcpy( p, a.p, a.size * sizeof( float ) );
-            System.arraycopy(a.p, 0, this.p, 0, a.p.length);//TODO:use a.size??
+            Nio.arraycopy(a.p, 0, this.p, 0, a.p.length);//TODO:use a.size??
 //#endif
             idVecX.tempIndex = 0;
             return this;
@@ -2358,7 +2357,7 @@ public class Vector {
                 this.p = new float[alloc];
                 this.alloced = alloc;
                 if (oldVec != null) {
-                    System.arraycopy(oldVec, 0, this.p, 0, this.size);
+                    Nio.arraycopy(oldVec, 0, this.p, 0, this.size);
 //			Mem_Free16( oldVec );//garbage collect me!
                 }//TODO:ifelse
                 if (makeZero) {

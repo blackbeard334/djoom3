@@ -19,6 +19,7 @@ import neo.idlib.Lib.idLib;
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
+import neo.open.Nio;
 
 /**
  *
@@ -57,11 +58,11 @@ public class CmdArgs {
 
             this.argc = args.argc;
 //	memcpy( tokenized, args.tokenized, MAX_COMMAND_STRING );
-            System.arraycopy(args.tokenized, 0, this.tokenized, 0, MAX_COMMAND_STRING);
+            Nio.arraycopy(args.tokenized, 0, this.tokenized, 0, MAX_COMMAND_STRING);
 //            for (i = 0; i < argc; i++) {
 //		argv[ i ] = tokenized + ( args.argv[ i ] - args.tokenized );
 //            }
-            System.arraycopy(args.argv, 0, this.argv, 0, this.argc);
+            Nio.arraycopy(args.argv, 0, this.argv, 0, this.argc);
         }
 //
 
