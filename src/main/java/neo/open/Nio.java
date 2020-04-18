@@ -43,9 +43,11 @@ public class Nio {
 	}
 
 	public static void arraycopy(final byte[] src, int srcPos, final ByteBuffer dest, int destPos, int length) {
+		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
-			dest.put(destPos + i, src[srcPos + i]);
+			dest.put(src[srcPos + i]);
 		}
+		dest.flip();
 	}
 
 	public static void arraycopy(final ByteBuffer src, int srcPos, final byte[] dest, int destPos, int length) {
@@ -63,9 +65,11 @@ public class Nio {
 	}
 
 	public static void arraycopy(final char[] src, int srcPos, final CharBuffer dest, int destPos, int length) {
+		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
-			dest.put(destPos + i, src[srcPos + i]);
+			dest.put(src[srcPos + i]);
 		}
+		dest.flip();
 	}
 
 	public static void arraycopy(final CharBuffer src, int srcPos, final char[] dest, int destPos, int length) {
@@ -79,9 +83,11 @@ public class Nio {
 	}
 
 	public static void arraycopy(final float[] src, int srcPos, final FloatBuffer dest, int destPos, int length) {
+		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
-			dest.put(destPos + i, src[srcPos + i]);
+			dest.put(src[srcPos + i]);
 		}
+		dest.flip();
 	}
 
 	public static void arraycopy(final Float[] src, int srcPos, final Float[] dest, int destPos, int length) {
@@ -99,9 +105,11 @@ public class Nio {
 	}
 
 	public static void arraycopy(final int[] src, int srcPos, final IntBuffer dest, int destPos, int length) {
+		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
-			dest.put(destPos + i, src[srcPos + i]);
+			dest.put(src[srcPos + i]);
 		}
+		dest.flip();
 	}
 
 	public static void arraycopy(final int[] src, int srcPos, final Integer[] dest, int destPos, int length) {
@@ -123,9 +131,11 @@ public class Nio {
 	}
 
 	public static void arraycopy(final long[] src, int srcPos, final LongBuffer dest, int destPos, int length) {
+		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
-			dest.put(destPos + i, src[srcPos + i]);
+			dest.put(src[srcPos + i]);
 		}
+		dest.flip();
 	}
 
 	public static void arraycopy(final LongBuffer src, int srcPos, final long[] dest, int destPos, int length) {
@@ -135,45 +145,72 @@ public class Nio {
 	}
 
 	public static void buffercopy(final ByteBuffer src, int srcPos, final ByteBuffer dest, int destPos, int length) {
+		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
-			dest.put(destPos + i, src.get(srcPos + i));
+			dest.put(src.get(srcPos + i));
 		}
+		dest.flip();
 	}
 
 	public static void buffercopy(final CharBuffer src, int srcPos, final CharBuffer dest, int destPos, int length) {
+		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
-			dest.put(destPos + i, src.get(srcPos + i));
+			dest.put(src.get(srcPos + i));
 		}
+		dest.flip();
 	}
 
-	public static void buffercopy(final DoubleBuffer src, int srcPos, final DoubleBuffer dest, int destPos, int length) {
+	public static void buffercopy(final DoubleBuffer src, int srcPos, final DoubleBuffer dest, int destPos,
+			int length) {
+		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
-			dest.put(destPos + i, src.get(srcPos + i));
+			dest.put(src.get(srcPos + i));
 		}
+		dest.flip();
 	}
 
 	public static void buffercopy(final FloatBuffer src, int srcPos, final FloatBuffer dest, int destPos, int length) {
+		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
-			dest.put(destPos + i, src.get(srcPos + i));
+			dest.put(src.get(srcPos + i));
 		}
+		dest.flip();
 	}
 
 	public static void buffercopy(final IntBuffer src, int srcPos, final IntBuffer dest, int destPos, int length) {
+		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
-			dest.put(destPos + i, src.get(srcPos + i));
+			dest.put(src.get(srcPos + i));
 		}
+		dest.flip();
 	}
 
 	public static void buffercopy(final LongBuffer src, int srcPos, final LongBuffer dest, int destPos, int length) {
+		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
-			dest.put(destPos + i, src.get(srcPos + i));
+			dest.put(src.get(srcPos + i));
 		}
+		dest.flip();
 	}
 
 	public static void buffercopy(final ShortBuffer src, int srcPos, final ShortBuffer dest, int destPos, int length) {
+		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
-			dest.put(destPos + i, src.get(srcPos + i));
+			dest.put(src.get(srcPos + i));
 		}
+		dest.flip();
+	}
+
+	public static ByteBuffer newByteArrayBuffer(int numElements) {
+		ByteBuffer bb = ByteBuffer.allocate(numElements);
+		bb.order(ByteOrder.nativeOrder());
+		return bb;
+	}
+
+	public static ByteBuffer newByteArrayBuffer(int numElements, ByteOrder order) {
+		ByteBuffer bb = ByteBuffer.wrap(new byte[numElements]);
+		bb.order(order);
+		return bb;
 	}
 
 	public static ByteBuffer newByteBuffer(int numElements) {
@@ -188,6 +225,11 @@ public class Nio {
 		return bb;
 	}
 
+	public static DoubleBuffer newDoubleArrayBuffer(int numElements) {
+		DoubleBuffer db = DoubleBuffer.wrap(new double[numElements]);
+		return db;
+	}
+
 	public static DoubleBuffer newDoubleBuffer(int numElements) {
 		ByteBuffer bb = newByteBuffer(numElements * SIZEOF_DOUBLE);
 		return bb.asDoubleBuffer();
@@ -198,6 +240,11 @@ public class Nio {
 		return bb.asDoubleBuffer();
 	}
 
+	public static FloatBuffer newFloatArrayBuffer(int numElements) {
+		FloatBuffer fb = FloatBuffer.wrap(new float[numElements]);
+		return fb;
+	}
+
 	public static FloatBuffer newFloatBuffer(int numElements) {
 		ByteBuffer bb = newByteBuffer(numElements * SIZEOF_FLOAT);
 		return bb.asFloatBuffer();
@@ -206,6 +253,16 @@ public class Nio {
 	public static FloatBuffer newFloatBuffer(int numElements, ByteOrder order) {
 		ByteBuffer bb = newByteBuffer(numElements * SIZEOF_FLOAT, order);
 		return bb.asFloatBuffer();
+	}
+
+	public static IntBuffer newIntArrayBuffer(int numElements) {
+		IntBuffer ib = IntBuffer.wrap(new int[numElements]);
+		return ib;
+	}
+
+	public static IntBuffer newIntArrayBuffer(int numElements, ByteOrder order) {
+		ByteBuffer bb = newByteArrayBuffer(numElements * SIZEOF_INT, order);
+		return bb.asIntBuffer();
 	}
 
 	public static IntBuffer newIntBuffer(int numElements) {

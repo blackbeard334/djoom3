@@ -5,28 +5,42 @@ import java.nio.FloatBuffer;
 public class MatrixUtil {
 
 	public static void matrixToClipGet3Set4(final FloatOGet get, final FloatOSet set,
-			final FloatOSet view, float[] modelViewMatrix, float[] projectionMatrix) {
+			final FloatOSet view, final float[] modelViewMatrix, final float[] projectionMatrix) {
 		MatrixUtil.multiplyGet3(view, get, Nio.wrap(modelViewMatrix));
 
 		MatrixUtil.multiplyGet4(set, view, Nio.wrap(projectionMatrix));
 	}
 
 	public static void matrixToClipGet3Set4(final FloatOGet get, final FloatOSet set,
-			final FloatOSet view, FloatBuffer modelViewMatrix, FloatBuffer projectionMatrix) {
+			final FloatOSet view, final float[] modelViewMatrix, final FloatBuffer projectionMatrix) {
+		MatrixUtil.multiplyGet3(view, get, Nio.wrap(modelViewMatrix));
+
+		MatrixUtil.multiplyGet4(set, view, projectionMatrix);
+	}
+
+	public static void matrixToClipGet3Set4(final FloatOGet get, final FloatOSet set,
+			final FloatOSet view, final FloatBuffer modelViewMatrix, final FloatBuffer projectionMatrix) {
 		MatrixUtil.multiplyGet3(view, get, modelViewMatrix);
 
 		MatrixUtil.multiplyGet4(set, view, projectionMatrix);
 	}
 
 	public static void matrixToClipGet4Set4(final FloatOGet get, final FloatOSet set,
-			final FloatOSet view, float[] modelViewMatrix, float[] projectionMatrix) {
+			final FloatOSet view, final float[] modelViewMatrix, final float[] projectionMatrix) {
 		MatrixUtil.multiplyGet4(view, get, Nio.wrap(modelViewMatrix));
 
 		MatrixUtil.multiplyGet4(set, view, Nio.wrap(projectionMatrix));
 	}
 
 	public static void matrixToClipGet4Set4(final FloatOGet get, final FloatOSet set,
-			final FloatOSet view, FloatBuffer modelViewMatrix, FloatBuffer projectionMatrix) {
+			final FloatOSet view, final float[] modelViewMatrix, final FloatBuffer projectionMatrix) {
+		MatrixUtil.multiplyGet4(view, get, Nio.wrap(modelViewMatrix));
+
+		MatrixUtil.multiplyGet4(set, view, projectionMatrix);
+	}
+
+	public static void matrixToClipGet4Set4(final FloatOGet get, final FloatOSet set,
+			final FloatOSet view, final FloatBuffer modelViewMatrix, final FloatBuffer projectionMatrix) {
 		MatrixUtil.multiplyGet4(view, get, modelViewMatrix);
 
 		MatrixUtil.multiplyGet4(set, view, projectionMatrix);
