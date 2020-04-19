@@ -1886,11 +1886,11 @@ public class Model_lwo {
     static <T> T lwListAdd(T list, lwNode node) {
         lwNode head, tail = null;
 
-        try {
-            head = (lwNode) list;
-		} catch (Exception e) {
+        if (list == null) {
             return (T) node;
         }
+
+        head = (lwNode) list;
         while (head != null) {
             tail = head;
             head = head.getNext();

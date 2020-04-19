@@ -162,10 +162,10 @@ import static neo.ui.UserInterface.uiManager;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import neo.TempDump;
 import neo.TempDump.CPP_class;
 import neo.TempDump.CPP_class.Bool;
 import neo.TempDump.CPP_class.Pointer;
-import neo.TempDump;
 import neo.Renderer.Cinematic.idCinematic;
 import neo.Renderer.Cinematic.idSndWindow;
 import neo.Renderer.Image.cubeFiles_t;

@@ -131,12 +131,12 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import neo.TempDump;
 import neo.TempDump.CPP_class;
 import neo.TempDump.CPP_class.Bool;
 import neo.TempDump.CPP_class.Pointer;
 import neo.TempDump.NeoFixStrings;
 import neo.TempDump.SERiAL;
-import neo.TempDump;
 import neo.Renderer.Image_init.R_AlphaNotchImage;
 import neo.Renderer.Image_init.R_AmbientNormalImage;
 import neo.Renderer.Image_init.R_BlackImage;

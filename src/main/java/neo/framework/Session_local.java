@@ -126,9 +126,9 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import neo.TempDump;
 import neo.TempDump.SERiAL;
 import neo.TempDump.TODO_Exception;
-import neo.TempDump;
 import neo.Game.Game.escReply_t;
 import neo.Game.Game.gameReturn_t;
 import neo.Renderer.Material.idMaterial;
