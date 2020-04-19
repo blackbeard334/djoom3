@@ -74,7 +74,7 @@ public class VertexCache {
 
         @Override
         public Iterator<vertCache_s> iterator() {
-            final Iterator i = new Iterator() {
+            final Iterator<vertCache_s> i = new Iterator<vertCache_s>() {
 
                 @Override
                 public boolean hasNext() {
@@ -82,7 +82,7 @@ public class VertexCache {
                 }
 
                 @Override
-                public Object next() {
+                public vertCache_s next() {
                     return vertCache_s.this.next;
                 }
 

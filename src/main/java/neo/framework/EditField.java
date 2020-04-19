@@ -115,9 +115,9 @@ public class EditField {
         public void AutoComplete() throws idException {
             final char[] completionArgString = new char[MAX_EDIT_LINE];
             final idCmdArgs args = new idCmdArgs();
-            final void_callback findMatches = FindMatches.getInstance();
-            final void_callback findIndexMatch = FindIndexMatch.getInstance();
-            final void_callback printMatches = PrintMatches.getInstance();
+            final void_callback<String> findMatches = FindMatches.getInstance();
+            final void_callback<String> findIndexMatch = FindIndexMatch.getInstance();
+            final void_callback<String> printMatches = PrintMatches.getInstance();
 
             if (!this.autoComplete.valid) {
                 args.TokenizeString(ctos(this.buffer), false);
@@ -511,9 +511,9 @@ public class EditField {
      */
     static class FindMatches extends void_callback<String> {
 
-        private static final void_callback instance = new FindMatches();
+        private static final void_callback<String> instance = new FindMatches();
 
-        public static void_callback getInstance() {
+        public static void_callback<String> getInstance() {
             return instance;
         }
 
@@ -550,9 +550,9 @@ public class EditField {
      */
     static class FindIndexMatch extends void_callback<String> {
 
-        private static final void_callback instance = new FindIndexMatch();
+        private static final void_callback<String> instance = new FindIndexMatch();
 
-        public static void_callback getInstance() {
+        public static void_callback<String> getInstance() {
             return instance;
         }
 
@@ -580,9 +580,9 @@ public class EditField {
      */
     static class PrintMatches extends void_callback<String> {
 
-        private static final void_callback instance = new PrintMatches();
+        private static final void_callback<String> instance = new PrintMatches();
 
-        public static void_callback getInstance() {
+        public static void_callback<String> getInstance() {
             return instance;
         }
 
@@ -604,9 +604,9 @@ public class EditField {
      */
     static class PrintCvarMatches extends void_callback<String> {
 
-        private static final void_callback instance = new PrintCvarMatches();
+        private static final void_callback<String> instance = new PrintCvarMatches();
 
-        public static void_callback getInstance() {
+        public static void_callback<String> getInstance() {
             return instance;
         }
 

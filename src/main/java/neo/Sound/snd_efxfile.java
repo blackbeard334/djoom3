@@ -72,7 +72,7 @@ public class snd_efxfile {
 //                    }
 //
 //                    if (!token.equals("{")) {
-//                        src.Error("idEFXFile::ReadEffect: { not found, found %s", token.c_str());
+//                        src.Error("idEFXFile::ReadEffect: { not found, found %s", token.getData());
 ////				Mem_Free( reverb );
 //                        return false;
 //                    }

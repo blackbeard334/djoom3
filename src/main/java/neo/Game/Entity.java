@@ -386,12 +386,12 @@ public class Entity {
         }
 
         @Override//TODO:final this
-        public java.lang.Class/*idTypeInfo*/ GetType() {//TODO: make method final
+        public java.lang.Class<?>/*idTypeInfo*/ GetType() {//TODO: make method final
             return getClass();
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1495,7 +1495,7 @@ public class Entity {
             return StartSoundShader(shader, channel, soundShaderFlags, broadcast, length);
         }
 
-        public boolean StartSound(final String soundName, final Enum channel, int soundShaderFlags, boolean broadcast, int[] length) {
+        public boolean StartSound(final String soundName, final Enum<?> channel, int soundShaderFlags, boolean broadcast, int[] length) {
             return StartSound(soundName, channel.ordinal(), soundShaderFlags, broadcast, length);
         }
 
@@ -1551,7 +1551,7 @@ public class Entity {
             return true;
         }
 
-        public boolean StartSoundShader(final idSoundShader shader, final Enum channel, int soundShaderFlags, boolean broadcast, int[] length) {
+        public boolean StartSoundShader(final idSoundShader shader, final Enum<?> channel, int soundShaderFlags, boolean broadcast, int[] length) {
             return StartSoundShader(shader, channel.ordinal(), soundShaderFlags, broadcast, length);
         }
 
@@ -4799,7 +4799,7 @@ public class Entity {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 

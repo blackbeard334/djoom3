@@ -131,6 +131,10 @@ public class CRC32 {
         crcvalue[0] = crctable[(int) (crcvalue[0] ^ data) & 0xff] ^ (crcvalue[0] >> 8);
     }
 
+    public static void CRC32_UpdateChecksum(long[] crcvalue, final String data, int length) {
+    	CRC32_UpdateChecksum(crcvalue, data.toCharArray(), length);
+    }
+
     public static void CRC32_UpdateChecksum(long[] crcvalue, final char[] data, int length) {
         long crc;
         int buf = 0;

@@ -1565,7 +1565,7 @@ public class Common {
             }
 
             for (int i = 0; i < currentLangList.Num(); i++) {
-                //common.Printf("%s\n", currentLangList[i].c_str());
+                //common.Printf("%s\n", currentLangList[i].getData());
                 this.languageDict.Load(currentLangList.oGet(i).getData(), false);
             }
 
@@ -2024,7 +2024,7 @@ public class Common {
                     String osPath;
                     osPath = fileSystem.RelativePathToOSPath("warnings.txt", "fs_savepath");
                     try {
-//                    WinExec(va("Notepad.exe %s", osPath.c_str()), SW_SHOW);
+//                    WinExec(va("Notepad.exe %s", osPath.getData()), SW_SHOW);
                         Runtime.getRuntime().exec(va("Notepad.exe %s", osPath));
                     } catch (final IOException ex) {
                         Logger.getLogger(Common.class.getName()).log(Level.SEVERE, null, ex);
@@ -3070,8 +3070,8 @@ public class Common {
                              }
                              for( int i = 0; i < ent.epairs.GetNumKeyVals(); i++) {
                              const idKeyValue* kv = ent.epairs.GetKeyVal(i);
-                             idStr out = va("%s,%s,%s,%s\r\n", static classname.c_str(), kv.GetKey().c_str(), kv.GetValue().c_str(), file.c_str());
-                             localizeFile.Write( out.c_str(), out.Length() );
+                             idStr out = va("%s,%s,%s,%s\r\n", static classname.getData(), kv.GetKey().getData(), kv.GetValue().getData(), file.getData());
+                             localizeFile.Write( out.getData(), out.Length() );
                              }*/
                             final String /*static*/ className = ent.epairs.GetString("static classname");
 

@@ -1378,7 +1378,7 @@ public class Game_local {
             savegame.WriteBool(this.mapCycleLoaded);
             savegame.WriteInt(this.spawnCount);
 
-            if (NOT(this.locationEntities)) {
+            if (NOT((Object[])this.locationEntities)) {
                 savegame.WriteInt(0);
             } else {
                 savegame.WriteInt(gameRenderWorld.NumAreas());
@@ -1843,7 +1843,7 @@ public class Game_local {
                     // see if a target_sessionCommand has forced a changelevel
                     if (this.sessionCommand.Length() != 0) {
 //                        strncpy(ret.sessionCommand, sessionCommand, sizeof(ret.sessionCommand));
-                        ret.sessionCommand = this.sessionCommand.c_str();
+                        ret.sessionCommand = this.sessionCommand.getData().toCharArray();
                         break;
                     }
 
@@ -2622,7 +2622,7 @@ public class Game_local {
 
             if (this.sessionCommand.Length() != 0) {
 //                strncpy(ret.sessionCommand, sessionCommand, sizeof(ret.sessionCommand));
-                ret.sessionCommand = this.sessionCommand.c_str();
+                ret.sessionCommand = this.sessionCommand.getData().toCharArray();
             }
             return ret;
         }
@@ -3304,7 +3304,7 @@ public class Game_local {
             return SpawnEntityType(classdef, args, false);
         }
 
-        public idEntity SpawnEntityType(final Class classdef, final idDict args /*= NULL*/) {
+        public idEntity SpawnEntityType(final Class<?> classdef, final idDict args /*= NULL*/) {
             idEntity obj = null;
 
             if (!idEntity.class.isAssignableFrom(classdef)) {
@@ -3331,7 +3331,7 @@ public class Game_local {
             return SpawnEntityType(classdef, null);
         }
 
-        public idEntity SpawnEntityType(final Class classdef) {
+        public idEntity SpawnEntityType(final Class<?> classdef) {
             return SpawnEntityType(classdef, null);
         }
 
@@ -4067,7 +4067,7 @@ public class Game_local {
          the line start,end
          =============
          */
-        public idEntity FindTraceEntity(idVec3 start, idVec3 end, final Class/*idTypeInfo*/ c, final idEntity skip) {
+        public idEntity FindTraceEntity(idVec3 start, idVec3 end, final Class<?>/*idTypeInfo*/ c, final idEntity skip) {
             idEntity ent;
             idEntity bestEnt;
             final float[] scale = {0};
@@ -5141,7 +5141,7 @@ public class Game_local {
                     if (null == this.entities[ i]) {
                         continue;
                     }
-                    this.entityHash.Add(this.entityHash.GenerateKey(this.entities[ i].name.c_str(), true), i);
+                    this.entityHash.Add(this.entityHash.GenerateKey(this.entities[ i].name.getData(), true), i);
                 }
             }
 

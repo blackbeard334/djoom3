@@ -229,7 +229,7 @@ public class Image_files {
         // load the file
         //
         length = fileSystem.ReadFile(name, buffer, timestamp);
-        if (NOT(buffer)) {
+        if (NOT((Object[])buffer)) {
             return null;
         }
 
@@ -368,7 +368,7 @@ public class Image_files {
         ByteBuffer out, pix;
         int xmax, ymax;
 
-        if (NOT(pic)) {
+        if (NOT((Object[])pic)) {
             fileSystem.ReadFile(filename, null, timestamp);
             return;	// just getting timestamp
         }
@@ -380,7 +380,7 @@ public class Image_files {
         // load the file
         //
         len = fileSystem.ReadFile(filename, raw, timestamp);
-        if (NOT(raw)) {
+        if (NOT((Object[])raw)) {
             return;
         }
 

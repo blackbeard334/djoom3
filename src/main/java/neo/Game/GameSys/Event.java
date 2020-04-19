@@ -330,7 +330,7 @@ public class Event {
         private idEventArg[]    data;
         private int             time;
         private idClass         object;
-        private java.lang.Class typeinfo;
+        private java.lang.Class<?> typeinfo;
         //
         private final       idLinkList<idEvent> eventNode   = new idLinkList<>();
         //
@@ -465,7 +465,7 @@ public class Event {
             this.eventNode.AddToEnd(FreeEvents);
         }
 
-        public void Schedule(idClass obj, final java.lang.Class type, int time) {
+        public void Schedule(idClass obj, final java.lang.Class<?> type, int time) {
             idEvent event;
 
             assert (initialized);

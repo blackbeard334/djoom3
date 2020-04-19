@@ -115,7 +115,7 @@ public class Model_ase {
         aseModel_s ase;
 
         fileSystem.ReadFile(fileName, buf, timeStamp);
-        if (buf == null) {  // buf is final, so it can never be null, so ???
+        if ((buf == null) || (buf.length == 0)) {
             return null;
         }
 

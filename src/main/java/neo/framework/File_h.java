@@ -87,7 +87,7 @@ public class File_h {
                                 temp = String.format("%s", tmp.getData());
                                 Nio.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
                                 index += temp.length();
-//                                index += sprintf(buf + index, "%s", tmp.c_str());
+//                                index += sprintf(buf + index, "%s", tmp.getData());
                             } else {
 //                                index += sprintf(buf + index, format, f);
                                 temp = String.format(format, f);
@@ -371,7 +371,7 @@ public class File_h {
             return Write(intBytes);
         }
 
-        public int WriteInt(final Enum value) {
+        public int WriteInt(final Enum<?> value) {
             return WriteInt(value.ordinal());
         }
 

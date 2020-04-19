@@ -3452,11 +3452,11 @@ public class Image {
                 }
 
                 if (!image.levelLoadReferenced && !image.referencedOutsideLevelLoad) {
-//			common.Printf( "Purging %s\n", image.imgName.c_str() );
+//			common.Printf( "Purging %s\n", image.imgName.getData() );
                     purgeCount++;
                     image.PurgeImage();
                 } else if (image.texNum != idImage.TEXTURE_NOT_LOADED) {
-//			common.Printf( "Keeping %s\n", image.imgName.c_str() );
+//			common.Printf( "Keeping %s\n", image.imgName.getData() );
                     keepCount++;
                 }
             }
@@ -3469,7 +3469,7 @@ public class Image {
                 }
 
                 if (image.levelLoadReferenced && (image.texNum == idImage.TEXTURE_NOT_LOADED) && (null == image.partialImage)) {
-//			common.Printf( "Loading %s\n", image.imgName.c_str() );
+//			common.Printf( "Loading %s\n", image.imgName.getData() );
                     loadCount++;
                     image.ActuallyLoadImage(true, false);
 

@@ -1468,7 +1468,7 @@ public class Material {
         // returns the length, in milliseconds, of the videoMap on this material,
         // or zero if it doesn't have one
         public int CinematicLength() {
-            if (NOT(this.stages) || NOT(this.stages[0].texture.cinematic[0])) {
+            if (NOT((Object[])this.stages) || NOT(this.stages[0].texture.cinematic[0])) {
                 return 0;
             }
             return this.stages[0].texture.cinematic[0].AnimationLength();
@@ -1493,7 +1493,7 @@ public class Material {
         }
 
         public void UpdateCinematic(int time) {
-            if (NOT(this.stages) || NOT(this.stages[0].texture.cinematic[0]) || NOT(backEnd.viewDef)) {
+            if (NOT((Object[])this.stages) || NOT(this.stages[0].texture.cinematic[0]) || NOT(backEnd.viewDef)) {
                 return;
             }
             this.stages[0].texture.cinematic[0].ImageForTime(tr.primaryRenderView.time);

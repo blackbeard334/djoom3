@@ -6682,8 +6682,8 @@ public class CollisionModel_local {
             this.checkCount++;
             CalculateEdgeNormals(model, model.node);
 
-            //common.Printf( "%s vertex hash spread is %d\n", model.name.c_str(), cm_vertexHash.GetSpread() );
-            //common.Printf( "%s edge hash spread is %d\n", model.name.c_str(), cm_edgeHash.GetSpread() );
+            //common.Printf( "%s vertex hash spread is %d\n", model.name.getData(), cm_vertexHash.GetSpread() );
+            //common.Printf( "%s edge hash spread is %d\n", model.name.getData(), cm_edgeHash.GetSpread() );
             // remove all unused vertices and edges
             OptimizeArrays(model);
             // get model bounds from brush and polygon bounds

@@ -172,10 +172,11 @@ public class DrawVert {
         }
 
         private long get_reinterpret_cast() {
-            return (this.getColor().get(0) & 0x0000_00FF)
-                    | (this.getColor().get(1) & 0x0000_FF00)
-                    | (this.getColor().get(2) & 0x00FF_0000)
-                    | (this.getColor().get(3) & 0xFF00_0000);
+        	ByteBuffer color = this.getColor();
+            return (color.get(0) & 0x0000_00FF)
+                    | (color.get(1) & 0x0000_FF00)
+                    | (color.get(2) & 0x00FF_0000)
+                    | (color.get(3) & 0xFF00_0000);
         }
 
         private short[] set_reinterpret_cast(long color) {
@@ -275,7 +276,7 @@ public class DrawVert {
         }
 
 		public ByteBuffer getColor() {
-			return color;
+			return this.color;
 		}
 
 		public void setColor(ByteBuffer color) {

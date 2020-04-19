@@ -1205,7 +1205,7 @@ public class Window {
                             AddChild(win);
                             SetFocus(win, false);
                             dwt.win = win;
-//                            System.out.println(dwt.win.text.c_str());
+//                            System.out.println(dwt.win.text.getData());
                             this.drawWindows.Append(dwt);
                             plainCount++;
                         }
@@ -1353,7 +1353,7 @@ public class Window {
 //                            src2.ParseBracedSectionExact(out, 1);
 //
 //                            // Save the script		
-//                            rvGEWindowWrapper.GetWrapper(this).GetScriptDict().Set(va("onEvent %s", token.c_str()), out);
+//                            rvGEWindowWrapper.GetWrapper(this).GetScriptDict().Set(va("onEvent %s", token.getData()), out);
 //                        }
 //                    }
                     this.namedEvents.Append(ev);
@@ -1419,7 +1419,7 @@ public class Window {
 //
 //                            // Grab the string from the last marker and save it in the wrapper
 //                            src.GetStringFromMarker(str, true);
-//                            rvGEWindowWrapper.GetWrapper(this).GetVariableDict().Set(va("definefloat\t\"%s\"", token.c_str()), str);
+//                            rvGEWindowWrapper.GetWrapper(this).GetVariableDict().Set(va("definefloat\t\"%s\"", token.getData()), str);
 //                        }
 //                    }
                 } else if (token.equals("definevec4")) {
@@ -1447,7 +1447,7 @@ public class Window {
 //
 //                            // Grab the string from the last marker and save it in the wrapper
 //                            src.GetStringFromMarker(str, true);
-//                            rvGEWindowWrapper.GetWrapper(this).GetVariableDict().Set(va("definevec4\t\"%s\"", token.c_str()), str);
+//                            rvGEWindowWrapper.GetWrapper(this).GetVariableDict().Set(va("definevec4\t\"%s\"", token.getData()), str);
 //                        }
 //                    }
                 } else if (token.equals("float")) {
@@ -1472,7 +1472,7 @@ public class Window {
 //
 //                            // Grab the string from the last marker and save it in the wrapper
 //                            src.GetStringFromMarker(str, true);
-//                            rvGEWindowWrapper.GetWrapper(this).GetVariableDict().Set(va("float\t\"%s\"", token.c_str()), str);
+//                            rvGEWindowWrapper.GetWrapper(this).GetVariableDict().Set(va("float\t\"%s\"", token.getData()), str);
 //                        }
 //                    }
                 } else if (ParseScriptEntry(token.getData(), src)) {
@@ -3001,7 +3001,7 @@ public class Window {
             return false;
         }
 
-        public boolean RunScript(Enum n) {
+        public boolean RunScript(Enum<?> n) {
             return this.RunScript(etoi(n));
         }
 
@@ -3451,7 +3451,7 @@ public class Window {
         protected void UpdateWinVars() {
             final int c = this.updateVars.Num();
             for (int i = 0; i < c; i++) {
-//                System.out.printf("%d %s\n", DEBUG_Activate, updateVars.oGet(i).c_str());
+//                System.out.printf("%d %s\n", DEBUG_Activate, updateVars.oGet(i).getData());
                 this.updateVars.oGet(i).Update();
             }
         }

@@ -781,7 +781,7 @@ public class Dict_h {
 
 //            list[0] = "";
             for (count = 0, kv = MatchPrefix(prefix); (kv != null) && (count < MAX_RANDOM_KEYS); kv = MatchPrefix(prefix, kv)) {
-                list[count++] = String.copyValueOf(kv.GetValue().c_str());
+                list[count++] = String.copyValueOf(kv.GetValue().getData().toCharArray());
             }
             return list[random.RandomInt(count)];
         }
@@ -840,8 +840,8 @@ public class Dict_h {
             n = sorted.Num();
             CRC32_InitChecksum(ret);
             for (i = 0; i < n; i++) {
-                CRC32.CRC32_UpdateChecksum(ret, sorted.oGet(i).GetKey().c_str(), sorted.oGet(i).GetKey().Length());
-                CRC32.CRC32_UpdateChecksum(ret, sorted.oGet(i).GetValue().c_str(), sorted.oGet(i).GetValue().Length());
+                CRC32.CRC32_UpdateChecksum(ret, sorted.oGet(i).GetKey().getData(), sorted.oGet(i).GetKey().Length());
+                CRC32.CRC32_UpdateChecksum(ret, sorted.oGet(i).GetValue().getData(), sorted.oGet(i).GetValue().Length());
             }
             CRC32_FinishChecksum(ret);
             return ret[0];
