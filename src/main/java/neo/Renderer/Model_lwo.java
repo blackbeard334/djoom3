@@ -6,7 +6,6 @@ import static neo.TempDump.bbtocb;
 import static neo.TempDump.btoi;
 import static neo.TempDump.replaceByIndex;
 import static neo.TempDump.strLen;
-import static neo.framework.Common.common;
 import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_CUR;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_SET;
@@ -19,8 +18,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import neo.TempDump;
-import neo.Renderer.tr_local.frameMemoryBlock_s;
 import neo.TempDump.NiLLABLE;
 import neo.TempDump.TODO_Exception;
 import neo.framework.File_h.idFile;
@@ -1888,9 +1885,8 @@ public class Model_lwo {
     static <T> T lwListAdd(T list, lwNode node) {
         lwNode head, tail = null;
 
-        try {
-            head = (lwNode) list;
-		} catch (Exception e) {
+        head = (lwNode) list;
+        if (null == head) {
             return (T) node;
         }
         while (head != null) {
@@ -2779,9 +2775,8 @@ public class Model_lwo {
         lwClip clip;
         int p;
 
-        try {
-            clip = new lwClip();// Mem_ClearedAlloc(sizeof(lwClip));
-		} catch (Exception e) {
+        clip = new lwClip();// Mem_ClearedAlloc(sizeof(lwClip));
+        if (null == clip) {
             return 0;
         }
 
@@ -2868,9 +2863,8 @@ public class Model_lwo {
     public static lwTexture get_texture(String s) {
         lwTexture tex;
 
-        try {
-            tex = new lwTexture();// Mem_ClearedAlloc(sizeof(lwTexture));
-		} catch (Exception e) {
+        tex = new lwTexture();// Mem_ClearedAlloc(sizeof(lwTexture));
+        if (null == tex) {
             return null;
         }
 
@@ -3208,9 +3202,8 @@ public class Model_lwo {
                         break;
 
                     case ID_SHDR:
-                        try {
-                            shdr = new lwPlugin();// Mem_ClearedAlloc(sizeof(lwPlugin));
-                		} catch (Exception e) {
+                        shdr = new lwPlugin();// Mem_ClearedAlloc(sizeof(lwPlugin));
+                        if (null == shdr) {
                             break Fail;
                         }
                         shdr.name = new String(getbytes(fp, sz));
@@ -3411,15 +3404,13 @@ public class Model_lwo {
         Fail:
         /* allocate an object and a default layer */
         if (true) {
-            try {
-                object = new lwObject();// Mem_ClearedAlloc(sizeof(lwObject));
-    		} catch (Exception e) {
+            object = new lwObject();// Mem_ClearedAlloc(sizeof(lwObject));
+            if (null == object) {
                 break Fail;
             }
 
-            try {
-                layer = new lwLayer();// Mem_ClearedAlloc(sizeof(lwLayer));
-    		} catch (Exception e) {
+            layer = new lwLayer();// Mem_ClearedAlloc(sizeof(lwLayer));
+            if (null == layer) {
                 break Fail;
             }
             object.layer = layer;
@@ -4772,9 +4763,8 @@ public class Model_lwo {
         short sz;
         int ok;
 
-        try {
-            tex = new lwTexture();// Mem_ClearedAlloc(sizeof(lwTexture));
-		} catch (Exception e) {
+        tex = new lwTexture();// Mem_ClearedAlloc(sizeof(lwTexture));
+        if (null == tex) {
             return null;
         }
 
@@ -4828,9 +4818,8 @@ public class Model_lwo {
         short sz;
         int hsz, rlen, pos;
 
-        try {
-            shdr = new lwPlugin();//Mem_ClearedAlloc(sizeof(lwPlugin));
-		} catch (Exception e) {
+        shdr = new lwPlugin();//Mem_ClearedAlloc(sizeof(lwPlugin));
+        if (null == shdr) {
             return null;
         }
 
@@ -4999,11 +4988,10 @@ public class Model_lwo {
     public static lwSurface lwDefaultSurface() {
         lwSurface surf;
 
-        try {
-            surf = new lwSurface();// Mem_ClearedAlloc(sizeof(lwSurface));
-		} catch (Exception e) {
+        surf = new lwSurface();// Mem_ClearedAlloc(sizeof(lwSurface));
+        if (null == surf) {
             return null;
-		}
+        }
 
         surf.color.rgb[0] = 0.78431f;
         surf.color.rgb[1] = 0.78431f;
@@ -5383,7 +5371,7 @@ public class Model_lwo {
         vmap.vindex = new int[npts];// Mem_ClearedAlloc(npts);
 
 //        Fail:
-        if (TempDump.isDeadCodeFalse()) {
+        if (true) {
 //            if (null == vmap.vindex) {
 //                break Fail;
 //            }

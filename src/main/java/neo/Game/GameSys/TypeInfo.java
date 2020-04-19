@@ -661,12 +661,12 @@ public class TypeInfo {
 //                Write.run(varName, varType, scope, prefix, "", idStr( /**
 //                         * ((float *)
 //                         */
-//                        varPtr).getData(), varPtr, typeSize);
+//                        varPtr).c_str(), varPtr, typeSize);
 //
 //            } else if (token.equals("double")) {
 //
 //                typeSize = sizeof(double);
-//                Write.run(varName, varType, scope, prefix, "", idStr( /*(float)*((double *)*/varPtr).getData(), varPtr, typeSize);
+//                Write.run(varName, varType, scope, prefix, "", idStr( /*(float)*((double *)*/varPtr).c_str(), varPtr, typeSize);
 //
 //            } else if (token.equals("idVec2")) {
 //
@@ -811,7 +811,7 @@ public class TypeInfo {
 //                typeSize = sizeof(idStr);
 //
 //                final idStr str = (/*(idStr *)*/varPtr);
-//                Write.run(varName, varType, scope, prefix, "", OutputString(str.getData()), str.getData(), str.Length());
+//                Write.run(varName, varType, scope, prefix, "", OutputString(str.getData()), str.c_str(), str.Length());
 //
 //            } else if (token.equals("idStrList")) {
 //
@@ -820,7 +820,7 @@ public class TypeInfo {
 //                final idStrList list = (/*(idStrList *)*/varPtr);
 //                if (list.Num() != 0) {
 //                    for (i = 0; i < list.Num(); i++) {
-//                        Write.run(varName, varType, scope, prefix, va("[%d]", i), OutputString(list.oGet(i).getData()), list.oGet(i).getData(), list.oGet(i).Length());
+//                        Write.run(varName, varType, scope, prefix, va("[%d]", i), OutputString(list.oGet(i).c_str()), list.oGet(i).c_str(), list.oGet(i).Length());
 //                    }
 //                } else {
 //                    Write.run(varName, varType, scope, prefix, "", "<empty>", null, 0);
@@ -834,7 +834,7 @@ public class TypeInfo {
 //                if (dict.GetNumKeyVals() != 0) {
 //                    for (i = 0; i < dict.GetNumKeyVals(); i++) {
 //                        final idKeyValue kv = dict.GetKeyVal(i);
-//                        Write.run(varName, varType, scope, prefix, va("[%d]", i), va("\'%s\'  \'%s\'", OutputString(kv.GetKey().getData()), OutputString(kv.GetValue().getData())), null, 0);
+//                        Write.run(varName, varType, scope, prefix, va("[%d]", i), va("\'%s\'  \'%s\'", OutputString(kv.GetKey().c_str()), OutputString(kv.GetValue().c_str())), null, 0);
 //                    }
 //                } else {
 //                    Write.run(varName, varType, scope, prefix, "", "<empty>", null, 0);
@@ -843,22 +843,22 @@ public class TypeInfo {
 //            } else if (token.equals("idExtrapolate")) {
 //
 //                final idExtrapolate<Float> interpolate = (/*(idExtrapolate<float> *)*/varPtr);
-//                Write.run(varName, varType, scope, prefix, ".extrapolationType", idStr(interpolate.GetExtrapolationType()).getData(), interpolate.extrapolationType, sizeof(interpolate.extrapolationType));
-//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).getData(), interpolate.startTime, sizeof(interpolate.startTime));
-//                Write.run(varName, varType, scope, prefix, ".duration", idStr(interpolate.GetDuration()).getData(), interpolate.duration, sizeof(interpolate.duration));
+//                Write.run(varName, varType, scope, prefix, ".extrapolationType", idStr(interpolate.GetExtrapolationType()).c_str(), interpolate.extrapolationType, sizeof(interpolate.extrapolationType));
+//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).c_str(), interpolate.startTime, sizeof(interpolate.startTime));
+//                Write.run(varName, varType, scope, prefix, ".duration", idStr(interpolate.GetDuration()).c_str(), interpolate.duration, sizeof(interpolate.duration));
 //
 //                if (ParseTemplateArguments(typeSrc, templateArgs)) {
 //                    if (templateArgs.equals("int")) {
 //                        final idExtrapolate<Integer> interpolate = ((idExtrapolate<Integer>) varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".baseSpeed", idStr(interpolate.GetBaseSpeed()).getData(), interpolate.baseSpeed, sizeof(interpolate.baseSpeed));
-//                        Write.run(varName, varType, scope, prefix, ".speed", idStr(interpolate.GetSpeed()).getData(), interpolate.speed, sizeof(interpolate.speed));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".baseSpeed", idStr(interpolate.GetBaseSpeed()).c_str(), interpolate.baseSpeed, sizeof(interpolate.baseSpeed));
+//                        Write.run(varName, varType, scope, prefix, ".speed", idStr(interpolate.GetSpeed()).c_str(), interpolate.speed, sizeof(interpolate.speed));
 //                        typeSize = sizeof(idExtrapolate < int >);
 //                    } else if (templateArgs.equals("float")) {
 //                        final idExtrapolate<Float> interpolate = ((idExtrapolate<Float>) varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".baseSpeed", idStr(interpolate.GetBaseSpeed()).getData(), interpolate.baseSpeed, sizeof(interpolate.baseSpeed));
-//                        Write.run(varName, varType, scope, prefix, ".speed", idStr(interpolate.GetSpeed()).getData(), interpolate.speed, sizeof(interpolate.speed));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".baseSpeed", idStr(interpolate.GetBaseSpeed()).c_str(), interpolate.baseSpeed, sizeof(interpolate.baseSpeed));
+//                        Write.run(varName, varType, scope, prefix, ".speed", idStr(interpolate.GetSpeed()).c_str(), interpolate.speed, sizeof(interpolate.speed));
 //                        typeSize = sizeof(idExtrapolate < float >);
 //                    } else if (templateArgs.equals("idVec3")) {
 //                        final idExtrapolate<idVec3> interpolate = ((idExtrapolate<idVec3>) varPtr);
@@ -873,77 +873,77 @@ public class TypeInfo {
 //                        Write.run(varName, varType, scope, prefix, ".speed", interpolate.GetSpeed().ToString(8), interpolate.speed, sizeof(interpolate.speed));
 //                        typeSize = sizeof(idExtrapolate < idAngles >);
 //                    } else {
-//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idExtrapolate>", templateArgs.getData()), null, 0);
+//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idExtrapolate>", templateArgs.c_str()), null, 0);
 //                    }
 //                }
 //
 //            } else if (token.equals("idInterpolate")) {
 //
 //                final idInterpolate<Float> interpolate = ((idInterpolate<Float>) varPtr);
-//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).getData(), interpolate.startTime, sizeof(interpolate.startTime));
-//                Write.run(varName, varType, scope, prefix, ".duration", idStr(interpolate.GetDuration()).getData(), interpolate.duration, sizeof(interpolate.duration));
+//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).c_str(), interpolate.startTime, sizeof(interpolate.startTime));
+//                Write.run(varName, varType, scope, prefix, ".duration", idStr(interpolate.GetDuration()).c_str(), interpolate.duration, sizeof(interpolate.duration));
 //
 //                if (ParseTemplateArguments(typeSrc, templateArgs)) {
 //                    if (templateArgs.equals("int")) {
 //                        final idInterpolate<Integer> interpolate = (/*(idInterpolate<int> *)*/varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).getData(), interpolate.endValue, sizeof(interpolate.endValue));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).c_str(), interpolate.endValue, sizeof(interpolate.endValue));
 //                        typeSize = sizeof(idInterpolate < int >);
 //                    } else if (templateArgs.equals("float")) {
 //                        final idInterpolate<Float> interpolate = ((idInterpolate<Float>) varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).getData(), interpolate.endValue, sizeof(interpolate.endValue));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).c_str(), interpolate.endValue, sizeof(interpolate.endValue));
 //                        typeSize = sizeof(idInterpolate < float >);
 //                    } else {
-//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idInterpolate>", templateArgs.getData()), null, 0);
+//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idInterpolate>", templateArgs.c_str()), null, 0);
 //                    }
 //                }
 //
 //            } else if (token.equals("idInterpolateAccelDecelLinear")) {
 //
 //                final idInterpolateAccelDecelLinear<Float> interpolate = ((idInterpolateAccelDecelLinear<Float>) varPtr);
-//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).getData(), interpolate.startTime, sizeof(interpolate.startTime));
-//                Write.run(varName, varType, scope, prefix, ".accelTime", idStr(interpolate.GetAcceleration()).getData(), interpolate.accelTime, sizeof(interpolate.accelTime));
-//                Write.run(varName, varType, scope, prefix, ".linearTime", idStr(interpolate.linearTime).getData(), interpolate.linearTime, sizeof(interpolate.linearTime));
-//                Write.run(varName, varType, scope, prefix, ".decelTime", idStr(interpolate.GetDeceleration()).getData(), interpolate.decelTime, sizeof(interpolate.decelTime));
+//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).c_str(), interpolate.startTime, sizeof(interpolate.startTime));
+//                Write.run(varName, varType, scope, prefix, ".accelTime", idStr(interpolate.GetAcceleration()).c_str(), interpolate.accelTime, sizeof(interpolate.accelTime));
+//                Write.run(varName, varType, scope, prefix, ".linearTime", idStr(interpolate.linearTime).c_str(), interpolate.linearTime, sizeof(interpolate.linearTime));
+//                Write.run(varName, varType, scope, prefix, ".decelTime", idStr(interpolate.GetDeceleration()).c_str(), interpolate.decelTime, sizeof(interpolate.decelTime));
 //
 //                if (ParseTemplateArguments(typeSrc, templateArgs)) {
 //                    if (templateArgs.equals("int")) {
 //                        final idInterpolateAccelDecelLinear<Integer> interpolate = ((idInterpolateAccelDecelLinear<Integer>) varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).getData(), interpolate.endValue, sizeof(interpolate.endValue));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).c_str(), interpolate.endValue, sizeof(interpolate.endValue));
 //                        typeSize = sizeof(idInterpolateAccelDecelLinear < int >);
 //                    } else if (templateArgs.equals("float")) {
 //                        final idInterpolateAccelDecelLinear<Float> interpolate = ((idInterpolateAccelDecelLinear<Float>) varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).getData(), interpolate.endValue, sizeof(interpolate.endValue));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).c_str(), interpolate.endValue, sizeof(interpolate.endValue));
 //                        typeSize = sizeof(idInterpolateAccelDecelLinear < float >);
 //                    } else {
-//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idInterpolateAccelDecelLinear>", templateArgs.getData()), null, 0);
+//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idInterpolateAccelDecelLinear>", templateArgs.c_str()), null, 0);
 //                    }
 //                }
 //
 //            } else if (token.equals("idInterpolateAccelDecelSine")) {
 //
 //                final idInterpolateAccelDecelSine<Float> interpolate = ((idInterpolateAccelDecelSine<Float>) varPtr);
-//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).getData(), interpolate.startTime, sizeof(interpolate.startTime));
-//                Write.run(varName, varType, scope, prefix, ".accelTime", idStr(interpolate.GetAcceleration()).getData(), interpolate.accelTime, sizeof(interpolate.accelTime));
-//                Write.run(varName, varType, scope, prefix, ".linearTime", idStr(interpolate.linearTime).getData(), interpolate.linearTime, sizeof(interpolate.linearTime));
-//                Write.run(varName, varType, scope, prefix, ".decelTime", idStr(interpolate.GetDeceleration()).getData(), interpolate.decelTime, sizeof(interpolate.decelTime));
+//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).c_str(), interpolate.startTime, sizeof(interpolate.startTime));
+//                Write.run(varName, varType, scope, prefix, ".accelTime", idStr(interpolate.GetAcceleration()).c_str(), interpolate.accelTime, sizeof(interpolate.accelTime));
+//                Write.run(varName, varType, scope, prefix, ".linearTime", idStr(interpolate.linearTime).c_str(), interpolate.linearTime, sizeof(interpolate.linearTime));
+//                Write.run(varName, varType, scope, prefix, ".decelTime", idStr(interpolate.GetDeceleration()).c_str(), interpolate.decelTime, sizeof(interpolate.decelTime));
 //
 //                if (ParseTemplateArguments(typeSrc, templateArgs)) {
 //                    if (templateArgs.equals("int")) {
 //                        final idInterpolateAccelDecelSine<Integer> interpolate = ((idInterpolateAccelDecelSine<Integer>) varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).getData(), interpolate.endValue, sizeof(interpolate.endValue));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).c_str(), interpolate.endValue, sizeof(interpolate.endValue));
 //                        typeSize = sizeof(idInterpolateAccelDecelSine < int >);
 //                    } else if (templateArgs.equals("float")) {
 //                        final idInterpolateAccelDecelSine<Float> interpolate = ((idInterpolateAccelDecelSine<Float>) varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).getData(), interpolate.endValue, sizeof(interpolate.endValue));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).c_str(), interpolate.endValue, sizeof(interpolate.endValue));
 //                        typeSize = sizeof(idInterpolateAccelDecelSine < float >);
 //                    } else {
-//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idInterpolateAccelDecelSine>", templateArgs.getData()), null, 0);
+//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idInterpolateAccelDecelSine>", templateArgs.c_str()), null, 0);
 //                    }
 //                }
 //
@@ -982,7 +982,7 @@ public class TypeInfo {
 //                final idEntityPtr<idEntity> entPtr = ((idEntityPtr<idEntity>) varPtr);
 //                if (entPtr.GetEntity() != null) {
 //                    idEntity entity = entPtr.GetEntity();
-//                    Write.run(varName, varType, scope, prefix, ".", va("entity %d: \'%s\'", entity.entityNumber, entity.name.getData()), varPtr, typeSize);
+//                    Write.run(varName, varType, scope, prefix, ".", va("entity %d: \'%s\'", entity.entityNumber, entity.name.c_str()), varPtr, typeSize);
 //                } else {
 //                    Write.run(varName, varType, scope, prefix, "", "<null>", varPtr, typeSize);
 //                }
@@ -1044,7 +1044,7 @@ public class TypeInfo {
 //                    } else if (IsSubclassOf(token, "idEntity")) {
 //
 //                        final idEntity entity = ((idEntity) varPtr);
-//                        Write.run(varName, varType, scope, prefix, "", va("entity %d: \'%s\'", entity.entityNumber, entity.name.getData()), null, 0);
+//                        Write.run(varName, varType, scope, prefix, "", va("entity %d: \'%s\'", entity.entityNumber, entity.name.c_str()), null, 0);
 //
 //                    } else if (IsSubclassOf(token, "idDecl")) {
 

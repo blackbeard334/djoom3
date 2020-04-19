@@ -701,19 +701,19 @@ public class snd_world {
                 name = new idStr(this.aviDemoPath.getData() + this.aviDemoName + ".wav");
                 wO = fileSystem.OpenFileWrite(name.getData());
                 if (null == wO) {
-                    common.Error("Couldn't write %s", name.getData());
+                    common.Error("Couldn't write %s", name.c_str());
                 }
 
                 name.oSet(this.aviDemoPath + "channel_right.raw");
                 rL = fileSystem.OpenFileRead(name.getData());
                 if (null == rL) {
-                    common.Error("Couldn't open %s", name.getData());
+                    common.Error("Couldn't open %s", name.c_str());
                 }
 
                 name.oSet(this.aviDemoPath + "channel_left.raw");
                 lL = fileSystem.OpenFileRead(name.getData());
                 if (null == lL) {
-                    common.Error("Couldn't open %s", name.getData());
+                    common.Error("Couldn't open %s", name.c_str());
                 }
 
                 final int numSamples = rL.Length() / 2;

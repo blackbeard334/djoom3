@@ -306,7 +306,7 @@ public class tr_backend {
         tr_local.backEnd.glState.faceCulling = cullType;
     }
 
-    public static void GL_Cull(Enum<?> cullType) {
+    public static void GL_Cull(Enum cullType) {
         GL_Cull(cullType.ordinal());
     }
 

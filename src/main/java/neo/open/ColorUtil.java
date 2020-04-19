@@ -1,9 +1,6 @@
 package neo.open;
 
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-
-import neo.framework.DemoFile.idDemoFile;
 
 public class ColorUtil {
 

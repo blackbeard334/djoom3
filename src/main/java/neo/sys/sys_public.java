@@ -10,7 +10,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.TimerTask;
 
-import neo.TempDump;
 import neo.TempDump.CPP_class;
 import neo.TempDump.SERiAL;
 import neo.TempDump.TODO_Exception;
@@ -280,7 +279,7 @@ public class sys_public {
                 return false;
             }
 
-            if (!TempDump.isDeadCodeFalse()) {
+            if (false) {
                 if (net_socksEnabled.GetBool()) {
                     NET_OpenSocks(portNumber);
                 }

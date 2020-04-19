@@ -95,7 +95,6 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import neo.TempDump;
 import neo.TempDump.CPP_class;
 import neo.TempDump.CPP_class.Bool;
 import neo.TempDump.CPP_class.Char;
@@ -1492,7 +1491,7 @@ public class FileSystem_h {
                         testPath.ToLower();
                         fileName = new idStr(relativePath);
                         fileName.StripPath();
-//				sprintf( newPath, "%s/%s/%s", base, testPath.getData(), fileName.getData() );
+//				sprintf( newPath, "%s/%s/%s", base, testPath.c_str(), fileName.c_str() );
                         newPath = new idStr(String.format("%s/%s/%s", base, testPath, fileName));
                         ReplaceSeparators(newPath);
                         common.DPrintf("Fixed up to %s\n", newPath);
@@ -1505,7 +1504,7 @@ public class FileSystem_h {
             final idStr strBase = new idStr(base);
             strBase.StripTrailing('/');
             strBase.StripTrailing('\\');
-//	sprintf( newPath, "%s/%s/%s", strBase.getData(), game, relativePath );
+//	sprintf( newPath, "%s/%s/%s", strBase.c_str(), game, relativePath );
             newPath = new idStr(String.format("%s/%s/%s", strBase, game, relativePath));
             ReplaceSeparators(newPath);
             idStr.Copynz(OSPath, newPath.getData());
@@ -2877,7 +2876,7 @@ public class FileSystem_h {
                 common.Warning("idFileSystem::ValidateDownloadPak: failed to extract relative path for %s", pak.pakFilename.getData());
                 return 0;
             }
-            idStr.Copynz(path, relativePath.getData(), MAX_STRING_CHARS);
+            idStr.Copynz(path, relativePath.c_str(), MAX_STRING_CHARS);
             return pak.length;
         }
 
@@ -3381,7 +3380,7 @@ public class FileSystem_h {
 //                                bgl.completed = true;
 //                                continue;
 //                            }
-//                            ret = curl_easy_setopt(session, CURLOPT_URL, bgl.url.url.getData());
+//                            ret = curl_easy_setopt(session, CURLOPT_URL, bgl.url.url.c_str());
 //                            if (ret) {
 //                                bgl.url.dlstatus = ret;
 //                                bgl.url.status = DL_FAILED;
@@ -3470,7 +3469,7 @@ public class FileSystem_h {
             char[] s;
             int i;
 
-            s = path.getData().toCharArray();
+            s = path.c_str();
 
             for (i = 0; i < s.length; i++) {
                 if ((s[i] == '/') || (s[i] == '\\')) {
@@ -4199,7 +4198,7 @@ public class FileSystem_h {
                     || ".so".equals(path.substring(l - 3))
                     || ((l > 6) && ".dylib".equals(path.substring(l - 6)))
                     || ((l > 10) && ".scriptcfg".equals(path.substring(l - 10))))// configuration script, such as map cycle
-                    || ((ID_PURE_ALLOWDDS == TempDump.isDeadCodeFalse()) && "dds".equals(path.substring(l - 4)))) {
+                    || (ID_PURE_ALLOWDDS && "dds".equals(path.substring(l - 4)))) {
                 // note: cd and xp keys, as well as config.spec are opened through an explicit OS path and don't hit this
                 return true;
             }
@@ -4541,7 +4540,7 @@ public class FileSystem_h {
                 }
                 int checksum;
 
-//		if ( sscanf( token.getData(), "0x%x", checksum ) != 1 && sscanf( token.getData(), "%x", checksum ) != 1 ) {
+//		if ( sscanf( token.c_str(), "0x%x", checksum ) != 1 && sscanf( token.c_str(), "%x", checksum ) != 1 ) {
                 if ((checksum = Integer.parseInt(String.format("%x", token.getData()))) != 0) {
                     src.Warning("Could not parse checksum '%s'", token.getData());
 //			delete info;

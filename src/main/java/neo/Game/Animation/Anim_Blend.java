@@ -892,19 +892,19 @@ public class Anim_Blend {
                             break;
                         }
                         case FC_TRIGGER_SMOKE_PARTICLE: {
-                            ent.ProcessEvent(AI_TriggerParticles, command.string.getData());
+                            ent.ProcessEvent(AI_TriggerParticles, command.string.c_str());
                             break;
                         }
                         case FC_MELEE: {
-                            ent.ProcessEvent(AI_AttackMelee, command.string.getData());
+                            ent.ProcessEvent(AI_AttackMelee, command.string.c_str());
                             break;
                         }
                         case FC_DIRECTDAMAGE: {
-                            ent.ProcessEvent(AI_DirectDamage, command.string.getData());
+                            ent.ProcessEvent(AI_DirectDamage, command.string.c_str());
                             break;
                         }
                         case FC_BEGINATTACK: {
-                            ent.ProcessEvent(AI_BeginAttack, command.string.getData());
+                            ent.ProcessEvent(AI_BeginAttack, command.string.c_str());
                             break;
                         }
                         case FC_ENDATTACK: {
@@ -912,19 +912,19 @@ public class Anim_Blend {
                             break;
                         }
                         case FC_MUZZLEFLASH: {
-                            ent.ProcessEvent(AI_MuzzleFlash, command.string.getData());
+                            ent.ProcessEvent(AI_MuzzleFlash, command.string.c_str());
                             break;
                         }
                         case FC_CREATEMISSILE: {
-                            ent.ProcessEvent(AI_CreateMissile, command.string.getData());
+                            ent.ProcessEvent(AI_CreateMissile, command.string.c_str());
                             break;
                         }
                         case FC_LAUNCHMISSILE: {
-                            ent.ProcessEvent(AI_AttackMissile, command.string.getData());
+                            ent.ProcessEvent(AI_AttackMissile, command.string.c_str());
                             break;
                         }
                         case FC_FIREMISSILEATTARGET: {
-                            ent.ProcessEvent(AI_FireMissileAtTarget, this.modelDef.GetJointName(command.index), command.string.getData());
+                            ent.ProcessEvent(AI_FireMissileAtTarget, this.modelDef.GetJointName(command.index), command.string.c_str());
                             break;
                         }
                         case FC_FOOTSTEP: {

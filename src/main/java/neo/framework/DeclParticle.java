@@ -45,7 +45,6 @@ import neo.idlib.math.Vector;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
-import neo.open.ColorUtil;
 
 /**
  *

@@ -191,7 +191,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import neo.TempDump;
 import neo.CM.CollisionModel.contactInfo_t;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.AFEntity.idAFAttachment;
@@ -3943,7 +3942,7 @@ public class Player {
             } else {
                 // offset for local bobbing and kicks
                 GetViewPos(this.firstPersonViewOrigin, this.firstPersonViewAxis);
-                if (!TempDump.isDeadCodeFalse()) {
+                if (false) {
                     // shakefrom sound stuff only happens in first person
                     this.firstPersonViewAxis = this.firstPersonViewAxis.oMultiply(this.playerView.ShakeAxis());
                 }
@@ -8430,7 +8429,7 @@ public class Player {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 

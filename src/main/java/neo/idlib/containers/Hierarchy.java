@@ -16,9 +16,9 @@ public class Hierarchy {
      */
     public static class idHierarchy<type> {
 
-        private idHierarchy<type> parent;
-        private idHierarchy<type> sibling;
-        private idHierarchy<type> child;
+        private idHierarchy parent;
+        private idHierarchy sibling;
+        private idHierarchy child;
         private type owner;
         //
         //
@@ -61,7 +61,7 @@ public class Hierarchy {
          Makes the given node the parent.
          ================
          */
-        public void ParentTo(idHierarchy<type> node) {
+        public void ParentTo(idHierarchy node) {
             RemoveFromParent();
 
             this.parent = node;
@@ -76,14 +76,14 @@ public class Hierarchy {
          Makes the given node a sibling after the passed in node.
          ================
          */
-        public void MakeSiblingAfter(idHierarchy<type> node) {
+        public void MakeSiblingAfter(idHierarchy node) {
             RemoveFromParent();
             this.parent = node.parent;
             this.sibling = node.sibling;
             node.sibling = this;
         }
 
-        public boolean ParentedBy(final idHierarchy<type> node) {
+        public boolean ParentedBy(final idHierarchy node) {
             if (this.parent == node) {
                 return true;
             } else if (this.parent != null) {
@@ -166,7 +166,7 @@ public class Hierarchy {
          Returns NULL if no parent, or if it is the first child.
          ================
          */
-        public idHierarchy<type> GetPriorSibling() {        // previous node with the same parent
+        public type GetPriorSibling() {        // previous node with the same parent
             if ((null == this.parent) || (this.parent.child == this)) {
                 return null;
             }
@@ -185,7 +185,7 @@ public class Hierarchy {
                 idLib.Error("idHierarchy::GetPriorSibling: could not find node in parent's list of children");
             }
 
-            return prev;
+            return (type) prev;
         }
 
         /*
@@ -256,7 +256,6 @@ public class Hierarchy {
         private idHierarchy<type> GetPriorSiblingNode() {// previous node with the same parent
             idHierarchy<type> prior;
 
-            // Check me - should it be? prior = GetPriorSibling();
             prior = GetPriorSiblingNode();
             if (prior != null) {
                 return (idHierarchy<type>) prior.owner;

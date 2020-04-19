@@ -22,7 +22,6 @@ import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import neo.TempDump;
 import neo.TempDump.TODO_Exception;
 
 /**
@@ -245,7 +244,7 @@ public class win_cpu {
      ================
      */
     public static boolean HasCMOV() {
-        if (TempDump.isDeadCodeFalse()) {
+        if (true) {
             return true;
         }
         throw new TODO_Exception();
@@ -267,7 +266,7 @@ public class win_cpu {
      ================
      */
     public static boolean Has3DNow() {
-        if (TempDump.isDeadCodeFalse()) {
+        if (true) {
             return IsAMD();
         }
         throw new TODO_Exception();
@@ -294,7 +293,7 @@ public class win_cpu {
      ================
      */
     public static boolean HasMMX() {
-        if (TempDump.isDeadCodeFalse()) {
+        if (true) {
             return true;
         }
         throw new TODO_Exception();
@@ -316,7 +315,7 @@ public class win_cpu {
      ================
      */
     public static boolean HasSSE() {
-        if (TempDump.isDeadCodeFalse()) {
+        if (true) {
             return true;
         }
         throw new TODO_Exception();
@@ -338,7 +337,7 @@ public class win_cpu {
      ================
      */
     public static boolean HasSSE2() {
-        if (TempDump.isDeadCodeFalse()) {
+        if (true) {
             return true;
         }
         throw new TODO_Exception();
@@ -360,7 +359,7 @@ public class win_cpu {
      ================
      */
     public static boolean HasSSE3() {
-        if (TempDump.isDeadCodeFalse()) {
+        if (true) {
             return true;
         }
         throw new TODO_Exception();
@@ -510,7 +509,7 @@ public class win_cpu {
      ================
      */
     public static boolean HasHTT() {
-        if (TempDump.isDeadCodeFalse()) {
+        if (true) {
             return true;
         }
         throw new TODO_Exception();
@@ -538,7 +537,7 @@ public class win_cpu {
      ================
      */
     public static boolean HasDAZ() {
-        if (TempDump.isDeadCodeFalse()) {
+        if (true) {
             return true;
         }
         throw new TODO_Exception();

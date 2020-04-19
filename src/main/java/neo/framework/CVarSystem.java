@@ -671,7 +671,7 @@ public class CVarSystem {
             if ((session != null) && session.IsMultiplayer() && !fromServer) {
 // #ifndef ID_TYPEINFO
                 // if ( ( flags & CVAR_NETWORKSYNC ) && idAsyncNetwork::client.IsActive() ) {
-                // common.Printf( "%s is a synced over the network and cannot be changed on a multiplayer client.\n", nameString.getData() );
+                // common.Printf( "%s is a synced over the network and cannot be changed on a multiplayer client.\n", nameString.c_str() );
 // #if ID_ALLOW_CHEATS
                 // common.Printf( "ID_ALLOW_CHEATS override!\n" );
 // #else				
@@ -820,7 +820,7 @@ public class CVarSystem {
                 internal.Update(cvar);
             } else {
                 internal = new idInternalCVar(cvar);
-                hash = this.cvarHash.GenerateKey(internal.nameString.getData(), false);
+                hash = this.cvarHash.GenerateKey(internal.nameString.c_str(), false);
                 this.cvarHash.Add(hash, this.cvars.Append(internal));
             }
 
@@ -1059,7 +1059,7 @@ public class CVarSystem {
                 internal.UpdateCheat();
             } else {
                 internal = new idInternalCVar(name, value, flags);
-                hash = this.cvarHash.GenerateKey(internal.nameString.getData(), false);
+                hash = this.cvarHash.GenerateKey(internal.nameString.c_str(), false);
                 this.cvarHash.Add(hash, this.cvars.Append(internal));
             }
         }

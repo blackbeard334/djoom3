@@ -801,7 +801,7 @@ public class Physics_StaticMulti {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 

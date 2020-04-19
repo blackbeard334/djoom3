@@ -37,7 +37,6 @@ import java.nio.FloatBuffer;
 import java.util.Arrays;
 
 import neo.TempDump.TODO_Exception;
-import neo.TempDump;
 import neo.Renderer.tr_local.drawSurf_s;
 import neo.Renderer.tr_local.frameData_t;
 import neo.Renderer.tr_local.frameMemoryBlock_s;
@@ -175,12 +174,10 @@ public class tr_main {
         frameData = new frameData_t();// Mem_ClearedAlloc(sizeof(frameData));
         frame = frameData;
         size = MEMORY_BLOCK_SIZE;
-        try {
-            block = new frameMemoryBlock_s();// Mem_Alloc(size /*+ sizeof( *block )*/);
-		} catch (Exception e) {
+        block = new frameMemoryBlock_s();// Mem_Alloc(size /*+ sizeof( *block )*/);
+        if (null == block) {
             common.FatalError("R_InitFrameData: Mem_Alloc() failed");
-            return; // FatalError exists, so code after is never reached
-		}
+        }
         block.size = size;
         block.used = 0;
         block.next = null;
@@ -722,7 +719,7 @@ public class tr_main {
      ==========================
      */
     public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final FloatBuffer b/*[16]*/, FloatBuffer out/*[16]*/) {
-        if (!TempDump.isDeadCodeFalse()) {
+        if (false) {
 //            int i, j;
 //
 //            for (i = 0; i < 4; i++) {

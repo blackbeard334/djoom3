@@ -363,7 +363,7 @@ public class Lcp {
 //#endif
 
             // if failed clear remaining forces
-            if (!TempDump.isDeadCodeFalse() /*failed != null*/) { /* failed is never assigned a value not null before this => It must be null!*/
+            if (failed != null) {
                 if (lcp_showFailures.GetBool()) {
 			        idLib.common.Printf( "idLCP_Square::Solve: %s (%d of %d bounded variables ignored)\n", failed, this.m.GetNumRows() - i, this.m.GetNumRows() - this.numUnbounded );
                 }
@@ -1111,7 +1111,7 @@ public class Lcp {
 //#endif
 
             // if failed clear remaining forces
-            if (!TempDump.isDeadCodeFalse() /*null != failed*/) { /* failed is never assigned a value not null before this => It must be null!*/
+            if (null != failed) {
                 if (lcp_showFailures.GetBool()) {
 			        idLib.common.Printf( "idLCP_Symmetric::Solve: %s (%d of %d bounded variables ignored)\n", failed, this.m.GetNumRows() - i, this.m.GetNumRows() - this.numUnbounded );
                 }

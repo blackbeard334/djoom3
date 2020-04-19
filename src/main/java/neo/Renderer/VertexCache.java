@@ -31,7 +31,6 @@ import java.util.List;
 
 import neo.Renderer.Model.lightingCache_s;
 import neo.Renderer.Model.shadowCache_s;
-import neo.Renderer.VertexCache.vertCache_s;
 import neo.framework.CVarSystem.idCVar;
 import neo.framework.CmdSystem.cmdFunction_t;
 import neo.idlib.CmdArgs.idCmdArgs;
@@ -75,7 +74,7 @@ public class VertexCache {
 
         @Override
         public Iterator<vertCache_s> iterator() {
-            final Iterator<vertCache_s> i = new Iterator<vertCache_s>() {
+            final Iterator i = new Iterator() {
 
                 @Override
                 public boolean hasNext() {
@@ -83,7 +82,7 @@ public class VertexCache {
                 }
 
                 @Override
-                public vertCache_s next() {
+                public Object next() {
                     return vertCache_s.this.next;
                 }
 

@@ -1095,7 +1095,7 @@ public class Anim_Testmodel {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 

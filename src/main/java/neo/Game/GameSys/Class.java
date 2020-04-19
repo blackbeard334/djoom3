@@ -57,13 +57,13 @@ public class Class {
 
     @FunctionalInterface
     public interface eventCallback_t<T extends idClass> {
-        void accept(T t, idEventArg<?>...args);
+        void accept(T t, idEventArg...args);
     }
 
     @FunctionalInterface
     public interface eventCallback_t0<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(T t, idEventArg<?>...args) {
+        default void accept(T t, idEventArg... args) {
             accept(t);
         }
 
@@ -73,7 +73,7 @@ public class Class {
     @FunctionalInterface
     public interface eventCallback_t1<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(T t, idEventArg<?>...args) {
+        default void accept(T t, idEventArg... args) {
             accept(t, args[0]);
         }
 
@@ -83,7 +83,7 @@ public class Class {
     @FunctionalInterface
     public interface eventCallback_t2<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(T t, idEventArg<?>...args) {
+        default void accept(T t, idEventArg... args) {
             accept(t, args[0], args[1]);
         }
 
@@ -93,7 +93,7 @@ public class Class {
     @FunctionalInterface
     public interface eventCallback_t3<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(T t, idEventArg<?>...args) {
+        default void accept(T t, idEventArg... args) {
             accept(t, args[0], args[1], args[2]);
         }
 
@@ -103,7 +103,7 @@ public class Class {
     @FunctionalInterface
     public interface eventCallback_t4<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(T t, idEventArg<?>...args) {
+        default void accept(T t, idEventArg... args) {
             accept(t, args[0], args[1], args[2], args[3]);
         }
 
@@ -113,7 +113,7 @@ public class Class {
     @FunctionalInterface
     public interface eventCallback_t5<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(T t, idEventArg<?>...args) {
+        default void accept(T t, idEventArg... args) {
             accept(t, args[0], args[1], args[2], args[3], args[4]);
         }
 
@@ -123,7 +123,7 @@ public class Class {
     @FunctionalInterface
     public interface eventCallback_t6<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(T t, idEventArg<?>...args) {
+        default void accept(T t, idEventArg... args) {
             accept(t, args[0], args[1], args[2], args[3], args[4], args[5]);
         }
 
@@ -188,35 +188,35 @@ public class Class {
         }
 
         static <T> idEventArg<T> toArg(T data) {
-            return new idEventArg<>(data);
+            return new idEventArg(data);
         }
 
         public static idEventArg<Integer> toArg(int data) {
-            return new idEventArg<>(D_EVENT_INTEGER, data);
+            return new idEventArg(D_EVENT_INTEGER, data);
         }
 
         public static idEventArg<Float> toArg(float data) {
-            return new idEventArg<>(D_EVENT_FLOAT, data);
+            return new idEventArg(D_EVENT_FLOAT, data);
         }
 
         public static idEventArg<idVec3> toArg(idVec3 data) {
-            return new idEventArg<>(D_EVENT_VECTOR, data);
+            return new idEventArg(D_EVENT_VECTOR, data);
         }
 
         public static idEventArg<idStr> toArg(idStr data) {
-            return new idEventArg<>(D_EVENT_STRING, data);
+            return new idEventArg(D_EVENT_STRING, data);
         }
 
         public static idEventArg<String> toArg(String data) {
-            return new idEventArg<>(D_EVENT_STRING, data);
+            return new idEventArg(D_EVENT_STRING, data);
         }
 
         public static idEventArg<idEntity> toArg(idEntity data) {
-            return new idEventArg<>(D_EVENT_ENTITY, data);
+            return new idEventArg(D_EVENT_ENTITY, data);
         }
 
         public static idEventArg<trace_s> toArg(trace_s data) {
-            return new idEventArg<>(D_EVENT_TRACE, data);
+            return new idEventArg(D_EVENT_TRACE, data);
         }
     }
 
@@ -299,9 +299,9 @@ public class Class {
 
         public abstract idClass CreateInstance();
 
-        public abstract java.lang.Class<?>/*idTypeInfo*/ GetType();
+        public abstract java.lang.Class/*idTypeInfo*/ GetType();
 
-        public abstract eventCallback_t<?> getEventCallBack(idEventDef event);
+        public abstract eventCallback_t getEventCallBack(idEventDef event);
 
         public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
             return eventCallbacks;
@@ -342,8 +342,8 @@ public class Class {
          passed in idTypeInfo.
          ================
          */
-        public boolean IsType(final java.lang.Class<?>/*idTypeInfo*/ superclass) {
-            java.lang.Class<?>/*idTypeInfo*/ subclass;
+        public boolean IsType(final java.lang.Class/*idTypeInfo*/ superclass) {
+            java.lang.Class/*idTypeInfo*/ subclass;
 
             subclass = this.getClass();
             return superclass.isAssignableFrom(subclass);
@@ -866,8 +866,8 @@ public class Class {
             return null;
         }
 
-        private classSpawnFunc_t<?> CallSpawnFunc(idTypeInfo cls) {
-            classSpawnFunc_t<?> func;
+        private classSpawnFunc_t CallSpawnFunc(idTypeInfo cls) {
+            classSpawnFunc_t func;
 
             if (cls.zuper != null) {//TODO:rename super
                 func = CallSpawnFunc(cls.zuper);
@@ -884,8 +884,8 @@ public class Class {
             return cls.Spawn;
         }
 
-        private boolean PostEventArgs(final idEventDef ev, int time, int numargs, idEventArg<?>...args) {
-            java.lang.Class<?> c;
+        private boolean PostEventArgs(final idEventDef ev, int time, int numargs, idEventArg... args) {
+            java.lang.Class c;
             idEvent event;
 //            va_list args;
 
@@ -919,7 +919,7 @@ public class Class {
             return true;
         }
 
-        private boolean ProcessEventArgs(final idEventDef ev, int numargs, idEventArg<?>...args) {
+        private boolean ProcessEventArgs(final idEventDef ev, int numargs, idEventArg... args) {
             final idTypeInfo c;
             final int num;
             final idEventArg[] data = new idEventArg[D_EVENT_MAXARGS];
@@ -981,15 +981,15 @@ public class Class {
 //
         public idHierarchy<idTypeInfo> node;
 //
-        public classSpawnFunc_t<?> CreateInstance;
-        public classSpawnFunc_t<?> Spawn;
+        public classSpawnFunc_t CreateInstance;
+        public classSpawnFunc_t Spawn;
         public idClass_Save Save;
         public idClass_Restore Restore;
 //
 //
 
         public idTypeInfo(final String classname, final String superclass,
-                idEventFunc<idClass>[] eventCallbacks, classSpawnFunc_t<?> CreateInstance, classSpawnFunc_t<?> Spawn,
+                idEventFunc<idClass>[] eventCallbacks, classSpawnFunc_t CreateInstance, classSpawnFunc_t Spawn,
                 idClass_Save Save, idClass_Restore Restore) {
 
             idTypeInfo type;
@@ -1150,7 +1150,7 @@ public class Class {
             return ((this.typeNum >= type.typeNum) && (this.typeNum <= type.lastChild));
         }
 
-        public boolean IsType(final java.lang.Class<?> type) {
+        public boolean IsType(final java.lang.Class type) {
             throw new TODO_Exception();
         }
 

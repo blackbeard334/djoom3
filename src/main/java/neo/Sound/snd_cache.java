@@ -654,7 +654,7 @@ public class snd_cache {
                     continue;
                 }
                 if (!sample.levelLoadReferenced) {
-//			common.Printf( "Purging %s\n", sample.name.getData() );
+//			common.Printf( "Purging %s\n", sample.name.c_str() );
                     purgeCount += sample.objectMemSize;
                     sample.PurgeSoundSample();
                 } else {

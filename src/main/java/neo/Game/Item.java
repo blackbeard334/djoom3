@@ -583,7 +583,7 @@ public class Item {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -776,7 +776,7 @@ public class Item {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1141,7 +1141,7 @@ public class Item {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1222,12 +1222,12 @@ public class Item {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1326,7 +1326,7 @@ public class Item {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 

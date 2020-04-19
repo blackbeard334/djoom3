@@ -898,7 +898,7 @@ public class Script_Program {
             }
         }
 
-        public idScriptVariable<type, returnType> oSet(final returnType value) {
+        public idScriptVariable oSet(final returnType value) {
             // check if we attempt to access the object before it's been linked
             assert (this.data != null);
 

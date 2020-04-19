@@ -1130,12 +1130,12 @@ public class Script_Thread {
         }
 
         @Override
-        public java.lang.Class<?>/*idTypeInfo*/ GetType() {
+        public java.lang.Class/*idTypeInfo*/ GetType() {
             return getClass();
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 

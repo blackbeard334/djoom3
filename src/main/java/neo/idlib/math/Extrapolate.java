@@ -238,22 +238,18 @@ public class Extrapolate {
             return this.extrapolationType;
         }
 
-		private type _Multiply(final float f, final type t) {
-            Object obj = null;
-        	if (t instanceof idVec3) {
-        		obj = ((idVec3) t).oMultiply(f);
+        private type _Multiply(final float f, final type t) {
+            if (t instanceof idVec3) {
+                return (type) ((idVec3) t).oMultiply(f);
             } else if (t instanceof idVec4) {
-            	obj = ((idVec4) t).oMultiply(f);
+                return (type) ((idVec4) t).oMultiply(f);
             } else if (t instanceof idAngles) {
-            	obj = ((idAngles) t).oMultiply(f);
+                return (type) ((idAngles) t).oMultiply(f);
             } else if (t instanceof Double) {
-            	obj = Double.valueOf(f * ((Double) t));
-            } else {
-            	obj = Float.valueOf(f * ((Float) t));
+                return (type) Double.valueOf(f * ((Double) t));
             }
-	        @SuppressWarnings("unchecked")
-	        type type = (type) obj;
-        	return type;
+
+            return (type) Float.valueOf(f * ((Float) t));
         }
 
         private type _Plus(final type t1, final type t2) {

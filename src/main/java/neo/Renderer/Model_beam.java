@@ -15,7 +15,6 @@ import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfIndexes;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfVerts;
 import static neo.Renderer.tr_trisurf.R_BoundTriSurf;
 
-import neo.TempDump;
 import neo.Renderer.Model.dynamicModel_t;
 import neo.Renderer.Model.idRenderModel;
 import neo.Renderer.Model.modelSurface_s;
@@ -82,7 +81,7 @@ public class Model_beam {
                 return null;
             }
 
-            if (!TempDump.isDeadCodeFalse() /*cachedModel != null*/) { /* cachedModel can not be null at this time. Is the code above correct?*/
+            if (cachedModel != null) {
 
 //		assert( dynamic_cast<idRenderModelStatic *>( cachedModel ) != null );
 //		assert( idStr.Icmp( cachedModel.Name(), beam_SnapshotName ) == 0 );

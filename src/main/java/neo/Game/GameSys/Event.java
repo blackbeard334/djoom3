@@ -8,7 +8,6 @@ import java.nio.ByteBuffer;
 
 import neo.TempDump.CPP_class;
 import neo.TempDump.TODO_Exception;
-import neo.TempDump;
 import neo.CM.CollisionModel.contactType_t;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.AFEntity;
@@ -330,7 +329,7 @@ public class Event {
         private idEventArg[]    data;
         private int             time;
         private idClass         object;
-        private java.lang.Class<?> typeinfo;
+        private java.lang.Class typeinfo;
         //
         private final       idLinkList<idEvent> eventNode   = new idLinkList<>();
         //
@@ -465,7 +464,7 @@ public class Event {
             this.eventNode.AddToEnd(FreeEvents);
         }
 
-        public void Schedule(idClass obj, final java.lang.Class<?> type, int time) {
+        public void Schedule(idClass obj, final java.lang.Class type, int time) {
             idEvent event;
 
             assert (initialized);
@@ -753,9 +752,7 @@ public class Event {
                     savefile.Error("idEvent::Restore: arg size (%d) doesn't match saved arg size(%d) on event '%s'", event.eventdef.GetArgSize(), argsize[0], event.eventdef.GetName());
                 }
 
-                if (TempDump.isDeadCodeFalse()) {
-                    throw new TODO_Exception();
-                }
+                throw new TODO_Exception();
 //                if (argsize[0] != 0) {
 //                    event.data = new Object[argsize[0]];//eventDataAllocator.Alloc(argsize[0]);
 //                    format = event.eventdef.GetArgFormat();

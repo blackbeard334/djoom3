@@ -130,7 +130,7 @@ public class SaveGame {
 // #ifdef ID_DEBUG_MEMORY
             // idStr gameState = file.GetName();
             // gameState.StripFileExtension();
-            // WriteGameState_f( idCmdArgs( va( "test %s_save", gameState.getData() ), false ) );
+            // WriteGameState_f( idCmdArgs( va( "test %s_save", gameState.c_str() ), false ) );
 // #endif
         }
 
@@ -587,7 +587,7 @@ public class SaveGame {
             cls.Save.run(this);
         }
 
-        private void CallSave_r(final java.lang.Class<?>/*idTypeInfo*/ cls, final idClass obj) {
+        private void CallSave_r(final java.lang.Class/*idTypeInfo*/ cls, final idClass obj) {
             throw new TODO_Exception();
         }
     }
@@ -664,8 +664,8 @@ public class SaveGame {
 // #ifdef ID_DEBUG_MEMORY
             // idStr gameState = file.GetName();
             // gameState.StripFileExtension();
-            // WriteGameState_f( idCmdArgs( va( "test %s_restore", gameState.getData() ), false ) );
-            // //CompareGameState_f( idCmdArgs( va( "test %s_save", gameState.getData() ) ) );
+            // WriteGameState_f( idCmdArgs( va( "test %s_restore", gameState.c_str() ), false ) );
+            // //CompareGameState_f( idCmdArgs( va( "test %s_save", gameState.c_str() ) ) );
             // gameLocal.Error( "dumped game states" );
 // #endif
         }
@@ -1214,7 +1214,7 @@ public class SaveGame {
             cls.Restore.run(this);
         }
 
-        private void CallRestore_r(final java.lang.Class<?>/*idTypeInfo*/ cls, idClass obj) {
+        private void CallRestore_r(final java.lang.Class/*idTypeInfo*/ cls, idClass obj) {
             throw new TODO_Exception();
         }
 

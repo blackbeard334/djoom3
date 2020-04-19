@@ -185,9 +185,7 @@ public class ModelManager {
             if (null == model) {
                 return;
             }
-            try {
-            	((idRenderModelStatic) model).getClass();
-			} catch (Exception e) {
+            if (null == ((idRenderModelStatic) model)) {//TODO:always false?
                 common.Error("idRenderModelManager::FreeModel: model '%s' is not a static model", model.Name());
                 return;
             }

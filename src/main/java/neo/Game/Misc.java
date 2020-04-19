@@ -163,7 +163,7 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
@@ -369,12 +369,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -467,12 +467,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -561,12 +561,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -729,12 +729,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -806,12 +806,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -935,12 +935,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1073,12 +1073,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1495,7 +1495,7 @@ public class Misc {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1740,12 +1740,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1836,7 +1836,7 @@ public class Misc {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1957,12 +1957,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2025,7 +2025,7 @@ public class Misc {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2101,7 +2101,7 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
@@ -2144,7 +2144,7 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
@@ -2184,7 +2184,7 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
@@ -2261,12 +2261,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2314,7 +2314,7 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
@@ -2488,7 +2488,7 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
@@ -2523,7 +2523,7 @@ public class Misc {
             /*
              model = dynamic_cast<idRenderModelLiquid *>( renderEntity.hModel );
              if ( !model ) {
-             gameLocal.Error( "Entity '%s' must have liquid model", name.getData() );
+             gameLocal.Error( "Entity '%s' must have liquid model", name.c_str() );
              }
              model->Reset();
              GetPhysics()->SetContents( CONTENTS_TRIGGER );
@@ -2557,12 +2557,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2663,12 +2663,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2843,12 +2843,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2926,12 +2926,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2998,12 +2998,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -3071,12 +3071,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -3176,12 +3176,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -3463,12 +3463,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 

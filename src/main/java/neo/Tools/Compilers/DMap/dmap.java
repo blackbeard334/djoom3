@@ -639,7 +639,7 @@ public class dmap {
 
         final idStr stripped = passedName;
         stripped.StripFileExtension();
-        idStr.Copynz(dmapGlobals.mapFileBase, stripped.getData(), dmapGlobals.mapFileBase.length);
+        idStr.Copynz(dmapGlobals.mapFileBase, stripped.c_str(), dmapGlobals.mapFileBase.length);
 
         boolean region = false;
         // if this isn't a regioned map, delete the last saved region map
