@@ -217,7 +217,6 @@ public class Nio {
 		return bb;
 	}
 
-
 	public static DoubleBuffer newDoubleBuffer(int numElements) {
 		ByteBuffer bb = newByteBuffer(numElements * SIZEOF_DOUBLE);
 		return bb.asDoubleBuffer();
@@ -227,7 +226,6 @@ public class Nio {
 		ByteBuffer bb = newByteBuffer(numElements * SIZEOF_DOUBLE, order);
 		return bb.asDoubleBuffer();
 	}
-
 
 	public static FloatBuffer newFloatBuffer(int numElements) {
 		ByteBuffer bb = newByteBuffer(numElements * SIZEOF_FLOAT);
@@ -316,6 +314,16 @@ public class Nio {
 	public static FloatBuffer wrap(final float[] floatArray) {
 
 		return (FloatBuffer) newFloatBuffer(floatArray.length).put(floatArray).flip();
+	}
+
+	/**
+	 * @deprecated the calling functions should send FloatBuffers instead.
+	 *
+	 *             to change float[] projectionMatrix in FloatBuffer
+	 *             projectionMatrix
+	 */
+	public static FloatBuffer wrap(final FloatBuffer floatBuffer) {
+		return floatBuffer;
 	}
 
 //	/**

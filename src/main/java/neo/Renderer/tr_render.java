@@ -277,7 +277,7 @@ public class tr_render {
 //        	System.err.println("tr_render.RB_EnterWeaponDepthHack length != 16 "+backEnd.viewDef.getProjectionMatrix().length);
 //        }
 //        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix(), 16));
-        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix()));
+        qglLoadMatrixf(backEnd.viewDef.getProjectionMatrix().duplicate());
         qglMatrixMode(GL_MODELVIEW);
     }
 
@@ -298,12 +298,12 @@ public class tr_render {
 
 //      // projectionMatrix has per definition length of 16! 
 //        FloatBuffer matrix = Nio.wrap(backEnd.viewDef.getProjectionMatrix(), 16);
-        FloatBuffer matrix = Nio.wrap(backEnd.viewDef.getProjectionMatrix());
+        FloatBuffer matrix = backEnd.viewDef.getProjectionMatrix();
 
         matrix.put(14, matrix.get(14)- depth);
 
         qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(matrix);
+        qglLoadMatrixf(matrix.duplicate());
         qglMatrixMode(GL_MODELVIEW);
     }
 
@@ -316,7 +316,7 @@ public class tr_render {
         qglDepthRange(0, 1);
 
         qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix()));
+        qglLoadMatrixf(backEnd.viewDef.getProjectionMatrix().duplicate());
         qglMatrixMode(GL_MODELVIEW);
     }
 
@@ -724,7 +724,7 @@ public class tr_render {
     public static void RB_BeginDrawingView() {
         // set the modelview matrix for the viewer
         qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix()));
+        qglLoadMatrixf(backEnd.viewDef.getProjectionMatrix().duplicate());
         qglMatrixMode(GL_MODELVIEW);
 
         // set the window clipping

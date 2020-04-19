@@ -27,6 +27,7 @@ import neo.idlib.geometry.Winding.idFixedWinding;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec5;
+import neo.open.MatrixUtil;
 import neo.open.Nio;
 
 /**
@@ -234,41 +235,9 @@ public class GuiModel {
             viewDef.floatTime = tr.frameShaderTime;
 
             // TODO: qglOrtho( 0, 640, 480, 0, 0, 1 );		// always assume 640x480 virtual coordinates
-            float[] projectionMatrix = viewDef.getProjectionMatrix();
-            projectionMatrix[ 0] = +2.0f / 640.0f;
-            projectionMatrix[ 5] = -2.0f / 480.0f;
-            projectionMatrix[10] = -2.0f / 1.0f;
-            projectionMatrix[12] = -1.0f;
-            projectionMatrix[13] = +1.0f;
-            projectionMatrix[14] = -1.0f;
-            projectionMatrix[15] = +1.0f;
-            /* TODO
-            FloatBuffer projectionMatrix = Nio.wrap(viewDef.getProjectionMatrix());
-            projectionMatrix.put( 0, +2.0f / 640.0f);
-            projectionMatrix.put( 5, -2.0f / 480.0f);
-            projectionMatrix.put(10, -2.0f / 1.0f);
-            projectionMatrix.put(12, -1.0f);
-            projectionMatrix.put(13, +1.0f);
-            projectionMatrix.put(14, -1.0f);
-            projectionMatrix.put(15, +1.0f);
+            MatrixUtil.emitFullScreenProjection(viewDef.getProjectionMatrix());
 
-            //projectionMatrix.position(projectionMatrix.capacity());
-            //projectionMatrix.flip();*/
-
-            /*float[] modelViewMatrix = viewDef.worldSpace.getModelViewMatrix();
-            modelViewMatrix[ 0] = 1.0f;
-            modelViewMatrix[ 5] = 1.0f;
-            modelViewMatrix[10] = 1.0f;
-            modelViewMatrix[15] = 1.0f;*/
-
-            FloatBuffer modelViewMatrix = viewDef.worldSpace.getModelViewMatrix();
-            modelViewMatrix.put( 0, 1.0f);
-            modelViewMatrix.put( 5, 1.0f);
-            modelViewMatrix.put(10, 1.0f);
-            modelViewMatrix.put(15, 1.0f);
-
-            modelViewMatrix.position(modelViewMatrix.capacity());
-            modelViewMatrix.flip();
+            MatrixUtil.emitFullScreenModelView(viewDef.worldSpace.getModelViewMatrix());
 
             viewDef.maxDrawSurfs = this.surfaces.Num();
             viewDef.drawSurfs = new drawSurf_s[viewDef.maxDrawSurfs];///*(drawSurf_t **)*/ R_FrameAlloc(viewDef.maxDrawSurfs * sizeof(viewDef.drawSurfs[0]));
@@ -282,7 +251,7 @@ public class GuiModel {
                 if (i == 33) {
                     this.surfaces.oGet(i).material.DBG_BALLS = i;
                 }
-                EmitSurface(this.surfaces.oGet(i), viewDef.worldSpace.modelMatrix, modelViewMatrix, false);
+                EmitSurface(this.surfaces.oGet(i), viewDef.worldSpace.modelMatrix, viewDef.worldSpace.getModelViewMatrix(), false);
             }
 
             tr.viewDef = oldViewDef;
@@ -738,10 +707,8 @@ public class GuiModel {
 //            memcpy(guiSpace.modelMatrix, modelMatrix, sizeof(guiSpace.modelMatrix));
             //System.arraycopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.length);
             Nio.arraycopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.length);
-            // preview Nio.buffercopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.limit());
 //            memcpy(guiSpace.modelViewMatrix, modelViewMatrix, sizeof(guiSpace.modelViewMatrix));
             //System.arraycopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().length);
-            //Nio.arraycopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().limit);
             Nio.buffercopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().limit());
             guiSpace.weaponDepthHack = depthHack;
 
