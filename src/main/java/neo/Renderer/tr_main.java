@@ -449,7 +449,7 @@ public class tr_main {
         out.oSet(3, (in.oGet(0) * modelMatrix[3]) + (in.oGet(1) * modelMatrix[7]) + (in.oGet(2) * modelMatrix[11]) + modelMatrix[15]);
     }
 
-    public static void R_GlobalPointToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, idVec out) {
+    public static void R_GlobalPointToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, idVec<?> out) {
         final float[] temp = new float[4];
 
         VectorSubtract(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 12, 16), temp);

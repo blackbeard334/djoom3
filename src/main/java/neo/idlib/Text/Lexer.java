@@ -928,7 +928,7 @@ public class Lexer {
             return token.GetFloatValue();
         }
 
-        public boolean Parse1DMatrix(int x, idVec v) throws idException {
+        public boolean Parse1DMatrix(int x, idVec<?> v) throws idException {
             final float[] m = new float[x];
             final boolean result = Parse1DMatrix(x, m);
             for (int i = 0; i < x; i++) {
