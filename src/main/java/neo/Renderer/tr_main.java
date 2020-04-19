@@ -175,10 +175,12 @@ public class tr_main {
         frameData = new frameData_t();// Mem_ClearedAlloc(sizeof(frameData));
         frame = frameData;
         size = MEMORY_BLOCK_SIZE;
-        block = new frameMemoryBlock_s();// Mem_Alloc(size /*+ sizeof( *block )*/);
-        if (null == block) {
+        try {
+            block = new frameMemoryBlock_s();// Mem_Alloc(size /*+ sizeof( *block )*/);
+		} catch (Exception e) {
             common.FatalError("R_InitFrameData: Mem_Alloc() failed");
-        }
+            return; // FatalError exists, so code after is never reached
+		}
         block.size = size;
         block.used = 0;
         block.next = null;
