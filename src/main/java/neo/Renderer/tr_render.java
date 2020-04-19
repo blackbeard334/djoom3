@@ -298,12 +298,18 @@ public class tr_render {
 
 //      // projectionMatrix has per definition length of 16! 
 //        FloatBuffer matrix = Nio.wrap(backEnd.viewDef.getProjectionMatrix(), 16);
-        FloatBuffer matrix = backEnd.viewDef.getProjectionMatrix();
+        FloatBuffer matrix = Nio.wrap(backEnd.viewDef.getProjectionMatrix());
+
+        matrix.clear();
 
         matrix.put(14, matrix.get(14)- depth);
 
+        matrix.position(matrix.capacity());
+        matrix.flip();
+        matrix.rewind();
+
         qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(Nio.wrap(matrix));
+        qglLoadMatrixf(matrix);
         qglMatrixMode(GL_MODELVIEW);
     }
 
