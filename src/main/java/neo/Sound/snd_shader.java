@@ -20,6 +20,7 @@ import static neo.idlib.math.Simd.speakerLabel.SPEAKER_LEFT;
 import static neo.idlib.math.Simd.speakerLabel.SPEAKER_LFE;
 import static neo.idlib.math.Simd.speakerLabel.SPEAKER_RIGHT;
 
+import neo.TempDump;
 import neo.Sound.snd_cache.idSoundSample;
 import neo.Sound.snd_system.idSoundSystemLocal;
 import neo.framework.DeclManager.idDecl;
@@ -124,7 +125,7 @@ public class snd_shader {
             wavName.DefaultFileExtension(".wav");		// if the name has .ogg in it, that will stay
 
             // if there exists a wav file with the same name
-            if (true) { //fileSystem->ReadFile( wavname, NULL ) != -1 ) {
+            if (!TempDump.isDeadCodeTrue()) { //fileSystem->ReadFile( wavname, NULL ) != -1 ) {
                 final StringBuilder generated = new StringBuilder(2048);
                 idStr.snPrintf(generated, generated.capacity(),
                         "sound %s // IMPLICITLY GENERATED\n"

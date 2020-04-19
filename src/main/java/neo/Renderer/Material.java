@@ -165,6 +165,7 @@ import java.util.Arrays;
 import neo.TempDump.CPP_class;
 import neo.TempDump.CPP_class.Bool;
 import neo.TempDump.CPP_class.Pointer;
+import neo.TempDump;
 import neo.Renderer.Cinematic.idCinematic;
 import neo.Renderer.Cinematic.idSndWindow;
 import neo.Renderer.Image.cubeFiles_t;
@@ -839,7 +840,7 @@ public class Material {
         @Override
         public boolean SetDefaultText() {
             // if there exists an image with the same name
-            if (true) { //fileSystem->ReadFile( GetName(), NULL ) != -1 ) {
+            if (!TempDump.isDeadCodeTrue()) { //fileSystem->ReadFile( GetName(), NULL ) != -1 ) {
                 final StringBuilder generated = new StringBuilder(2048);
                 idStr.snPrintf(generated, generated.capacity(),
                         "material %s // IMPLICITLY GENERATED\n"

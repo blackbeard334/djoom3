@@ -675,7 +675,7 @@ public class Entity {
                 this.fl.networkSync = (atoi(networkSync.GetValue()) != 0);
             }
 
-            if (false) {
+            if (TempDump.isDeadCodeTrue()) {
                 if (!gameLocal.isClient) {
                     // common.DPrintf( "NET: DBG %s - %s is synced: %s\n", spawnArgs.GetString( "classname", "" ), GetType().classname, fl.networkSync ? "true" : "false" );
                     if ((this.spawnArgs.GetString("classname", "").charAt(0) == '\0') && !this.fl.networkSync) {

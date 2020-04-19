@@ -1169,12 +1169,12 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     /**
      * used to avoid dead code warnings
      * 
-     * The method is named DeadCodeFalse, because the method returns true. If its used in an if clause, the else block will never be reached.
+     * The method is named isDeadCodeTrue, because if its used in an if clause, the else block will be executed and if block will never be reached.
      * 
      * If time, check all references to this method to fix that code.
      */
-    public static boolean isDeadCodeFalse() {
-    	// a comparison that always returns true
-    	return (NeoFixStrings.BLA != NeoFixStrings.BLA1);
+    public static boolean isDeadCodeTrue() {
+    	// a comparison that always returns false => in if block will never be executed, only else will be reached!
+    	return (NeoFixStrings.BLA == NeoFixStrings.BLA1);
     }
 }

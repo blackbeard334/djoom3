@@ -88,6 +88,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import neo.TempDump;
 import neo.TempDump.NeoFixStrings;
 import neo.TempDump.TODO_Exception;
 import neo.framework.CVarSystem.idCVar;
@@ -959,7 +960,7 @@ public class win_main {//TODO: rename to plain "main" or something.
      ================
      */
     public static boolean Sys_AlreadyRunning() {
-        if (true) {
+        if (!TempDump.isDeadCodeTrue()) {
             return false;
         }
         throw new TODO_Exception();

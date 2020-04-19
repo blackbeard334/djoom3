@@ -37,6 +37,7 @@ import java.nio.FloatBuffer;
 import java.util.Arrays;
 
 import neo.TempDump.TODO_Exception;
+import neo.TempDump;
 import neo.Renderer.tr_local.drawSurf_s;
 import neo.Renderer.tr_local.frameData_t;
 import neo.Renderer.tr_local.frameMemoryBlock_s;
@@ -719,7 +720,7 @@ public class tr_main {
      ==========================
      */
     public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final FloatBuffer b/*[16]*/, FloatBuffer out/*[16]*/) {
-        if (false) {
+        if (TempDump.isDeadCodeTrue()) {
 //            int i, j;
 //
 //            for (i = 0; i < 4; i++) {
