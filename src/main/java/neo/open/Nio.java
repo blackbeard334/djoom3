@@ -323,7 +323,7 @@ public class Nio {
 	 *             projectionMatrix
 	 */
 	public static FloatBuffer wrap(final FloatBuffer floatBuffer) {
-		return floatBuffer;
+		return wrap(floatBuffer.array());
 	}
 
 //	/**
