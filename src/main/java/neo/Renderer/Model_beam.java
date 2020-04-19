@@ -82,7 +82,7 @@ public class Model_beam {
                 return null;
             }
 
-            if (TempDump.isDeadCodeTrue() /*cachedModel != null*/) { /* cachedModel can not be null at this time. Is the code above correct?*/
+            if (TempDump.isDeadCodeTrue() /*cachedModel != null*/) { /* cachedModel can only be null at this time. Is the code above correct?*/
 
 //		assert( dynamic_cast<idRenderModelStatic *>( cachedModel ) != null );
 //		assert( idStr.Icmp( cachedModel.Name(), beam_SnapshotName ) == 0 );
