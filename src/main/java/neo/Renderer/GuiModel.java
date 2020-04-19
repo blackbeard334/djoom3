@@ -707,8 +707,10 @@ public class GuiModel {
 //            memcpy(guiSpace.modelMatrix, modelMatrix, sizeof(guiSpace.modelMatrix));
             //System.arraycopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.length);
             Nio.arraycopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.length);
+            // preview Nio.buffercopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.limit());
 //            memcpy(guiSpace.modelViewMatrix, modelViewMatrix, sizeof(guiSpace.modelViewMatrix));
             //System.arraycopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().length);
+            //Nio.arraycopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().limit);
             Nio.buffercopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().limit());
             guiSpace.weaponDepthHack = depthHack;
 

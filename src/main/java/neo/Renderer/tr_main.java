@@ -681,7 +681,7 @@ public class tr_main {
     public static void R_GlobalToNormalizedDeviceCoordinates(final idVec3 global, idVec3 ndc) {
         final idPlane clip = new idPlane();
         FloatBuffer modelViewMatrix;
-        FloatBuffer projectionMatrix;
+        float[] projectionMatrix;
 
         // _D3XP added work on primaryView when no viewDef
         if (null == tr.viewDef) {
@@ -981,8 +981,7 @@ public class tr_main {
         MatrixUtil.setupProjection(tr.viewDef.getProjectionMatrix(), zNear, width, xmax, xmin, height, ymax, ymin);
     }
 
-
-	/*
+    /*
      =================
      R_SetupViewFrustum
 
