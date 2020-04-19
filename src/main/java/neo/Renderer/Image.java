@@ -136,6 +136,7 @@ import neo.TempDump.CPP_class.Bool;
 import neo.TempDump.CPP_class.Pointer;
 import neo.TempDump.NeoFixStrings;
 import neo.TempDump.SERiAL;
+import neo.TempDump;
 import neo.Renderer.Image_init.R_AlphaNotchImage;
 import neo.Renderer.Image_init.R_AmbientNormalImage;
 import neo.Renderer.Image_init.R_BlackImage;
@@ -1443,7 +1444,7 @@ public class Image {
                 // these probably should be clamp, but we have a lot of issues with editor
                 // geometry coming out with texcoords slightly off one side, resulting in
                 // a smear across the entire polygon
-                if (true) {
+                if (TempDump.isDeadCodeFalse()) {
                     qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
                     qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
                 } else {
@@ -2856,7 +2857,7 @@ public class Image {
                 return GL_INTENSITY8;	// single byte for all channels
             }
 
-            if (false) {
+            if (!TempDump.isDeadCodeFalse()) {
                 // we don't support alpha textures any more, because there
                 // is a discrepancy in the definition of TEX_ENV_COMBINE that
                 // causes them to be treated as 0 0 0 A, instead of 1 1 1 A as
@@ -3451,11 +3452,11 @@ public class Image {
                 }
 
                 if (!image.levelLoadReferenced && !image.referencedOutsideLevelLoad) {
-//			common.Printf( "Purging %s\n", image.imgName.c_str() );
+//			common.Printf( "Purging %s\n", image.imgName.getData() );
                     purgeCount++;
                     image.PurgeImage();
                 } else if (image.texNum != idImage.TEXTURE_NOT_LOADED) {
-//			common.Printf( "Keeping %s\n", image.imgName.c_str() );
+//			common.Printf( "Keeping %s\n", image.imgName.getData() );
                     keepCount++;
                 }
             }
@@ -3468,7 +3469,7 @@ public class Image {
                 }
 
                 if (image.levelLoadReferenced && (image.texNum == idImage.TEXTURE_NOT_LOADED) && (null == image.partialImage)) {
-//			common.Printf( "Loading %s\n", image.imgName.c_str() );
+//			common.Printf( "Loading %s\n", image.imgName.getData() );
                     loadCount++;
                     image.ActuallyLoadImage(true, false);
 
@@ -3730,7 +3731,7 @@ public class Image {
                 }
             }
 
-            if (false) {
+            if (!TempDump.isDeadCodeFalse()) {
 //	for ( i = 0; i < 16; i++ ) {
 //		for ( j = 0 ; j < 16 ; j++ ) {
 //

@@ -415,7 +415,7 @@ public class Lexer {
         // so source strings extracted from a file can still refer to proper line numbers in the file
         // NOTE: the ptr is expected to point at a valid C string: ptr[length] == '\0'
         public boolean LoadMemory(final idStr ptr, int length, final idStr name/*= 1*/) throws idException {
-            return LoadMemory(CharBuffer.wrap(ptr.c_str()), length, name.getData());
+            return LoadMemory(CharBuffer.wrap(ptr.getData()), length, name.getData());
         }
 
         public boolean LoadMemory(final String ptr, int length, final String name/*= 1*/) throws idException {

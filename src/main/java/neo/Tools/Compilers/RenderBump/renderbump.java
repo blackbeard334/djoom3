@@ -1070,7 +1070,7 @@ public class renderbump {
 //	filename = source;
 //	filename.setFileExtension();
 //	filename.append( "_nooutline.tga" );
-//	common.Printf( "writing %s\n", filename.c_str() );
+//	common.Printf( "writing %s\n", filename.getData() );
 //	WriteTGA( filename, globalPic, width, height );
 //}
         // outline the image several times to help bilinear filtering across disconnected

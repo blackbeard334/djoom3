@@ -49,6 +49,7 @@ import static neo.idlib.precompiled.MAX_EXPRESSION_REGISTERS;
 
 import java.util.stream.Stream;
 
+import neo.TempDump;
 import neo.Renderer.Interaction.idInteraction;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Material.shaderStage_t;
@@ -143,7 +144,7 @@ public class tr_light {
         final int size = tri.ambientSurface.numVerts * lightingCache_s.BYTES;
         final lightingCache_s[] cache = new lightingCache_s[size];
 
-        if (true) {
+        if (TempDump.isDeadCodeFalse()) {
 
             SIMDProcessor.CreateTextureSpaceLightVectors(cache[0].localLightVector, localLightOrigin, tri.ambientSurface.verts, tri.ambientSurface.numVerts, tri.getIndexes().getValues(), tri.getIndexes().getNumValues());
 
@@ -356,7 +357,7 @@ public class tr_light {
         final int size = tri.numVerts;// * sizeof( idVec4 );
         final idVec4[] texCoords = new idVec4[size];
 
-        if (true) {
+        if (TempDump.isDeadCodeFalse()) {
 
             SIMDProcessor.CreateSpecularTextureCoords(texCoords, localLightOrigin, localViewOrigin,
                     tri.verts, tri.numVerts, tri.getIndexes().getValues(), tri.getIndexes().getNumValues());

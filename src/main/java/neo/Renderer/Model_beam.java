@@ -15,6 +15,7 @@ import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfIndexes;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfVerts;
 import static neo.Renderer.tr_trisurf.R_BoundTriSurf;
 
+import neo.TempDump;
 import neo.Renderer.Model.dynamicModel_t;
 import neo.Renderer.Model.idRenderModel;
 import neo.Renderer.Model.modelSurface_s;
@@ -81,7 +82,7 @@ public class Model_beam {
                 return null;
             }
 
-            if (cachedModel != null) {
+            if (!TempDump.isDeadCodeFalse() /*cachedModel != null*/) { /* cachedModel can not be null at this time. Is the code above correct?*/
 
 //		assert( dynamic_cast<idRenderModelStatic *>( cachedModel ) != null );
 //		assert( idStr.Icmp( cachedModel.Name(), beam_SnapshotName ) == 0 );
@@ -165,7 +166,7 @@ public class Model_beam {
             tri.verts[3].xyz = localTarget.oMinus(minor);
 
             for (int i = 0; i < 4; i++) {
-                ColorUtil.setColors(tri.verts[i].getColor(), red, green, blue, alpha);
+                ColorUtil.setElements(tri.verts[i].getColor(), red, green, blue, alpha);
 			}
 
             R_BoundTriSurf(tri);

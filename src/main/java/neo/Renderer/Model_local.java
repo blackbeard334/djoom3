@@ -706,7 +706,7 @@ public class Model_local {
                     f.ReadVec3(tri.verts[j].tangents[0]);
                     f.ReadVec3(tri.verts[j].tangents[1]);
                     
-                    ColorUtil.readFile(tri.verts[j].getColor(), f);
+                    readFile(tri.verts[j].getColor(), f);
                 }
 
                 surf.geometry = tri;
@@ -715,6 +715,15 @@ public class Model_local {
             }
             this.FinishSurfaces();
         }
+
+    	private static void readFile(ByteBuffer bcolor, idDemoFile f) {
+    		final char[][] color = new char[4][1];
+    		for (int i = 0; i < 4; i++) {
+    			// TODO check if color[0] should be color[i]
+    			f.ReadUnsignedChar(color[0]);
+    			bcolor.put(i, (byte) color[i][0]);
+    		}
+    	}
 
         @Override
         public void WriteToDemoFile(idDemoFile f) {
@@ -748,10 +757,16 @@ public class Model_local {
                     f.WriteVec3(tri.verts[j].normal);
                     f.WriteVec3(tri.verts[j].tangents[0]);
                     f.WriteVec3(tri.verts[j].tangents[1]);
-                    ColorUtil.writeFile(tri.verts[j].getColor(), f);
+                    writeFile(tri.verts[j].getColor(), f);
                 }
             }
         }
+
+    	public static void writeFile(ByteBuffer color, idDemoFile f) {
+    		for (int i = 0; i < 4; i++) {
+    			f.WriteUnsignedChar((char) color.get(i));
+    		}
+    	}
 
         @Override
         public float DepthHack() {

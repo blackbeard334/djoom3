@@ -22,6 +22,7 @@ import static neo.idlib.math.Simd.SIMDProcessor;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import neo.TempDump;
 import neo.Renderer.Interaction.srfCullInfo_t;
 import neo.Renderer.Model.silEdge_t;
 import neo.Renderer.Model.srfTriangles_s;
@@ -1072,7 +1073,7 @@ public class tr_stencilshadow {
         int i, j;
 
         if (light.parms.pointLight) {
-            if (false) {
+            if (!TempDump.isDeadCodeFalse()) {
 //		idVec3	adjustedRadius;
 //
 //		// increase the light radius to cover any origin offsets.
@@ -1374,7 +1375,7 @@ public class tr_stencilshadow {
 
         R_AllocStaticTriSurfIndexes(newTri, newTri.getIndexes().getNumValues());
 
-        if (true /* sortCapIndexes */) {
+        if (TempDump.isDeadCodeFalse() /* sortCapIndexes */) {
             newTri.shadowCapPlaneBits = capPlaneBits;
 
             int c = 0;

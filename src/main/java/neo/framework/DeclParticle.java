@@ -22,6 +22,7 @@ import static neo.framework.DeclParticle.prtOrientation_t.POR_Y;
 import static neo.framework.DeclParticle.prtOrientation_t.POR_Z;
 import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import neo.Renderer.Material.idMaterial;
@@ -418,8 +419,11 @@ public class DeclParticle {
             ParticleColors(g, verts);
 
             // if we are completely faded out, kill the particle
-            if (ColorUtil.equalsElements0(verts[0].getColor())) {
-                return 0;
+            {
+                ByteBuffer color = verts[0].getColor();
+                if ((color.get(0) == 0) && (color.get(1) == 0) && (color.get(2) == 0) && (color.get(3) == 0)) {
+                    return 0;
+                }
             }
 
             ParticleOrigin(g, origin);
@@ -441,13 +445,19 @@ public class DeclParticle {
 
                 verts[numVerts + i].st.x += width;
 
-                ColorUtil.muliplyElementsWith(verts[numVerts + i].getColor(), frac);
+                muliplyElementsWith(verts[numVerts + i].getColor(), frac);
 
-                ColorUtil.muliplyElementsWith(verts[i].getColor(), iFrac);
+                muliplyElementsWith(verts[i].getColor(), iFrac);
             }
 
             return numVerts * 2;
         }
+
+    	private static void muliplyElementsWith(ByteBuffer color, float faktor) {
+    		for (int i = 0; i < 4; i++) {
+    			color.put(i, (byte) (color.get(i) * faktor));
+    		}
+    	}
 
         public void ParticleOrigin(particleGen_t g, idVec3 origin) throws idException {
             if (this.customPathType == PPATH_STANDARD) {

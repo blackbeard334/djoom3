@@ -396,7 +396,7 @@ public class GameEdit {
      */
     public static class selectedTypeInfo_s {
 
-        Class/*idTypeInfo*/ typeInfo;
+        Class<?>/*idTypeInfo*/ typeInfo;
         idStr textKey;
     }
 

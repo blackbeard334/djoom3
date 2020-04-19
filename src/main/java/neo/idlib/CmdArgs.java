@@ -206,7 +206,7 @@ public class CmdArgs {
                 this.argv[this.argc] = this.tokenized.replace(totalLen, this.tokenized.capacity(), token.getData()).substring(totalLen);
                 this.argc++;
 
-//                idStr::Copynz( tokenized + totalLen, token.c_str(), sizeof( tokenized ) - totalLen );
+//                idStr::Copynz( tokenized + totalLen, token.getData(), sizeof( tokenized ) - totalLen );
 //                tokenized.replace(totalLen, tokenized.capacity() - token.Length(), token.toString());
                 totalLen += len;// + 1;//we don't need the '\0'.
             }

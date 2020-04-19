@@ -156,7 +156,7 @@ public class Model_sprite {
             tri.verts[ 3].xyz = right.oMinus(up);
 
             for (int i = 0; i < 4; i++) {
-            	ColorUtil.setColors(tri.verts[i].getColor(), red, green, blue, alpha);
+            	ColorUtil.setElements(tri.verts[i].getColor(), red, green, blue, alpha);
 			}
 
             R_BoundTriSurf(tri);

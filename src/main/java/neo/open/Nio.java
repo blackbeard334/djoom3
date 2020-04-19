@@ -64,6 +64,10 @@ public class Nio {
 		System.arraycopy(src, srcPos, dest, destPos, length);
 	}
 
+	public static void arraycopy(final String src, int srcPos, final char[] dest, int destPos, int length) {
+		System.arraycopy(src.toCharArray(), srcPos, dest, destPos, length);
+	}
+
 //	public static void arraycopy(final char[] src, int srcPos, final CharBuffer dest, int destPos, int length) {
 //		dest.position(destPos);
 //		for (int i = 0; i < length; i++) {

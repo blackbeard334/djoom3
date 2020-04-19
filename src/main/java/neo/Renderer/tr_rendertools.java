@@ -417,15 +417,19 @@ public class tr_rendertools {
      ===================
      */
     private static final FloatBuffer[] colors/*[8][3]*/ = {
-                ColorUtil.newColorFloatBuffer(0, 0, 0),
-                ColorUtil.newColorFloatBuffer(1, 0, 0),
-                ColorUtil.newColorFloatBuffer(0, 1, 0),
-                ColorUtil.newColorFloatBuffer(0, 0, 1),
-                ColorUtil.newColorFloatBuffer(0, 1, 1),
-                ColorUtil.newColorFloatBuffer(1, 0, 1),
-                ColorUtil.newColorFloatBuffer(1, 1, 0),
-                ColorUtil.newColorFloatBuffer(1, 1, 1)
+                newColorFloatBuffer(0, 0, 0),
+                newColorFloatBuffer(1, 0, 0),
+                newColorFloatBuffer(0, 1, 0),
+                newColorFloatBuffer(0, 0, 1),
+                newColorFloatBuffer(0, 1, 1),
+                newColorFloatBuffer(1, 0, 1),
+                newColorFloatBuffer(1, 1, 0),
+                newColorFloatBuffer(1, 1, 1)
             };
+
+    private static FloatBuffer newColorFloatBuffer(float color1, float color2, float color3) {
+		return Nio.newFloatBuffer(3).put(0, color1).put(1, color2).put(2, color3).flip();
+	}
 
     public static void R_ColorByStencilBuffer() {
         int i;
@@ -1075,7 +1079,7 @@ public class tr_rendertools {
         for (i = 0; i < numDrawSurfs; i++) {
             drawSurf = drawSurfs[i];
             tri = drawSurf.geo;
-            if (NOT(tri.verts)) {
+            if (NOT((Object[])tri.verts)) {
                 continue;
             }
 
