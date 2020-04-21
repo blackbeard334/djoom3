@@ -63,7 +63,6 @@ import static neo.open.gl.QGLConstantsIfc.GL_FLOAT;
 import static neo.open.gl.QGLConstantsIfc.GL_MODELVIEW;
 import static neo.open.gl.QGLConstantsIfc.GL_NORMAL_ARRAY;
 import static neo.open.gl.QGLConstantsIfc.GL_OBJECT_LINEAR;
-import static neo.open.gl.QGLConstantsIfc.GL_PROJECTION;
 import static neo.open.gl.QGLConstantsIfc.GL_R;
 import static neo.open.gl.QGLConstantsIfc.GL_REFLECTION_MAP;
 import static neo.open.gl.QGLConstantsIfc.GL_S;
@@ -95,6 +94,7 @@ import neo.Renderer.tr_local.viewLight_s;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.MatrixUtil;
 import neo.open.Nio;
 
 /**
@@ -271,14 +271,11 @@ public class tr_render {
 //	memcpy( matrix, backEnd.viewDef.projectionMatrix, sizeof( matrix ) );
         //System.arraycopy(backEnd.viewDef.projectionMatrix, 0, matrix, 0, matrix.length);
 
-        qglMatrixMode(GL_PROJECTION);
 //        // projectionMatrix has per definition length of 16! 
 //        if (backEnd.viewDef.getProjectionMatrix().length != 16) {
 //        	System.err.println("tr_render.RB_EnterWeaponDepthHack length != 16 "+backEnd.viewDef.getProjectionMatrix().length);
 //        }
-//        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix(), 16));
-        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix()));
-        qglMatrixMode(GL_MODELVIEW);
+        MatrixUtil.loadProjectioMatrix(backEnd.viewDef.getProjectionMatrix());
     }
 
     /*
@@ -296,21 +293,12 @@ public class tr_render {
 
         //matrix[14] -= depth;
 
-//      // projectionMatrix has per definition length of 16! 
-//        FloatBuffer matrix = Nio.wrap(backEnd.viewDef.getProjectionMatrix(), 16);
-        FloatBuffer matrix = Nio.wrap(backEnd.viewDef.getProjectionMatrix());
+        // projectionMatrix has per definition length of 16! 
+        FloatBuffer projectionMatrix = Nio.wrap(backEnd.viewDef.getProjectionMatrix());
 
-        matrix.clear();
+        MatrixUtil.enterModelDepthHack(projectionMatrix, depth);
 
-        matrix.put(14, matrix.get(14)- depth);
-
-        matrix.position(matrix.capacity());
-        matrix.flip();
-        matrix.rewind();
-
-        qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(matrix);
-        qglMatrixMode(GL_MODELVIEW);
+        //MatrixUtil.loadProjectioMatrix(projectionMatrix);
     }
 
     /*
@@ -321,9 +309,7 @@ public class tr_render {
     public static void RB_LeaveDepthHack() {
         qglDepthRange(0, 1);
 
-        qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix()));
-        qglMatrixMode(GL_MODELVIEW);
+        MatrixUtil.loadProjectioMatrix(backEnd.viewDef.getProjectionMatrix());
     }
 
     /*
@@ -729,9 +715,7 @@ public class tr_render {
      */
     public static void RB_BeginDrawingView() {
         // set the modelview matrix for the viewer
-        qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.getProjectionMatrix()));
-        qglMatrixMode(GL_MODELVIEW);
+        MatrixUtil.loadProjectioMatrix(backEnd.viewDef.getProjectionMatrix());
 
         // set the window clipping
         qglViewport(tr.viewportOffset[0] + backEnd.viewDef.viewport.x1,

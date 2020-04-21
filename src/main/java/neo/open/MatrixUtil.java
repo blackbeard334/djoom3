@@ -1,5 +1,10 @@
 package neo.open;
 
+import static neo.open.gl.QGL.qglLoadMatrixf;
+import static neo.open.gl.QGL.qglMatrixMode;
+import static neo.open.gl.QGLConstantsIfc.GL_MODELVIEW;
+import static neo.open.gl.QGLConstantsIfc.GL_PROJECTION;
+
 import java.nio.FloatBuffer;
 
 public class MatrixUtil {
@@ -31,6 +36,26 @@ public class MatrixUtil {
         projectionMatrix.position(projectionMatrix.capacity());
         projectionMatrix.flip();
         projectionMatrix.rewind();
+	}
+
+	public static void enterModelDepthHack(FloatBuffer projectionMatrix, float depth) {
+		projectionMatrix.clear();
+
+		projectionMatrix.put(14, projectionMatrix.get(14)- depth);
+
+		projectionMatrix.position(projectionMatrix.capacity());
+		projectionMatrix.flip();
+		projectionMatrix.rewind();
+
+        qglMatrixMode(GL_PROJECTION);
+        qglLoadMatrixf(projectionMatrix);
+        qglMatrixMode(GL_MODELVIEW);
+	}
+
+	public static void loadProjectioMatrix(FloatBuffer projectionMatrix) {
+        qglMatrixMode(GL_PROJECTION);
+        qglLoadMatrixf(Nio.wrap(projectionMatrix));
+        qglMatrixMode(GL_MODELVIEW);
 	}
 
 	public static void matrixToClipGet3Set4(final FloatOGetSet get, final FloatOGetSet set,

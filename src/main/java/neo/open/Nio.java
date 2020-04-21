@@ -324,6 +324,8 @@ public class Nio {
 	 */
 	public static FloatBuffer wrap(final FloatBuffer floatBuffer) {
 		return wrap(floatBuffer.array());
+		//return (FloatBuffer) newFloatBuffer(floatBuffer.capacity()).put(floatBuffer.clear()).clear();
+		//return floatBuffer.duplicate().clear();
 	}
 
 //	/**
