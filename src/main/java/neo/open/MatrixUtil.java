@@ -39,7 +39,7 @@ public class MatrixUtil {
 	}
 
 	public static void enterModelDepthHack(FloatBuffer projectionMatrix, float depth) {
-		projectionMatrix.clear();
+		//projectionMatrix.clear();
 
 		//projectionMatrix.rewind();
 
