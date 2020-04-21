@@ -23,7 +23,7 @@ public class MatrixUtil {
 	}
 
 	public static void emitFullScreenProjection(FloatBuffer projectionMatrix) {
-        projectionMatrix.clear();
+        //projectionMatrix.clear();
 
         projectionMatrix.put( 0, +2.0f / 640.0f);
         projectionMatrix.put( 5, -2.0f / 480.0f);
@@ -33,15 +33,18 @@ public class MatrixUtil {
         projectionMatrix.put(14, -1.0f);
         projectionMatrix.put(15, +1.0f);
 
-        projectionMatrix.position(projectionMatrix.capacity());
-        projectionMatrix.flip();
-        projectionMatrix.rewind();
+        //projectionMatrix.position(projectionMatrix.capacity());
+        //projectionMatrix.flip();
+        //projectionMatrix.rewind();
 	}
 
 	public static void enterModelDepthHack(FloatBuffer projectionMatrix, float depth) {
 		projectionMatrix.clear();
 
-		projectionMatrix.put(14, projectionMatrix.get(14)- depth);
+		//projectionMatrix.rewind();
+
+		float f = projectionMatrix.get(14)- depth;
+		projectionMatrix.put(14, f);
 
 		projectionMatrix.position(projectionMatrix.capacity());
 		projectionMatrix.flip();
@@ -50,12 +53,22 @@ public class MatrixUtil {
         qglMatrixMode(GL_PROJECTION);
         qglLoadMatrixf(projectionMatrix);
         qglMatrixMode(GL_MODELVIEW);
+
+        projectionMatrix.clear();
+        
+        //loadProjectioMatrix(projectionMatrix);
 	}
 
 	public static void loadProjectioMatrix(FloatBuffer projectionMatrix) {
-        qglMatrixMode(GL_PROJECTION);
+		projectionMatrix.position(projectionMatrix.capacity());
+		projectionMatrix.flip();
+		projectionMatrix.rewind();
+
+		qglMatrixMode(GL_PROJECTION);
         qglLoadMatrixf(Nio.wrap(projectionMatrix));
         qglMatrixMode(GL_MODELVIEW);
+
+        projectionMatrix.clear();
 	}
 
 	public static void matrixToClipGet3Set4(final FloatOGetSet get, final FloatOGetSet set,
@@ -109,7 +122,7 @@ public class MatrixUtil {
 
 	public static void setupProjection(FloatBuffer projectionMatrix, float zNear, float width, float xmax, float xmin,
 			float height, float ymax, float ymin) {
-        projectionMatrix.clear();
+        //projectionMatrix.clear();
 
         projectionMatrix.put( 0, (2 * zNear) / width);
         projectionMatrix.put( 4, 0);
@@ -134,9 +147,9 @@ public class MatrixUtil {
         projectionMatrix.put(11, -1);
         projectionMatrix.put(15, 0);
         
-        projectionMatrix.position(projectionMatrix.capacity());
-        projectionMatrix.flip();
-        projectionMatrix.rewind();
+        //projectionMatrix.position(projectionMatrix.capacity());
+        //projectionMatrix.flip();
+        //projectionMatrix.rewind();
 	}
 
 }

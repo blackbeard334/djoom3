@@ -43,11 +43,16 @@ public class Nio {
 	}
 
 	public static void arraycopy(final byte[] src, int srcPos, final ByteBuffer dest, int destPos, int length) {
+        dest.clear();
+
 		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
 			dest.put(src[srcPos + i]);
 		}
+
+		dest.position(dest.capacity());
 		dest.flip();
+		dest.rewind();
 	}
 
 //	public static void arraycopy(final ByteBuffer src, int srcPos, final byte[] dest, int destPos, int length) {
@@ -69,11 +74,16 @@ public class Nio {
 	}
 
 //	public static void arraycopy(final char[] src, int srcPos, final CharBuffer dest, int destPos, int length) {
+//        dest.clear();
+//
 //		dest.position(destPos);
 //		for (int i = 0; i < length; i++) {
 //			dest.put(src[srcPos + i]);
 //		}
+//
+//		dest.position(dest.capacity());
 //		dest.flip();
+//		dest.rewind();
 //	}
 //
 //	public static void arraycopy(final CharBuffer src, int srcPos, final char[] dest, int destPos, int length) {
@@ -87,11 +97,16 @@ public class Nio {
 	}
 
 //	public static void arraycopy(final float[] src, int srcPos, final FloatBuffer dest, int destPos, int length) {
+//        dest.clear();
+//
 //		dest.position(destPos);
 //		for (int i = 0; i < length; i++) {
 //			dest.put(src[srcPos + i]);
 //		}
+//
+//		dest.position(dest.capacity());
 //		dest.flip();
+//		dest.rewind();
 //	}
 
 	public static void arraycopy(final Float[] src, int srcPos, final Float[] dest, int destPos, int length) {
@@ -109,11 +124,16 @@ public class Nio {
 	}
 
 	public static void arraycopy(final int[] src, int srcPos, final IntBuffer dest, int destPos, int length) {
+        dest.clear();
+
 		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
 			dest.put(src[srcPos + i]);
 		}
+
+		dest.position(dest.capacity());
 		dest.flip();
+		dest.rewind();
 	}
 
 	public static void arraycopy(final int[] src, int srcPos, final Integer[] dest, int destPos, int length) {
@@ -135,11 +155,16 @@ public class Nio {
 	}
 
 //	public static void arraycopy(final long[] src, int srcPos, final LongBuffer dest, int destPos, int length) {
+//        dest.clear();
+//
 //		dest.position(destPos);
 //		for (int i = 0; i < length; i++) {
 //			dest.put(src[srcPos + i]);
 //		}
+//
+//		dest.position(dest.capacity());
 //		dest.flip();
+//		dest.rewind();
 //	}
 //
 //	public static void arraycopy(final LongBuffer src, int srcPos, final long[] dest, int destPos, int length) {
@@ -149,60 +174,95 @@ public class Nio {
 //	}
 
 	public static void buffercopy(final ByteBuffer src, int srcPos, final ByteBuffer dest, int destPos, int length) {
+        dest.clear();
+
 		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
 			dest.put(src.get(srcPos + i));
 		}
+
+		dest.position(dest.capacity());
 		dest.flip();
+		dest.rewind();
 	}
 
 	public static void buffercopy(final CharBuffer src, int srcPos, final CharBuffer dest, int destPos, int length) {
+        dest.clear();
+
 		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
 			dest.put(src.get(srcPos + i));
 		}
+
+		dest.position(dest.capacity());
 		dest.flip();
+		dest.rewind();
 	}
 
 	public static void buffercopy(final DoubleBuffer src, int srcPos, final DoubleBuffer dest, int destPos,
 			int length) {
+        dest.clear();
+
 		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
 			dest.put(src.get(srcPos + i));
 		}
+
+		dest.position(dest.capacity());
 		dest.flip();
+		dest.rewind();
 	}
 
 	public static void buffercopy(final FloatBuffer src, int srcPos, final FloatBuffer dest, int destPos, int length) {
+        dest.clear();
+
 		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
 			dest.put(src.get(srcPos + i));
 		}
+
+		dest.position(dest.capacity());
 		dest.flip();
+		dest.rewind();
 	}
 
 	public static void buffercopy(final IntBuffer src, int srcPos, final IntBuffer dest, int destPos, int length) {
+        dest.clear();
+
 		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
 			dest.put(src.get(srcPos + i));
 		}
+
+		dest.position(dest.capacity());
 		dest.flip();
+		dest.rewind();
 	}
 
 	public static void buffercopy(final LongBuffer src, int srcPos, final LongBuffer dest, int destPos, int length) {
+        dest.clear();
+
 		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
 			dest.put(src.get(srcPos + i));
 		}
+
+		dest.position(dest.capacity());
 		dest.flip();
+		dest.rewind();
 	}
 
 	public static void buffercopy(final ShortBuffer src, int srcPos, final ShortBuffer dest, int destPos, int length) {
+        dest.clear();
+
 		dest.position(destPos);
 		for (int i = 0; i < length; i++) {
 			dest.put(src.get(srcPos + i));
 		}
+
+		dest.position(dest.capacity());
 		dest.flip();
+		dest.rewind();
 	}
 
 	public static ByteBuffer newByteBuffer(int numElements) {
@@ -323,7 +383,8 @@ public class Nio {
 	 *             projectionMatrix
 	 */
 	public static FloatBuffer wrap(final FloatBuffer floatBuffer) {
-		return wrap(floatBuffer.array());
+		return floatBuffer;
+		//return wrap(floatBuffer.array());
 		//return (FloatBuffer) newFloatBuffer(floatBuffer.capacity()).put(floatBuffer.clear()).clear();
 		//return floatBuffer.duplicate().clear();
 	}
