@@ -20,7 +20,7 @@ public class HashTable {
 
     public static class idHashTable<Type> {
 
-        private final hashnode_s[] heads;
+        private final hashnode_s<Type>[] heads;
         //
         private final int          tablesize;
         private int          numentries;
@@ -56,7 +56,7 @@ public class HashTable {
 
         public idHashTable(final idHashTable<Type> map) {
             int i;
-            hashnode_s node;
+            hashnode_s<Type> node;
             int prev;
 
             assert (map.tablesize > 0);
@@ -90,8 +90,8 @@ public class HashTable {
 //
 
         public void Set(final String key, Type value) {
-            hashnode_s node;
-            hashnode_s nextPtr;
+            hashnode_s<Type> node;
+            hashnode_s<Type> nextPtr;
             int hash, s;
 
             hash = GetHash(key);
@@ -117,7 +117,7 @@ public class HashTable {
         }
 
         public boolean Get(final String key, Type[] value) {
-            hashnode_s node;
+            hashnode_s<Type> node;
             int hash, s;
 
             hash = GetHash(key);
@@ -142,9 +142,9 @@ public class HashTable {
         }
 
         public boolean Remove(final String key) {
-            hashnode_s head;
-            hashnode_s node;
-            hashnode_s prev;
+            hashnode_s<Type> head;
+            hashnode_s<Type> node;
+            hashnode_s<Type> prev;
             int hash;
 
             hash = GetHash(key);
@@ -170,13 +170,13 @@ public class HashTable {
 
         public void Clear() {
             int i;
-            hashnode_s node;
-            hashnode_s next;
+            //hashnode_s<Type> node;
+            hashnode_s<Type> next;
 
             for (i = 0; i < this.tablesize; i++) {
                 next = this.heads[i];
                 while (next != null) {
-                    node = next;
+                    //node = next;
                     next = next.next;
 //			delete node;
                 }
@@ -189,13 +189,13 @@ public class HashTable {
 
         public void DeleteContents() {
             int i;
-            hashnode_s node;
-            hashnode_s next;
+            //hashnode_s<Type> node;
+            hashnode_s<Type> next;
 
             for (i = 0; i < this.tablesize; i++) {
                 next = this.heads[i];
                 while (next != null) {
-                    node = next;
+                    //node = next;
                     next = next.next;
 //			delete node->value;
 //			delete node;
@@ -222,7 +222,7 @@ public class HashTable {
          ================
          */
         public Type GetIndex(int index) {
-            hashnode_s node;
+            hashnode_s<Type> node;
             int count;
             int i;
 
@@ -246,7 +246,7 @@ public class HashTable {
 
         public int GetSpread() {
             int i, average, error, e;
-            hashnode_s node;
+            hashnode_s<Type> node;
 
             // if no items in hash
             if (0 == this.numentries) {
@@ -267,11 +267,11 @@ public class HashTable {
             return 100 - ((error * 100) / this.numentries);
         }
 
-        private class hashnode_s<Type> {
+        private class hashnode_s<type> {
 
             idStr      key;
             Type       value;
-            hashnode_s next;
+            hashnode_s<Type> next;
             //
             //
 
@@ -279,13 +279,13 @@ public class HashTable {
                 this.key = new idStr();
             }
 
-            hashnode_s(final idStr k, Type v, hashnode_s n) {
+            hashnode_s(final idStr k, Type v, hashnode_s<Type> n) {
                 this.key = new idStr(k);
                 this.value = v;
                 this.next = n;
             }
 
-            hashnode_s(final String k, Type v, hashnode_s n) {
+            hashnode_s(final String k, Type v, hashnode_s<Type> n) {
                 this(new idStr(k), v, n);
             }
         }

@@ -1078,7 +1078,7 @@ public class tr_rendertools {
         for (i = 0; i < numDrawSurfs; i++) {
             drawSurf = drawSurfs[i];
             tri = drawSurf.geo;
-            if (NOT(tri.verts)) {
+            if (NOT((Object[])tri.verts)) {
                 continue;
             }
 

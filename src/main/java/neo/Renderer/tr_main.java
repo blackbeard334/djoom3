@@ -36,6 +36,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
+import neo.TempDump;
 import neo.TempDump.TODO_Exception;
 import neo.Renderer.tr_local.drawSurf_s;
 import neo.Renderer.tr_local.frameData_t;
@@ -174,10 +175,12 @@ public class tr_main {
         frameData = new frameData_t();// Mem_ClearedAlloc(sizeof(frameData));
         frame = frameData;
         size = MEMORY_BLOCK_SIZE;
-        block = new frameMemoryBlock_s();// Mem_Alloc(size /*+ sizeof( *block )*/);
-        if (null == block) {
+        try {
+            block = new frameMemoryBlock_s();// Mem_Alloc(size /*+ sizeof( *block )*/);
+		} catch (Exception e) {
             common.FatalError("R_InitFrameData: Mem_Alloc() failed");
-        }
+            return; // FatalError exists, so code after is never reached
+		}
         block.size = size;
         block.used = 0;
         block.next = null;
@@ -446,7 +449,7 @@ public class tr_main {
         out.oSet(3, (in.oGet(0) * modelMatrix[3]) + (in.oGet(1) * modelMatrix[7]) + (in.oGet(2) * modelMatrix[11]) + modelMatrix[15]);
     }
 
-    public static void R_GlobalPointToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, idVec out) {
+    public static void R_GlobalPointToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, idVec<?> out) {
         final float[] temp = new float[4];
 
         VectorSubtract(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 12, 16), temp);
@@ -719,7 +722,7 @@ public class tr_main {
      ==========================
      */
     public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final FloatBuffer b/*[16]*/, FloatBuffer out/*[16]*/) {
-        if (false) {
+        if (TempDump.isDeadCodeTrue()) {
 //            int i, j;
 //
 //            for (i = 0; i < 4; i++) {

@@ -22,8 +22,8 @@ public class VectorSet {
     public static class idVectorSet<type> extends idList<type> {
 
         private       idHashIndex hash;
-        private       idVec       mins;
-        private       idVec       maxs;
+        private       idVec<?>       mins;
+        private       idVec<?>       maxs;
         private       int         boxHashSize;
         private       float[]     boxInvSize/*= new float[dimension]*/;
         private       float[]     boxHalfSize /*= new float[dimension]*/;
@@ -43,7 +43,7 @@ public class VectorSet {
 //	memset( boxHalfSize, 0, dimension * sizeof( boxHalfSize[0] ) );
         }
 
-        public idVectorSet(final idVec mins, final idVec maxs, final int boxHashSize, final int initialSize, final int dimension) {
+        public idVectorSet(final idVec<?> mins, final idVec<?> maxs, final int boxHashSize, final int initialSize, final int dimension) {
             this.dimension = dimension;
             Init(mins, maxs, boxHashSize, initialSize);
         }
@@ -54,7 +54,7 @@ public class VectorSet {
 //							// returns total size of allocated memory including size of type
 //public	size_t					Size( void ) const { return sizeof( *this ) + Allocated(); }
 //
-        public void Init(final idVec mins, final idVec maxs, final int boxHashSize, final int initialSize) {
+        public void Init(final idVec<?> mins, final idVec<?> maxs, final int boxHashSize, final int initialSize) {
             int i;
             float boxSize;
 
@@ -86,7 +86,7 @@ public class VectorSet {
         }
 //
 
-        public int FindVector(final idVec v, final float epsilon) {
+        public int FindVector(final idVec<?> v, final float epsilon) {
             int i, j, k, hashKey;
             final int[] partialHashKey = new int[this.dimension];
 
@@ -104,7 +104,7 @@ public class VectorSet {
                 }
 
                 for (j = this.hash.First(hashKey); j >= 0; j = this.hash.Next(j)) {
-                    final idVec lv = (idVec) this.oGet(j);
+                    final idVec<?> lv = (idVec<?>) this.oGet(j);
                     for (k = 0; k < this.dimension; k++) {
                         if (idMath.Fabs(lv.oGet(k) - v.oGet(k)) > epsilon) {
                             break;
@@ -140,8 +140,8 @@ public class VectorSet {
     public static class idVectorSubset<type> {
 
         private final idHashIndex   hash = new idHashIndex();
-        private       idVec   mins;
-        private       idVec   maxs;
+        private       idVec<?>   mins;
+        private       idVec<?>   maxs;
         private       int     boxHashSize;
         private       float[] boxInvSize /*= new float[dimension]*/;
         private       float[] boxHalfSize/*= new float[dimension]*/;
@@ -164,7 +164,7 @@ public class VectorSet {
 //	memset( boxHalfSize, 0, dimension * sizeof( boxHalfSize[0] ) );
         }
 
-        public idVectorSubset(final idVec mins, final idVec maxs, final int boxHashSize, final int initialSize, final int dimension) {
+        public idVectorSubset(final idVec<?> mins, final idVec<?> maxs, final int boxHashSize, final int initialSize, final int dimension) {
             this.dimension = dimension;
             Init(mins, maxs, boxHashSize, initialSize);
         }
@@ -175,7 +175,7 @@ public class VectorSet {
 //	size_t					Size( void ) const { return sizeof( *this ) + Allocated(); }
 //
 
-        public void Init(final idVec mins, final idVec maxs, final int boxHashSize, final int initialSize) {
+        public void Init(final idVec<?> mins, final idVec<?> maxs, final int boxHashSize, final int initialSize) {
             int i;
             float boxSize;
 
@@ -199,10 +199,10 @@ public class VectorSet {
 //
 
         // returns either vectorNum or an index to a previously found vector
-        public int FindVector(final idVec[] vectorList, final int vectorNum, final float epsilon) {
+        public int FindVector(final idVec<?>[] vectorList, final int vectorNum, final float epsilon) {
             int i, j, k, hashKey;
             final int[] partialHashKey = new int[this.dimension];
-            final idVec v = vectorList[vectorNum];
+            final idVec<?> v = vectorList[vectorNum];
 
             for (i = 0; i < this.dimension; i++) {
                 assert (epsilon <= this.boxHalfSize[i]);
@@ -218,7 +218,7 @@ public class VectorSet {
                 }
 
                 for (j = this.hash.First(hashKey); j >= 0; j = this.hash.Next(j)) {
-                    final idVec lv = vectorList[j];
+                    final idVec<?> lv = vectorList[j];
                     for (k = 0; k < this.dimension; k++) {
                         if (idMath.Fabs(lv.oGet(k) - v.oGet(k)) > epsilon) {
                             break;

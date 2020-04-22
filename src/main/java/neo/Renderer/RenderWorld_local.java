@@ -349,7 +349,7 @@ public class RenderWorld_local {
                 if (0 == re.forceUpdate) {
 
                     // check for exact match (OPTIMIZE: check through pointers more)
-                    if (NOT(re.joints) && NOT(re.callbackData) && NOT(def.dynamicModel) && re.equals(def.parms)) {
+                    if (NOT((Object[])re.joints) && NOT(re.callbackData) && NOT(def.dynamicModel) && re.equals(def.parms)) {
                         return;
                     }
 
@@ -3507,8 +3507,8 @@ public class RenderWorld_local {
             session.writeDemo.WriteInt(DC_LOADMAP);
 
             final demoHeader_t header = new demoHeader_t();
-//            strncpy(header.mapname, mapName.c_str(), sizeof(header.mapname) - 1);
-            header.mapname = this.mapName.c_str();
+//            strncpy(header.mapname, mapName.getData(), sizeof(header.mapname) - 1);
+            header.mapname = this.mapName.getData().toCharArray();
             header.version[0] = 4;
             header.sizeofRenderEntity[0] = sizeof(renderEntity_s.class);
             header.sizeofRenderLight[0] = sizeof(renderLight_s.class);

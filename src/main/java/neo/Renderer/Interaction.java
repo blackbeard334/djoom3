@@ -621,7 +621,7 @@ public class Interaction {
                     // copy the shadow vertexes to the vertex cache if they have been purged
                     // if we are using shared shadowVertexes and letting a vertex program fix them up,
                     // get the shadowCache from the parent ambient surface
-                    if (NOT(shadowTris.shadowVertexes)) {
+                    if (NOT((Object[])shadowTris.shadowVertexes)) {
                         // the data may have been purged, so get the latest from the "home position"
                         shadowTris.shadowCache = sint.ambientTris.shadowCache;
                     }
@@ -983,7 +983,7 @@ public class Interaction {
 
         final int numFaces = tri.getIndexes().getNumValues() / 3;
 
-        if (NOT(tri.facePlanes) || !tri.facePlanesCalculated) {
+        if (NOT((Object[])tri.facePlanes) || !tri.facePlanesCalculated) {
             R_DeriveFacePlanes( /*const_cast<srfTriangles_s *>*/(tri));
         }
 

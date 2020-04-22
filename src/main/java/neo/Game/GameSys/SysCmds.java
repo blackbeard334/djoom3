@@ -322,7 +322,7 @@ public class SysCmds {
      Kills all the entities of the given class in a level.
      ==================
      */
-    static void KillEntities(final idCmdArgs args, final java.lang.Class/*idTypeInfo*/ superClass) {
+    static void KillEntities(final idCmdArgs args, final java.lang.Class<?>/*idTypeInfo*/ superClass) {
         idEntity ent;
         final idStrList ignore = new idStrList();
         String name;

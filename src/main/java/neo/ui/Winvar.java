@@ -368,7 +368,7 @@ public class Winvar {
 //public	operator const char *() {//TODO:wtF?
 
         public char[] oCastChar() {//TODO:wtF?
-            return this.data.c_str();
+            return this.data.getData().toCharArray();
         }
 //	public operator const idStr &() {
 
@@ -1325,7 +1325,7 @@ public class Winvar {
 //        }
         @Override
         public char[] oCastChar() {
-            return this.data.c_str();
+            return this.data.getData().toCharArray();
         }
 
         @Override

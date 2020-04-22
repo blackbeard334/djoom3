@@ -162,6 +162,7 @@ import static neo.ui.UserInterface.uiManager;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import neo.TempDump;
 import neo.TempDump.CPP_class;
 import neo.TempDump.CPP_class.Bool;
 import neo.TempDump.CPP_class.Pointer;
@@ -839,7 +840,7 @@ public class Material {
         @Override
         public boolean SetDefaultText() {
             // if there exists an image with the same name
-            if (true) { //fileSystem->ReadFile( GetName(), NULL ) != -1 ) {
+            if (!TempDump.isDeadCodeTrue()) { //fileSystem->ReadFile( GetName(), NULL ) != -1 ) {
                 final StringBuilder generated = new StringBuilder(2048);
                 idStr.snPrintf(generated, generated.capacity(),
                         "material %s // IMPLICITLY GENERATED\n"
@@ -1467,7 +1468,7 @@ public class Material {
         // returns the length, in milliseconds, of the videoMap on this material,
         // or zero if it doesn't have one
         public int CinematicLength() {
-            if (NOT(this.stages) || NOT(this.stages[0].texture.cinematic[0])) {
+            if (NOT((Object[])this.stages) || NOT(this.stages[0].texture.cinematic[0])) {
                 return 0;
             }
             return this.stages[0].texture.cinematic[0].AnimationLength();
@@ -1492,7 +1493,7 @@ public class Material {
         }
 
         public void UpdateCinematic(int time) {
-            if (NOT(this.stages) || NOT(this.stages[0].texture.cinematic[0]) || NOT(backEnd.viewDef)) {
+            if (NOT((Object[])this.stages) || NOT(this.stages[0].texture.cinematic[0]) || NOT(backEnd.viewDef)) {
                 return;
             }
             this.stages[0].texture.cinematic[0].ImageForTime(tr.primaryRenderView.time);

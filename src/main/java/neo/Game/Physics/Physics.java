@@ -341,7 +341,7 @@ public class Physics {
         public abstract void ReadFromSnapshot(final idBitMsgDelta msg);
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return null;
         }
     }

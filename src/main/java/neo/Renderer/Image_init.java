@@ -44,6 +44,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
+import neo.TempDump;
 import neo.Renderer.Image.GeneratorFunction;
 import neo.Renderer.Image.idImage;
 import neo.Renderer.Image.idImageManager;
@@ -542,7 +543,7 @@ public class Image_init {
 
             for (x = 0; x < 256; x++) {
                 float f = x / 255.f;
-                if (false) {
+                if (TempDump.isDeadCodeTrue()) {
                     f = (float) Math.pow(f, 16);
                 } else {
                     // this is the behavior of the hacked up fragment programs that

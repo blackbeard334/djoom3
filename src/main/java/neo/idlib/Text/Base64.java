@@ -171,7 +171,7 @@ public class Base64 {
 
         public void oSet(final idStr s) {
             EnsureAlloced(s.Length() + 1); // trailing \0 - beware, this does a Release
-//	strcpy( (char *)data, s.c_str() );
+//	strcpy( (char *)data, s.getData() );
             this.data = s.getData().getBytes();
             this.len = s.Length();
         }

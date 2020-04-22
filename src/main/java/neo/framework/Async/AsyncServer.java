@@ -2772,9 +2772,9 @@ public class AsyncServer {
      */
     static class RConRedirect extends void_callback<String> {
 
-        private static final void_callback instance = new RConRedirect();
+        private static final void_callback<String> instance = new RConRedirect();
 
-        public static void_callback getInstance() {
+        public static void_callback<String> getInstance() {
             return instance;
         }
 
