@@ -515,9 +515,7 @@ public class tr_render {
 //                m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15]);
         
 //        TempDump.printCallStack("------->" + (DBG_RB_LoadShaderTextureMatrix++));
-        qglMatrixMode(GL_TEXTURE);
-        qglLoadMatrixf(matrix);
-        qglMatrixMode(GL_MODELVIEW);
+        MatrixUtil.loadTextureMatrix(matrix);
     }
     
     /*
@@ -595,10 +593,7 @@ public class tr_render {
             final idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));// {//TODO:figure out how to work these damn casts.
             qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, vert.normalOffset());
 
-            qglMatrixMode(GL_TEXTURE);
-
-            qglLoadMatrixf(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.getModelViewMatrix()));
-            qglMatrixMode(GL_MODELVIEW);
+            MatrixUtil.loadTextureMatrix(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.getModelViewMatrix()));
         }
 
         // matrix

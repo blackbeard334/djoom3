@@ -209,6 +209,7 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.MatrixUtil;
 import neo.open.Nio;
 
 /**
@@ -372,10 +373,7 @@ public class draw_common {
                 qglEnableClientState(GL_NORMAL_ARRAY);
                 qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, ac.normalOffset());
 
-                qglMatrixMode(GL_TEXTURE);
-
-                qglLoadMatrixf(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.getModelViewMatrix()));
-                qglMatrixMode(GL_MODELVIEW);
+                MatrixUtil.loadTextureMatrix(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.getModelViewMatrix()));
             }
         }
     }

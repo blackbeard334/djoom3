@@ -4,6 +4,7 @@ import static neo.open.gl.QGL.qglLoadMatrixf;
 import static neo.open.gl.QGL.qglMatrixMode;
 import static neo.open.gl.QGLConstantsIfc.GL_MODELVIEW;
 import static neo.open.gl.QGLConstantsIfc.GL_PROJECTION;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE;
 
 import java.nio.FloatBuffer;
 
@@ -69,6 +70,12 @@ public class MatrixUtil {
         qglMatrixMode(GL_MODELVIEW);
 
         projectionMatrix.clear();
+	}
+
+	public static void loadTextureMatrix(FloatBuffer textureMatrix) {
+		qglMatrixMode(GL_TEXTURE);
+        qglLoadMatrixf(textureMatrix);
+        qglMatrixMode(GL_MODELVIEW);
 	}
 
 	public static void matrixToClipGet3Set4(final FloatOGetSet get, final FloatOGetSet set,
