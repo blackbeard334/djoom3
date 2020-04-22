@@ -715,7 +715,6 @@ public class tr_local {
         //
         public float[]             modelMatrix     = new float[16];         // local coords to global coords
         //private final float[]      modelViewMatrix = new float[16];         // local coords to eye coords
-        //public FloatBuffer         modelMatrix     = Nio.newFloatBuffer(16);         // local coords to global coords
         private final FloatBuffer  modelViewMatrix = Nio.newFloatBuffer(16);         // local coords to eye coords
 
         private static int DBG_COUNTER = 0;

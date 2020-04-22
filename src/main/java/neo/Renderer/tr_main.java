@@ -751,9 +751,6 @@ public class tr_main {
             out.put((3 * 4) + 1, (a.get((3 * 4) + 0) * b.get((0 * 4) + 1)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 1)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 1)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 1)));
             out.put((3 * 4) + 2, (a.get((3 * 4) + 0) * b.get((0 * 4) + 2)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 2)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 2)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 2)));
             out.put((3 * 4) + 3, (a.get((3 * 4) + 0) * b.get((0 * 4) + 3)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 3)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 3)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 3)));
-
-            //out.position(out.capacity());
-            //out.flip();
         }
     }
 

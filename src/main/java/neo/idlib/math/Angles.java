@@ -11,7 +11,6 @@ import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Matrix.idMat4;
-import neo.open.FloatOGet;
 
 /**
  *
@@ -38,7 +37,7 @@ public class Angles {
     public static final int ROLL = 2;		// fall over
 
 
-    public static class idAngles implements FloatOGet, SERiAL {
+    public static class idAngles implements SERiAL {
 
         /**
 		 * 

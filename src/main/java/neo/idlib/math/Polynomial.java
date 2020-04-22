@@ -6,7 +6,6 @@ import java.util.stream.Stream;
 import neo.idlib.Lib;
 import neo.idlib.math.Complex.idComplex;
 import neo.idlib.math.Math_h.idMath;
-import neo.open.FloatOGet;
 import neo.open.Nio;
 
 /**
@@ -23,7 +22,7 @@ public class Polynomial {
 
      ===============================================================================
      */
-    public static class idPolynomial implements FloatOGet {
+    public static class idPolynomial {
 
         private int degree;
         private int allocated;

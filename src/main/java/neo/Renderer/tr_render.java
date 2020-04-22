@@ -450,9 +450,6 @@ public class tr_render {
         matrix.put(7, 0);
         matrix.put(11, 0);
         matrix.put(15, 1);
-        
-        //matrix.position(matrix.capacity());
-        //matrix.flip();
     }
 
     /**

@@ -7,7 +7,6 @@ import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Matrix.idMat4;
-import neo.open.FloatOGet;
 
 /**
  *
@@ -21,7 +20,7 @@ public class Quat {
      *
      * ===============================================================================
      */
-    public static class idQuat implements FloatOGet {
+    public static class idQuat {
 //        public:
 
         public float x;//TODO:prime candidate to turn into an array.
@@ -435,7 +434,7 @@ public class Quat {
      *
      * ===============================================================================
      */
-    public static class idCQuat implements FloatOGet {
+    public static class idCQuat {
 //        public:
 
         public float x;

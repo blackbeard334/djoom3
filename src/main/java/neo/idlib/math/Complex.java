@@ -1,7 +1,6 @@
 package neo.idlib.math;
 
 import neo.idlib.math.Math_h.idMath;
-import neo.open.FloatOGet;
 
 /**
  *
@@ -15,7 +14,7 @@ public class Complex {
 
      ===============================================================================
      */
-    static class idComplex implements FloatOGet {
+    static class idComplex {
 
         public float r;		// real part
         public float i;		// imaginary part
