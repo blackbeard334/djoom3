@@ -33,6 +33,7 @@ public class Nio {
 
 		for (int i = 0; i < length; i++) {
 			dest.put(destPos + i, src[srcPos + i]);
+			// test
 		}
 	}
 
