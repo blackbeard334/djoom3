@@ -270,17 +270,6 @@ public class draw_common {
     	RB_BakeTextureMatrixIntoTexgen(lightProject);
     }
 
-    /**
-     * 
-     * @param lightProject
-     * @param textureMatrix - why this ???
-     * 
-     * @deprecated use public static void RB_BakeTextureMatrixIntoTexgen(idVec4[] lightProject) instead
-     */
-    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/, final float[] textureMatrix) {
-    	RB_BakeTextureMatrixIntoTexgen(lightProject);
-    }
-
     /*
      ================
      RB_PrepareStageTexturing

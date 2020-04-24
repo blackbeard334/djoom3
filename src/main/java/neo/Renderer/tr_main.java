@@ -657,20 +657,6 @@ public class tr_main {
         MatrixUtil.matrixToClipGet3Set4(src, dst, eye, modelMatrix, projectionMatrix);
     }
 
-    /**
-     * 
-     * @param src
-     * @param modelMatrix
-     * @param projectionMatrix
-     * @param eye
-     * @param dst
-     * 
-     * @deprecated use R_TransformModelToClip(final idVec3 src, final FloatBuffer modelMatrix, final FloatBuffer projectionMatrix, idPlane eye, idPlane dst) instead
-     */
-    public static void R_TransformModelToClip(final idVec3 src, final FloatBuffer modelMatrix, final float[] projectionMatrix, idPlane eye, idPlane dst) {
-        MatrixUtil.matrixToClipGet3Set4(src, dst, eye, modelMatrix, projectionMatrix);
-    }
-
     /*
      ==========================
      R_GlobalToNormalizedDeviceCoordinates

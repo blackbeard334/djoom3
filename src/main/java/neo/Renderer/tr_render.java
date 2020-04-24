@@ -294,11 +294,7 @@ public class tr_render {
         //matrix[14] -= depth;
 
         // projectionMatrix has per definition length of 16! 
-        FloatBuffer projectionMatrix = Nio.wrap(backEnd.viewDef.getProjectionMatrix());
-
-        MatrixUtil.enterModelDepthHack(projectionMatrix, depth);
-
-        //MatrixUtil.loadProjectioMatrix(projectionMatrix);
+        MatrixUtil.enterModelDepthHack(Nio.wrap(backEnd.viewDef.getProjectionMatrix()), depth);
     }
 
     /*

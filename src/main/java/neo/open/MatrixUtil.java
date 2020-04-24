@@ -67,13 +67,6 @@ public class MatrixUtil {
 	}
 
 	public static void matrixToClipGet3Set4(final FloatOGetSet get, final FloatOGetSet set,
-			final FloatOGetSet view, final FloatBuffer modelViewMatrix, final float[] projectionMatrix) {
-		MatrixUtil.multiplyGet3(view, get, modelViewMatrix);
-
-		MatrixUtil.multiplyGet4(set, view, Nio.wrap(projectionMatrix));
-	}
-
-	public static void matrixToClipGet3Set4(final FloatOGetSet get, final FloatOGetSet set,
 			final FloatOGetSet view, final FloatBuffer modelViewMatrix, final FloatBuffer projectionMatrix) {
 		MatrixUtil.multiplyGet3(view, get, modelViewMatrix);
 
