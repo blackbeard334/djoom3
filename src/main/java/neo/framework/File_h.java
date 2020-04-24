@@ -33,6 +33,7 @@ import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Vector.idVec6;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 
 /**
  *
@@ -84,13 +85,13 @@ public class File_h {
                                 tmp.StripTrailing('0');
                                 tmp.StripTrailing('.');
                                 temp = String.format("%s", tmp.getData());
-                                System.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
+                                Nio.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
                                 index += temp.length();
-//                                index += sprintf(buf + index, "%s", tmp.c_str());
+//                                index += sprintf(buf + index, "%s", tmp.getData());
                             } else {
 //                                index += sprintf(buf + index, format, f);
                                 temp = String.format(format, f);
-                                System.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
+                                Nio.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
                                 index += temp.length();
                             }
                             break;
@@ -99,55 +100,55 @@ public class File_h {
                             i = (long) argPtr[va_ptr++];
 //                            index += sprintf(buf + index, format, i);
                             temp = String.format(format, i);
-                            System.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
+                            Nio.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
                             index += temp.length();
                             break;
                         case 'u':
                             u = (long) argPtr[va_ptr++];
 //                            index += sprintf(buf + index, format, u);
                             temp = String.format(format, u);
-                            System.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
+                            Nio.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
                             index += temp.length();
                             break;
                         case 'o':
                             u = (long) argPtr[va_ptr++];
 //                            index += sprintf(buf + index, format, u);
                             temp = String.format(format, u);
-                            System.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
+                            Nio.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
                             index += temp.length();
                             break;
                         case 'x':
                             u = (long) argPtr[va_ptr++];
 //                            index += sprintf(buf + index, format, u);
                             temp = String.format(format, u);
-                            System.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
+                            Nio.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
                             index += temp.length();
                             break;
                         case 'X':
                             u = (long) argPtr[va_ptr++];
 //                            index += sprintf(buf + index, format, u);
                             temp = String.format(format, u);
-                            System.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
+                            Nio.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
                             index += temp.length();
                             break;
                         case 'c':
                             i = (long) argPtr[va_ptr++];
 //                            index += sprintf(buf + index, format, (char) i);
                             temp = String.format(format, i);
-                            System.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
+                            Nio.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
                             index += temp.length();
                             break;
                         case 's':
                             str = (String) argPtr[va_ptr++];
 //                            index += sprintf(buf + index, format, str);
                             temp = String.format(format, str);
-                            System.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
+                            Nio.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
                             index += temp.length();
                             break;
                         case '%':
 //                            index += sprintf(buf + index, format);
                             temp = String.format(format);
-                            System.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
+                            Nio.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
                             index += temp.length();
                             break;
                         default:
@@ -370,7 +371,7 @@ public class File_h {
             return Write(intBytes);
         }
 
-        public int WriteInt(final Enum value) {
+        public int WriteInt(final Enum<?> value) {
             return WriteInt(value.ordinal());
         }
 

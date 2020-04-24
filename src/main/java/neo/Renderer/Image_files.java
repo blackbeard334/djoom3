@@ -1,7 +1,6 @@
 package neo.Renderer;
 
 import static neo.Renderer.Image.MAX_IMAGE_NAME;
-import static neo.Renderer.Image.globalImages;
 import static neo.Renderer.Image.cubeFiles_t.CF_CAMERA;
 import static neo.Renderer.Image_process.R_HorizontalFlip;
 import static neo.Renderer.Image_process.R_ResampleTexture;
@@ -29,9 +28,10 @@ import javax.imageio.ImageIO;
 
 import neo.TempDump.TODO_Exception;
 import neo.Renderer.Image.cubeFiles_t;
+import neo.Renderer.Image.idImageManager;
 import neo.framework.File_h.idFile;
 import neo.idlib.Text.Str.idStr;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *
@@ -229,7 +229,7 @@ public class Image_files {
         // load the file
         //
         length = fileSystem.ReadFile(name, buffer, timestamp);
-        if (NOT(buffer)) {
+        if (NOT((Object[])buffer)) {
             return null;
         }
 
@@ -368,7 +368,7 @@ public class Image_files {
         ByteBuffer out, pix;
         int xmax, ymax;
 
-        if (NOT(pic)) {
+        if (NOT((Object[])pic)) {
             fileSystem.ReadFile(filename, null, timestamp);
             return;	// just getting timestamp
         }
@@ -380,7 +380,7 @@ public class Image_files {
         // load the file
         //
         len = fileSystem.ReadFile(filename, raw, timestamp);
-        if (NOT(raw)) {
+        if (NOT((Object[])raw)) {
             return;
         }
 
@@ -1008,10 +1008,10 @@ public class Image_files {
 			}
 
             if ((scaled_width != w) || (scaled_height != h)) {
-                if (globalImages.image_roundDown.GetBool() && (scaled_width > w)) {
+                if (idImageManager.image_roundDown.GetBool() && (scaled_width > w)) {
                     scaled_width >>= 1;
                 }
-                if (globalImages.image_roundDown.GetBool() && (scaled_height > h)) {
+                if (idImageManager.image_roundDown.GetBool() && (scaled_height > h)) {
                     scaled_height >>= 1;
                 }
 

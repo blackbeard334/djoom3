@@ -15,6 +15,7 @@ import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGESCAPECHARS;
 import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import static neo.idlib.math.Simd.SIMDProcessor;
 
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Script.Script_Program.function_t;
 import neo.Renderer.Model.idMD5Joint;
 import neo.Renderer.Model.idRenderModel;
@@ -462,14 +463,14 @@ public class Anim {
             int parent;
 
             if (this.jointInfo.Num() != model.NumJoints()) {
-                gameLocal.Error("Model '%s' has different # of joints than anim '%s'", model.Name(), this.name);
+                idGameLocal.Error("Model '%s' has different # of joints than anim '%s'", model.Name(), this.name);
             }
 
             final idMD5Joint[] modelJoints = model.GetJoints();
             for (i = 0; i < this.jointInfo.Num(); i++) {
                 jointNum = this.jointInfo.oGet(i).nameIndex;
                 if (!modelJoints[ i].name.equals(animationLib.JointName(jointNum))) {
-                    gameLocal.Error("Model '%s''s joint names don't match anim '%s''s", model.Name(), this.name);
+                    idGameLocal.Error("Model '%s''s joint names don't match anim '%s''s", model.Name(), this.name);
                 }
                 if (modelJoints[i].parent != null) {
                     parent = indexOf(modelJoints[i].parent, modelJoints);
@@ -477,7 +478,7 @@ public class Anim {
                     parent = -1;
                 }
                 if (parent != this.jointInfo.oGet(i).parentNum) {
-                    gameLocal.Error("Model '%s' has deleteifferent joint hierarchy than anim '%s'", model.Name(), this.name);
+                    idGameLocal.Error("Model '%s' has deleteifferent joint hierarchy than anim '%s'", model.Name(), this.name);
                 }
             }
         }

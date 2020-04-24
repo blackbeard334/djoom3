@@ -137,7 +137,7 @@ public class StrPool {
 
             poolStr.numUsers--;
             if (poolStr.numUsers <= 0) {
-                hash = this.poolHash.GenerateKey(poolStr.c_str(), this.caseSensitive);
+                hash = this.poolHash.GenerateKey(poolStr.getData(), this.caseSensitive);
                 if (this.caseSensitive) {
                     for (i = this.poolHash.First(hash); i != -1; i = this.poolHash.Next(i)) {
                         if (this.pool.oGet(i).Cmp(poolStr.getData()) == 0) {

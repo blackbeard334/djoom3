@@ -26,6 +26,7 @@ import java.util.Map;
 
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Player.idPlayer;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
@@ -224,7 +225,7 @@ public class Trigger {
         }
 
         @Override
-        public java.lang.Class/*idTypeInfo*/ GetType() {
+        public java.lang.Class<?>/*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
@@ -239,7 +240,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -515,7 +516,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -610,7 +611,7 @@ public class Trigger {
 
             this.entityName.oSet(this.spawnArgs.GetString("entityname"));
             if (NOT(this.entityName.Length())) {
-                gameLocal.Error("idTrigger_EntityName '%s' at (%s) doesn't have 'entityname' key specified", this.name, GetPhysics().GetOrigin().ToString(0));
+                idGameLocal.Error("idTrigger_EntityName '%s' at (%s) doesn't have 'entityname' key specified", this.name, GetPhysics().GetOrigin().ToString(0));
             }
 
             this.nextTriggerTime = 0;
@@ -707,7 +708,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -856,7 +857,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -952,7 +953,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1053,7 +1054,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1104,7 +1105,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1237,7 +1238,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 

@@ -29,6 +29,7 @@ import neo.CM.CollisionModel.contactType_t;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
 import neo.Game.Game.refSound_t;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Animation.Anim_Blend.idDeclModelDef;
 import neo.Game.GameSys.Class.idClass;
 import neo.Game.GameSys.Class.idTypeInfo;
@@ -129,7 +130,7 @@ public class SaveGame {
 // #ifdef ID_DEBUG_MEMORY
             // idStr gameState = file.GetName();
             // gameState.StripFileExtension();
-            // WriteGameState_f( idCmdArgs( va( "test %s_save", gameState.c_str() ), false ) );
+            // WriteGameState_f( idCmdArgs( va( "test %s_save", gameState.getData() ), false ) );
 // #endif
         }
 
@@ -351,7 +352,7 @@ public class SaveGame {
                 WriteString(name);
                 WriteBool(unique);
                 if (ui.WriteToSaveGame(this.file) == false) {
-                    gameLocal.Error("idSaveGame::WriteUserInterface: ui failed to write properly\n");
+                    idGameLocal.Error("idSaveGame::WriteUserInterface: ui failed to write properly\n");
                 }
             }
         }
@@ -586,7 +587,7 @@ public class SaveGame {
             cls.Save.run(this);
         }
 
-        private void CallSave_r(final java.lang.Class/*idTypeInfo*/ cls, final idClass obj) {
+        private void CallSave_r(final java.lang.Class<?>/*idTypeInfo*/ cls, final idClass obj) {
             throw new TODO_Exception();
         }
     }
@@ -663,8 +664,8 @@ public class SaveGame {
 // #ifdef ID_DEBUG_MEMORY
             // idStr gameState = file.GetName();
             // gameState.StripFileExtension();
-            // WriteGameState_f( idCmdArgs( va( "test %s_restore", gameState.c_str() ), false ) );
-            // //CompareGameState_f( idCmdArgs( va( "test %s_save", gameState.c_str() ) ) );
+            // WriteGameState_f( idCmdArgs( va( "test %s_restore", gameState.getData() ), false ) );
+            // //CompareGameState_f( idCmdArgs( va( "test %s_save", gameState.getData() ) ) );
             // gameLocal.Error( "dumped game states" );
 // #endif
         }
@@ -1213,7 +1214,7 @@ public class SaveGame {
             cls.Restore.run(this);
         }
 
-        private void CallRestore_r(final java.lang.Class/*idTypeInfo*/ cls, idClass obj) {
+        private void CallRestore_r(final java.lang.Class<?>/*idTypeInfo*/ cls, idClass obj) {
             throw new TODO_Exception();
         }
 

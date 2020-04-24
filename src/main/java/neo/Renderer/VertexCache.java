@@ -14,21 +14,21 @@ import static neo.framework.CmdSystem.CMD_FL_RENDERER;
 import static neo.framework.CmdSystem.cmdSystem;
 import static neo.framework.Common.common;
 import static neo.idlib.math.Simd.SIMDProcessor;
-import static neo.opengl.QGL.qglBindBufferARB;
-import static neo.opengl.QGL.qglBufferDataARB;
-import static neo.opengl.QGL.qglBufferSubDataARB;
-import static neo.opengl.QGL.qglGenBuffersARB;
-import static neo.opengl.QGLConstantsIfc.GL_ARRAY_BUFFER_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_ELEMENT_ARRAY_BUFFER_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_STATIC_DRAW_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_STREAM_DRAW_ARB;
+import static neo.open.gl.QGL.qglBindBufferARB;
+import static neo.open.gl.QGL.qglBufferDataARB;
+import static neo.open.gl.QGL.qglBufferSubDataARB;
+import static neo.open.gl.QGL.qglGenBuffersARB;
+import static neo.open.gl.QGLConstantsIfc.GL_ARRAY_BUFFER_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_ELEMENT_ARRAY_BUFFER_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_STATIC_DRAW_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_STREAM_DRAW_ARB;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import neo.TempDump.Deprecation_Exception;
 import neo.Renderer.Model.lightingCache_s;
 import neo.Renderer.Model.shadowCache_s;
 import neo.framework.CVarSystem.idCVar;
@@ -38,7 +38,7 @@ import neo.idlib.geometry.DrawVert;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *
@@ -74,7 +74,7 @@ public class VertexCache {
 
         @Override
         public Iterator<vertCache_s> iterator() {
-            final Iterator i = new Iterator() {
+            final Iterator<vertCache_s> i = new Iterator<vertCache_s>() {
 
                 @Override
                 public boolean hasNext() {
@@ -82,7 +82,7 @@ public class VertexCache {
                 }
 
                 @Override
-                public Object next() {
+                public vertCache_s next() {
                     return vertCache_s.this.next;
                 }
 
@@ -352,17 +352,24 @@ public class VertexCache {
             return buffer;
         }
 
-        @Deprecated
-        public void Alloc(int[] data, int size, vertCache_s buffer, boolean indexBuffer /*= false*/) {
-            final ByteBuffer byteData = ByteBuffer.allocate(data.length * 4);
-            byteData.asIntBuffer().put(data);
+//        @Deprecated
+//        public void Alloc(int[] data, int size, vertCache_s buffer, boolean indexBuffer /*= false*/) {
+//            final ByteBuffer byteData = ByteBuffer.allocate(data.length * 4);
+//            byteData.asIntBuffer().put(data);
+//
+////            Alloc(byteData, size, buffer, indexBuffer);
+//            throw new Deprecation_Exception();
+//        }
 
-//            Alloc(byteData, size, buffer, indexBuffer);
-            throw new Deprecation_Exception();
-        }
+//        public vertCache_s Alloc(int[] data, int size, boolean indexBuffer) {
+//            final ByteBuffer byteData = Nio.newByteBuffer(size * Integer.BYTES);
+//            byteData.asIntBuffer().put(data);
+//
+//            return Alloc(byteData, size, indexBuffer);
+//        }
 
-        public vertCache_s Alloc(int[] data, int size, boolean indexBuffer) {
-            final ByteBuffer byteData = Nio.newByteBuffer(size);
+        public vertCache_s Alloc(IntBuffer data, int size, boolean indexBuffer) {
+            final ByteBuffer byteData = Nio.newByteBuffer(size * Integer.BYTES);
             byteData.asIntBuffer().put(data);
 
             return Alloc(byteData, size, indexBuffer);

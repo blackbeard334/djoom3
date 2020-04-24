@@ -5,11 +5,13 @@ import static neo.framework.Common.common;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import neo.TempDump;
 import neo.framework.File_h.fsOrigin_t;
 import neo.framework.File_h.idFile;
 import neo.idlib.Lib;
 import neo.idlib.Lib.idException;
 import neo.idlib.containers.HashIndex.idHashIndex;
+import neo.open.Nio;
 
 /**
  *
@@ -1399,7 +1401,7 @@ public class Compressor {
         }
 
         private int ProbabilityForCount(long count) {
-            if (true) {
+            if (!TempDump.isDeadCodeTrue()) {
 
                 int len, mid, offset, res;
 
@@ -1653,7 +1655,7 @@ public class Compressor {
                     this.blockSize = 0;
                 } else {
 //			memcpy( block + blockSize, ((const byte *)inData) + i, inLength - i );
-                    System.arraycopy(inData.array(), i, this.block, this.blockSize, inLength - i);
+                    Nio.arraycopy(inData.array(), i, this.block, this.blockSize, inLength - i);
                     n = inLength - i;
                     this.blockSize += n;
                 }
@@ -1681,12 +1683,12 @@ public class Compressor {
                 n = this.blockSize - this.blockIndex;
                 if ((outLength - i) >= n) {
 //			memcpy( ((byte *)outData) + i, block + blockIndex, n );
-                    System.arraycopy(this.block, this.blockIndex, outData.array(), i, n);
+                    Nio.arraycopy(this.block, this.blockIndex, outData.array(), i, n);
                     DecompressBlock();
                     this.blockIndex = 0;
                 } else {
 //			memcpy( ((byte *)outData) + i, block + blockIndex, outLength - i );
-                    System.arraycopy(this.block, this.blockIndex, outData.array(), i, outLength - i);
+                    Nio.arraycopy(this.block, this.blockIndex, outData.array(), i, outLength - i);
                     n = outLength - i;
                     this.blockIndex += n;
                 }
@@ -2059,12 +2061,12 @@ public class Compressor {
                 n = this.blockSize - this.blockIndex;
                 if ((outLength - i) >= n) {
 //			memcpy( ((byte *)outData) + i, block + blockIndex, n );
-                    System.arraycopy(this.block, this.blockIndex, outData.array(), i, n);
+                    Nio.arraycopy(this.block, this.blockIndex, outData.array(), i, n);
                     DecompressBlock();
                     this.blockIndex = 0;
                 } else {
 //			memcpy( ((byte *)outData) + i, block + blockIndex, outLength - i );
-                    System.arraycopy(this.block, this.blockIndex, outData.array(), i, outLength - i);
+                    Nio.arraycopy(this.block, this.blockIndex, outData.array(), i, outLength - i);
                     n = outLength - i;
                     this.blockIndex += n;
                 }

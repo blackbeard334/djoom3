@@ -147,6 +147,7 @@ import neo.Game.AFEntity.idAFEntity_Base;
 import neo.Game.Actor.idActor;
 import neo.Game.Entity.idEntity;
 import neo.Game.Game_local.idEntityPtr;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Misc.idPathCorner;
 import neo.Game.Moveable.idMoveable;
 import neo.Game.Player.idPlayer;
@@ -2077,7 +2078,7 @@ public class AI {
                 final idAASSettings settings = this.aas.GetSettings();
                 if (settings != null) {
                     if (!ValidForBounds(settings, this.physicsObj.GetBounds())) {
-                        gameLocal.Error("%s cannot use use_aas %s\n", this.name, use_aas);
+                        idGameLocal.Error("%s cannot use use_aas %s\n", this.name, use_aas);
                     }
                     final float height = settings.maxStepHeight[0];
                     this.physicsObj.SetMaxStepHeight(height);
@@ -2528,7 +2529,7 @@ public class AI {
                     if (frame >= 0) {
                         joint = this.animator.GetJointHandle(command[0].string.getData());
                         if (joint == INVALID_JOINT) {
-                            gameLocal.Error("Invalid joint '%s' on 'launch_missile' frame command on frame %d of model '%s'", command[0].string.getData(), frame, modelDef.GetName());
+                            idGameLocal.Error("Invalid joint '%s' on 'launch_missile' frame command on frame %d of model '%s'", command[0].string.getData(), frame, modelDef.GetName());
                         }
                         GetJointTransformForAnim(joint, i, FRAME2MS(frame), this.missileLaunchOffset.oGet(i), axis);
                     }
@@ -2621,7 +2622,7 @@ public class AI {
             idVec3 oldModelOrigin;
             idVec3 modelOrigin;
 
-            this.animator.GetDelta(gameLocal.time - gameLocal.msec, gameLocal.time, delta);
+            this.animator.GetDelta(gameLocal.time - idGameLocal.msec, gameLocal.time, delta);
             delta.oSet(axis.oMultiply(delta));
 
             if (!this.modelOffset.equals(getVec3_zero())) {
@@ -2655,8 +2656,8 @@ public class AI {
             this.AI_OBSTACLE_IN_PATH.operator(false);
             foundPath = FindPathAroundObstacles(this.physicsObj, this.aas, this.enemy.GetEntity(), origin, goalPos, path);
             if (ai_showObstacleAvoidance.GetBool()) {
-                gameRenderWorld.DebugLine(colorBlue, goalPos.oPlus(new idVec3(1.0f, 1.0f, 0.0f)), goalPos.oPlus(new idVec3(1.0f, 1.0f, 64.0f)), gameLocal.msec);
-                gameRenderWorld.DebugLine(foundPath ? colorYellow : colorRed, path.seekPos, path.seekPos.oPlus(new idVec3(0.0f, 0.0f, 64.0f)), gameLocal.msec);
+                gameRenderWorld.DebugLine(colorBlue, goalPos.oPlus(new idVec3(1.0f, 1.0f, 0.0f)), goalPos.oPlus(new idVec3(1.0f, 1.0f, 64.0f)), idGameLocal.msec);
+                gameRenderWorld.DebugLine(foundPath ? colorYellow : colorRed, path.seekPos, path.seekPos.oPlus(new idVec3(0.0f, 0.0f, 64.0f)), idGameLocal.msec);
             }
 
             if (!foundPath) {
@@ -2826,9 +2827,9 @@ public class AI {
             }
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), org, gameLocal.msec);
-                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), this.move.moveDest, gameLocal.msec);
-                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis().oMultiply(16.0f)))), gameLocal.msec, true);
+                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), org, idGameLocal.msec);
+                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), this.move.moveDest, idGameLocal.msec);
+                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis().oMultiply(16.0f)))), idGameLocal.msec, true);
                 DrawRoute();
             }
         }
@@ -2887,8 +2888,8 @@ public class AI {
 
             // seek the goal position
             goalDelta = goalPos.oMinus(predictedPos);
-            vel.oMinSet(vel.oMultiply(AI_FLY_DAMPENING * MS2SEC(gameLocal.msec)));
-            vel.oPluSet(goalDelta.oMultiply(MS2SEC(gameLocal.msec)));
+            vel.oMinSet(vel.oMultiply(AI_FLY_DAMPENING * MS2SEC(idGameLocal.msec)));
+            vel.oPluSet(goalDelta.oMultiply(MS2SEC(idGameLocal.msec)));
 
             // cap our speed
             vel.Truncate(this.fly_speed);
@@ -2932,9 +2933,9 @@ public class AI {
             }
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), org, gameLocal.msec);
-                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), this.move.moveDest, gameLocal.msec);
-                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis().oMultiply(16.0f)))), gameLocal.msec, true);
+                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), org, idGameLocal.msec);
+                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), this.move.moveDest, idGameLocal.msec);
+                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis().oMultiply(16.0f)))), idGameLocal.msec, true);
                 DrawRoute();
             }
         }
@@ -2984,7 +2985,7 @@ public class AI {
             if (this.fly_bob_strength != 0) {
                 t = MS2SEC(gameLocal.time + (this.entityNumber * 497));
                 fly_bob_add = (this.viewAxis.oGet(1).oMultiply(idMath.Sin16(t * this.fly_bob_horz)).oPlus(this.viewAxis.oGet(2).oMultiply(idMath.Sin16(t * this.fly_bob_vert)))).oMultiply(this.fly_bob_strength);
-                vel.oPluSet(fly_bob_add.oMultiply(MS2SEC(gameLocal.msec)));
+                vel.oPluSet(fly_bob_add.oMultiply(MS2SEC(idGameLocal.msec)));
                 if (ai_debugMove.GetBool()) {
                     final idVec3 origin = this.physicsObj.GetOrigin();
                     gameRenderWorld.DebugArrow(colorOrange, origin, origin.oPlus(fly_bob_add), 0);
@@ -3014,7 +3015,7 @@ public class AI {
                 }
 
                 if (ai_debugMove.GetBool()) {
-                    gameRenderWorld.DebugBounds(goLower ? colorRed : colorGreen, this.physicsObj.GetBounds(), path.endPos, gameLocal.msec);
+                    gameRenderWorld.DebugBounds(goLower ? colorRed : colorGreen, this.physicsObj.GetBounds(), path.endPos, idGameLocal.msec);
                 }
             }
 
@@ -3048,11 +3049,11 @@ public class AI {
             float speed;
 
             // apply dampening
-            vel.oMinSet(vel.oMultiply(AI_FLY_DAMPENING * MS2SEC(gameLocal.msec)));
+            vel.oMinSet(vel.oMultiply(AI_FLY_DAMPENING * MS2SEC(idGameLocal.msec)));
 
             // gradually speed up/slow down to desired speed
             speed = vel.Normalize();
-            speed += (this.move.speed - speed) * MS2SEC(gameLocal.msec);
+            speed += (this.move.speed - speed) * MS2SEC(idGameLocal.msec);
             if (speed < 0.0f) {
                 speed = 0.0f;
             } else if ((this.move.speed != 0) && (speed > this.move.speed)) {
@@ -3145,11 +3146,11 @@ public class AI {
 
             if (ai_debugMove.GetBool()) {
                 gameRenderWorld.DebugLine(colorCyan, oldorigin, this.physicsObj.GetOrigin(), 4000);
-                gameRenderWorld.DebugBounds(colorOrange, this.physicsObj.GetBounds(), org, gameLocal.msec);
-                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), this.move.moveDest, gameLocal.msec);
-                gameRenderWorld.DebugLine(colorRed, org, org.oPlus(this.physicsObj.GetLinearVelocity()), gameLocal.msec, true);
-                gameRenderWorld.DebugLine(colorBlue, org, goalPos, gameLocal.msec, true);
-                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis().oMultiply(16.0f)))), gameLocal.msec, true);
+                gameRenderWorld.DebugBounds(colorOrange, this.physicsObj.GetBounds(), org, idGameLocal.msec);
+                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), this.move.moveDest, idGameLocal.msec);
+                gameRenderWorld.DebugLine(colorRed, org, org.oPlus(this.physicsObj.GetLinearVelocity()), idGameLocal.msec, true);
+                gameRenderWorld.DebugLine(colorBlue, org, goalPos, idGameLocal.msec, true);
+                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis().oMultiply(16.0f)))), idGameLocal.msec, true);
                 DrawRoute();
             }
         }
@@ -3181,9 +3182,9 @@ public class AI {
 
             if (ai_debugMove.GetBool()) {
                 final idVec3 org = this.physicsObj.GetOrigin();
-                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), org, gameLocal.msec);
-                gameRenderWorld.DebugLine(colorBlue, org, this.move.moveDest, gameLocal.msec, true);
-                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis().oMultiply(16.0f)))), gameLocal.msec, true);
+                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), org, idGameLocal.msec);
+                gameRenderWorld.DebugLine(colorBlue, org, this.move.moveDest, idGameLocal.msec, true);
+                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis().oMultiply(16.0f)))), idGameLocal.msec, true);
             }
         }
 
@@ -3419,7 +3420,7 @@ public class AI {
                 dist = delta.LengthFast();
 
                 if (ai_debugMove.GetBool()) {
-                    gameRenderWorld.DebugLine(colorBlue, start, end, gameLocal.msec, false);
+                    gameRenderWorld.DebugLine(colorBlue, start, end, idGameLocal.msec, false);
                     gameRenderWorld.DrawText(va("%d", (int) dist), (start.oPlus(end)).oMultiply(0.5f), 0.1f, colorWhite, gameLocal.GetLocalPlayer().viewAngles.ToMat3());
                 }
 
@@ -3440,7 +3441,7 @@ public class AI {
                 dist = delta.LengthFast();
 
                 if (ai_debugMove.GetBool()) {
-                    gameRenderWorld.DebugLine(colorBlue, start, end, gameLocal.msec, false);
+                    gameRenderWorld.DebugLine(colorBlue, start, end, idGameLocal.msec, false);
                     gameRenderWorld.DrawText(va("%d", (int) dist), (start.oPlus(end)).oMultiply(0.5f), 0.1f, colorWhite, gameLocal.GetLocalPlayer().viewAngles.ToMat3());
                 }
 
@@ -3608,7 +3609,7 @@ public class AI {
 
                 seekPos.oSet(org.oPlus(this.move.moveDir.oMultiply(2048.0f)));
                 if (ai_debugMove.GetBool()) {
-                    gameRenderWorld.DebugLine(colorYellow, org, seekPos, gameLocal.msec, true);
+                    gameRenderWorld.DebugLine(colorYellow, org, seekPos, idGameLocal.msec, true);
                 }
             } else {
                 this.AI_DEST_UNREACHABLE.operator(false);
@@ -4422,18 +4423,18 @@ public class AI {
                 this.current_yaw = idMath.AngleNormalize180(this.anim_turn_yaw + rotateAxis.oGet(0).ToYaw());
             } else {
                 diff = idMath.AngleNormalize180(this.ideal_yaw - this.current_yaw);
-                this.turnVel += AI_TURN_SCALE * diff * MS2SEC(gameLocal.msec);
+                this.turnVel += AI_TURN_SCALE * diff * MS2SEC(idGameLocal.msec);
                 if (this.turnVel > this.turnRate) {
                     this.turnVel = this.turnRate;
                 } else if (this.turnVel < -this.turnRate) {
                     this.turnVel = -this.turnRate;
                 }
-                turnAmount = this.turnVel * MS2SEC(gameLocal.msec);
+                turnAmount = this.turnVel * MS2SEC(idGameLocal.msec);
                 if ((diff >= 0.0f) && (turnAmount >= diff)) {
-                    this.turnVel = diff / MS2SEC(gameLocal.msec);
+                    this.turnVel = diff / MS2SEC(idGameLocal.msec);
                     turnAmount = diff;
                 } else if ((diff <= 0.0f) && (turnAmount <= diff)) {
-                    this.turnVel = diff / MS2SEC(gameLocal.msec);
+                    this.turnVel = diff / MS2SEC(idGameLocal.msec);
                     turnAmount = diff;
                 }
                 this.current_yaw += turnAmount;
@@ -4448,9 +4449,9 @@ public class AI {
 
             if (ai_debugMove.GetBool()) {
                 final idVec3 org = this.physicsObj.GetOrigin();
-                gameRenderWorld.DebugLine(colorRed, org, org.oPlus(new idAngles(0, this.ideal_yaw, 0).ToForward().oMultiply(64)), gameLocal.msec);
-                gameRenderWorld.DebugLine(colorGreen, org, org.oPlus(new idAngles(0, this.current_yaw, 0).ToForward().oMultiply(48)), gameLocal.msec);
-                gameRenderWorld.DebugLine(colorYellow, org, org.oPlus(new idAngles(0, this.current_yaw + this.turnVel, 0).ToForward().oMultiply(32)), gameLocal.msec);
+                gameRenderWorld.DebugLine(colorRed, org, org.oPlus(new idAngles(0, this.ideal_yaw, 0).ToForward().oMultiply(64)), idGameLocal.msec);
+                gameRenderWorld.DebugLine(colorGreen, org, org.oPlus(new idAngles(0, this.current_yaw, 0).ToForward().oMultiply(48)), idGameLocal.msec);
+                gameRenderWorld.DebugLine(colorYellow, org, org.oPlus(new idAngles(0, this.current_yaw + this.turnVel, 0).ToForward().oMultiply(32)), idGameLocal.msec);
             }
         }
 
@@ -4666,8 +4667,8 @@ public class AI {
             }
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugBounds(colorLtGrey, enemyEnt.GetPhysics().GetBounds(), this.lastReachableEnemyPos, gameLocal.msec);
-                gameRenderWorld.DebugBounds(colorWhite, enemyEnt.GetPhysics().GetBounds(), this.lastVisibleReachableEnemyPos, gameLocal.msec);
+                gameRenderWorld.DebugBounds(colorLtGrey, enemyEnt.GetPhysics().GetBounds(), this.lastReachableEnemyPos, idGameLocal.msec);
+                gameRenderWorld.DebugBounds(colorWhite, enemyEnt.GetPhysics().GetBounds(), this.lastVisibleReachableEnemyPos, idGameLocal.msec);
             }
         }
 
@@ -4721,12 +4722,12 @@ public class AI {
                 gameLocal.SpawnEntityDef(this.projectileDef, ent, false);
                 if (null == ent[0]) {
                     clsname = this.projectileDef.GetString("classname");
-                    gameLocal.Error("Could not spawn entityDef '%s'", clsname);
+                    idGameLocal.Error("Could not spawn entityDef '%s'", clsname);
                 }
 
                 if (!ent[0].IsType(idProjectile.class)) {
                     clsname = ent[0].GetClassname();
-                    gameLocal.Error("'%s' is not an idProjectile", clsname);
+                    idGameLocal.Error("'%s' is not an idProjectile", clsname);
                 }
                 this.projectile.oSet((idProjectile) ent[0]);
             }
@@ -4901,7 +4902,7 @@ public class AI {
 
             meleeDef = gameLocal.FindEntityDefDict(meleeDefName, false);
             if (null == meleeDef) {
-                gameLocal.Error("Unknown damage def '%s' on '%s'", meleeDefName, this.name);
+                idGameLocal.Error("Unknown damage def '%s' on '%s'", meleeDefName, this.name);
             }
 
             if (!ent.fl.takedamage) {
@@ -4962,7 +4963,7 @@ public class AI {
             enemyBounds.TranslateSelf(enemyOrg);
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugBounds(colorYellow, bounds, getVec3_zero(), gameLocal.msec);
+                gameRenderWorld.DebugBounds(colorYellow, bounds, getVec3_zero(), idGameLocal.msec);
             }
 
             if (!bounds.IntersectsBounds(enemyBounds)) {
@@ -4997,7 +4998,7 @@ public class AI {
 
             meleeDef = gameLocal.FindEntityDefDict(meleeDefName, false);
             if (null == meleeDef) {
-                gameLocal.Error("Unknown melee '%s'", meleeDefName);
+                idGameLocal.Error("Unknown melee '%s'", meleeDefName);
             }
 
             if (null == enemyEnt) {
@@ -5119,7 +5120,7 @@ public class AI {
             } else {
                 joint = this.animator.GetJointHandle(jointname);
                 if (joint == INVALID_JOINT) {
-                    gameLocal.Error("Unknown joint '%s' on %s", jointname, GetEntityDefName());
+                    idGameLocal.Error("Unknown joint '%s' on %s", jointname, GetEntityDefName());
                 }
                 GetJointWorldTransform(joint, gameLocal.time, muzzle, axis);
             }
@@ -5240,7 +5241,7 @@ public class AI {
                 }
                 this.eyeOffset.z = eyepos.z - this.physicsObj.GetOrigin().z;
                 if (ai_debugMove.GetBool()) {
-                    gameRenderWorld.DebugLine(colorRed, eyepos, eyepos.oPlus(orientationJointAxis.oGet(0).oMultiply(32.0f)), gameLocal.msec);
+                    gameRenderWorld.DebugLine(colorRed, eyepos, eyepos.oPlus(orientationJointAxis.oGet(0).oMultiply(32.0f)), idGameLocal.msec);
                 }
             } else {
                 eyepos = GetEyePosition();
@@ -5585,7 +5586,7 @@ public class AI {
             final aasPath_s path = new aasPath_s();
 
             if (!team_mate.IsType(idActor.class)) {
-                gameLocal.Error("Entity '%s' is not an AI character or player", team_mate.GetName());
+                idGameLocal.Error("Entity '%s' is not an AI character or player", team_mate.GetName());
             }
 
             actor = (idActor) team_mate;
@@ -5635,7 +5636,7 @@ public class AI {
             if (null == ent) {
                 ClearEnemy();
             } else if (!ent.IsType(idActor.class)) {
-                gameLocal.Error("'%s' is not an idActor (player or ai controlled character)", ent.name);
+                idGameLocal.Error("'%s' is not an idActor (player or ai controlled character)", ent.name);
             } else {
                 SetEnemy((idActor) ent);
             }
@@ -5768,7 +5769,7 @@ public class AI {
             } else {
                 joint = this.animator.GetJointHandle(jointname.value);
                 if (joint == INVALID_JOINT) {
-                    gameLocal.Error("Unknown joint '%s' on %s", jointname.value, GetEntityDefName());
+                    idGameLocal.Error("Unknown joint '%s' on %s", jointname.value, GetEntityDefName());
                 }
                 GetJointWorldTransform(joint, gameLocal.time, org, axis);
             }
@@ -5794,14 +5795,14 @@ public class AI {
 
             joint = this.animator.GetJointHandle(jointname.value);
             if (joint == INVALID_JOINT) {
-                gameLocal.Error("Unknown joint '%s' on %s", jointname.value, GetEntityDefName());
+                idGameLocal.Error("Unknown joint '%s' on %s", jointname.value, GetEntityDefName());
             }
             this.animator.GetJointTransform(joint, gameLocal.time, end, axis);
             end = this.physicsObj.GetOrigin().oPlus((end.oPlus(this.modelOffset)).oMultiply(this.viewAxis).oMultiply(this.physicsObj.GetGravityAxis()));
             start = GetEyePosition();
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugLine(colorYellow, start, end, gameLocal.msec);
+                gameRenderWorld.DebugLine(colorYellow, start, end, idGameLocal.msec);
             }
 
             gameLocal.clip.TranslationEntities(trace, start, end, null, getMat3_identity(), MASK_SHOT_BOUNDINGBOX, this);
@@ -5968,7 +5969,7 @@ public class AI {
 
             anim = GetAnim(ANIMCHANNEL_LEGS, attack_anim.value);
             if (0 == anim) {
-                gameLocal.Error("Unknown anim '%s'", attack_anim.value);
+                idGameLocal.Error("Unknown anim '%s'", attack_anim.value);
             }
 
             MoveToAttackPosition(entity.value, anim);
@@ -6123,7 +6124,7 @@ public class AI {
             }
 
             if (speed <= 0.0f) {
-                gameLocal.Error("Invalid speed.  speed must be > 0.");
+                idGameLocal.Error("Invalid speed.  speed must be > 0.");
             }
 
             start = this.physicsObj.GetOrigin();
@@ -6187,7 +6188,7 @@ public class AI {
         protected void Event_SetTalkTarget(idEventArg<idEntity> _target) {
             final idEntity target = _target.value;
             if ((target != null) && !target.IsType(idActor.class)) {
-                gameLocal.Error("Cannot set talk target to '%s'.  Not a character or player.", target.GetName());
+                idGameLocal.Error("Cannot set talk target to '%s'.  Not a character or player.", target.GetName());
             }
             this.talkTarget.oSet((idActor) target);
             if (target != null) {
@@ -6204,7 +6205,7 @@ public class AI {
         protected void Event_SetTalkState(idEventArg<Integer> _state) {
             final int state = _state.value;
             if ((state < 0) || (state >= etoi(NUM_TALK_STATES))) {
-                gameLocal.Error("Invalid talk state (%d)", state);
+                idGameLocal.Error("Invalid talk state (%d)", state);
             }
 
             this.talk_state = talkState_t.values()[state];
@@ -6400,7 +6401,7 @@ public class AI {
             final idVec3 toPos = enemyEnt.GetEyePosition();
             final int/*jointHandle_t*/ joint = this.animator.GetJointHandle(jointname.value);
             if (joint == INVALID_JOINT) {
-                gameLocal.Error("Unknown joint '%s' on %s", jointname.value, GetEntityDefName());
+                idGameLocal.Error("Unknown joint '%s' on %s", jointname.value, GetEntityDefName());
             }
             this.animator.GetJointTransform(joint, gameLocal.time, muzzle, axis);
             muzzle = org.oPlus((muzzle.oPlus(this.modelOffset)).oMultiply(this.viewAxis).oMultiply(this.physicsObj.GetGravityAxis()));
@@ -6488,8 +6489,8 @@ public class AI {
             idAI.PredictPath(this, this.aas, this.physicsObj.GetOrigin(), end.oMinus(this.physicsObj.GetOrigin()), 1000, 1000, (this.move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugLine(colorGreen, this.physicsObj.GetOrigin(), end, gameLocal.msec);
-                gameRenderWorld.DebugBounds(path.endEvent == 0 ? colorYellow : colorRed, this.physicsObj.GetBounds(), end, gameLocal.msec);
+                gameRenderWorld.DebugLine(colorGreen, this.physicsObj.GetOrigin(), end, idGameLocal.msec);
+                gameRenderWorld.DebugBounds(path.endEvent == 0 ? colorYellow : colorRed, this.physicsObj.GetBounds(), end, idGameLocal.msec);
             }
 
             if ((path.endEvent == 0) || (path.blockingEntity.equals(enemyEnt))) {
@@ -6529,8 +6530,8 @@ public class AI {
             idAI.PredictPath(this, this.aas, this.physicsObj.GetOrigin(), moveVec, 1000, 1000, (this.move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugLine(colorGreen, this.physicsObj.GetOrigin(), this.physicsObj.GetOrigin().oPlus(moveVec), gameLocal.msec);
-                gameRenderWorld.DebugBounds(path.endEvent == 0 ? colorYellow : colorRed, this.physicsObj.GetBounds(), this.physicsObj.GetOrigin().oPlus(moveVec), gameLocal.msec);
+                gameRenderWorld.DebugLine(colorGreen, this.physicsObj.GetOrigin(), this.physicsObj.GetOrigin().oPlus(moveVec), idGameLocal.msec);
+                gameRenderWorld.DebugBounds(path.endEvent == 0 ? colorYellow : colorRed, this.physicsObj.GetBounds(), this.physicsObj.GetOrigin().oPlus(moveVec), idGameLocal.msec);
             }
 
             idThread.ReturnInt(path.endEvent == 0);
@@ -6552,8 +6553,8 @@ public class AI {
             idAI.PredictPath(this, this.aas, this.physicsObj.GetOrigin(), moveVec, 1000, 1000, (this.move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugLine(colorGreen, this.physicsObj.GetOrigin(), this.physicsObj.GetOrigin().oPlus(moveVec), gameLocal.msec);
-                gameRenderWorld.DebugBounds(path.endEvent == 0 ? colorYellow : colorRed, this.physicsObj.GetBounds(), this.physicsObj.GetOrigin().oPlus(moveVec), gameLocal.msec);
+                gameRenderWorld.DebugLine(colorGreen, this.physicsObj.GetOrigin(), this.physicsObj.GetOrigin().oPlus(moveVec), idGameLocal.msec);
+                gameRenderWorld.DebugBounds(path.endEvent == 0 ? colorYellow : colorRed, this.physicsObj.GetBounds(), this.physicsObj.GetOrigin().oPlus(moveVec), idGameLocal.msec);
             }
 
             idThread.ReturnInt(path.endEvent == 0);
@@ -6566,10 +6567,10 @@ public class AI {
             idAI.PredictPath(this, this.aas, this.physicsObj.GetOrigin(), position.oMinus(this.physicsObj.GetOrigin()), 1000, 1000, (this.move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugLine(colorGreen, this.physicsObj.GetOrigin(), position, gameLocal.msec);
-                gameRenderWorld.DebugBounds(colorYellow, this.physicsObj.GetBounds(), position, gameLocal.msec);
+                gameRenderWorld.DebugLine(colorGreen, this.physicsObj.GetOrigin(), position, idGameLocal.msec);
+                gameRenderWorld.DebugBounds(colorYellow, this.physicsObj.GetBounds(), position, idGameLocal.msec);
                 if (path.endEvent != 0) {
-                    gameRenderWorld.DebugBounds(colorRed, this.physicsObj.GetBounds(), path.endPos, gameLocal.msec);
+                    gameRenderWorld.DebugBounds(colorRed, this.physicsObj.GetBounds(), path.endPos, idGameLocal.msec);
                 }
             }
 
@@ -6698,7 +6699,7 @@ public class AI {
         protected void Event_SetMoveType(idEventArg<Integer> _moveType) {
             final int moveType = _moveType.value;
             if ((moveType < 0) || (moveType >= etoi(NUM_MOVETYPES))) {
-                gameLocal.Error("Invalid movetype %d", moveType);
+                idGameLocal.Error("Invalid movetype %d", moveType);
             }
 
             this.move.moveType = moveType_t.values()[moveType];
@@ -7254,7 +7255,7 @@ public class AI {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -7280,7 +7281,11 @@ public class AI {
     }
 
     public static class idCombatNode extends idEntity {
-        // CLASS_PROTOTYPE( idCombatNode );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 3898158320225705910L;
+		// CLASS_PROTOTYPE( idCombatNode );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -7443,12 +7448,12 @@ public class AI {
                     final idVec3 pos3 = org.oPlus(rightDir.oMultiply(node.min_dist));
                     final idVec3 pos4 = org.oPlus(rightDir.oMultiply(cone_dist));
 
-                    gameRenderWorld.DebugLine(color, node.GetPhysics().GetOrigin(), (pos1.oPlus(pos3)).oMultiply(0.5f), gameLocal.msec);
-                    gameRenderWorld.DebugLine(color, pos1, pos2, gameLocal.msec);
-                    gameRenderWorld.DebugLine(color, pos1, pos3, gameLocal.msec);
-                    gameRenderWorld.DebugLine(color, pos3, pos4, gameLocal.msec);
-                    gameRenderWorld.DebugLine(color, pos2, pos4, gameLocal.msec);
-                    gameRenderWorld.DebugBounds(color, bounds, org, gameLocal.msec);
+                    gameRenderWorld.DebugLine(color, node.GetPhysics().GetOrigin(), (pos1.oPlus(pos3)).oMultiply(0.5f), idGameLocal.msec);
+                    gameRenderWorld.DebugLine(color, pos1, pos2, idGameLocal.msec);
+                    gameRenderWorld.DebugLine(color, pos1, pos3, idGameLocal.msec);
+                    gameRenderWorld.DebugLine(color, pos3, pos4, idGameLocal.msec);
+                    gameRenderWorld.DebugLine(color, pos2, pos4, idGameLocal.msec);
+                    gameRenderWorld.DebugBounds(color, bounds, org, idGameLocal.msec);
                 }
             }
         }
@@ -7470,7 +7475,7 @@ public class AI {
 
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -7512,7 +7517,7 @@ public class AI {
         // predict our position
         predictedPos = org.oPlus(vel.oMultiply(prediction));
         goalDelta = goal.oMinus(predictedPos);
-        seekVel = goalDelta.oMultiply(MS2SEC(gameLocal.msec));
+        seekVel = goalDelta.oMultiply(MS2SEC(idGameLocal.msec));
 
         return seekVel;
     }

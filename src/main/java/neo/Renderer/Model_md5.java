@@ -285,14 +285,14 @@ public class Model_md5 {
 
             tr.pc.c_deformedSurfaces++;
             tr.pc.c_deformedVerts += this.deformInfo.numOutputVerts;
-            tr.pc.c_deformedIndexes += this.deformInfo.numIndexes;
+            tr.pc.c_deformedIndexes += this.deformInfo.getIndexes().getNumValues();
 
             surf.shader = this.shader;
 
             if (surf.geometry != null) {
                 // if the number of verts and indexes are the same we can re-use the triangle surface
                 // the number of indexes must be the same to assure the correct amount of memory is allocated for the facePlanes
-                if ((surf.geometry.numVerts == this.deformInfo.numOutputVerts) && (surf.geometry.numIndexes == this.deformInfo.numIndexes)) {
+                if ((surf.geometry.numVerts == this.deformInfo.numOutputVerts) && (surf.geometry.getIndexes().getNumValues() == this.deformInfo.getIndexes().getNumValues())) {
                     R_FreeStaticTriSurfVertexCaches(surf.geometry);
                 } else {
                     R_FreeStaticTriSurf(surf.geometry);
@@ -309,8 +309,8 @@ public class Model_md5 {
             tri.tangentsCalculated = false;
             tri.facePlanesCalculated = false;
 
-            tri.numIndexes = this.deformInfo.numIndexes;
-            tri.indexes = this.deformInfo.indexes;
+            tri.getIndexes().setNumValues(this.deformInfo.getIndexes().getNumValues());
+            tri.getIndexes().setValues(this.deformInfo.getIndexes().getValues());
             tri.silIndexes = this.deformInfo.silIndexes;
             tri.numMirroredVerts = this.deformInfo.numMirroredVerts;
             tri.mirroredVerts = this.deformInfo.mirroredVerts;
@@ -659,7 +659,7 @@ public class Model_md5 {
         public int Memory() {
             int total;
 
-            total = this.BYTES;
+            total = idRenderModelMD5.BYTES;
             total += this.joints.MemoryUsed() + this.defaultPose.MemoryUsed() + this.meshes.MemoryUsed();
 
             // count up strings
@@ -673,7 +673,7 @@ public class Model_md5 {
                 total += mesh.texCoords.MemoryUsed() + (mesh.numWeights * idVec4.BYTES) + (Integer.BYTES * 2);
 
                 // sum up deform info
-                total += mesh.deformInfo.BYTES;
+                total += deformInfo_s.BYTES;
                 total += R_DeformInfoMemoryUsed(mesh.deformInfo);
             }
             return total;

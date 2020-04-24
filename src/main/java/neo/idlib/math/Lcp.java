@@ -15,6 +15,7 @@ import neo.idlib.Lib.idLib;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVecX;
 import neo.idlib.math.Matrix.idMatX;
+import neo.open.Nio;
 
 /**
  *
@@ -143,7 +144,7 @@ public class Lcp {
 //		boxIndex = (int *)_alloca16( o_x.GetSize() * sizeof( int ) );
 //		memcpy( boxIndex, o_boxIndex, o_x.GetSize() * sizeof( int ) );
                 this.boxIndex = new int[o_x.GetSize()];
-                System.arraycopy(o_boxIndex, 0, this.boxIndex, 0, o_x.GetSize());
+                Nio.arraycopy(o_boxIndex, 0, this.boxIndex, 0, o_x.GetSize());
             } else {
                 this.boxIndex = null;
             }
@@ -362,7 +363,7 @@ public class Lcp {
 //#endif
 
             // if failed clear remaining forces
-            if (failed != null) {
+            if (failed != null) { /* failed is never assigned a value not null before this, so it must be null!*/
                 if (lcp_showFailures.GetBool()) {
 			        idLib.common.Printf( "idLCP_Square::Solve: %s (%d of %d bounded variables ignored)\n", failed, this.m.GetNumRows() - i, this.m.GetNumRows() - this.numUnbounded );
                 }
@@ -890,7 +891,7 @@ public class Lcp {
 //		boxIndex = (int *)_alloca16( o_x.GetSize() * sizeof( int ) );
                 this.boxIndex = new int[o_x.GetSize()];
 //		memcpy( boxIndex, o_boxIndex, o_x.GetSize() * sizeof( int ) );
-                System.arraycopy(o_boxIndex, 0, this.boxIndex, 0, o_x.GetSize());
+                Nio.arraycopy(o_boxIndex, 0, this.boxIndex, 0, o_x.GetSize());
             } else {
                 this.boxIndex = null;
             }
@@ -1110,7 +1111,7 @@ public class Lcp {
 //#endif
 
             // if failed clear remaining forces
-            if (null != failed) {
+            if (null != failed) { /* failed is never assigned a value not null before this, so it must be null!*/
                 if (lcp_showFailures.GetBool()) {
 			        idLib.common.Printf( "idLCP_Symmetric::Solve: %s (%d of %d bounded variables ignored)\n", failed, this.m.GetNumRows() - i, this.m.GetNumRows() - this.numUnbounded );
                 }
@@ -1638,7 +1639,7 @@ public class Lcp {
     public static float[] clam(final float[] src, final int numClamped) {
         final float[] clamped = new float[src.length - numClamped];
 
-        System.arraycopy(src, numClamped, clamped, 0, clamped.length);
+        Nio.arraycopy(src, numClamped, clamped, 0, clamped.length);
 
         return clamped;
     }
@@ -1652,20 +1653,20 @@ public class Lcp {
     }
 
     public static float[] unClam(float[] dst, final float[] clamArray) {
-        System.arraycopy(clamArray, 0, dst, dst.length - clamArray.length, clamArray.length);
+        Nio.arraycopy(clamArray, 0, dst, dst.length - clamArray.length, clamArray.length);
         return dst;
     }
 
     public static char[] clam(final char[] src, int numClamped) {
         final char[] clamped = new char[src.length - numClamped];
 
-        System.arraycopy(src, numClamped, clamped, 0, clamped.length);
+        Nio.arraycopy(src, numClamped, clamped, 0, clamped.length);
 
         return clamped;
     }
 
     public static char[] unClam(char[] dst, char[] clamArray) {
-        System.arraycopy(clamArray, 0, dst, dst.length - clamArray.length, clamArray.length);
+        Nio.arraycopy(clamArray, 0, dst, dst.length - clamArray.length, clamArray.length);
         return dst;
     }
 }

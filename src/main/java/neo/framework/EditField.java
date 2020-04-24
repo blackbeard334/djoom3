@@ -30,6 +30,7 @@ import neo.framework.KeyInput.idKeyInput;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
+import neo.open.Nio;
 
 /**
  *
@@ -114,9 +115,9 @@ public class EditField {
         public void AutoComplete() throws idException {
             final char[] completionArgString = new char[MAX_EDIT_LINE];
             final idCmdArgs args = new idCmdArgs();
-            final void_callback findMatches = FindMatches.getInstance();
-            final void_callback findIndexMatch = FindIndexMatch.getInstance();
-            final void_callback printMatches = PrintMatches.getInstance();
+            final void_callback<String> findMatches = FindMatches.getInstance();
+            final void_callback<String> findIndexMatch = FindIndexMatch.getInstance();
+            final void_callback<String> printMatches = PrintMatches.getInstance();
 
             if (!this.autoComplete.valid) {
                 args.TokenizeString(ctos(this.buffer), false);
@@ -234,7 +235,7 @@ public class EditField {
             if ((ch == (('h' - 'a') + 1)) || (ch == K_BACKSPACE)) {	// ctrl-h is backspace
                 if (this.cursor > 0) {
 //			memmove( buffer + cursor - 1, buffer + cursor, len + 1 - cursor );
-                    System.arraycopy(this.buffer, this.cursor, this.buffer, this.cursor - 1, (len + 1) - this.cursor);
+                    Nio.arraycopy(this.buffer, this.cursor, this.buffer, this.cursor - 1, (len + 1) - this.cursor);
                     this.cursor--;
                     if (this.cursor < this.scroll) {
                         this.scroll--;
@@ -273,7 +274,7 @@ public class EditField {
                     return; // all full
                 }
 //		memmove( buffer + cursor + 1, buffer + cursor, len + 1 - cursor );
-                System.arraycopy(this.buffer, this.cursor, this.buffer, this.cursor + 1, (len + 1) - this.cursor);
+                Nio.arraycopy(this.buffer, this.cursor, this.buffer, this.cursor + 1, (len + 1) - this.cursor);
                 this.buffer[this.cursor] = (char) ch;
                 this.cursor++;
             }
@@ -304,7 +305,7 @@ public class EditField {
                     ClearAutoComplete();
                 } else if (this.cursor < len) {
 //			memmove( buffer + cursor, buffer + cursor + 1, len - cursor );
-                    System.arraycopy(this.buffer, this.cursor + 1, this.buffer, this.cursor, len - this.cursor);
+                    Nio.arraycopy(this.buffer, this.cursor + 1, this.buffer, this.cursor, len - this.cursor);
                 }
                 return;
             }
@@ -464,7 +465,7 @@ public class EditField {
             }
 
 //	memcpy( str, buffer + prestep, drawLen );
-            System.arraycopy(this.buffer, prestep, str, 0, drawLen);
+            Nio.arraycopy(this.buffer, prestep, str, 0, drawLen);
             str[drawLen] = 0;
 
             // draw it
@@ -510,9 +511,9 @@ public class EditField {
      */
     static class FindMatches extends void_callback<String> {
 
-        private static final void_callback instance = new FindMatches();
+        private static final void_callback<String> instance = new FindMatches();
 
-        public static void_callback getInstance() {
+        public static void_callback<String> getInstance() {
             return instance;
         }
 
@@ -549,9 +550,9 @@ public class EditField {
      */
     static class FindIndexMatch extends void_callback<String> {
 
-        private static final void_callback instance = new FindIndexMatch();
+        private static final void_callback<String> instance = new FindIndexMatch();
 
-        public static void_callback getInstance() {
+        public static void_callback<String> getInstance() {
             return instance;
         }
 
@@ -579,9 +580,9 @@ public class EditField {
      */
     static class PrintMatches extends void_callback<String> {
 
-        private static final void_callback instance = new PrintMatches();
+        private static final void_callback<String> instance = new PrintMatches();
 
-        public static void_callback getInstance() {
+        public static void_callback<String> getInstance() {
             return instance;
         }
 
@@ -603,9 +604,9 @@ public class EditField {
      */
     static class PrintCvarMatches extends void_callback<String> {
 
-        private static final void_callback instance = new PrintCvarMatches();
+        private static final void_callback<String> instance = new PrintCvarMatches();
 
-        public static void_callback getInstance() {
+        public static void_callback<String> getInstance() {
             return instance;
         }
 

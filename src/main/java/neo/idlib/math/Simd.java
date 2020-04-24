@@ -6,6 +6,7 @@ import static neo.sys.sys_public.CPUID_GENERIC;
 import static neo.sys.sys_public.CPUID_NONE;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import neo.TempDump.TODO_Exception;
@@ -356,7 +357,7 @@ public class Simd {
 
         public abstract void /*VPCALL*/ MinMax(idVec3 min, idVec3 max, final idDrawVert[] src, final int count);
 
-        public abstract void /*VPCALL*/ MinMax(idVec3 min, idVec3 max, final idDrawVert[] src, final int[] indexes, final int count);
+        public abstract void /*VPCALL*/ MinMax(idVec3 min, idVec3 max, final idDrawVert[] src, final IntBuffer indexes, final int count);
 //
 
         public abstract void /*VPCALL*/ Clamp(float[] dst, final float[] src, final float min, final float max, final int count);
@@ -475,9 +476,9 @@ public class Simd {
 
         public abstract void /*VPCALL*/ OverlayPointCull(byte[] cullBits, idVec2[] texCoords, final idPlane[] planes, final idDrawVert[] verts, final int numVerts);
 
-        public abstract void /*VPCALL*/ DeriveTriPlanes(idPlane[] planes, final idDrawVert[] verts, final int numVerts, final int[] indexes, final int numIndexes);
+        public abstract void /*VPCALL*/ DeriveTriPlanes(idPlane[] planes, final idDrawVert[] verts, final int numVerts, final IntBuffer indexes, final int numIndexes);
 
-        public abstract void /*VPCALL*/ DeriveTangents(idPlane[] planes, idDrawVert[] verts, final int numVerts, final int[] indexes, final int numIndexes);
+        public abstract void /*VPCALL*/ DeriveTangents(idPlane[] planes, idDrawVert[] verts, final int numVerts, final IntBuffer indexes, final int numIndexes);
 
         public abstract void /*VPCALL*/ DeriveUnsmoothedTangents(idDrawVert[] verts, final dominantTri_s[] dominantTris, final int numVerts);
 
@@ -485,11 +486,11 @@ public class Simd {
 
         public abstract void /*VPCALL*/ CreateTextureSpaceLightVectors(idVec3[] lightVectors, final idVec3 lightOrigin, final idDrawVert[] verts, final int numVerts, final int[] indexes, final int numIndexes);
 
-        public void CreateTextureSpaceLightVectors(idVec3 localLightVector, idVec3 localLightOrigin, idDrawVert[] verts, int numVerts, int[] indexes, int numIndexes) {
+        public void CreateTextureSpaceLightVectors(idVec3 localLightVector, idVec3 localLightOrigin, idDrawVert[] verts, int numVerts, IntBuffer indexes, int numIndexes) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
-        public abstract void /*VPCALL*/ CreateSpecularTextureCoords(idVec4[] texCoords, final idVec3 lightOrigin, final idVec3 viewOrigin, final idDrawVert[] verts, final int numVerts, final int[] indexes, final int numIndexes);
+        public abstract void /*VPCALL*/ CreateSpecularTextureCoords(idVec4[] texCoords, final idVec3 lightOrigin, final idVec3 viewOrigin, final idDrawVert[] verts, final int numVerts, final IntBuffer indexes, final int numIndexes);
 
         public abstract int /*VPCALL*/ CreateShadowCache(idVec4[] vertexCache, int[] vertRemap, final idVec3 lightOrigin, final idDrawVert[] verts, final int numVerts);
 
@@ -554,13 +555,20 @@ public class Simd {
             }
         }
 
-        public void Memcpy(int[] dst, int[] src, int count) {
-            Memcpy(dst, 0, src, 0, count);
-        }
+//        public void Memcpy(int[] dst, int[] src, int count) {
+//            Memcpy(dst, 0, src, 0, count);
+//        }
 
-        public void Memcpy(int[] dst, int dstOffset, int[] src, int srcOffset, int count) {
-            System.arraycopy(src, srcOffset, dst, dstOffset, count);
-        }
+//        public void Memcpy(int[] dst, int dstOffset, int[] src, int srcOffset, int count) {
+//            Nio.arraycopy(src, srcOffset, dst, dstOffset, count);
+//        }
+
+		public void Memcpy(IntBuffer dst, int dstOffset, int[] src, int srcOffset, int count) {
+			// Nio.arraycopy(src, srcOffset, dst, dstOffset, count);
+			for (int i = 0; i < count; i++) {
+				dst.put(dstOffset + i, src[srcOffset + i]);
+			}
+		}
 
     }
     //TODO:add tests

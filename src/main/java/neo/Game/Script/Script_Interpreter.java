@@ -51,6 +51,7 @@ import neo.Game.Script.Script_Thread.idThread;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.Nio;
 
 /**
  *
@@ -121,7 +122,7 @@ public class Script_Interpreter {
 //            idStr.Copynz(localstack[localstackUsed], string, MAX_STRING_LEN);
             final String str = string + '\0';
             final int length = Math.min(str.length(), MAX_STRING_LEN);
-            System.arraycopy(str.getBytes(), 0, this.localstack, this.localstackUsed, length);
+            Nio.arraycopy(str.getBytes(), 0, this.localstack, this.localstackUsed, length);
             this.localstackUsed += MAX_STRING_LEN;
         }
 
@@ -158,7 +159,7 @@ public class Script_Interpreter {
                 final int length = Math.min(str.length(), MAX_STRING_LEN);
                 final int offset = this.localstackBase + def.value.getStackOffset();
                 final int appendOffset = strLen(this.localstack, offset);
-                System.arraycopy(str.getBytes(), 0, this.localstack, appendOffset, length);
+                Nio.arraycopy(str.getBytes(), 0, this.localstack, appendOffset, length);
             } else {
                 def.value.stringPtr = idStr.Append(def.value.stringPtr, MAX_STRING_LEN, from);
             }
@@ -169,7 +170,7 @@ public class Script_Interpreter {
 //                idStr.Copynz(localstack[localstackBase + def.value.stackOffset], from, MAX_STRING_LEN);
                 final String str = from + '\0';
                 final int length = Math.min(str.length(), MAX_STRING_LEN);
-                System.arraycopy(str.getBytes(), 0, this.localstack, this.localstackBase + def.value.getStackOffset(), length);
+                Nio.arraycopy(str.getBytes(), 0, this.localstack, this.localstackBase + def.value.getStackOffset(), length);
             } else {
                 def.value.stringPtr = from;//idStr.Copynz(def.value.stringPtr, from, MAX_STRING_LEN);
             }
@@ -741,7 +742,7 @@ public class Script_Interpreter {
             Reset();
 
 //	memcpy( localstack, &source.localstack[ source.localstackUsed - args ], args );
-            System.arraycopy(source.localstack, source.localstackUsed - args, this.localstack, 0, args);
+            Nio.arraycopy(source.localstack, source.localstackUsed - args, this.localstack, 0, args);
 
             this.localstackUsed = args;
             this.localstackBase = 0;

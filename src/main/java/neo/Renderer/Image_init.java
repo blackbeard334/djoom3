@@ -34,25 +34,27 @@ import static neo.TempDump.NOT;
 import static neo.TempDump.flatten;
 import static neo.TempDump.wrapToNativeBuffer;
 import static neo.idlib.Lib.idLib.common;
-import static neo.opengl.QGL.qglTexParameterfv;
-import static neo.opengl.QGLConstantsIfc.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-import static neo.opengl.QGLConstantsIfc.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_2D;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_BORDER_COLOR;
+import static neo.open.gl.QGL.qglTexParameterfv;
+import static neo.open.gl.QGLConstantsIfc.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+import static neo.open.gl.QGLConstantsIfc.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_2D;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_BORDER_COLOR;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
+import neo.TempDump;
 import neo.Renderer.Image.GeneratorFunction;
 import neo.Renderer.Image.idImage;
+import neo.Renderer.Image.idImageManager;
 import neo.framework.CmdSystem.cmdFunction_t;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.cmp_t;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *
@@ -541,7 +543,7 @@ public class Image_init {
 
             for (x = 0; x < 256; x++) {
                 float f = x / 255.f;
-                if (false) {
+                if (TempDump.isDeadCodeTrue()) {
                     f = (float) Math.pow(f, 16);
                 } else {
                     // this is the behavior of the hacked up fragment programs that
@@ -850,7 +852,7 @@ public class Image_init {
             final byte[][][] data = new byte[DEFAULT_SIZE][DEFAULT_SIZE][4];
             int i;
 
-            final int red = (globalImages.image_useNormalCompression.GetInteger() == 1) ? 0 : 3;
+            final int red = (idImageManager.image_useNormalCompression.GetInteger() == 1) ? 0 : 3;
             final int alpha = (red == 0) ? 3 : 0;
             // flat normal map for default bunp mapping
             for (i = 0; i < 4; i++) {
@@ -880,7 +882,7 @@ public class Image_init {
             final byte[] data = new byte[DEFAULT_SIZE];
             int i;
 
-            final int red = (globalImages.image_useNormalCompression.GetInteger() == 1) ? 0 : 3;
+            final int red = (idImageManager.image_useNormalCompression.GetInteger() == 1) ? 0 : 3;
             final int alpha = (red == 0) ? 3 : 0;
             // flat normal map for default bunp mapping
             for (i = 0; i < DEFAULT_SIZE; i += 4) {

@@ -8,7 +8,8 @@ import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat2;
 import neo.idlib.math.Matrix.idMat3;
-import neo.opengl.Nio;
+import neo.open.FloatOGetSet;
+import neo.open.Nio;
 
 /**
  *
@@ -49,7 +50,7 @@ public class Plane {
 
      ===============================================================================
      */
-    public static class idPlane {
+    public static class idPlane implements FloatOGetSet {
         public static final int BYTES = idVec3.BYTES + Float.BYTES;
 
         private final idVec3 abc = new idVec3();
@@ -97,7 +98,8 @@ public class Plane {
 //public	float			operator[]( int index ) const;
 //public	float &			operator[]( int index );
 
-        public float oGet(int index) {
+        @Override
+		public float oGet(int index) {
             switch (index) {
                 case 0:
                     return this.abc.x;

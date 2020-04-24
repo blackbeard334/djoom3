@@ -37,6 +37,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
 import neo.Game.Script.Script_Compiler.idCompiler;
@@ -56,6 +57,7 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StaticList.idStaticList;
 import neo.idlib.containers.StrList.idStrList;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.Nio;
 
 /* **********************************************************************
 
@@ -269,7 +271,7 @@ public final class idProgram {
             statementList[i].lineNumber = this.statements.oGet(i).linenumber;
             statementList[i].file = this.statements.oGet(i).file;
 
-            System.arraycopy(statementList[i].toArray(), 0, statementIntArray, i * 6, 6);
+            Nio.arraycopy(statementList[i].toArray(), 0, statementIntArray, i * 6, 6);
         }
 
         result = new BigInteger(MD4_BlockChecksum(statementIntArray, /*sizeof(statementBlock_t)*/ this.statements.Num())).intValue();
@@ -366,7 +368,7 @@ public final class idProgram {
                 gameLocal.Printf("%s\n", err.error);
                 return false;
             } else {
-                gameLocal.Error("%s\n", err.error);
+                idGameLocal.Error("%s\n", err.error);
             }
         }
 
@@ -387,7 +389,7 @@ public final class idProgram {
         }
 
         if (!result) {
-            gameLocal.Error("Compile failed.");
+            idGameLocal.Error("Compile failed.");
         }
 
         return FindFunction(functionName);
@@ -398,7 +400,7 @@ public final class idProgram {
         boolean result;
 
         if (fileSystem.ReadFile(filename, src, null) < 0) {
-            gameLocal.Error("Couldn't load %s\n", filename);
+            idGameLocal.Error("Couldn't load %s\n", filename);
         }
 
         result = CompileText(filename, new String(src[0].array()), false);
@@ -410,7 +412,7 @@ public final class idProgram {
         }
 
         if (!result) {
-            gameLocal.Error("Compile failed in file %s.", filename);
+            idGameLocal.Error("Compile failed in file %s.", filename);
         }
     }
 
@@ -447,7 +449,7 @@ public final class idProgram {
             // define the sys object
             this.sysDef = AllocDef(type_void, "sys", def_namespace, true);
         } catch (final idCompileError err) {
-            gameLocal.Error("%s", err.error);
+            idGameLocal.Error("%s", err.error);
         }
     }
 

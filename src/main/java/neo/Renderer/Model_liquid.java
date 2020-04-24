@@ -366,15 +366,15 @@ public class Model_liquid {
 
             tr.pc.c_deformedSurfaces++;
             tr.pc.c_deformedVerts += this.deformInfo.numOutputVerts;
-            tr.pc.c_deformedIndexes += this.deformInfo.numIndexes;
+            tr.pc.c_deformedIndexes += this.deformInfo.getIndexes().getNumValues();
 
             tri = R_AllocStaticTriSurf();
 
             // note that some of the data is references, and should not be freed
             tri.deformedSurface = true;
 
-            tri.numIndexes = this.deformInfo.numIndexes;
-            tri.indexes = this.deformInfo.indexes;
+            tri.getIndexes().setNumValues(this.deformInfo.getIndexes().getNumValues());
+            tri.getIndexes().setValues(this.deformInfo.getIndexes().getValues());
             tri.silIndexes = this.deformInfo.silIndexes;
             tri.numMirroredVerts = this.deformInfo.numMirroredVerts;
             tri.mirroredVerts = this.deformInfo.mirroredVerts;

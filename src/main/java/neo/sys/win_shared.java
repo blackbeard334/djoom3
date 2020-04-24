@@ -356,7 +356,7 @@ public class win_shared {
 //	index = 0;
 //	for ( i = callStackSize-1; i >= 0; i-- ) {
 //		Sym_GetFuncInfo( callStack[i], module, funcName );
-//		index += sprintf( string+index, " -> %s", funcName.c_str() );
+//		index += sprintf( string+index, " -> %s", funcName.getData() );
 //	}
 //	return string;
             }

@@ -35,47 +35,46 @@ import static neo.Renderer.tr_main.R_TransposeGLMatrix;
 import static neo.Renderer.tr_rendertools.RB_ShowOverdraw;
 import static neo.TempDump.NOT;
 import static neo.TempDump.btoi;
-import static neo.opengl.QGL.qglBegin;
-import static neo.opengl.QGL.qglClear;
-import static neo.opengl.QGL.qglClearStencil;
-import static neo.opengl.QGL.qglDepthRange;
-import static neo.opengl.QGL.qglDisable;
-import static neo.opengl.QGL.qglDisableClientState;
-import static neo.opengl.QGL.qglDrawElements;
-import static neo.opengl.QGL.qglEnable;
-import static neo.opengl.QGL.qglEnableClientState;
-import static neo.opengl.QGL.qglEnd;
-import static neo.opengl.QGL.qglLoadIdentity;
-import static neo.opengl.QGL.qglLoadMatrixf;
-import static neo.opengl.QGL.qglMatrixMode;
-import static neo.opengl.QGL.qglNormalPointer;
-import static neo.opengl.QGL.qglScissor;
-import static neo.opengl.QGL.qglStencilMask;
-import static neo.opengl.QGL.qglTexCoord2fv;
-import static neo.opengl.QGL.qglTexCoordPointer;
-import static neo.opengl.QGL.qglTexGenf;
-import static neo.opengl.QGL.qglVertex3fv;
-import static neo.opengl.QGL.qglVertexPointer;
-import static neo.opengl.QGL.qglViewport;
-import static neo.opengl.QGLConstantsIfc.GL_DEPTH_BUFFER_BIT;
-import static neo.opengl.QGLConstantsIfc.GL_DEPTH_TEST;
-import static neo.opengl.QGLConstantsIfc.GL_FLOAT;
-import static neo.opengl.QGLConstantsIfc.GL_MODELVIEW;
-import static neo.opengl.QGLConstantsIfc.GL_NORMAL_ARRAY;
-import static neo.opengl.QGLConstantsIfc.GL_OBJECT_LINEAR;
-import static neo.opengl.QGLConstantsIfc.GL_PROJECTION;
-import static neo.opengl.QGLConstantsIfc.GL_R;
-import static neo.opengl.QGLConstantsIfc.GL_REFLECTION_MAP;
-import static neo.opengl.QGLConstantsIfc.GL_S;
-import static neo.opengl.QGLConstantsIfc.GL_STENCIL_BUFFER_BIT;
-import static neo.opengl.QGLConstantsIfc.GL_STENCIL_TEST;
-import static neo.opengl.QGLConstantsIfc.GL_T;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_GEN_MODE;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_GEN_R;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_GEN_S;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_GEN_T;
-import static neo.opengl.QGLConstantsIfc.GL_TRIANGLES;
+import static neo.open.gl.QGL.qglBegin;
+import static neo.open.gl.QGL.qglClear;
+import static neo.open.gl.QGL.qglClearStencil;
+import static neo.open.gl.QGL.qglDepthRange;
+import static neo.open.gl.QGL.qglDisable;
+import static neo.open.gl.QGL.qglDisableClientState;
+import static neo.open.gl.QGL.qglDrawElements;
+import static neo.open.gl.QGL.qglEnable;
+import static neo.open.gl.QGL.qglEnableClientState;
+import static neo.open.gl.QGL.qglEnd;
+import static neo.open.gl.QGL.qglLoadIdentity;
+import static neo.open.gl.QGL.qglLoadMatrixf;
+import static neo.open.gl.QGL.qglMatrixMode;
+import static neo.open.gl.QGL.qglNormalPointer;
+import static neo.open.gl.QGL.qglScissor;
+import static neo.open.gl.QGL.qglStencilMask;
+import static neo.open.gl.QGL.qglTexCoord2fv;
+import static neo.open.gl.QGL.qglTexCoordPointer;
+import static neo.open.gl.QGL.qglTexGenf;
+import static neo.open.gl.QGL.qglVertex3fv;
+import static neo.open.gl.QGL.qglVertexPointer;
+import static neo.open.gl.QGL.qglViewport;
+import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_BUFFER_BIT;
+import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_TEST;
+import static neo.open.gl.QGLConstantsIfc.GL_FLOAT;
+import static neo.open.gl.QGLConstantsIfc.GL_MODELVIEW;
+import static neo.open.gl.QGLConstantsIfc.GL_NORMAL_ARRAY;
+import static neo.open.gl.QGLConstantsIfc.GL_OBJECT_LINEAR;
+import static neo.open.gl.QGLConstantsIfc.GL_R;
+import static neo.open.gl.QGLConstantsIfc.GL_REFLECTION_MAP;
+import static neo.open.gl.QGLConstantsIfc.GL_S;
+import static neo.open.gl.QGLConstantsIfc.GL_STENCIL_BUFFER_BIT;
+import static neo.open.gl.QGLConstantsIfc.GL_STENCIL_TEST;
+import static neo.open.gl.QGLConstantsIfc.GL_T;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_MODE;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_R;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_S;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_T;
+import static neo.open.gl.QGLConstantsIfc.GL_TRIANGLES;
 import static neo.sys.win_glimp.GLimp_ActivateContext;
 import static neo.sys.win_glimp.GLimp_DeactivateContext;
 
@@ -95,7 +94,8 @@ import neo.Renderer.tr_local.viewLight_s;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec4;
-import neo.opengl.Nio;
+import neo.open.MatrixUtil;
+import neo.open.Nio;
 
 /**
  *
@@ -133,12 +133,12 @@ public class tr_render {
      */
     public static void RB_DrawElementsImmediate(final srfTriangles_s tri) {
         backEnd.pc.c_drawElements++;
-        backEnd.pc.c_drawIndexes += tri.numIndexes;
+        backEnd.pc.c_drawIndexes += tri.getIndexes().getNumValues();
         backEnd.pc.c_drawVertexes += tri.numVerts;
 
         if (tri.ambientSurface != null) {
-            if (tri.indexes == tri.ambientSurface.indexes) {
-                backEnd.pc.c_drawRefIndexes += tri.numIndexes;
+            if (tri.getIndexes().getValues() == tri.ambientSurface.getIndexes().getValues()) {
+                backEnd.pc.c_drawRefIndexes += tri.getIndexes().getNumValues();
             }
             if (tri.verts == tri.ambientSurface.verts) {
                 backEnd.pc.c_drawRefVertexes += tri.numVerts;
@@ -146,9 +146,9 @@ public class tr_render {
         }
 
         qglBegin(GL_TRIANGLES);
-        for (int i = 0; i < tri.numIndexes; i++) {
-            qglTexCoord2fv(tri.verts[tri.indexes[i]].st.toFloatBuffer());
-            qglVertex3fv(tri.verts[tri.indexes[i]].xyz.toFloatBuffer());
+        for (int i = 0; i < tri.getIndexes().getNumValues(); i++) {
+            qglTexCoord2fv(tri.verts[tri.getIndexes().getValues().get(i)].st.toFloatBuffer());
+            qglVertex3fv(tri.verts[tri.getIndexes().getValues().get(i)].xyz.toFloatBuffer());
         }
         qglEnd();
     }
@@ -162,30 +162,30 @@ public class tr_render {
     public static void RB_DrawElementsWithCounters(final srfTriangles_s tri) {
 
         backEnd.pc.c_drawElements++;
-        backEnd.pc.c_drawIndexes += tri.numIndexes;
+        backEnd.pc.c_drawIndexes += tri.getIndexes().getNumValues();
         backEnd.pc.c_drawVertexes += tri.numVerts;
         DEBUG_RB_DrawElementsWithCounters++;
 //        TempDump.printCallStack("" + DEBUG_RB_DrawElementsWithCounters);
 
         if (tri.ambientSurface != null) {
-            if (tri.indexes == tri.ambientSurface.indexes) {
-                backEnd.pc.c_drawRefIndexes += tri.numIndexes;
+            if (tri.getIndexes().getValues() == tri.ambientSurface.getIndexes().getValues()) {
+                backEnd.pc.c_drawRefIndexes += tri.getIndexes().getNumValues();
             }
             if (tri.verts == tri.ambientSurface.verts) {
                 backEnd.pc.c_drawRefVertexes += tri.numVerts;
             }
         }
 
-        final int count = r_singleTriangle.GetBool() ? 3 : tri.numIndexes;
+        final int count = r_singleTriangle.GetBool() ? 3 : tri.getIndexes().getNumValues();
         if ((tri.indexCache != null) && r_useIndexBuffers.GetBool()) {
             qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE, vertexCache.Position(tri.indexCache));
-            backEnd.pc.c_vboIndexes += tri.numIndexes;
+            backEnd.pc.c_vboIndexes += tri.getIndexes().getNumValues();
         } else {
             if (r_useIndexBuffers.GetBool()) {
                 vertexCache.UnbindIndex();
             }
 //            if(tri.DBG_count!=11)
-            qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE/*GL_UNSIGNED_INT*/, Nio.wrap(tri.indexes));
+            qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE/*GL_UNSIGNED_INT*/, tri.getIndexes().getValues());
         }
     }
 
@@ -214,7 +214,7 @@ public class tr_render {
             qglDrawElements(GL_TRIANGLES,
                     r_singleTriangle.GetBool() ? 3 : numIndexes,
                     GL_INDEX_TYPE,
-                    Nio.wrap(tri.indexes));
+                    tri.getIndexes().getValues());
         }
     }
 
@@ -271,12 +271,11 @@ public class tr_render {
 //	memcpy( matrix, backEnd.viewDef.projectionMatrix, sizeof( matrix ) );
         //System.arraycopy(backEnd.viewDef.projectionMatrix, 0, matrix, 0, matrix.length);
 
-        qglMatrixMode(GL_PROJECTION);
-        if (backEnd.viewDef.projectionMatrix.length != 16) {
-        	System.err.println("tr_render.RB_EnterWeaponDepthHack length != 16 "+backEnd.viewDef.projectionMatrix.length);
-        }
-        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.projectionMatrix, 16));
-        qglMatrixMode(GL_MODELVIEW);
+//        // projectionMatrix has per definition length of 16! 
+//        if (backEnd.viewDef.getProjectionMatrix().length != 16) {
+//        	System.err.println("tr_render.RB_EnterWeaponDepthHack length != 16 "+backEnd.viewDef.getProjectionMatrix().length);
+//        }
+        MatrixUtil.loadProjectioMatrix(backEnd.viewDef.getProjectionMatrix());
     }
 
     /*
@@ -294,12 +293,8 @@ public class tr_render {
 
         //matrix[14] -= depth;
 
-        FloatBuffer matrix = Nio.wrap(backEnd.viewDef.projectionMatrix, 16);
-        matrix.put(14, matrix.get(14)- depth);
-
-        qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(matrix);
-        qglMatrixMode(GL_MODELVIEW);
+        // projectionMatrix has per definition length of 16! 
+        MatrixUtil.enterModelDepthHack(Nio.wrap(backEnd.viewDef.getProjectionMatrix()), depth);
     }
 
     /*
@@ -310,9 +305,7 @@ public class tr_render {
     public static void RB_LeaveDepthHack() {
         qglDepthRange(0, 1);
 
-        qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.projectionMatrix));
-        qglMatrixMode(GL_MODELVIEW);
+        MatrixUtil.loadProjectioMatrix(backEnd.viewDef.getProjectionMatrix());
     }
 
     /*
@@ -336,7 +329,7 @@ public class tr_render {
 
             // change the matrix if needed
             if (drawSurf.space != backEnd.currentSpace) {
-                qglLoadMatrixf(Nio.wrap(drawSurf.space.modelViewMatrix));
+                qglLoadMatrixf(drawSurf.space.getModelViewMatrix());
             }
 
             if (drawSurf.space.weaponDepthHack) {
@@ -380,7 +373,7 @@ public class tr_render {
         for (drawSurf = drawSurfs; drawSurf != null; drawSurf = drawSurf.nextOnLight) {
             // change the matrix if needed
             if (drawSurf.space != backEnd.currentSpace) {
-                qglLoadMatrixf(Nio.wrap(drawSurf.space.modelViewMatrix));
+                qglLoadMatrixf(drawSurf.space.getModelViewMatrix());
             }
 
             if (drawSurf.space.weaponDepthHack) {
@@ -416,6 +409,53 @@ public class tr_render {
      RB_GetShaderTextureMatrix
      ======================
      */private static int DBG_RB_GetShaderTextureMatrix = 0;
+    public static void RB_GetShaderTextureMatrix(final float[] shaderRegisters, final textureStage_t texture, FloatBuffer matrix/*[16]*/) {
+        matrix.put(0, shaderRegisters[texture.matrix[0][0]]);
+        matrix.put(4, shaderRegisters[texture.matrix[0][1]]);
+        matrix.put(8, 0);
+        float temp = shaderRegisters[texture.matrix[0][2]];
+        matrix.put(12, temp);
+        
+        DBG_RB_GetShaderTextureMatrix++;
+//        System.out.println(">>>>>>" + DBG_RB_GetShaderTextureMatrix);
+//        System.out.println("0:" + Arrays.toString(texture.matrix[0]));
+//        System.out.println("1:" + Arrays.toString(texture.matrix[1]));
+//        System.out.println("<<<<<<" + DBG_RB_GetShaderTextureMatrix);
+
+        // we attempt to keep scrolls from generating incredibly large texture values, but
+        // center rotations and center scales can still generate offsets that need to be > 1
+        if ((temp < -40) || (temp > 40)) {
+            matrix.put(12, temp - ((int) temp));
+        }
+
+        matrix.put(1, shaderRegisters[texture.matrix[1][0]]);
+        matrix.put(5, shaderRegisters[texture.matrix[1][1]]);
+        matrix.put(9, 0);
+        temp = shaderRegisters[texture.matrix[1][2]];
+        matrix.put(13, temp);
+        if ((temp < -40) || (temp > 40)) {
+            matrix.put(13, temp - ((int) temp));
+        }
+
+        matrix.put(2, 0);
+        matrix.put(6, 0);
+        matrix.put(10, 1);
+        matrix.put(14, 0);
+
+        matrix.put(3, 0);
+        matrix.put(7, 0);
+        matrix.put(11, 0);
+        matrix.put(15, 1);
+    }
+
+    /**
+     * 
+     * @param shaderRegisters
+     * @param texture
+     * @param matrix
+     * 
+     * @Deprecated use public static void RB_GetShaderTextureMatrix(final float[] shaderRegisters, final textureStage_t texture, FloatBuffer matrix) instead
+     */
     public static void RB_GetShaderTextureMatrix(final float[] shaderRegisters, final textureStage_t texture, float[] matrix/*[16]*/) {
         matrix[0] = shaderRegisters[texture.matrix[0][0]];
         matrix[4] = shaderRegisters[texture.matrix[0][1]];
@@ -459,7 +499,7 @@ public class tr_render {
      ======================
      */
     public static void RB_LoadShaderTextureMatrix(final float[] shaderRegisters, final textureStage_t texture) {
-        final float[] matrix = new float[16];
+        final FloatBuffer matrix = Nio.newFloatBuffer(16);
 
         RB_GetShaderTextureMatrix(shaderRegisters, texture, matrix);
 //        final float[] m = matrix;
@@ -468,9 +508,7 @@ public class tr_render {
 //                m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15]);
         
 //        TempDump.printCallStack("------->" + (DBG_RB_LoadShaderTextureMatrix++));
-        qglMatrixMode(GL_TEXTURE);
-        qglLoadMatrixf(Nio.wrap(matrix));
-        qglMatrixMode(GL_MODELVIEW);
+        MatrixUtil.loadTextureMatrix(matrix);
     }
     
     /*
@@ -548,10 +586,7 @@ public class tr_render {
             final idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));// {//TODO:figure out how to work these damn casts.
             qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, vert.normalOffset());
 
-            qglMatrixMode(GL_TEXTURE);
-
-            qglLoadMatrixf(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.modelViewMatrix));
-            qglMatrixMode(GL_MODELVIEW);
+            MatrixUtil.loadTextureMatrix(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.getModelViewMatrix()));
         }
 
         // matrix
@@ -668,9 +703,7 @@ public class tr_render {
      */
     public static void RB_BeginDrawingView() {
         // set the modelview matrix for the viewer
-        qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.projectionMatrix));
-        qglMatrixMode(GL_MODELVIEW);
+        MatrixUtil.loadProjectioMatrix(backEnd.viewDef.getProjectionMatrix());
 
         // set the window clipping
         qglViewport(tr.viewportOffset[0] + backEnd.viewDef.viewport.x1,
@@ -817,7 +850,7 @@ public class tr_render {
         // change the matrix and light projection vectors if needed
         if (surf.space != backEnd.currentSpace) {
             backEnd.currentSpace = surf.space;
-            qglLoadMatrixf(Nio.wrap(surf.space.modelViewMatrix));
+            qglLoadMatrixf(surf.space.getModelViewMatrix());
         }
 
         // change the scissor if needed
@@ -869,8 +902,8 @@ public class tr_render {
             }
             // now multiply the texgen by the light texture matrix
             if (lightStage.texture.hasMatrix) {
-                RB_GetShaderTextureMatrix(lightRegs, lightStage.texture, backEnd.lightTextureMatrix);
-                RB_BakeTextureMatrixIntoTexgen( /*reinterpret_cast<class idPlane *>*/inter.lightProjection, backEnd.lightTextureMatrix);
+                RB_GetShaderTextureMatrix(lightRegs, lightStage.texture, backEnd.getLightTextureMatrix());
+                RB_BakeTextureMatrixIntoTexgen( /*reinterpret_cast<class idPlane *>*/inter.lightProjection, backEnd.getLightTextureMatrix());
             }
 
             inter.bumpImage = null;

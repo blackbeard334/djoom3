@@ -183,7 +183,7 @@ public class EventLoop {
                 event = ByteBuffer.allocate(sysEvent_s.BYTES);
                 r = this.com_journalFile.Read(event);
                 ev = new sysEvent_s(event);
-                if (r != ev.BYTES) {
+                if (r != sysEvent_s.BYTES) {
                     common.FatalError("Error reading from journal file");
                 }
                 if (ev.evPtrLength != 0) {
@@ -199,7 +199,7 @@ public class EventLoop {
                 // write the journal value out if needed
                 if (com_journal.GetInteger() == 1) {
                     r = this.com_journalFile.Write(ev.Write());
-                    if (r != ev.BYTES) {
+                    if (r != sysEvent_s.BYTES) {
                         common.FatalError("Error writing to journal file");
                     }
                     if (ev.evPtrLength != 0) {

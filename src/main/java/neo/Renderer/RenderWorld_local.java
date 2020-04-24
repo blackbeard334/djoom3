@@ -98,15 +98,16 @@ import static neo.idlib.math.Plane.PLANESIDE_BACK;
 import static neo.idlib.math.Plane.PLANESIDE_CROSS;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import static neo.idlib.math.Plane.SIDE_BACK;
-import static neo.opengl.QGL.qglBegin;
-import static neo.opengl.QGL.qglColor3f;
-import static neo.opengl.QGL.qglEnd;
-import static neo.opengl.QGL.qglVertex3fv;
-import static neo.opengl.QGLConstantsIfc.GL_LINE_LOOP;
+import static neo.open.gl.QGL.qglBegin;
+import static neo.open.gl.QGL.qglColor3f;
+import static neo.open.gl.QGL.qglEnd;
+import static neo.open.gl.QGL.qglVertex3fv;
+import static neo.open.gl.QGLConstantsIfc.GL_LINE_LOOP;
 import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.ui.UserInterface.uiManager;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -348,7 +349,7 @@ public class RenderWorld_local {
                 if (0 == re.forceUpdate) {
 
                     // check for exact match (OPTIMIZE: check through pointers more)
-                    if (NOT(re.joints) && NOT(re.callbackData) && NOT(def.dynamicModel) && re.equals(def.parms)) {
+                    if (NOT((Object[])re.joints) && NOT(re.callbackData) && NOT(def.dynamicModel) && re.equals(def.parms)) {
                         return;
                     }
 
@@ -1769,7 +1770,7 @@ public class RenderWorld_local {
                 surf.geometry = tri;
 
                 tri.numVerts = src.ParseInt();
-                tri.numIndexes = src.ParseInt();
+                tri.getIndexes().setNumValues(src.ParseInt());
 
                 R_AllocStaticTriSurfVerts(tri, tri.numVerts);
                 for (j = 0; j < tri.numVerts; j++) {
@@ -1787,9 +1788,9 @@ public class RenderWorld_local {
                     tri.verts[j].normal.oSet(2, vec[7]);
                 }
 
-                R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
-                for (j = 0; j < tri.numIndexes; j++) {
-                    tri.indexes[j] = src.ParseInt();
+                R_AllocStaticTriSurfIndexes(tri, tri.getIndexes().getNumValues());
+                for (j = 0; j < tri.getIndexes().getNumValues(); j++) {
+                    tri.getIndexes().getValues().put(j, src.ParseInt());
                 }
                 src.ExpectTokenString("}");
 
@@ -1827,7 +1828,7 @@ public class RenderWorld_local {
             tri.numVerts = src.ParseInt();
             tri.numShadowIndexesNoCaps = src.ParseInt();
             tri.numShadowIndexesNoFrontCaps = src.ParseInt();
-            tri.numIndexes = src.ParseInt();
+            tri.getIndexes().setNumValues(src.ParseInt());
             tri.shadowCapPlaneBits = src.ParseInt();
 
             R_AllocStaticTriSurfShadowVerts(tri, tri.numVerts);
@@ -1847,9 +1848,9 @@ public class RenderWorld_local {
                 final int a = 0;
             }
 
-            R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
-            for (j = 0; j < tri.numIndexes; j++) {
-                tri.indexes[j] = src.ParseInt();
+            R_AllocStaticTriSurfIndexes(tri, tri.getIndexes().getNumValues());
+            for (j = 0; j < tri.getIndexes().getNumValues(); j++) {
+                tri.getIndexes().getValues().put(j, src.ParseInt());
             }
 
             // add the completed surface to the model
@@ -2384,10 +2385,11 @@ public class RenderWorld_local {
                 a = -0.5f / alpha;
             }
 
-            forward.oSet(0, a * tr.viewDef.worldSpace.modelViewMatrix[2]);
-            forward.oSet(1, a * tr.viewDef.worldSpace.modelViewMatrix[6]);
-            forward.oSet(2, a * tr.viewDef.worldSpace.modelViewMatrix[10]);
-            forward.oSet(3, a * tr.viewDef.worldSpace.modelViewMatrix[14]);
+            FloatBuffer modelViewMatrix = tr.viewDef.worldSpace.getModelViewMatrix();
+            forward.oSet(0, a * modelViewMatrix.get(2));
+            forward.oSet(1, a * modelViewMatrix.get(6));
+            forward.oSet(2, a * modelViewMatrix.get(10));
+            forward.oSet(3, a * modelViewMatrix.get(14));
 
             w = p.w;
             for (i = 0; i < w.GetNumPoints(); i++) {
@@ -3505,8 +3507,8 @@ public class RenderWorld_local {
             session.writeDemo.WriteInt(DC_LOADMAP);
 
             final demoHeader_t header = new demoHeader_t();
-//            strncpy(header.mapname, mapName.c_str(), sizeof(header.mapname) - 1);
-            header.mapname = this.mapName.c_str();
+//            strncpy(header.mapname, mapName.getData(), sizeof(header.mapname) - 1);
+            header.mapname = this.mapName.getData().toCharArray();
             header.version[0] = 4;
             header.sizeofRenderEntity[0] = sizeof(renderEntity_s.class);
             header.sizeofRenderLight[0] = sizeof(renderLight_s.class);

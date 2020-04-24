@@ -131,6 +131,7 @@ import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 
 /**
  *
@@ -2043,7 +2044,7 @@ public class CollisionModel_local {
                 	// Unlikely argument type CollisionModel_local.cm_vertex_s for indexOf(Object) on a List<CollisionModel_local.cm_trmVertex_s>
                 	// => indexOf returns always -1
                 	// replace analog cpp code
-                	trmFeature = Arrays.asList(tw.vertices).indexOf(v);
+					trmFeature = Arrays.asList(tw.vertices).indexOf(v);
                 	tw.trace.c.trmFeature = trmFeature;
         			// original cpp code: tw->trace.c.trmFeature = trmpoly - tw->polys;
                     // plain cpp2java does not work: tw.trace.c.trmFeature = trmpoly - tw.polys;
@@ -2267,7 +2268,7 @@ public class CollisionModel_local {
             tw.numPolys = trm.numPolys;
             for (i = 0; i < trm.numPolys; i++) {
                 tw.polys[i].numEdges = trm.polys[i].numEdges;
-                System.arraycopy(trm.polys[i].edges, 0, tw.polys[i].edges, 0, trm.polys[i].numEdges);
+                Nio.arraycopy(trm.polys[i].edges, 0, tw.polys[i].edges, 0, trm.polys[i].numEdges);
                 tw.polys[i].plane.SetNormal(trm.polys[i].normal);
                 tw.polys[i].used = 0;//false;
             }
@@ -4870,7 +4871,7 @@ public class CollisionModel_local {
 
             newp = AllocPolygon(model, newNumEdges);
             newp.oSet(p1);//memcpy( newp, p1, sizeof(cm_polygon_t) );
-            System.arraycopy(newEdges, 0, newp.edges, 0, newNumEdges);//memcpy( newp.edges, newEdges, newNumEdges * sizeof(int) );
+            Nio.arraycopy(newEdges, 0, newp.edges, 0, newNumEdges);//memcpy( newp.edges, newEdges, newNumEdges * sizeof(int) );
             newp.numEdges = newNumEdges;
             newp.checkcount = 0;
             // increase usage count for the edges of this polygon
@@ -6681,8 +6682,8 @@ public class CollisionModel_local {
             this.checkCount++;
             CalculateEdgeNormals(model, model.node);
 
-            //common.Printf( "%s vertex hash spread is %d\n", model.name.c_str(), cm_vertexHash.GetSpread() );
-            //common.Printf( "%s edge hash spread is %d\n", model.name.c_str(), cm_edgeHash.GetSpread() );
+            //common.Printf( "%s vertex hash spread is %d\n", model.name.getData(), cm_vertexHash.GetSpread() );
+            //common.Printf( "%s edge hash spread is %d\n", model.name.getData(), cm_edgeHash.GetSpread() );
             // remove all unused vertices and edges
             OptimizeArrays(model);
             // get model bounds from brush and polygon bounds
@@ -6914,7 +6915,7 @@ public class CollisionModel_local {
                 }
                 // get max verts and edges
                 model.maxVertices += surf.geometry.numVerts;
-                model.maxEdges += surf.geometry.numIndexes;
+                model.maxEdges += surf.geometry.getIndexes().getNumValues();
             }
 
             model.vertices = cm_vertex_s.generateArray(model.maxVertices);
@@ -6939,11 +6940,11 @@ public class CollisionModel_local {
                     continue;
                 }
 
-                for (j = 0; j < surf.geometry.numIndexes; j += 3) {
+                for (j = 0; j < surf.geometry.getIndexes().getNumValues(); j += 3) {
                     w.Clear();
-                    w.oPluSet(surf.geometry.verts[surf.geometry.indexes[j + 2]].xyz);
-                    w.oPluSet(surf.geometry.verts[surf.geometry.indexes[j + 1]].xyz);
-                    w.oPluSet(surf.geometry.verts[surf.geometry.indexes[j + 0]].xyz);
+                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes().getValues().get(j + 2)].xyz);
+                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes().getValues().get(j + 1)].xyz);
+                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes().getValues().get(j + 0)].xyz);
                     w.GetPlane(plane);
                     plane = plane.oNegative();
                     PolygonFromWinding(model, w, plane, surf.shader, 1);

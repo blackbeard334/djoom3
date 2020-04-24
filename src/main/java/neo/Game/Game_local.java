@@ -387,6 +387,7 @@ import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 import neo.sys.sys_public;
 import neo.ui.UserInterface;
 import neo.ui.UserInterface.idUserInterface;
@@ -1377,7 +1378,7 @@ public class Game_local {
             savegame.WriteBool(this.mapCycleLoaded);
             savegame.WriteInt(this.spawnCount);
 
-            if (NOT(this.locationEntities)) {
+            if (NOT((Object[])this.locationEntities)) {
                 savegame.WriteInt(0);
             } else {
                 savegame.WriteInt(gameRenderWorld.NumAreas());
@@ -1842,7 +1843,7 @@ public class Game_local {
                     // see if a target_sessionCommand has forced a changelevel
                     if (this.sessionCommand.Length() != 0) {
 //                        strncpy(ret.sessionCommand, sessionCommand, sizeof(ret.sessionCommand));
-                        ret.sessionCommand = this.sessionCommand.c_str();
+                        ret.sessionCommand = this.sessionCommand.getData().toCharArray();
                         break;
                     }
 
@@ -2621,7 +2622,7 @@ public class Game_local {
 
             if (this.sessionCommand.Length() != 0) {
 //                strncpy(ret.sessionCommand, sessionCommand, sizeof(ret.sessionCommand));
-                ret.sessionCommand = this.sessionCommand.c_str();
+                ret.sessionCommand = this.sessionCommand.getData().toCharArray();
             }
             return ret;
         }
@@ -2985,7 +2986,7 @@ public class Game_local {
 //	idStr::vsnPrintf( text, sizeof( text ), fmt, argptr );
 //	va_end( argptr );
 
-            gameLocal.Error("%s", String.format(fmt, args));
+            idGameLocal.Error("%s", String.format(fmt, args));
         }
 
         public void DWarning(final String fmt, final Object... args) {
@@ -3303,7 +3304,7 @@ public class Game_local {
             return SpawnEntityType(classdef, args, false);
         }
 
-        public idEntity SpawnEntityType(final Class classdef, final idDict args /*= NULL*/) {
+        public idEntity SpawnEntityType(final Class<?> classdef, final idDict args /*= NULL*/) {
             idEntity obj = null;
 
             if (!idEntity.class.isAssignableFrom(classdef)) {
@@ -3330,7 +3331,7 @@ public class Game_local {
             return SpawnEntityType(classdef, null);
         }
 
-        public idEntity SpawnEntityType(final Class classdef) {
+        public idEntity SpawnEntityType(final Class<?> classdef) {
             return SpawnEntityType(classdef, null);
         }
 
@@ -4066,7 +4067,7 @@ public class Game_local {
          the line start,end
          =============
          */
-        public idEntity FindTraceEntity(idVec3 start, idVec3 end, final Class/*idTypeInfo*/ c, final idEntity skip) {
+        public idEntity FindTraceEntity(idVec3 start, idVec3 end, final Class<?>/*idTypeInfo*/ c, final idEntity skip) {
             idEntity ent;
             idEntity bestEnt;
             final float[] scale = {0};
@@ -4796,7 +4797,7 @@ public class Game_local {
             if (msg != null) {
                 event.paramsSize = msg.GetSize();
 //		memcpy( event.paramsBuf, msg.GetData(), msg.GetSize() );
-                System.arraycopy(msg.GetData().array(), 0, event.paramsBuf.array(), 0, msg.GetSize());
+                Nio.arraycopy(msg.GetData().array(), 0, event.paramsBuf.array(), 0, msg.GetSize());
             } else {
                 event.paramsSize = 0;
             }
@@ -4851,15 +4852,15 @@ public class Game_local {
 
             // make sure the index is valid
             if (this.clientDeclRemap[this.localClientNum][ type.ordinal()].Num() == 0) {
-                gameLocal.Error("client received decl index %d before %s decl remap was initialized", index, declManager.GetDeclNameFromType(type));
+                idGameLocal.Error("client received decl index %d before %s decl remap was initialized", index, declManager.GetDeclNameFromType(type));
                 return -1;
             }
             if (index >= this.clientDeclRemap[this.localClientNum][ type.ordinal()].Num()) {
-                gameLocal.Error("client received unmapped %s decl index %d from server", declManager.GetDeclNameFromType(type), index);
+                idGameLocal.Error("client received unmapped %s decl index %d from server", declManager.GetDeclNameFromType(type), index);
                 return -1;
             }
             if (this.clientDeclRemap[this.localClientNum][ type.ordinal()].oGet(index) == -1) {
-                gameLocal.Error("client received unmapped %s decl index %d from server", declManager.GetDeclNameFromType(type), index);
+                idGameLocal.Error("client received unmapped %s decl index %d from server", declManager.GetDeclNameFromType(type), index);
                 return -1;
             }
             return this.clientDeclRemap[this.localClientNum][type.ordinal()].oGet(index);
@@ -5140,7 +5141,7 @@ public class Game_local {
                     if (null == this.entities[ i]) {
                         continue;
                     }
-                    this.entityHash.Add(this.entityHash.GenerateKey(this.entities[ i].name.c_str(), true), i);
+                    this.entityHash.Add(this.entityHash.GenerateKey(this.entities[ i].name.getData(), true), i);
                 }
             }
 
@@ -5718,7 +5719,7 @@ public class Game_local {
 
             final idDecl decl = declManager.DeclByIndex(type, index, false);
             if (decl == null) {
-                gameLocal.Error("server tried to remap bad %s decl index %d", declManager.GetDeclNameFromType(type), index);
+                idGameLocal.Error("server tried to remap bad %s decl index %d", declManager.GetDeclNameFromType(type), index);
                 return;
             }
 
@@ -5774,7 +5775,7 @@ public class Game_local {
                         this.clientEntityStates[clientNum][state.entityNumber] = state;
                     }
 //			memcpy( clientPVS[clientNum], snapshot.pvs, sizeof( snapshot.pvs ) );
-                    System.arraycopy(snapshot.pvs, 0, this.clientPVS[clientNum], 0, snapshot.pvs.length);
+                    Nio.arraycopy(snapshot.pvs, 0, this.clientPVS[clientNum], 0, snapshot.pvs.length);
                     if (lastSnapshot != null) {
                         lastSnapshot.next = nextSnapshot;
                     } else {
@@ -6168,7 +6169,7 @@ public class Game_local {
         @Override
         public void GetBestGameType(final String map, final String gametype, char[] buf/*[MAX_STRING_CHARS ]*/) {
 //	strncpy( buf, gametype, MAX_STRING_CHARS );
-            System.arraycopy(gametype.toCharArray(), 0, buf, 0, MAX_STRING_CHARS);
+            Nio.arraycopy(gametype.toCharArray(), 0, buf, 0, MAX_STRING_CHARS);
             buf[ MAX_STRING_CHARS - 1] = '\0';
         }
 

@@ -191,6 +191,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import neo.TempDump;
 import neo.CM.CollisionModel.contactInfo_t;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.AFEntity.idAFAttachment;
@@ -201,6 +202,7 @@ import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
 import neo.Game.GameEdit.idDragEntity;
 import neo.Game.Game_local.idEntityPtr;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Item.idItem;
 import neo.Game.Misc.idLocationEntity;
 import neo.Game.PlayerIcon.idPlayerIcon;
@@ -1000,7 +1002,7 @@ public class Player {
                     }
 
                     if (i >= MAX_WEAPONS) {
-                        gameLocal.Error("Unknown weapon '%s'", weaponName);
+                        idGameLocal.Error("Unknown weapon '%s'", weaponName);
                     }
 
                     // cache the media for this weapon
@@ -1054,7 +1056,7 @@ public class Player {
                     }
                 }
                 if (weapon_index >= MAX_WEAPONS) {
-                    gameLocal.Error("Unknown weapon '%s'", weapon_classname[0]);
+                    idGameLocal.Error("Unknown weapon '%s'", weapon_classname[0]);
                 }
             } else if (null == weapon_classname[0]) {
                 weapon_classname[0] = spawnArgs.GetString(va("def_weapon%d", weapon_index));
@@ -1103,7 +1105,7 @@ public class Player {
         public int/*ammo_t*/ AmmoIndexForWeaponClass(final String weapon_classname, int[] ammoRequired) {
             final idDeclEntityDef decl = gameLocal.FindEntityDef(weapon_classname, false);
             if (null == decl) {
-                gameLocal.Error("Unknown weapon in decl '%s'", weapon_classname);
+                idGameLocal.Error("Unknown weapon in decl '%s'", weapon_classname);
             }
             if (ammoRequired != null) {
                 ammoRequired[0] = decl.dict.GetInt("ammoRequired");
@@ -1682,7 +1684,7 @@ public class Player {
 //            idBounds bounds;
 
             if (this.entityNumber >= MAX_CLIENTS) {
-                gameLocal.Error("entityNum > MAX_CLIENTS for player.  Player may only be spawned with a client.");
+                idGameLocal.Error("entityNum > MAX_CLIENTS for player.  Player may only be spawned with a client.");
             }
 
             // allow thinking during cinematics
@@ -2692,19 +2694,19 @@ public class Player {
             value[0] = this.spawnArgs.GetString("bone_hips", "");
             this.hipJoint = this.animator.GetJointHandle(value[0]);
             if (this.hipJoint == INVALID_JOINT) {
-                gameLocal.Error("Joint '%s' not found for 'bone_hips' on '%s'", value[0], this.name);
+                idGameLocal.Error("Joint '%s' not found for 'bone_hips' on '%s'", value[0], this.name);
             }
 
             value[0] = this.spawnArgs.GetString("bone_chest", "");
             this.chestJoint = this.animator.GetJointHandle(value[0]);
             if (this.chestJoint == INVALID_JOINT) {
-                gameLocal.Error("Joint '%s' not found for 'bone_chest' on '%s'", value[0], this.name);
+                idGameLocal.Error("Joint '%s' not found for 'bone_chest' on '%s'", value[0], this.name);
             }
 
             value[0] = this.spawnArgs.GetString("bone_head", "");
             this.headJoint = this.animator.GetJointHandle(value[0]);
             if (this.headJoint == INVALID_JOINT) {
-                gameLocal.Error("Joint '%s' not found for 'bone_head' on '%s'", value[0], this.name);
+                idGameLocal.Error("Joint '%s' not found for 'bone_head' on '%s'", value[0], this.name);
             }
 
             // initialize the script variables
@@ -3941,7 +3943,7 @@ public class Player {
             } else {
                 // offset for local bobbing and kicks
                 GetViewPos(this.firstPersonViewOrigin, this.firstPersonViewAxis);
-                if (false) {
+                if (TempDump.isDeadCodeTrue()) {
                     // shakefrom sound stuff only happens in first person
                     this.firstPersonViewAxis = this.firstPersonViewAxis.oMultiply(this.playerView.ShakeAxis());
                 }
@@ -7097,7 +7099,7 @@ public class Player {
 
                 // check for footstep / splash sounds
                 old = this.bobCycle;
-                this.bobCycle = (int) (old + (bobmove * gameLocal.msec)) & 255;
+                this.bobCycle = (int) (old + (bobmove * idGameLocal.msec)) & 255;
                 this.bobFoot = (this.bobCycle & 128) >> 7;
                 this.bobfracsin = idMath.Fabs((float) Math.sin(((this.bobCycle & 127) / 127.0) * idMath.PI));
             }
@@ -7283,7 +7285,7 @@ public class Player {
                 this.bobFrac = 0;
             } else if (!this.physicsObj.OnLadder() && ((this.usercmd.buttons & BUTTON_RUN) != 0) && ((this.usercmd.forwardmove != 0) || (this.usercmd.rightmove != 0)) && (this.usercmd.upmove >= 0)) {
                 if (!gameLocal.isMultiplayer && !this.physicsObj.IsCrouching() && !PowerUpActive(ADRENALINE)) {
-                    this.stamina -= MS2SEC(gameLocal.msec);
+                    this.stamina -= MS2SEC(idGameLocal.msec);
                 }
                 if (this.stamina < 0) {
                     this.stamina = 0;
@@ -7304,7 +7306,7 @@ public class Player {
                     rate *= 1.25f;
                 }
 
-                this.stamina += rate * MS2SEC(gameLocal.msec);
+                this.stamina += rate * MS2SEC(idGameLocal.msec);
                 if (this.stamina > pm_stamina.GetFloat()) {
                     this.stamina = pm_stamina.GetFloat();
                 }
@@ -8428,7 +8430,7 @@ public class Player {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 

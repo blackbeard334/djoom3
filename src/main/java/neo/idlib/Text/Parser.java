@@ -60,6 +60,7 @@ import neo.idlib.Text.Lexer.punctuation_t;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.math.Math_h.idMath;
+import neo.open.Nio;
 import neo.sys.sys_public;
 
 /**
@@ -391,7 +392,7 @@ public class Parser {
                     final idToken newtoken = new idToken();
                     if (this.ReadToken(newtoken)) {
                         if (newtoken.type == TT_STRING) {
-                            token.Append(newtoken.c_str());
+                            token.Append(newtoken.getData());
                         } else {
                             this.UnreadSourceToken(newtoken);
                         }
@@ -853,12 +854,12 @@ public class Parser {
 
             for (i = 0; i < y; i++) {
                 final float[] tempM = new float[m.length - (i * x)];
-                System.arraycopy(m, i * x, tempM, 0, tempM.length);
+                Nio.arraycopy(m, i * x, tempM, 0, tempM.length);
                 if (!this.Parse1DMatrix(x, tempM)) {
-                    System.arraycopy(tempM, 0, m, i * x, tempM.length);
+                    Nio.arraycopy(tempM, 0, m, i * x, tempM.length);
                     return false;
                 }
-                System.arraycopy(tempM, 0, m, i * x, tempM.length);
+                Nio.arraycopy(tempM, 0, m, i * x, tempM.length);
             }
 
             if (!this.ExpectTokenString(")")) {
@@ -876,12 +877,12 @@ public class Parser {
 
             for (i = 0; i < z; i++) {
                 final float[] tempM = new float[m.length - (i * x * y)];
-                System.arraycopy(m, i * x * y, tempM, 0, tempM.length);
+                Nio.arraycopy(m, i * x * y, tempM, 0, tempM.length);
                 if (!this.Parse2DMatrix(y, x, tempM)) {
-                    System.arraycopy(tempM, 0, m, i * x * y, tempM.length);
+                    Nio.arraycopy(tempM, 0, m, i * x * y, tempM.length);
                     return false;
                 }
-                System.arraycopy(tempM, 0, m, i * x * y, tempM.length);
+                Nio.arraycopy(tempM, 0, m, i * x * y, tempM.length);
             }
 
             if (!this.ExpectTokenString(")")) {
@@ -1433,12 +1434,12 @@ public class Parser {
         private boolean MergeTokens(idToken t1, idToken t2) {
             // merging of a name with a name or number
             if ((t1.type == TT_NAME) && ((t2.type == TT_NAME) || ((t2.type == TT_NUMBER) && ((t2.subtype & TT_FLOAT) == 0)))) {
-                t1.Append(t2.c_str());
+                t1.Append(t2.getData());
                 return true;
             }
             // merging of two strings
             if ((t1.type == TT_STRING) && (t2.type == TT_STRING)) {
-                t1.Append(t2.c_str());
+                t1.Append(t2.getData());
                 return true;
             }
             // merging of two numbers
@@ -1447,7 +1448,7 @@ public class Parser {
                     && ((t2.subtype & (TT_HEX | TT_BINARY)) == 0)
                     && (((t1.subtype & TT_FLOAT) == 0)
                     || ((t2.subtype & TT_FLOAT) == 0))) {
-                t1.Append(t2.c_str());
+                t1.Append(t2.getData());
                 return true;
             }
 
@@ -1560,7 +1561,7 @@ public class Parser {
 //		for ( i = 0; i < define.numparms; i++ ) {
 //			Log_Write("define parms %d:", i);
 //			for ( pt = parms[i]; pt; pt = pt.next ) {
-//				Log_Write( "%s", pt.c_str() );
+//				Log_Write( "%s", pt.getData() );
 //			}
 //		}
 //#endif //DEBUG_EVAL
@@ -1923,7 +1924,7 @@ public class Parser {
                 return false;
             }
 
-            hash = PC_NameHash(token.c_str());
+            hash = PC_NameHash(token.getData());
             for (lastdefine = null, define = this.definehash[hash]; define != null; define = define.hashnext) {
                 if (token.equals(define.name)) {
                     if ((define.flags & DEFINE_FIXED) != 0) {
@@ -2646,7 +2647,7 @@ public class Parser {
 //// #endif //DEBUG_EVAL
 //            for (t = firsttoken; t != null; t = nexttoken) {
 //// #ifdef DEBUG_EVAL
-//                // Log_Write(" %s", t.c_str());
+//                // Log_Write(" %s", t.getData());
 //// #endif //DEBUG_EVAL
 //                nexttoken = t.next;
 ////		delete t;
@@ -2753,7 +2754,7 @@ public class Parser {
 // // #endif //DEBUG_EVAL
             // for (t = firsttoken; t; t = nexttoken) {
 // // #ifdef DEBUG_EVAL
-            // // Log_Write(" %s", t.c_str());
+            // // Log_Write(" %s", t.getData());
 // // #endif //DEBUG_EVAL
             // nexttoken = t.next;
             // delete t;
@@ -2800,7 +2801,7 @@ public class Parser {
 //	define = (define_t *) Mem_ClearedAlloc(sizeof(define_t) + token.Length() + 1);
             define = new define_s();
 //	define.name = (char *) define + sizeof(define_t);
-            define.name = String.copyValueOf(token.c_str());
+            define.name = String.copyValueOf(token.getData().toCharArray());
             // add the define to the source
             AddDefineToHash(define, this.definehash);
             // if nothing is defined, just return

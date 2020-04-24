@@ -54,6 +54,7 @@ import neo.Game.AFEntity.idAFEntity_Generic;
 import neo.Game.AFEntity.idAFEntity_WithAttachedHead;
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Light.idLight;
 import neo.Game.Moveable.idMoveable;
 import neo.Game.Player.idPlayer;
@@ -261,7 +262,7 @@ public class SysCmds {
             gameLocal.program.Startup(SCRIPT_DEFAULT);
 
             // error out so that the user can rerun the scripts
-            gameLocal.Error("Exiting map to reload scripts");
+            idGameLocal.Error("Exiting map to reload scripts");
         }
     }
 
@@ -321,7 +322,7 @@ public class SysCmds {
      Kills all the entities of the given class in a level.
      ==================
      */
-    static void KillEntities(final idCmdArgs args, final java.lang.Class/*idTypeInfo*/ superClass) {
+    static void KillEntities(final idCmdArgs args, final java.lang.Class<?>/*idTypeInfo*/ superClass) {
         idEntity ent;
         final idStrList ignore = new idStrList();
         String name;
@@ -2603,7 +2604,7 @@ public class SysCmds {
 
         @Override
         public void run(idCmdArgs args) {
-            gameLocal.Error("game error");
+            idGameLocal.Error("game error");
         }
     }
 

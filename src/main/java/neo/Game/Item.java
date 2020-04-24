@@ -41,6 +41,7 @@ import neo.CM.CollisionModel_local;
 import neo.Game.Entity.idAnimatedEntity;
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Player.idPlayer;
 import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.eventCallback_t;
@@ -207,7 +208,7 @@ public class Item {
             if (giveTo.length() != 0) {
                 ent = gameLocal.FindEntity(giveTo);
                 if (NOT(ent)) {
-                    gameLocal.Error("Item couldn't find owner '%s'", giveTo);
+                    idGameLocal.Error("Item couldn't find owner '%s'", giveTo);
                 }
                 PostEventMS(EV_Touch, 0, ent, null);
             }
@@ -498,7 +499,7 @@ public class Item {
 
                 ent = (idItem) gameLocal.entities[ e.entityNum];
                 if (null == ent) {
-                    gameLocal.Error("idItem::ModelCallback: callback with NULL game entity");
+                    idGameLocal.Error("idItem::ModelCallback: callback with NULL game entity");
                 }
 
                 return ent.UpdateRenderEntity(e, v);
@@ -582,7 +583,7 @@ public class Item {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -775,7 +776,7 @@ public class Item {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -924,7 +925,7 @@ public class Item {
 
             // load the trace model
             if (!CollisionModel_local.collisionModelManager.TrmFromModel(clipModelName, trm)) {
-                gameLocal.Error("idMoveableItem '%s': cannot load collision model %s", this.name, clipModelName);
+                idGameLocal.Error("idMoveableItem '%s': cannot load collision model %s", this.name, clipModelName);
                 return;
             }
 
@@ -1140,7 +1141,7 @@ public class Item {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1221,12 +1222,12 @@ public class Item {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1325,7 +1326,7 @@ public class Item {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 

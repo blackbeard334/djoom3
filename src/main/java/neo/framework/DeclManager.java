@@ -71,6 +71,7 @@ import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.HashIndex.idHashIndex;
 import neo.idlib.containers.List.idList;
+import neo.open.Nio;
 
 /**
  *
@@ -754,9 +755,9 @@ public class DeclManager {
             GetText(declString);
             declText = declString[0].toCharArray();
 //	memmove( buffer + sourceTextOffset + textLength, buffer + sourceTextOffset + sourceTextLength, oldFileLength - sourceTextOffset - sourceTextLength );
-            System.arraycopy(buffer, this.sourceTextOffset + this.sourceTextLength, buffer, this.sourceTextOffset + this.textLength, oldFileLength - this.sourceTextOffset - this.sourceTextLength);
+            Nio.arraycopy(buffer, this.sourceTextOffset + this.sourceTextLength, buffer, this.sourceTextOffset + this.textLength, oldFileLength - this.sourceTextOffset - this.sourceTextLength);
 //	memcpy( buffer + sourceTextOffset, declText, textLength );
-            System.arraycopy(declText, 0, buffer, this.sourceTextOffset, this.textLength);
+            Nio.arraycopy(declText, 0, buffer, this.sourceTextOffset, this.textLength);
 
             // write out new file
             file = fileSystem.OpenFileWrite(GetFileName(), "fs_devpath");
@@ -1555,7 +1556,7 @@ public class DeclManager {
             DEBUG_FindType++;
             if ((name == null) || name.isEmpty()) {
                 name = "_emptyName";
-                //common.Warning( "idDeclManager::FindType: empty %s name", GetDeclType( (int)type ).typeName.c_str() );
+                //common.Warning( "idDeclManager::FindType: empty %s name", GetDeclType( (int)type ).typeName.getData() );
             }
 
             decl = FindTypeWithoutParsing(type, name, makeDefault);
@@ -1818,13 +1819,13 @@ public class DeclManager {
             final char[] declText = new char[size + 1];
 
 //	memcpy( declText, header, header.Length() );
-            System.arraycopy(header.c_str(), 0, declText, 0, header.Length());
+            Nio.arraycopy(header.getData(), 0, declText, 0, header.Length());
             declText[header.Length()] = ' ';
 //	memcpy( declText + header.Length() + 1, canonicalName, idStr::Length( canonicalName ) );
-            System.arraycopy(canonicalName, 0, declText, header.Length() + 1, idStr.Length(canonicalName));
+            Nio.arraycopy(canonicalName, 0, declText, header.Length() + 1, idStr.Length(canonicalName));
             declText[header.Length() + 1 + idStr.Length(canonicalName)] = ' ';
 //	memcpy( declText + header.Length() + 1 + idStr::Length( canonicalName ) + 1, defaultText, defaultText.Length() + 1 );
-            System.arraycopy(defaultText.c_str(), 0, declText, header.Length() + 1 + idStr.Length(canonicalName) + 1, defaultText.Length() + 1);
+            Nio.arraycopy(defaultText.getData(), 0, declText, header.Length() + 1 + idStr.Length(canonicalName) + 1, defaultText.Length() + 1);
 
             final String declString = ctos(declText);
             decl.SetTextLocal(declString, declString.length());

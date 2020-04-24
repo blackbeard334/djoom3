@@ -1,6 +1,6 @@
 package neo.Renderer;
 
-import static neo.opengl.QGLConstantsIfc.GL_UNSIGNED_INT;
+import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_INT;
 
 import java.nio.ByteBuffer;
 import java.util.stream.Stream;
@@ -20,7 +20,8 @@ import neo.idlib.geometry.JointTransform.idJointQuat;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.opengl.Nio;
+import neo.open.NeoIntBuffer;
+import neo.open.Nio;
 
 /**
  *
@@ -141,8 +142,9 @@ public class Model {
         public int                 numVerts;    // number of vertices
         public idDrawVert[]        verts;       // vertices, allocated with special allocator
 
-        public int                 numIndexes;  // for shadows, this has both front and rear end caps and silhouette planes
-        public int /*glIndex_t*/[] indexes;     // indexes, allocated with special allocator
+        //public int                 numIndexes;  // for shadows, this has both front and rear end caps and silhouette planes
+        //public int /*glIndex_t*/[] indexes;     // indexes, allocated with special allocator
+        private NeoIntBuffer         indexes;     // for shadows, this has both front and rear end caps and silhouette planes
 
         public int/*glIndex_t*/[]  silIndexes;  // indexes changed to be the first vertex with same XYZ, ignoring normal and texcoords
 
@@ -194,8 +196,7 @@ public class Model {
             this.deformedSurface = false;
             this.numVerts = 0;
             this.verts = null;
-            this.numIndexes = 0;
-            this.indexes = null;
+            this.indexes = new NeoIntBuffer();
             this.silIndexes = null;
             this.numMirroredVerts = 0;
             this.mirroredVerts = null;
@@ -216,6 +217,11 @@ public class Model {
             this.lightingCache = null;
             this.shadowCache = null;
         }
+
+		public NeoIntBuffer getIndexes() {
+			return this.indexes;
+		}
+
     }
 
     static class idTriList extends idList<srfTriangles_s> {

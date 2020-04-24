@@ -21,45 +21,46 @@ import static neo.framework.Common.common;
 import static neo.idlib.math.Vector.DotProduct;
 import static neo.idlib.math.Vector.VectorSubtract;
 import static neo.idlib.math.Vector.getVec3_origin;
-import static neo.opengl.QGL.qglBegin;
-import static neo.opengl.QGL.qglClear;
-import static neo.opengl.QGL.qglClearColor;
-import static neo.opengl.QGL.qglColor3f;
-import static neo.opengl.QGL.qglColor3ubv;
-import static neo.opengl.QGL.qglCullFace;
-import static neo.opengl.QGL.qglDepthFunc;
-import static neo.opengl.QGL.qglDepthMask;
-import static neo.opengl.QGL.qglDisable;
-import static neo.opengl.QGL.qglEnable;
-import static neo.opengl.QGL.qglEnd;
-import static neo.opengl.QGL.qglFlush;
-import static neo.opengl.QGL.qglLoadIdentity;
-import static neo.opengl.QGL.qglMatrixMode;
-import static neo.opengl.QGL.qglOrtho;
-import static neo.opengl.QGL.qglReadPixels;
-import static neo.opengl.QGL.qglVertex3f;
-import static neo.opengl.QGL.qglViewport;
-import static neo.opengl.QGLConstantsIfc.GL_ALPHA_TEST;
-import static neo.opengl.QGLConstantsIfc.GL_BLEND;
-import static neo.opengl.QGLConstantsIfc.GL_COLOR_BUFFER_BIT;
-import static neo.opengl.QGLConstantsIfc.GL_CULL_FACE;
-import static neo.opengl.QGLConstantsIfc.GL_DEPTH_BUFFER_BIT;
-import static neo.opengl.QGLConstantsIfc.GL_DEPTH_TEST;
-import static neo.opengl.QGLConstantsIfc.GL_FRONT;
-import static neo.opengl.QGLConstantsIfc.GL_LEQUAL;
-import static neo.opengl.QGLConstantsIfc.GL_MODELVIEW;
-import static neo.opengl.QGLConstantsIfc.GL_PROJECTION;
-import static neo.opengl.QGLConstantsIfc.GL_RGBA;
-import static neo.opengl.QGLConstantsIfc.GL_SCISSOR_TEST;
-import static neo.opengl.QGLConstantsIfc.GL_STENCIL_TEST;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_2D;
-import static neo.opengl.QGLConstantsIfc.GL_TRIANGLES;
-import static neo.opengl.QGLConstantsIfc.GL_TRUE;
-import static neo.opengl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
+import static neo.open.gl.QGL.qglBegin;
+import static neo.open.gl.QGL.qglClear;
+import static neo.open.gl.QGL.qglClearColor;
+import static neo.open.gl.QGL.qglColor3f;
+import static neo.open.gl.QGL.qglColor3ubv;
+import static neo.open.gl.QGL.qglCullFace;
+import static neo.open.gl.QGL.qglDepthFunc;
+import static neo.open.gl.QGL.qglDepthMask;
+import static neo.open.gl.QGL.qglDisable;
+import static neo.open.gl.QGL.qglEnable;
+import static neo.open.gl.QGL.qglEnd;
+import static neo.open.gl.QGL.qglFlush;
+import static neo.open.gl.QGL.qglLoadIdentity;
+import static neo.open.gl.QGL.qglMatrixMode;
+import static neo.open.gl.QGL.qglOrtho;
+import static neo.open.gl.QGL.qglReadPixels;
+import static neo.open.gl.QGL.qglVertex3f;
+import static neo.open.gl.QGL.qglViewport;
+import static neo.open.gl.QGLConstantsIfc.GL_ALPHA_TEST;
+import static neo.open.gl.QGLConstantsIfc.GL_BLEND;
+import static neo.open.gl.QGLConstantsIfc.GL_COLOR_BUFFER_BIT;
+import static neo.open.gl.QGLConstantsIfc.GL_CULL_FACE;
+import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_BUFFER_BIT;
+import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_TEST;
+import static neo.open.gl.QGLConstantsIfc.GL_FRONT;
+import static neo.open.gl.QGLConstantsIfc.GL_LEQUAL;
+import static neo.open.gl.QGLConstantsIfc.GL_MODELVIEW;
+import static neo.open.gl.QGLConstantsIfc.GL_PROJECTION;
+import static neo.open.gl.QGLConstantsIfc.GL_RGBA;
+import static neo.open.gl.QGLConstantsIfc.GL_SCISSOR_TEST;
+import static neo.open.gl.QGLConstantsIfc.GL_STENCIL_TEST;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_2D;
+import static neo.open.gl.QGLConstantsIfc.GL_TRIANGLES;
+import static neo.open.gl.QGLConstantsIfc.GL_TRUE;
+import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
 import static neo.sys.win_glimp.GLimp_SwapBuffers;
 import static neo.sys.win_shared.Sys_Milliseconds;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 import neo.TempDump.TODO_Exception;
 import neo.Renderer.Model.idRenderModel;
@@ -76,7 +77,7 @@ import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Matrix.idMat3;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *
@@ -246,7 +247,7 @@ public class renderbump {
 
         orig = new byte[width * height * 4];// Mem_Alloc(width * height * 4);
 //	memcpy( orig, data, width * height * 4 );
-        System.arraycopy(orig, 0, data.array(), 0, width * height * 4);
+        Nio.arraycopy(orig, 0, data.array(), 0, width * height * 4);
 
         for (i = 0; i < width; i++) {
             for (j = 0; j < height; j++) {
@@ -263,7 +264,7 @@ public class renderbump {
                     for (l = -1; l < 2; l++) {
                         int in;
 
-//					in = orig + ( ((j+l)&(height-1))*width + ((i+k)&(width-1)) ) * 4;
+//                        in = orig + ( ((j+l)&(height-1))*width + ((i+k)&(width-1)) ) * 4;
                         in = ((((j + l) & (height - 1)) * width) + ((i + k) & (width - 1))) * 4;
 
                         if ((orig[in + 0] == emptyR) && (orig[in + 1] == emptyG) && (orig[in + 2] == emptyB)) {
@@ -306,7 +307,7 @@ public class renderbump {
 
         orig = new byte[width * height * 4];// Mem_Alloc(width * height * 4);
 //	memcpy( orig, data, width * height * 4 );
-        System.arraycopy(orig, 0, data, 0, width * height * 4);
+        Nio.arraycopy(orig, 0, data, 0, width * height * 4);
 
         for (i = 0; i < width; i++) {
             for (j = 0; j < height; j++) {
@@ -413,11 +414,11 @@ public class renderbump {
         maxLinks = hash.numLinkBlocks * MAX_LINKS_PER_BLOCK;
 
         // for each triangle, place a triLink in each bin that might reference it
-        for (i = 0; i < highMesh.numIndexes; i += 3) {
+        for (i = 0; i < highMesh.getIndexes().getNumValues(); i += 3) {
             // determine which hash bins the triangle will need to be in
             triBounds.Clear();
             for (j = 0; j < 3; j++) {
-                triBounds.AddPoint(highMesh.verts[ highMesh.indexes[i + j]].xyz);
+                triBounds.AddPoint(highMesh.verts[ highMesh.getIndexes().getValues().get(i + j)].xyz);
             }
             for (j = 0; j < 3; j++) {
                 iBounds[0][j] = (int) ((triBounds.oGet(0, j) - hash.bounds.oGet(0, j)) / hash.binSize[j]);
@@ -457,7 +458,7 @@ public class renderbump {
             }
         }
 
-        common.Printf("%d triangles made %d links\n", highMesh.numIndexes / 3, numLinks);
+        common.Printf("%d triangles made %d links\n", highMesh.getIndexes().getNumValues() / 3, numLinks);
 
         return hash;
     }
@@ -483,9 +484,9 @@ public class renderbump {
         final float[] bary = new float[3];
         idVec3 testVert;
 
-        v[0] = highMesh.verts[ highMesh.indexes[ (faceNum * 3) + 0]].xyz;
-        v[1] = highMesh.verts[ highMesh.indexes[ (faceNum * 3) + 1]].xyz;
-        v[2] = highMesh.verts[ highMesh.indexes[ (faceNum * 3) + 2]].xyz;
+        v[0] = highMesh.verts[ highMesh.getIndexes().getValues().get( (faceNum * 3) + 0)].xyz;
+        v[1] = highMesh.verts[ highMesh.getIndexes().getValues().get( (faceNum * 3) + 1)].xyz;
+        v[2] = highMesh.verts[ highMesh.getIndexes().getValues().get( (faceNum * 3) + 2)].xyz;
 
         plane = highMesh.facePlanes[faceNum];
 
@@ -550,7 +551,7 @@ public class renderbump {
         // triangularly interpolate the normals to the sample point
         sampledNormal.oSet(getVec3_origin());
         for (j = 0; j < 3; j++) {
-            sampledNormal.oPluSet(highMesh.verts[ highMesh.indexes[ (faceNum * 3) + j]].normal.oMultiply(bary[j]));
+            sampledNormal.oPluSet(highMesh.verts[ highMesh.getIndexes().getValues().get( (faceNum * 3) + j)].normal.oMultiply(bary[j]));
         }
         sampledNormal.Normalize();
 
@@ -558,7 +559,7 @@ public class renderbump {
         for (int i = 0; i < 4; i++) {
             float color = 0.0f;
             for (j = 0; j < 3; j++) {
-                color += bary[j] * highMesh.verts[ highMesh.indexes[ (faceNum * 3) + j]].color[i];
+                color += bary[j] * highMesh.verts[ highMesh.getIndexes().getValues().get( (faceNum * 3) + j)].getColor().get(i);
             }
             sampledColor[i] = (byte) color;
         }
@@ -708,12 +709,12 @@ public class renderbump {
         // this is a brain-dead rasterizer, but compared to the ray trace,
         // nothing we do here is going to matter performance-wise
         // adjust for resolution and texel centers
-        verts[0][0] = (lowMesh.verts[ lowMesh.indexes[(lowFaceNum * 3) + 0]].st.oGet(0) * rbs[0].width) - 0.5f;
-        verts[1][0] = (lowMesh.verts[ lowMesh.indexes[(lowFaceNum * 3) + 1]].st.oGet(0) * rbs[0].width) - 0.5f;
-        verts[2][0] = (lowMesh.verts[ lowMesh.indexes[(lowFaceNum * 3) + 2]].st.oGet(0) * rbs[0].width) - 0.5f;
-        verts[0][1] = (lowMesh.verts[ lowMesh.indexes[(lowFaceNum * 3) + 0]].st.oGet(1) * rbs[0].width) - 0.5f;
-        verts[1][1] = (lowMesh.verts[ lowMesh.indexes[(lowFaceNum * 3) + 1]].st.oGet(1) * rbs[0].width) - 0.5f;
-        verts[2][1] = (lowMesh.verts[ lowMesh.indexes[(lowFaceNum * 3) + 2]].st.oGet(1) * rbs[0].width) - 0.5f;
+        verts[0][0] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 0)].st.oGet(0) * rbs[0].width) - 0.5f;
+        verts[1][0] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 1)].st.oGet(0) * rbs[0].width) - 0.5f;
+        verts[2][0] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 2)].st.oGet(0) * rbs[0].width) - 0.5f;
+        verts[0][1] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 0)].st.oGet(1) * rbs[0].width) - 0.5f;
+        verts[1][1] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 1)].st.oGet(1) * rbs[0].width) - 0.5f;
+        verts[2][1] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 2)].st.oGet(1) * rbs[0].width) - 0.5f;
 
         // find the texcoord bounding box
         bounds[0][0] = 99999;
@@ -827,7 +828,7 @@ public class renderbump {
                 for (k = 0; k < 3; k++) {
                     int index;
 
-                    index = lowMesh.indexes[(lowFaceNum * 3) + k];
+                    index = lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + k);
                     point.oPluSet(lowMesh.verts[index].xyz.oMultiply(bary[k]));
 
                     // traceNormal will differ from normal if the surface uses unsmoothedTangents
@@ -925,7 +926,7 @@ public class renderbump {
             final modelSurface_s surf = model.Surface(i);
 
             totalVerts += surf.geometry.numVerts;
-            totalIndexes += surf.geometry.numIndexes;
+            totalIndexes += surf.geometry.getIndexes().getNumValues();
         }
 
         final srfTriangles_s newTri = R_AllocStaticTriSurf();
@@ -933,12 +934,12 @@ public class renderbump {
         R_AllocStaticTriSurfIndexes(newTri, totalIndexes);
 
         newTri.numVerts = totalVerts;
-        newTri.numIndexes = totalIndexes;
+        newTri.getIndexes().setNumValues(totalIndexes);
 
         newTri.bounds.Clear();
 
         final idDrawVert[] verts = newTri.verts;
-        final int[]/*glIndex_t*/ indexes = newTri.indexes;
+        final IntBuffer/*glIndex_t*/ indexes = newTri.getIndexes().getValues();
         numIndexes = 0;
         numVerts = 0;
         for (i = 0; i < model.NumSurfaces(); i++) {
@@ -947,11 +948,11 @@ public class renderbump {
 
 //            memcpy(verts + numVerts, tri.verts, tri.numVerts * sizeof(tri.verts[0]));
             System.arraycopy(tri.verts, 0, verts, numVerts, tri.numVerts);
-            for (j = 0; j < tri.numIndexes; j++) {
-                indexes[numIndexes + j] = numVerts + tri.indexes[j];
+            for (j = 0; j < tri.getIndexes().getNumValues(); j++) {
+            	indexes.put(numIndexes + j, numVerts + tri.getIndexes().getValues().get(j));
             }
             newTri.bounds.AddBounds(tri.bounds);
-            numIndexes += tri.numIndexes;
+            numIndexes += tri.getIndexes().getNumValues();
             numVerts += tri.numVerts;
         }
 
@@ -1069,7 +1070,7 @@ public class renderbump {
 //	filename = source;
 //	filename.setFileExtension();
 //	filename.append( "_nooutline.tga" );
-//	common.Printf( "writing %s\n", filename.c_str() );
+//	common.Printf( "writing %s\n", filename.getData() );
 //	WriteTGA( filename, globalPic, width, height );
 //}
         // outline the image several times to help bilinear filtering across disconnected
@@ -1549,13 +1550,13 @@ public class renderbump {
 
                         if (colorPass != 0) {
                             // just render the surface color for artist visualization
-                            for (j = 0; j < mesh.numIndexes; j += 3) {
+                            for (j = 0; j < mesh.getIndexes().getNumValues(); j += 3) {
                                 for (k = 0; k < 3; k++) {
                                     int v;
                                     float[] a;
 
-                                    v = mesh.indexes[j + k];
-                                    qglColor3ubv(Nio.wrap(mesh.verts[v].color));
+                                    v = mesh.getIndexes().getValues().get(j + k);
+                                    qglColor3ubv(mesh.verts[v].getColor());
                                     a = mesh.verts[v].xyz.ToFloatPtr();
                                     qglVertex3f(a[0] + xOff, a[2] + yOff, a[1]);
                                 }
@@ -1564,15 +1565,15 @@ public class renderbump {
                             // render as normal map
                             // we can either flat shade from the plane,
                             // or smooth shade from the vertex normals
-                            for (j = 0; j < mesh.numIndexes; j += 3) {
+                            for (j = 0; j < mesh.getIndexes().getNumValues(); j += 3) {
                                 if (flat) {
                                     final idPlane plane = new idPlane();
                                     idVec3 a2, b2, c2;
                                     int v1, v2, v3;
 
-                                    v1 = mesh.indexes[j + 0];
-                                    v2 = mesh.indexes[j + 1];
-                                    v3 = mesh.indexes[j + 2];
+                                    v1 = mesh.getIndexes().getValues().get(j + 0);
+                                    v2 = mesh.getIndexes().getValues().get(j + 1);
+                                    v3 = mesh.getIndexes().getValues().get(j + 2);
 
                                     a2 = mesh.verts[ v1].xyz;
                                     b2 = mesh.verts[ v2].xyz;
@@ -1600,7 +1601,7 @@ public class renderbump {
                                         float[] n;
                                         float[] a;
 
-                                        v = mesh.indexes[j + k];
+                                        v = mesh.getIndexes().getValues().get(j + k);
                                         n = mesh.verts[v].normal.ToFloatPtr();
 
                                         // NULLNORMAL is used by the artists to force an area to reflect no

@@ -125,10 +125,10 @@ import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
-import neo.opengl.QUser.KeyboardCallback;
-import neo.opengl.QUser.MouseButtonCallback;
-import neo.opengl.QUser.MouseCursorCallback;
-import neo.opengl.QUser.MouseScrollCallback;
+import neo.open.gl.QUser.KeyboardCallback;
+import neo.open.gl.QUser.MouseButtonCallback;
+import neo.open.gl.QUser.MouseCursorCallback;
+import neo.open.gl.QUser.MouseScrollCallback;
 
 /**
  *

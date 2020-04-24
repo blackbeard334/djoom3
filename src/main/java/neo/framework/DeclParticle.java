@@ -22,6 +22,7 @@ import static neo.framework.DeclParticle.prtOrientation_t.POR_Y;
 import static neo.framework.DeclParticle.prtOrientation_t.POR_Z;
 import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import neo.Renderer.Material.idMaterial;
@@ -417,9 +418,11 @@ public class DeclParticle {
             ParticleColors(g, verts);
 
             // if we are completely faded out, kill the particle
-            if ((verts[0].color[0] == 0) && (verts[0].color[1] == 0)
-                    && (verts[0].color[2] == 0) && (verts[0].color[3] == 0)) {
-                return 0;
+            {
+                ByteBuffer color = verts[0].getColor();
+                if ((color.get(0) == 0) && (color.get(1) == 0) && (color.get(2) == 0) && (color.get(3) == 0)) {
+                    return 0;
+                }
             }
 
             ParticleOrigin(g, origin);
@@ -441,19 +444,19 @@ public class DeclParticle {
 
                 verts[numVerts + i].st.x += width;
 
-                verts[numVerts + i].color[0] *= frac;
-                verts[numVerts + i].color[1] *= frac;
-                verts[numVerts + i].color[2] *= frac;
-                verts[numVerts + i].color[3] *= frac;
+                muliplyElementsWith(verts[numVerts + i].getColor(), frac);
 
-                verts[i].color[0] *= iFrac;
-                verts[i].color[1] *= iFrac;
-                verts[i].color[2] *= iFrac;
-                verts[i].color[3] *= iFrac;
+                muliplyElementsWith(verts[i].getColor(), iFrac);
             }
 
             return numVerts * 2;
         }
+
+    	private static void muliplyElementsWith(ByteBuffer color, float faktor) {
+    		for (int i = 0; i < 4; i++) {
+    			color.put(i, (byte) (color.get(i) * faktor));
+    		}
+    	}
 
         public void ParticleOrigin(particleGen_t g, idVec3 origin) throws idException {
             if (this.customPathType == PPATH_STANDARD) {
@@ -860,6 +863,7 @@ public class DeclParticle {
                 }
             }
 
+            byte bcolor;
             for (int i = 0; i < 4; i++) {
                 final float fcolor = ((this.entityColor ? g.renderEnt.shaderParms[i] : this.color.oGet(i)) * fadeFraction) + (this.fadeColor.oGet(i) * (1.0f - fadeFraction));
                 int icolor = idMath.FtoiFast(fcolor * 255.0f);
@@ -868,10 +872,11 @@ public class DeclParticle {
                 } else if (icolor > 255) {
                     icolor = 255;
                 }
-                verts[0].color[i]
-                        = verts[1].color[i]
-                        = verts[2].color[i]
-                        = verts[3].color[i] = (byte) icolor;
+                bcolor =  (byte) icolor;
+                verts[0].getColor().put(i, bcolor); 
+                verts[1].getColor().put(i, bcolor); 
+                verts[2].getColor().put(i, bcolor); 
+                verts[3].getColor().put(i, bcolor); 
             }
         }
 //

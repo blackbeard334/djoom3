@@ -77,10 +77,10 @@ public class tr_polytope {
             }
 
             for (j = 1; j < (w.GetNumPoints() - 1); j++) {
-                tri.indexes[ tri.numIndexes + 0] = tri.numVerts;
-                tri.indexes[ tri.numIndexes + 1] = tri.numVerts + j;
-                tri.indexes[ tri.numIndexes + 2] = tri.numVerts + j + 1;
-                tri.numIndexes += 3;
+                tri.getIndexes().getValues().put( tri.getIndexes().getNumValues() + 0, tri.numVerts);
+                tri.getIndexes().getValues().put( tri.getIndexes().getNumValues() + 1, tri.numVerts + j);
+                tri.getIndexes().getValues().put( tri.getIndexes().getNumValues() + 2, tri.numVerts + j + 1);
+                tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() + 3);
             }
             tri.numVerts += w.GetNumPoints();
 

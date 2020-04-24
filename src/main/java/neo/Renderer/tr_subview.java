@@ -89,9 +89,9 @@ public class tr_subview {
     public static void R_PlaneForSurface(final srfTriangles_s tri, idPlane plane) {
         idDrawVert v1, v2, v3;
 
-        v1 = tri.verts[tri.indexes[0]];
-        v2 = tri.verts[tri.indexes[1]];
-        v3 = tri.verts[tri.indexes[2]];
+        v1 = tri.verts[tri.getIndexes().getValues().get(0)];
+        v2 = tri.verts[tri.getIndexes().getValues().get(1)];
+        v3 = tri.verts[tri.getIndexes().getValues().get(2)];
         plane.FromPoints(v1.xyz, v2.xyz, v3.xyz);
     }
 
@@ -130,8 +130,8 @@ public class tr_subview {
 //		int j;
             int pointFlags;
 
-            R_TransformModelToClip(tri.verts[i].xyz, drawSurf.space.modelViewMatrix,
-                    tr.viewDef.projectionMatrix, eye, clip);
+            R_TransformModelToClip(tri.verts[i].xyz, drawSurf.space.getModelViewMatrix(),
+                    tr.viewDef.getProjectionMatrix(), eye, clip);
 
             pointFlags = 0;
             for (j = 0; j < 3; j++) {
@@ -152,18 +152,18 @@ public class tr_subview {
         }
 
         // backface and frustum cull
-        numTriangles = tri.numIndexes / 3;
+        numTriangles = tri.getIndexes().getNumValues() / 3;
 
         R_GlobalPointToLocal(drawSurf.space.modelMatrix, tr.viewDef.renderView.vieworg, localView);
 
-        for (i = 0; i < tri.numIndexes; i += 3) {
+        for (i = 0; i < tri.getIndexes().getNumValues(); i += 3) {
             idVec3 dir, normal;
             float dot;
             idVec3 d1, d2;
 
-            final idVec3 v1 = tri.verts[tri.indexes[i]].xyz;
-            final idVec3 v2 = tri.verts[tri.indexes[i + 1]].xyz;
-            final idVec3 v3 = tri.verts[tri.indexes[i + 2]].xyz;
+            final idVec3 v1 = tri.verts[tri.getIndexes().getValues().get(i)].xyz;
+            final idVec3 v2 = tri.verts[tri.getIndexes().getValues().get(i + 1)].xyz;
+            final idVec3 v3 = tri.verts[tri.getIndexes().getValues().get(i + 2)].xyz;
 
             // this is a hack, because R_GlobalPointToLocal doesn't work with the non-normalized
             // axis that we get from the gui view transform.  It doesn't hurt anything, because

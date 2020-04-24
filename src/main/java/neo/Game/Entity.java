@@ -78,6 +78,7 @@ import neo.Game.Actor.idActor;
 import neo.Game.FX.idEntityFx;
 import neo.Game.Game.refSound_t;
 import neo.Game.Game_local.idEntityPtr;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Player.idPlayer;
 import neo.Game.Pvs.pvsHandle_t;
 import neo.Game.Animation.Anim.jointModTransform_t;
@@ -136,6 +137,7 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 import neo.ui.UserInterface.idUserInterface;
 
 /**
@@ -384,12 +386,12 @@ public class Entity {
         }
 
         @Override//TODO:final this
-        public java.lang.Class/*idTypeInfo*/ GetType() {//TODO: make method final
+        public java.lang.Class<?>/*idTypeInfo*/ GetType() {//TODO: make method final
             return getClass();
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -636,7 +638,7 @@ public class Entity {
             this.renderEntity.entityNum = this.entityNumber;
 
             // go dormant within 5 frames so that when the map starts most monsters are dormant
-            this.dormantStart = (gameLocal.time - DELAY_DORMANT_TIME) + (gameLocal.msec * 5);
+            this.dormantStart = (gameLocal.time - DELAY_DORMANT_TIME) + (idGameLocal.msec * 5);
 
             origin = new idVec3(this.renderEntity.origin);
             axis = new idMat3(this.renderEntity.axis);
@@ -673,7 +675,7 @@ public class Entity {
                 this.fl.networkSync = (atoi(networkSync.GetValue()) != 0);
             }
 
-            if (false) {
+            if (TempDump.isDeadCodeTrue()) {
                 if (!gameLocal.isClient) {
                     // common.DPrintf( "NET: DBG %s - %s is synced: %s\n", spawnArgs.GetString( "classname", "" ), GetType().classname, fl.networkSync ? "true" : "false" );
                     if ((this.spawnArgs.GetString("classname", "").charAt(0) == '\0') && !this.fl.networkSync) {
@@ -720,7 +722,7 @@ public class Entity {
             // setup script object
             if (ShouldConstructScriptObjectAtSpawn() && this.spawnArgs.GetString("scriptobject", null, scriptObjectName)) {
                 if (!this.scriptObject.SetType(scriptObjectName[0])) {
-                    gameLocal.Error("Script object '%s' not found on entity '%s'.", scriptObjectName[0], this.name);
+                    idGameLocal.Error("Script object '%s' not found on entity '%s'.", scriptObjectName[0], this.name);
                 }
 
                 ConstructScriptObject();
@@ -890,7 +892,7 @@ public class Entity {
             if (this.name.Length() != 0) {
 //            if ( ( name == "NULL" ) || ( name == "null_entity" ) ) {
                 if (("NULL".equals(newname)) || ("null_entity".equals(newname))) {
-                    gameLocal.Error("Cannot name entity '%s'.  '%s' is reserved for script.", this.name, this.name);
+                    idGameLocal.Error("Cannot name entity '%s'.  '%s' is reserved for script.", this.name, this.name);
                 }
                 gameLocal.AddEntityToHash(this.name.getData(), this);
                 gameLocal.program.SetEntity(this.name.getData(), this);
@@ -955,7 +957,7 @@ public class Entity {
             this.renderView.viewaxis = new idMat3(GetPhysics().GetAxis());
 
             // copy global shader parms
-            System.arraycopy(gameLocal.globalShaderParms, 0, this.renderView.shaderParms, 0, MAX_GLOBAL_SHADER_PARMS);
+            Nio.arraycopy(gameLocal.globalShaderParms, 0, this.renderView.shaderParms, 0, MAX_GLOBAL_SHADER_PARMS);
 
             this.renderView.globalMaterial = gameLocal.GetGlobalMaterial();
 
@@ -1413,7 +1415,7 @@ public class Entity {
 
                 ent = gameLocal.entities[e.entityNum];
                 if (null == ent) {
-                    gameLocal.Error("idEntity::ModelCallback: callback with NULL game entity");
+                    idGameLocal.Error("idEntity::ModelCallback: callback with NULL game entity");
                 }
 
                 return ent.UpdateRenderEntity(e, v);
@@ -1493,7 +1495,7 @@ public class Entity {
             return StartSoundShader(shader, channel, soundShaderFlags, broadcast, length);
         }
 
-        public boolean StartSound(final String soundName, final Enum channel, int soundShaderFlags, boolean broadcast, int[] length) {
+        public boolean StartSound(final String soundName, final Enum<?> channel, int soundShaderFlags, boolean broadcast, int[] length) {
             return StartSound(soundName, channel.ordinal(), soundShaderFlags, broadcast, length);
         }
 
@@ -1549,7 +1551,7 @@ public class Entity {
             return true;
         }
 
-        public boolean StartSoundShader(final idSoundShader shader, final Enum channel, int soundShaderFlags, boolean broadcast, int[] length) {
+        public boolean StartSoundShader(final idSoundShader shader, final Enum<?> channel, int soundShaderFlags, boolean broadcast, int[] length) {
             return StartSoundShader(shader, channel.ordinal(), soundShaderFlags, broadcast, length);
         }
 
@@ -2512,7 +2514,7 @@ public class Entity {
 
             final idDict damageDef = gameLocal.FindEntityDefDict(damageDefName, false);
             if (null == damageDef) {
-                gameLocal.Error("Unknown damageDef '%s'\n", damageDefName);
+                idGameLocal.Error("Unknown damageDef '%s'\n", damageDefName);
             }
 
             final int[] damage = {damageDef.GetInt("damage")};
@@ -2729,7 +2731,7 @@ public class Entity {
             final int signalnum = _signalnum.ordinal();
             assert (thread != null);
             if ((signalnum < 0) || (signalnum >= NUM_SIGNALS.ordinal())) {
-                gameLocal.Error("Signal out of range");
+                idGameLocal.Error("Signal out of range");
             }
 
             if (null == this.signals) {
@@ -2752,7 +2754,7 @@ public class Entity {
             assert (thread != null);
 
             if ((signalnum < 0) || (signalnum >= NUM_SIGNALS.ordinal())) {
-                gameLocal.Error("Signal out of range");
+                idGameLocal.Error("Signal out of range");
             }
 
             if (null == this.signals) {
@@ -2816,7 +2818,7 @@ public class Entity {
         public void SignalEvent(idThread thread, signalNum_t _signalNum) {
             final int signalNum = etoi(_signalNum);
             if ((signalNum < 0) || (signalNum >= etoi(NUM_SIGNALS))) {
-                gameLocal.Error("Signal out of range");
+                idGameLocal.Error("Signal out of range");
             }
 
             if (null == this.signals) {
@@ -2890,13 +2892,13 @@ public class Entity {
 //						idToken token3;
                                 token3 = new idToken();
                                 if (!src.ReadToken(token3)) {
-                                    gameLocal.Error("Expecting function name following '::' in gui for entity '%s'", entityGui.name);
+                                    idGameLocal.Error("Expecting function name following '::' in gui for entity '%s'", entityGui.name);
                                 }
                                 token2.Append("::" + token3.getData());
                             }
                             final function_t func = gameLocal.program.FindFunction(token2);
                             if (null == func) {
-                                gameLocal.Error("Can't find function '%s' for gui in entity '%s'", token2, entityGui.name);
+                                idGameLocal.Error("Can't find function '%s' for gui in entity '%s'", token2, entityGui.name);
                             } else {
                                 final idThread thread = new idThread(func);
                                 thread.DelayedStart(0);
@@ -3023,7 +3025,7 @@ public class Entity {
             // ensure that we don't target ourselves since that could cause an infinite loop when activating entities
             for (i = 0; i < this.targets.Num(); i++) {
                 if (this.targets.oGet(i).GetEntity() == this) {
-                    gameLocal.Error("Entity '%s' is targeting itself", this.name);
+                    idGameLocal.Error("Entity '%s' is targeting itself", this.name);
                 }
             }
         }
@@ -3494,11 +3496,11 @@ public class Entity {
                             && this.spawnArgs.GetVector("maxs", null, bounds.oGet(1))) {
                         setClipModel = true;
                         if ((bounds.oGet(0).oGet(0) > bounds.oGet(1).oGet(0)) || (bounds.oGet(0).oGet(1) > bounds.oGet(1).oGet(1)) || (bounds.oGet(0).oGet(2) > bounds.oGet(1).oGet(2))) {
-                            gameLocal.Error("Invalid bounds '%s'-'%s' on entity '%s'", bounds.oGet(0).ToString(), bounds.oGet(1).ToString(), this.name);
+                            idGameLocal.Error("Invalid bounds '%s'-'%s' on entity '%s'", bounds.oGet(0).ToString(), bounds.oGet(1).ToString(), this.name);
                         }
                     } else if (this.spawnArgs.GetVector("size", null, size)) {
                         if ((size.x < 0.0f) || (size.y < 0.0f) || (size.z < 0.0f)) {
-                            gameLocal.Error("Invalid size '%s' on entity '%s'", size.ToString(), this.name);
+                            idGameLocal.Error("Invalid size '%s' on entity '%s'", size.ToString(), this.name);
                         }
                         bounds.oGet(0).Set(size.x * -0.5f, size.y * -0.5f, 0.0f);
                         bounds.oGet(1).Set(size.x * 0.5f, size.y * 0.5f, size.z);
@@ -3569,12 +3571,12 @@ public class Entity {
             }
 
             if (master.equals(this)) {//TODO:equals
-                gameLocal.Error("Tried to bind an object to itself.");
+                idGameLocal.Error("Tried to bind an object to itself.");
                 return false;
             }
 
             if (this == gameLocal.world) {
-                gameLocal.Error("Tried to bind world to another entity");
+                idGameLocal.Error("Tried to bind world to another entity");
                 return false;
             }
 
@@ -3814,22 +3816,22 @@ public class Entity {
                     if (this.spawnArgs.GetString("bindToJoint", "", joint) && (joint[0] != null)) {//TODO:check if java actually compiles them in the right order.
                         parentAnimator = parent.GetAnimator();
                         if (NOT(parentAnimator)) {
-                            gameLocal.Error("Cannot bind to joint '%s' on '%s'.  Entity does not support skeletal models.", joint[0], this.name);
+                            idGameLocal.Error("Cannot bind to joint '%s' on '%s'.  Entity does not support skeletal models.", joint[0], this.name);
                         }
                         bindJoint = parentAnimator.GetJointHandle(joint[0]);
                         if (bindJoint == INVALID_JOINT) {
-                            gameLocal.Error("Joint '%s' not found for bind on '%s'", joint[0], this.name);
+                            idGameLocal.Error("Joint '%s' not found for bind on '%s'", joint[0], this.name);
                         }
 
                         // bind it relative to a specific anim
                         if ((parent.spawnArgs.GetString("bindanim", "", bindanim) || parent.spawnArgs.GetString("anim", "", bindanim)) && (bindanim[0] != null)) {
                             animNum = parentAnimator.GetAnim(bindanim[0]);
                             if (0 == animNum) {
-                                gameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], this.name);
+                                idGameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], this.name);
                             }
                             anim = parentAnimator.GetAnim(animNum);
                             if (NOT(anim)) {
-                                gameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], this.name);
+                                idGameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], this.name);
                             }
 
                             // make sure parent's render origin has been set
@@ -3875,7 +3877,7 @@ public class Entity {
         private static void Event_GetShaderParm(idEntity e, idEventArg<Integer> parm) {
             final int parmnum = parm.value;
             if ((parmnum < 0) || (parmnum >= MAX_ENTITY_SHADER_PARMS)) {
-                gameLocal.Error("shader parm index (%d) out of range", parmnum);
+                idGameLocal.Error("shader parm index (%d) out of range", parmnum);
             }
 
             idThread.ReturnFloat(e.renderEntity.shaderParms[parmnum]);
@@ -4200,7 +4202,7 @@ public class Entity {
             final idThread thread = idThread.CurrentThread();
 
             if (null == thread) {
-                gameLocal.Error("Event 'wait' called from outside thread");
+                idGameLocal.Error("Event 'wait' called from outside thread");
             }
 
             thread.WaitSec(time.value);
@@ -4224,19 +4226,19 @@ public class Entity {
 
             thread = idThread.CurrentThread();
             if (null == thread) {
-                gameLocal.Error("Event 'callFunction' called from outside thread");
+                idGameLocal.Error("Event 'callFunction' called from outside thread");
             }
 
             func = this.scriptObject.GetFunction(funcName);
             if (NOT(func)) {
-                gameLocal.Error("Unknown function '%s' in '%s'", funcName, this.scriptObject.GetTypeName());
+                idGameLocal.Error("Unknown function '%s' in '%s'", funcName, this.scriptObject.GetTypeName());
             }
 
             if (func.type.NumParameters() != 1) {
-                gameLocal.Error("Function '%s' has the wrong number of parameters for 'callFunction'", funcName);
+                idGameLocal.Error("Function '%s' has the wrong number of parameters for 'callFunction'", funcName);
             }
             if (!this.scriptObject.GetTypeDef().Inherits(func.type.GetParmType(0))) {
-                gameLocal.Error("Function '%s' is the wrong type for 'callFunction'", funcName);
+                idGameLocal.Error("Function '%s' is the wrong type for 'callFunction'", funcName);
             }
 
             // function args will be invalid after this call
@@ -4797,7 +4799,7 @@ public class Entity {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 

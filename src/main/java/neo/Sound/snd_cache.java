@@ -12,15 +12,15 @@ import static neo.framework.FileSystem_h.FILE_NOT_FOUND_TIMESTAMP;
 import static neo.framework.FileSystem_h.fileSystem;
 import static neo.idlib.Lib.Min;
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
-import static neo.openal.QAL.alBufferData;
-import static neo.openal.QAL.alDeleteBuffers;
-import static neo.openal.QAL.alGenBuffers;
-import static neo.openal.QAL.alGetError;
-import static neo.openal.QAL.alIsBuffer;
-import static neo.openal.QAL.alIsExtensionPresent;
-import static neo.openal.QALConstantsIfc.AL_FORMAT_MONO16;
-import static neo.openal.QALConstantsIfc.AL_FORMAT_STEREO16;
-import static neo.openal.QALConstantsIfc.AL_NO_ERROR;
+import static neo.open.al.QAL.alBufferData;
+import static neo.open.al.QAL.alDeleteBuffers;
+import static neo.open.al.QAL.alGenBuffers;
+import static neo.open.al.QAL.alGetError;
+import static neo.open.al.QAL.alIsBuffer;
+import static neo.open.al.QAL.alIsExtensionPresent;
+import static neo.open.al.QALConstantsIfc.AL_FORMAT_MONO16;
+import static neo.open.al.QALConstantsIfc.AL_FORMAT_STEREO16;
+import static neo.open.al.QALConstantsIfc.AL_NO_ERROR;
 
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
@@ -34,7 +34,7 @@ import neo.framework.File_h.idFile;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *
@@ -654,7 +654,7 @@ public class snd_cache {
                     continue;
                 }
                 if (!sample.levelLoadReferenced) {
-//			common.Printf( "Purging %s\n", sample.name.c_str() );
+//			common.Printf( "Purging %s\n", sample.name.getData() );
                     purgeCount += sample.objectMemSize;
                     sample.PurgeSoundSample();
                 } else {

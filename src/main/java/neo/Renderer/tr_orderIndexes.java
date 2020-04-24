@@ -3,6 +3,7 @@ package neo.Renderer;
 import static neo.framework.Common.common;
 
 import neo.idlib.Lib.idException;
+import neo.open.Nio;
 
 /**
  *
@@ -88,7 +89,7 @@ public class tr_orderIndexes {
         // save off the original indexes
         oldIndexes = new int[numIndexes];
 //	memcpy( oldIndexes, indexes, numIndexes * sizeof( *oldIndexes ) );
-        System.arraycopy(indexes, 0, oldIndexes, 0, numIndexes);
+        Nio.arraycopy(indexes, 0, oldIndexes, 0, numIndexes);
         numOldIndexes = numIndexes;
 
         // make a table to mark the triangles when they are emited

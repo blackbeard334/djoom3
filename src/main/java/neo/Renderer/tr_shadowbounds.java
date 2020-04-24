@@ -6,6 +6,8 @@ import static neo.idlib.Lib.colorGreen;
 import static neo.idlib.Lib.colorRed;
 import static neo.idlib.Lib.colorYellow;
 
+import java.util.ArrayList;
+
 import neo.Renderer.tr_local.idRenderEntityLocal;
 import neo.Renderer.tr_local.idRenderLightLocal;
 import neo.Renderer.tr_local.idScreenRect;
@@ -14,6 +16,7 @@ import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat4;
+import neo.open.MatrixUtil;
 
 /**
  *
@@ -26,54 +29,56 @@ public class tr_shadowbounds {
 // --cass
     static class MyArray<T> {
 
-        private MyArray() {
-            this.N = -1;
-        }
+        //private MyArray() {
+        //    this.N = -1;
+        //}
 
         public MyArray(final int N) //: s(0) 
         {
-            this.N = N;
-            this.v = (T[]) new Object[N];
+        	//this.N = N;
+            this.v = new ArrayList<T>();
         }
 
         public MyArray(final int N, final MyArray<T> cpy) //: s(cpy.s)
         {
-            this.N = N;
-            this.v = (T[]) new Object[N];
-            for (int i = 0; i < this.s; i++) {
-                this.v[i] = cpy.v[i];
+            //this.N = N;
+            this.v = new ArrayList<T>();
+            for (int i = 0; i < cpy.size(); i++) {
+            	this.v.add(cpy.v.get(i));
             }
         }
-
+        
         public void push_back(final T i) {
-            this.v[this.s] = i;
-            this.s++;
+            //this.v[this.s] = i;
+        	this.v.add(i);
+            //this.s++;
             //if(s > max_size)
             //	max_size = int(s);
         }
 
         public T oGet(final int index) {
-            return this.v[index];
+            return this.v.get(index);
         }
 
         public T oSet(final int index, final T value) {
-            return this.v[index] = value;
+            return this.v.set(index, value);
         }
 
 //	const T & operator[](int i) const {
 //		return v[i];
 //	}
         int size() {
-            return this.s;
+            return this.v.size();
         }
 
         void empty() {
-            this.s = 0;
+            this.v.clear();
         }
 //
-        private final int N;
-        T[] v;// = (T[]) new Object[N];
-        int s;
+       // private final int N;
+        ArrayList<T> v;
+        //T[] v;// = (T[]) new Object[N];
+        //int s;
 //	static int max_size;
     }
 
@@ -238,7 +243,7 @@ public class tr_shadowbounds {
                     // check all remaining polygons
                     for (int j = i + 1; j < P; j++) {
                         final MyArrayInt vj = this.p.oGet(j).vi;
-                        final MyArrayInt nj = this.p.oGet(j).ni;
+                        //final MyArrayInt nj = this.p.oGet(j).ni;
                         final int Sj = vj.size();
 
                         for (int jj = 0; jj < Sj; jj++) {
@@ -524,24 +529,7 @@ public class tr_shadowbounds {
     }
 
     public static void world_to_hclip(final viewDef_s viewDef, final idVec4 global, idVec4 clip) {
-        int i;
-        final idVec4 view = new idVec4();
-
-        for (i = 0; i < 4; i++) {
-            view.oSet(i,
-                    (global.oGet(0) * viewDef.worldSpace.modelViewMatrix[ i + (0 * 4)])
-                    + (global.oGet(1) * viewDef.worldSpace.modelViewMatrix[ i + (1 * 4)])
-                    + (global.oGet(2) * viewDef.worldSpace.modelViewMatrix[ i + (2 * 4)])
-                    + (global.oGet(3) * viewDef.worldSpace.modelViewMatrix[ i + (3 * 4)]));
-        }
-
-        for (i = 0; i < 4; i++) {
-            clip.oSet(i,
-                    (view.oGet(0) * viewDef.projectionMatrix[ i + (0 * 4)])
-                    + (view.oGet(1) * viewDef.projectionMatrix[ i + (1 * 4)])
-                    + (view.oGet(2) * viewDef.projectionMatrix[ i + (2 * 4)])
-                    + (view.oGet(3) * viewDef.projectionMatrix[ i + (3 * 4)]));
-        }
+        MatrixUtil.matrixToClipGet4Set4(global, clip, new idVec4(), viewDef.worldSpace.getModelViewMatrix(), viewDef.getProjectionMatrix());
     }
 
     public static idScreenRect R_CalcIntersectionScissor(final idRenderLightLocal lightDef, final idRenderEntityLocal entityDef, final viewDef_s viewDef) {

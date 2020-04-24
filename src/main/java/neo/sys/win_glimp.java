@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 
 import neo.TempDump.TODO_Exception;
 import neo.idlib.Text.Str.idStr;
-import neo.opengl.QUser;
+import neo.open.gl.QUser;
 
 /**
  *
@@ -235,7 +235,7 @@ public class win_glimp {
 ////        // restore gamma
 ////        GLimp_RestoreGamma();//TODO:check if our java opengl requires restoring gamma.
 ////
-////        // shutdown QGL subsystem
+////        // shutdown qgl subsystem
 ////        QGL_Shutdown();//not necessary.
         QUser.shutdown();
     }

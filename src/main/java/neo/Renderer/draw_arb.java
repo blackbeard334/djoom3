@@ -24,51 +24,51 @@ import static neo.Renderer.tr_local.glConfig;
 import static neo.Renderer.tr_render.RB_CreateSingleDrawInteractions;
 import static neo.Renderer.tr_render.RB_DrawElementsWithCounters;
 import static neo.TempDump.NOT;
-import static neo.opengl.QGL.qglClear;
-import static neo.opengl.QGL.qglColor3f;
-import static neo.opengl.QGL.qglColor4fv;
-import static neo.opengl.QGL.qglColorPointer;
-import static neo.opengl.QGL.qglDisable;
-import static neo.opengl.QGL.qglDisableClientState;
-import static neo.opengl.QGL.qglEnable;
-import static neo.opengl.QGL.qglEnableClientState;
-import static neo.opengl.QGL.qglScissor;
-import static neo.opengl.QGL.qglStencilFunc;
-import static neo.opengl.QGL.qglTexCoord2f;
-import static neo.opengl.QGL.qglTexCoordPointer;
-import static neo.opengl.QGL.qglTexEnvi;
-import static neo.opengl.QGL.qglTexGenfv;
-import static neo.opengl.QGL.qglVertexPointer;
-import static neo.opengl.QGLConstantsIfc.GL_ALPHA_SCALE;
-import static neo.opengl.QGLConstantsIfc.GL_ALWAYS;
-import static neo.opengl.QGLConstantsIfc.GL_COLOR_ARRAY;
-import static neo.opengl.QGLConstantsIfc.GL_COMBINE_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_COMBINE_RGB_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_DOT3_RGBA_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_FLOAT;
-import static neo.opengl.QGLConstantsIfc.GL_MODULATE;
-import static neo.opengl.QGLConstantsIfc.GL_OBJECT_PLANE;
-import static neo.opengl.QGLConstantsIfc.GL_ONE_MINUS_SRC_COLOR;
-import static neo.opengl.QGLConstantsIfc.GL_OPERAND0_RGB_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_OPERAND1_RGB_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_PREVIOUS_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_PRIMARY_COLOR_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_Q;
-import static neo.opengl.QGLConstantsIfc.GL_RGB_SCALE_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_S;
-import static neo.opengl.QGLConstantsIfc.GL_SOURCE0_RGB_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_SOURCE1_RGB_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_SRC_COLOR;
-import static neo.opengl.QGLConstantsIfc.GL_STENCIL_BUFFER_BIT;
-import static neo.opengl.QGLConstantsIfc.GL_STENCIL_TEST;
-import static neo.opengl.QGLConstantsIfc.GL_T;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_COORD_ARRAY;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_ENV;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_GEN_Q;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_GEN_S;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_GEN_T;
-import static neo.opengl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
+import static neo.open.gl.QGL.qglClear;
+import static neo.open.gl.QGL.qglColor3f;
+import static neo.open.gl.QGL.qglColor4fv;
+import static neo.open.gl.QGL.qglColorPointer;
+import static neo.open.gl.QGL.qglDisable;
+import static neo.open.gl.QGL.qglDisableClientState;
+import static neo.open.gl.QGL.qglEnable;
+import static neo.open.gl.QGL.qglEnableClientState;
+import static neo.open.gl.QGL.qglScissor;
+import static neo.open.gl.QGL.qglStencilFunc;
+import static neo.open.gl.QGL.qglTexCoord2f;
+import static neo.open.gl.QGL.qglTexCoordPointer;
+import static neo.open.gl.QGL.qglTexEnvi;
+import static neo.open.gl.QGL.qglTexGenfv;
+import static neo.open.gl.QGL.qglVertexPointer;
+import static neo.open.gl.QGLConstantsIfc.GL_ALPHA_SCALE;
+import static neo.open.gl.QGLConstantsIfc.GL_ALWAYS;
+import static neo.open.gl.QGLConstantsIfc.GL_COLOR_ARRAY;
+import static neo.open.gl.QGLConstantsIfc.GL_COMBINE_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_COMBINE_RGB_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_DOT3_RGBA_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_FLOAT;
+import static neo.open.gl.QGLConstantsIfc.GL_MODULATE;
+import static neo.open.gl.QGLConstantsIfc.GL_OBJECT_PLANE;
+import static neo.open.gl.QGLConstantsIfc.GL_ONE_MINUS_SRC_COLOR;
+import static neo.open.gl.QGLConstantsIfc.GL_OPERAND0_RGB_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_OPERAND1_RGB_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_PREVIOUS_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_PRIMARY_COLOR_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_Q;
+import static neo.open.gl.QGLConstantsIfc.GL_RGB_SCALE_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_S;
+import static neo.open.gl.QGLConstantsIfc.GL_SOURCE0_RGB_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_SOURCE1_RGB_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_SRC_COLOR;
+import static neo.open.gl.QGLConstantsIfc.GL_STENCIL_BUFFER_BIT;
+import static neo.open.gl.QGLConstantsIfc.GL_STENCIL_TEST;
+import static neo.open.gl.QGLConstantsIfc.GL_T;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_COORD_ARRAY;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_ENV;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_Q;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_S;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_T;
+import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
 
 import neo.Renderer.Model.lightingCache_s;
 import neo.Renderer.Model.srfTriangles_s;
@@ -79,7 +79,6 @@ import neo.Renderer.tr_local.viewLight_s;
 import neo.Renderer.tr_render.DrawInteraction;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Vector.idVec4;
-import neo.opengl.Nio;
 
 /**
  *
@@ -280,7 +279,7 @@ public class draw_arb {
                 qglColor4fv(din.diffuseColor.toFloatBuffer());
             } else {
                 // FIXME: does this not get diffuseColor blended in?
-                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ Nio.wrap(ac.color));
+                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.getColor());
                 qglEnableClientState(GL_COLOR_ARRAY);
 
                 if (din.vertexColor == SVC_INVERSE_MODULATE) {
@@ -425,7 +424,7 @@ public class draw_arb {
                 qglColor4fv(din.diffuseColor.toFloatBuffer());
             } else {
                 // FIXME: does this not get diffuseColor blended in?
-                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ Nio.wrap(ac.color));
+                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.getColor());
                 qglEnableClientState(GL_COLOR_ARRAY);
 
                 if (din.vertexColor == SVC_INVERSE_MODULATE) {

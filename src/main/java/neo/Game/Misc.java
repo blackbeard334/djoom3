@@ -89,6 +89,7 @@ import neo.Game.Actor.idActor;
 import neo.Game.Camera.idCamera;
 import neo.Game.Entity.idEntity;
 import neo.Game.Game_local.idEntityPtr;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Moveable.idMoveable;
 import neo.Game.Player.idPlayer;
 import neo.Game.Projectile.idProjectile;
@@ -162,7 +163,7 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
@@ -368,12 +369,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -466,12 +467,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -560,12 +561,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -638,7 +639,7 @@ public class Misc {
             // make sure the model gets cached
             this.spawnArgs.GetString("broken", "", broken);
             if ((broken.Length() != 0) && NOT(renderModelManager.CheckModel(broken.getData()))) {
-                gameLocal.Error("idDamagable '%s' at (%s): cannot load broken model '%s'", this.name, GetPhysics().GetOrigin().ToString(0), broken);
+                idGameLocal.Error("idDamagable '%s' at (%s): cannot load broken model '%s'", this.name, GetPhysics().GetOrigin().ToString(0), broken);
             }
 
             this.fl.takedamage = true;
@@ -728,12 +729,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -805,12 +806,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -910,7 +911,7 @@ public class Misc {
             if (name1.Length() != 0) {
                 this.ent1 = gameLocal.FindEntity(name1.getData());
                 if (null == this.ent1) {
-                    gameLocal.Error("idSpring '%s' at (%s): cannot find first entity '%s'", this.name, GetPhysics().GetOrigin().ToString(0), name1);
+                    idGameLocal.Error("idSpring '%s' at (%s): cannot find first entity '%s'", this.name, GetPhysics().GetOrigin().ToString(0), name1);
                 }
             } else {
                 this.ent1 = gameLocal.entities[ENTITYNUM_WORLD];
@@ -919,7 +920,7 @@ public class Misc {
             if (name2.Length() != 0) {
                 this.ent2 = gameLocal.FindEntity(name2.getData());
                 if (null == this.ent2) {
-                    gameLocal.Error("idSpring '%s' at (%s): cannot find second entity '%s'", this.name, GetPhysics().GetOrigin().ToString(0), name2);
+                    idGameLocal.Error("idSpring '%s' at (%s): cannot find second entity '%s'", this.name, GetPhysics().GetOrigin().ToString(0), name2);
                 }
             } else {
                 this.ent2 = gameLocal.entities[ENTITYNUM_WORLD];
@@ -934,12 +935,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1072,12 +1073,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1217,7 +1218,7 @@ public class Misc {
             } else {
                 this.anim = this.animator.GetAnim(animname[0]);
                 if (0 == this.anim) {
-                    gameLocal.Error("idAnimated '%s' at (%s): cannot find anim '%s'", this.name, GetPhysics().GetOrigin().ToString(0), animname[0]);
+                    idGameLocal.Error("idAnimated '%s' at (%s): cannot find anim '%s'", this.name, GetPhysics().GetOrigin().ToString(0), animname[0]);
                 }
             }
 
@@ -1230,7 +1231,7 @@ public class Misc {
             } else if (this.spawnArgs.GetString("start_anim", "", animname)) {
                 anim2 = this.animator.GetAnim(animname[0]);
                 if (0 == anim2) {
-                    gameLocal.Error("idAnimated '%s' at (%s): cannot find anim '%s'", this.name, GetPhysics().GetOrigin().ToString(0), animname[0]);
+                    idGameLocal.Error("idAnimated '%s' at (%s): cannot find anim '%s'", this.name, GetPhysics().GetOrigin().ToString(0), animname[0]);
                 }
                 this.animator.CycleAnim(ANIMCHANNEL_ALL, anim2, gameLocal.time, 0);
             } else if (this.anim != 0) {
@@ -1437,7 +1438,7 @@ public class Misc {
             launch = this.animator.GetJointHandle(launchjoint.value);
             if (launch == INVALID_JOINT) {
                 gameLocal.Warning("idAnimated '%s' at (%s): unknown launch joint '%s'", this.name, GetPhysics().GetOrigin().ToString(0), launchjoint.value);
-                gameLocal.Error("Unknown joint '%s'", launchjoint.value);
+                idGameLocal.Error("Unknown joint '%s'", launchjoint.value);
             }
 
             target = this.animator.GetJointHandle(targetjoint.value);
@@ -1482,7 +1483,7 @@ public class Misc {
 
             gameLocal.SpawnEntityDef(projectileDef, ent, false);
             if ((null == ent[0]) || !ent[0].IsType(idProjectile.class)) {
-                gameLocal.Error("idAnimated '%s' at (%s): in 'launchMissiles' call '%s' is not an idProjectile", this.name, GetPhysics().GetOrigin().ToString(0), projectilename);
+                idGameLocal.Error("idAnimated '%s' at (%s): in 'launchMissiles' call '%s' is not an idProjectile", this.name, GetPhysics().GetOrigin().ToString(0), projectilename);
             }
             projectile = (idProjectile) ent[0];
             projectile.Create(this, launchPos, dir);
@@ -1494,7 +1495,7 @@ public class Misc {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1739,12 +1740,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1835,7 +1836,7 @@ public class Misc {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1956,12 +1957,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2024,7 +2025,7 @@ public class Misc {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2100,7 +2101,7 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
@@ -2143,7 +2144,7 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
@@ -2183,7 +2184,7 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
@@ -2260,12 +2261,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2313,7 +2314,7 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
@@ -2463,7 +2464,7 @@ public class Misc {
             }
 
             if (null == targetBeam) {
-                gameLocal.Error("Could not find valid beam target for '%s'", this.name);
+                idGameLocal.Error("Could not find valid beam target for '%s'", this.name);
             }
 
             this.target.oSet(targetBeam);
@@ -2487,7 +2488,7 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
@@ -2522,7 +2523,7 @@ public class Misc {
             /*
              model = dynamic_cast<idRenderModelLiquid *>( renderEntity.hModel );
              if ( !model ) {
-             gameLocal.Error( "Entity '%s' must have liquid model", name.c_str() );
+             gameLocal.Error( "Entity '%s' must have liquid model", name.getData() );
              }
              model->Reset();
              GetPhysics()->SetContents( CONTENTS_TRIGGER );
@@ -2556,12 +2557,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2662,12 +2663,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2685,7 +2686,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idEarthQuake extends idEntity {
-        // CLASS_PROTOTYPE( idEarthQuake );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -5892291559148660706L;
+		// CLASS_PROTOTYPE( idEarthQuake );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -2838,12 +2843,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2862,7 +2867,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idFuncPortal extends idEntity {
-        // CLASS_PROTOTYPE( idFuncPortal );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 935062458871120297L;
+		// CLASS_PROTOTYPE( idFuncPortal );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -2917,12 +2926,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2940,7 +2949,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idFuncAASPortal extends idEntity {
-        // CLASS_PROTOTYPE( idFuncAASPortal );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 2352468639457188273L;
+		// CLASS_PROTOTYPE( idFuncAASPortal );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -2985,12 +2998,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -3008,7 +3021,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idFuncAASObstacle extends idEntity {
-        // CLASS_PROTOTYPE( idFuncAASObstacle );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 2338709258716423473L;
+		// CLASS_PROTOTYPE( idFuncAASObstacle );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -3054,12 +3071,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -3078,7 +3095,11 @@ public class Misc {
     public static final idEventDef EV_ResetRadioHud = new idEventDef("<resetradiohud>", "e");
 
     public static class idFuncRadioChatter extends idEntity {
-        // CLASS_PROTOTYPE( idFuncRadioChatter );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -8168694844528207578L;
+		// CLASS_PROTOTYPE( idFuncRadioChatter );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -3155,12 +3176,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -3179,7 +3200,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idPhantomObjects extends idEntity {
-        // CLASS_PROTOTYPE( idPhantomObjects );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -3576149907834991213L;
+		// CLASS_PROTOTYPE( idPhantomObjects );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -3438,12 +3463,12 @@ public class Misc {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 

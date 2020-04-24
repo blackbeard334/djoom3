@@ -37,6 +37,7 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 import neo.ui.UserInterface.idUserInterface;
 
 /**
@@ -201,7 +202,7 @@ public class RenderWorld {
             this.referenceShader = newEntity.referenceShader;
             this.customSkin = newEntity.customSkin;
             this.referenceSound = newEntity.referenceSound;
-            System.arraycopy(newEntity.shaderParms, 0, this.shaderParms, 0, this.shaderParms.length);
+            Nio.arraycopy(newEntity.shaderParms, 0, this.shaderParms, 0, this.shaderParms.length);
             System.arraycopy(newEntity.gui, 0, this.gui, 0, this.gui.length);
             this.remoteRenderView = newEntity.remoteRenderView;
             this.numJoints = newEntity.numJoints;
@@ -492,7 +493,7 @@ public class RenderWorld {
             this.lightId = other.lightId;
 
             this.shader = other.shader;
-            System.arraycopy(other.shaderParms, 0, this.shaderParms, 0, other.shaderParms.length);
+            Nio.arraycopy(other.shaderParms, 0, this.shaderParms, 0, other.shaderParms.length);
             this.referenceSound = other.referenceSound;
         }
 

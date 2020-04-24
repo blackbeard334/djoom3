@@ -4,7 +4,7 @@ import static neo.idlib.Lib.idLib.common;
 
 import java.nio.ByteBuffer;
 
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *
@@ -476,7 +476,7 @@ public class Image_process {
         }
 
 //	memcpy( data, temp, width * width * 4 );
-//        System.arraycopy(temp, 0, data, 0, width * width * 4);
+//        Nio.arraycopy(temp, 0, data, 0, width * width * 4);
         data.put(temp);
 
 //        R_StaticFree(temp);

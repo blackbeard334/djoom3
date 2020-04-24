@@ -122,6 +122,7 @@ import java.util.stream.Stream;
 
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Animation.Anim.AFJointModType_t;
 import neo.Game.Animation.Anim.animFlags_t;
 import neo.Game.Animation.Anim.frameBlend_t;
@@ -154,6 +155,7 @@ import neo.idlib.geometry.JointTransform.idJointQuat;
 import neo.idlib.math.Quat.idQuat;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 
 /**
  *
@@ -211,7 +213,7 @@ public class Anim_Blend {
 
             this.frameLookup.SetNum(anim.frameLookup.Num());
             if (this.frameLookup.Num() > 0) {
-                System.arraycopy(anim.frameLookup.Ptr(), 0, this.frameLookup.Ptr(), 0, this.frameLookup.MemoryUsed());
+            	System.arraycopy(anim.frameLookup.Ptr(), 0, this.frameLookup.Ptr(), 0, this.frameLookup.MemoryUsed());
             }
 
             this.frameCommands.SetNum(anim.frameCommands.Num());
@@ -890,19 +892,19 @@ public class Anim_Blend {
                             break;
                         }
                         case FC_TRIGGER_SMOKE_PARTICLE: {
-                            ent.ProcessEvent(AI_TriggerParticles, command.string.c_str());
+                            ent.ProcessEvent(AI_TriggerParticles, command.string.getData());
                             break;
                         }
                         case FC_MELEE: {
-                            ent.ProcessEvent(AI_AttackMelee, command.string.c_str());
+                            ent.ProcessEvent(AI_AttackMelee, command.string.getData());
                             break;
                         }
                         case FC_DIRECTDAMAGE: {
-                            ent.ProcessEvent(AI_DirectDamage, command.string.c_str());
+                            ent.ProcessEvent(AI_DirectDamage, command.string.getData());
                             break;
                         }
                         case FC_BEGINATTACK: {
-                            ent.ProcessEvent(AI_BeginAttack, command.string.c_str());
+                            ent.ProcessEvent(AI_BeginAttack, command.string.getData());
                             break;
                         }
                         case FC_ENDATTACK: {
@@ -910,19 +912,19 @@ public class Anim_Blend {
                             break;
                         }
                         case FC_MUZZLEFLASH: {
-                            ent.ProcessEvent(AI_MuzzleFlash, command.string.c_str());
+                            ent.ProcessEvent(AI_MuzzleFlash, command.string.getData());
                             break;
                         }
                         case FC_CREATEMISSILE: {
-                            ent.ProcessEvent(AI_CreateMissile, command.string.c_str());
+                            ent.ProcessEvent(AI_CreateMissile, command.string.getData());
                             break;
                         }
                         case FC_LAUNCHMISSILE: {
-                            ent.ProcessEvent(AI_AttackMissile, command.string.c_str());
+                            ent.ProcessEvent(AI_AttackMissile, command.string.getData());
                             break;
                         }
                         case FC_FIREMISSILEATTARGET: {
-                            ent.ProcessEvent(AI_FireMissileAtTarget, this.modelDef.GetJointName(command.index), command.string.c_str());
+                            ent.ProcessEvent(AI_FireMissileAtTarget, this.modelDef.GetJointName(command.index), command.string.getData());
                             break;
                         }
                         case FC_FOOTSTEP: {
@@ -1359,7 +1361,7 @@ public class Anim_Blend {
             num = this.modelHandle.NumJoints();
 
             if (0 == num) {
-                gameLocal.Error("model '%s' has no joints", this.modelHandle.Name());
+                idGameLocal.Error("model '%s' has no joints", this.modelHandle.Name());
             }
 
             // set up initial pose for model (with no pose, model is just a jumbled mess)
@@ -1593,7 +1595,7 @@ public class Anim_Blend {
 
         public jointInfo_t GetJoint(int jointHandle) {
             if ((jointHandle < 0) || (jointHandle > this.joints.Num())) {
-                gameLocal.Error("idDeclModelDef::GetJoint : joint handle out of range");
+                idGameLocal.Error("idDeclModelDef::GetJoint : joint handle out of range");
             }
             return this.joints.oGet(jointHandle);
         }
@@ -1606,7 +1608,7 @@ public class Anim_Blend {
             }
 
             if ((jointHandle < 0) || (jointHandle > this.joints.Num())) {
-                gameLocal.Error("idDeclModelDef::GetJointName : joint handle out of range");
+                idGameLocal.Error("idDeclModelDef::GetJointName : joint handle out of range");
             }
 
             joint = this.modelHandle.GetJoints();
@@ -1615,14 +1617,14 @@ public class Anim_Blend {
 
         public int NumJointsOnChannel(int channel) {
             if ((channel < 0) || (channel >= ANIM_NumAnimChannels)) {
-                gameLocal.Error("idDeclModelDef::NumJointsOnChannel : channel out of range");
+                idGameLocal.Error("idDeclModelDef::NumJointsOnChannel : channel out of range");
             }
             return this.channelJoints[ channel].Num();
         }
 
         public Integer[] GetChannelJoints(int channel) {
             if ((channel < 0) || (channel >= ANIM_NumAnimChannels)) {
-                gameLocal.Error("idDeclModelDef::GetChannelJoints : channel out of range");
+                idGameLocal.Error("idDeclModelDef::GetChannelJoints : channel out of range");
             }
             return this.channelJoints[channel].Ptr(Integer[].class);
         }
@@ -1650,6 +1652,9 @@ public class Anim_Blend {
             System.arraycopy(decl.joints.Ptr(), 0, this.joints.Ptr(), 0, decl.joints.Num());
             this.jointParents.SetNum(decl.jointParents.Num());
 //            memcpy(jointParents.Ptr(), decl.jointParents.Ptr(), decl.jointParents.Num() * sizeof(jointParents[0]));
+            // TODO FIXME: method Ptr() from the type List.idList<Integer> returns not always Integers!!!
+            // Nio.arraycopy(decl.jointParents.Ptr(), 0, this.jointParents.Ptr(), 0, decl.jointParents.Num());
+            // throws Exception in thread "main" java.lang.ClassCastException: class [Ljava.lang.Object; cannot be cast to class [Ljava.lang.Integer; ([Ljava.lang.Object; and [Ljava.lang.Integer; are in module java.base of loader 'bootstrap')
             System.arraycopy(decl.jointParents.Ptr(), 0, this.jointParents.Ptr(), 0, decl.jointParents.Num());
             for (i = 0; i < ANIM_NumAnimChannels; i++) {
                 this.channelJoints[i] = decl.channelJoints[i];
@@ -1875,7 +1880,7 @@ public class Anim_Blend {
             this.blendDuration = blend.blendDuration;
             this.blendStartValue = blend.blendStartValue;
             this.blendEndValue = blend.blendEndValue;
-            System.arraycopy(blend.animWeights, 0, this.animWeights, 0, ANIM_MaxSyncedAnims);
+            Nio.arraycopy(blend.animWeights, 0, this.animWeights, 0, ANIM_MaxSyncedAnims);
             this.cycle = blend.cycle;
             this.frame = blend.frame;
             this.animNum = blend.animNum;
@@ -3613,7 +3618,7 @@ public class Anim_Blend {
 
                 public idAnimBlend CurrentAnim(int channelNum) {
                     if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels)) {
-                        gameLocal.Error("idAnimator::CurrentAnim : channel out of range");
+                        idGameLocal.Error("idAnimator::CurrentAnim : channel out of range");
                     }
 
                     return this.channels[ channelNum][ 0];
@@ -3624,7 +3629,7 @@ public class Anim_Blend {
                     idAnimBlend[] blend;
 
                     if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels)) {
-                        gameLocal.Error("idAnimator::Clear : channel out of range");
+                        idGameLocal.Error("idAnimator::Clear : channel out of range");
                     }
 
                     blend = this.channels[channelNum];
@@ -3636,7 +3641,7 @@ public class Anim_Blend {
 
                 public void SetFrame(int channelNum, int animNum, int frame, int currentTime, int blendTime) {
                     if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels)) {
-                        gameLocal.Error("idAnimator::SetFrame : channel out of range");
+                        idGameLocal.Error("idAnimator::SetFrame : channel out of range");
                     }
 
                     if ((null == this.modelDef) || (null == this.modelDef.GetAnim(animNum))) {
@@ -3652,7 +3657,7 @@ public class Anim_Blend {
 
                 public void CycleAnim(int channelNum, int animNum, int currentTime, int blendTime) {
                     if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels)) {
-                        gameLocal.Error("idAnimator::CycleAnim : channel out of range");
+                        idGameLocal.Error("idAnimator::CycleAnim : channel out of range");
                     }
 
                     if ((null == this.modelDef) || (null == this.modelDef.GetAnim(animNum))) {
@@ -3668,7 +3673,7 @@ public class Anim_Blend {
 
                 public void PlayAnim(int channelNum, int animNum, int currentTime, int blendTime) {
                     if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels)) {
-                        gameLocal.Error("idAnimator::PlayAnim : channel out of range");
+                        idGameLocal.Error("idAnimator::PlayAnim : channel out of range");
                     }
 
                     if ((null == this.modelDef) || (null == this.modelDef.GetAnim(animNum))) {
@@ -3686,7 +3691,7 @@ public class Anim_Blend {
                 // the copied anim will have frame commands disabled to avoid executing them twice.
                 public void SyncAnimChannels(int channelNum, int fromChannelNum, int currentTime, int blendTime) {
                     if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels) || (fromChannelNum < 0) || (fromChannelNum >= ANIM_NumAnimChannels)) {
-                        gameLocal.Error("idAnimator::SyncToChannel : channel out of range");
+                        idGameLocal.Error("idAnimator::SyncToChannel : channel out of range");
                     }
 
                     final idAnimBlend fromBlend = this.channels[ fromChannelNum][ 0];
@@ -4032,11 +4037,11 @@ public class Anim_Blend {
 
                 public int GetChannelForJoint(int/*jointHandle_t*/ joint) {
                     if (null == this.modelDef) {
-                        gameLocal.Error("idAnimator::GetChannelForJoint: NULL model");
+                        idGameLocal.Error("idAnimator::GetChannelForJoint: NULL model");
                     }
 
                     if ((joint < 0) || (joint >= this.numJoints)) {
-                        gameLocal.Error("idAnimator::GetChannelForJoint: invalid joint num (%d)", joint);
+                        idGameLocal.Error("idAnimator::GetChannelForJoint: invalid joint num (%d)", joint);
                     }
 
                     return this.modelDef.GetJoint(joint).channel;

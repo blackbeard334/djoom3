@@ -679,16 +679,16 @@ public class AASFile {
             this.name = new idStr();
 
             this.planeList = new idPlaneSet();
-            this.vertices = new idList();
-            this.edges = new idList();
-            this.edgeIndex = new idList();
-            this.faces = new idList();
-            this.faceIndex = new idList();
-            this.areas = new idList();
-            this.nodes = new idList();
-            this.portals = new idList();
-            this.portalIndex = new idList();
-            this.clusters = new idList();
+            this.vertices = new idList<>();
+            this.edges = new idList<>();
+            this.edgeIndex = new idList<>();
+            this.faces = new idList<>();
+            this.faceIndex = new idList<>();
+            this.areas = new idList<>();
+            this.nodes = new idList<>();
+            this.portals = new idList<>();
+            this.portalIndex = new idList<>();
+            this.clusters = new idList<>();
             this.settings = new idAASSettings();
         }
 

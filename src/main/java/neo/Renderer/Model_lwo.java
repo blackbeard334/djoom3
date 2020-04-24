@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import neo.TempDump;
 import neo.TempDump.NiLLABLE;
 import neo.TempDump.TODO_Exception;
 import neo.framework.File_h.idFile;
@@ -1885,10 +1886,11 @@ public class Model_lwo {
     static <T> T lwListAdd(T list, lwNode node) {
         lwNode head, tail = null;
 
-        head = (lwNode) list;
-        if (null == head) {
+        if (list == null) {
             return (T) node;
         }
+
+        head = (lwNode) list;
         while (head != null) {
             tail = head;
             head = head.getNext();
@@ -2775,8 +2777,9 @@ public class Model_lwo {
         lwClip clip;
         int p;
 
-        clip = new lwClip();// Mem_ClearedAlloc(sizeof(lwClip));
-        if (null == clip) {
+        try {
+            clip = new lwClip();// Mem_ClearedAlloc(sizeof(lwClip));
+		} catch (Exception e) {
             return 0;
         }
 
@@ -2863,8 +2866,9 @@ public class Model_lwo {
     public static lwTexture get_texture(String s) {
         lwTexture tex;
 
-        tex = new lwTexture();// Mem_ClearedAlloc(sizeof(lwTexture));
-        if (null == tex) {
+        try {
+            tex = new lwTexture();// Mem_ClearedAlloc(sizeof(lwTexture));
+		} catch (Exception e) {
             return null;
         }
 
@@ -3202,8 +3206,9 @@ public class Model_lwo {
                         break;
 
                     case ID_SHDR:
-                        shdr = new lwPlugin();// Mem_ClearedAlloc(sizeof(lwPlugin));
-                        if (null == shdr) {
+                        try {
+                            shdr = new lwPlugin();// Mem_ClearedAlloc(sizeof(lwPlugin));
+                		} catch (Exception e) {
                             break Fail;
                         }
                         shdr.name = new String(getbytes(fp, sz));
@@ -3404,13 +3409,15 @@ public class Model_lwo {
         Fail:
         /* allocate an object and a default layer */
         if (true) {
-            object = new lwObject();// Mem_ClearedAlloc(sizeof(lwObject));
-            if (null == object) {
+            try {
+                object = new lwObject();// Mem_ClearedAlloc(sizeof(lwObject));
+    		} catch (Exception e) {
                 break Fail;
             }
 
-            layer = new lwLayer();// Mem_ClearedAlloc(sizeof(lwLayer));
-            if (null == layer) {
+            try {
+                layer = new lwLayer();// Mem_ClearedAlloc(sizeof(lwLayer));
+    		} catch (Exception e) {
                 break Fail;
             }
             object.layer = layer;
@@ -3589,7 +3596,7 @@ public class Model_lwo {
         }
         if (oldpt != null) {
 //            memcpy(point.pt, oldpt, point.offset * sizeof(lwPoint));
-            System.arraycopy(oldpt, 0, point.pt, 0, point.offset);
+        	System.arraycopy(oldpt, 0, point.pt, 0, point.offset);
 //            Mem_Free(oldpt);
             oldpt = null;
         }
@@ -3670,7 +3677,7 @@ public class Model_lwo {
 //        }
         if (oldpol != null) {
 //            memcpy(plist.pol, oldpol, plist.offset);
-            System.arraycopy(oldpol, 0, plist.pol, 0, plist.offset);
+        	System.arraycopy(oldpol, 0, plist.pol, 0, plist.offset);
 //            Mem_Free(oldpol);
             oldpol = null;
         }
@@ -3688,7 +3695,7 @@ public class Model_lwo {
         }
         if (oldpolv != null) {
 //            memcpy(plist.pol[0].v, oldpolv, plist.voffset);
-            System.arraycopy(oldpolv, 0, plist.pol[0].v, 0, plist.voffset);
+        	System.arraycopy(oldpolv, 0, plist.pol[0].v, 0, plist.voffset);
             oldpolv = null;//Mem_Free(oldpolv);
         }
 //        memset(plist.pol[ 0].v + plist.voffset, 0, nverts);
@@ -4054,7 +4061,7 @@ public class Model_lwo {
             return false;
         }
         if (oldtag != null) {
-            System.arraycopy(oldtag, 0, tList.tag, 0, tList.offset);
+        	System.arraycopy(oldtag, 0, tList.tag, 0, tList.offset);
         }
 
         /* copy the new tags to the tag array */
@@ -4763,8 +4770,9 @@ public class Model_lwo {
         short sz;
         int ok;
 
-        tex = new lwTexture();// Mem_ClearedAlloc(sizeof(lwTexture));
-        if (null == tex) {
+        try {
+            tex = new lwTexture();// Mem_ClearedAlloc(sizeof(lwTexture));
+		} catch (Exception e) {
             return null;
         }
 
@@ -4818,8 +4826,9 @@ public class Model_lwo {
         short sz;
         int hsz, rlen, pos;
 
-        shdr = new lwPlugin();//Mem_ClearedAlloc(sizeof(lwPlugin));
-        if (null == shdr) {
+        try {
+            shdr = new lwPlugin();//Mem_ClearedAlloc(sizeof(lwPlugin));
+		} catch (Exception e) {
             return null;
         }
 
@@ -4988,10 +4997,11 @@ public class Model_lwo {
     public static lwSurface lwDefaultSurface() {
         lwSurface surf;
 
-        surf = new lwSurface();// Mem_ClearedAlloc(sizeof(lwSurface));
-        if (null == surf) {
+        try {
+            surf = new lwSurface();// Mem_ClearedAlloc(sizeof(lwSurface));
+		} catch (Exception e) {
             return null;
-        }
+		}
 
         surf.color.rgb[0] = 0.78431f;
         surf.color.rgb[1] = 0.78431f;
@@ -5371,7 +5381,7 @@ public class Model_lwo {
         vmap.vindex = new int[npts];// Mem_ClearedAlloc(npts);
 
 //        Fail:
-        if (true) {
+        if (!TempDump.isDeadCodeTrue()) { // code block returns, so code after that will never be reached
 //            if (null == vmap.vindex) {
 //                break Fail;
 //            }

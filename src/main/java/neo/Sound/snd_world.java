@@ -41,36 +41,35 @@ import static neo.idlib.Text.Str.va;
 import static neo.idlib.math.Math_h.DEG2RAD;
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
 import static neo.idlib.math.Simd.SIMDProcessor;
-import static neo.openal.QAL.alBufferData;
-import static neo.openal.QAL.alDeleteBuffers;
-import static neo.openal.QAL.alGenBuffers;
-import static neo.openal.QAL.alGetSourcei;
-import static neo.openal.QAL.alIsSource;
-//import static neo.openal.QAL.alListener;
-import static neo.openal.QAL.alListener3f;
-import static neo.openal.QAL.alListenerf;
-import static neo.openal.QAL.alListenerfv;
-import static neo.openal.QAL.alSource3f;
-import static neo.openal.QAL.alSourcePlay;
-import static neo.openal.QAL.alSourceQueueBuffers;
-import static neo.openal.QAL.alSourceStop;
-import static neo.openal.QAL.alSourceUnqueueBuffers;
-import static neo.openal.QAL.alSourcef;
-import static neo.openal.QAL.alSourcei;
-import static neo.openal.QALConstantsIfc.AL_BUFFER;
-import static neo.openal.QALConstantsIfc.AL_BUFFERS_PROCESSED;
-import static neo.openal.QALConstantsIfc.AL_FALSE;
-import static neo.openal.QALConstantsIfc.AL_FORMAT_MONO16;
-import static neo.openal.QALConstantsIfc.AL_FORMAT_STEREO16;
-import static neo.openal.QALConstantsIfc.AL_GAIN;
-import static neo.openal.QALConstantsIfc.AL_LOOPING;
-import static neo.openal.QALConstantsIfc.AL_MAX_DISTANCE;
-import static neo.openal.QALConstantsIfc.AL_ORIENTATION;
-import static neo.openal.QALConstantsIfc.AL_PITCH;
-import static neo.openal.QALConstantsIfc.AL_POSITION;
-import static neo.openal.QALConstantsIfc.AL_REFERENCE_DISTANCE;
-import static neo.openal.QALConstantsIfc.AL_SOURCE_RELATIVE;
-import static neo.openal.QALConstantsIfc.AL_TRUE;
+import static neo.open.al.QAL.alBufferData;
+import static neo.open.al.QAL.alDeleteBuffers;
+import static neo.open.al.QAL.alGenBuffers;
+import static neo.open.al.QAL.alGetSourcei;
+import static neo.open.al.QAL.alIsSource;
+import static neo.open.al.QAL.alListener3f;
+import static neo.open.al.QAL.alListenerf;
+import static neo.open.al.QAL.alListenerfv;
+import static neo.open.al.QAL.alSource3f;
+import static neo.open.al.QAL.alSourcePlay;
+import static neo.open.al.QAL.alSourceQueueBuffers;
+import static neo.open.al.QAL.alSourceStop;
+import static neo.open.al.QAL.alSourceUnqueueBuffers;
+import static neo.open.al.QAL.alSourcef;
+import static neo.open.al.QAL.alSourcei;
+import static neo.open.al.QALConstantsIfc.AL_BUFFER;
+import static neo.open.al.QALConstantsIfc.AL_BUFFERS_PROCESSED;
+import static neo.open.al.QALConstantsIfc.AL_FALSE;
+import static neo.open.al.QALConstantsIfc.AL_FORMAT_MONO16;
+import static neo.open.al.QALConstantsIfc.AL_FORMAT_STEREO16;
+import static neo.open.al.QALConstantsIfc.AL_GAIN;
+import static neo.open.al.QALConstantsIfc.AL_LOOPING;
+import static neo.open.al.QALConstantsIfc.AL_MAX_DISTANCE;
+import static neo.open.al.QALConstantsIfc.AL_ORIENTATION;
+import static neo.open.al.QALConstantsIfc.AL_PITCH;
+import static neo.open.al.QALConstantsIfc.AL_POSITION;
+import static neo.open.al.QALConstantsIfc.AL_REFERENCE_DISTANCE;
+import static neo.open.al.QALConstantsIfc.AL_SOURCE_RELATIVE;
+import static neo.open.al.QALConstantsIfc.AL_TRUE;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
 
@@ -110,7 +109,7 @@ import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *
@@ -702,19 +701,19 @@ public class snd_world {
                 name = new idStr(this.aviDemoPath.getData() + this.aviDemoName + ".wav");
                 wO = fileSystem.OpenFileWrite(name.getData());
                 if (null == wO) {
-                    common.Error("Couldn't write %s", name.c_str());
+                    common.Error("Couldn't write %s", name.getData());
                 }
 
                 name.oSet(this.aviDemoPath + "channel_right.raw");
                 rL = fileSystem.OpenFileRead(name.getData());
                 if (null == rL) {
-                    common.Error("Couldn't open %s", name.c_str());
+                    common.Error("Couldn't open %s", name.getData());
                 }
 
                 name.oSet(this.aviDemoPath + "channel_left.raw");
                 lL = fileSystem.OpenFileRead(name.getData());
                 if (null == lL) {
-                    common.Error("Couldn't open %s", name.c_str());
+                    common.Error("Couldn't open %s", name.getData());
                 }
 
                 final int numSamples = rL.Length() / 2;

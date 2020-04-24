@@ -1,4 +1,4 @@
-package neo.opengl;
+package neo.open.gl;
 
 public interface QGLConstantsIfc {
 

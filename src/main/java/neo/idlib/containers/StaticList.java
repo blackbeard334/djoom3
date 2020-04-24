@@ -39,7 +39,7 @@ public class StaticList {
 
         public idStaticList(int size, Object object) {
             this(size);
-            this.list = ((idStaticList<type>) object).list;
+            this.list = (type[])((idStaticList<type>) object).list;
         }
 //	public					idStaticList( const idStaticList<type,size> &other );
 //	public					~idStaticList<type,size>( void );

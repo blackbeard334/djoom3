@@ -20,6 +20,7 @@ import java.util.Map;
 
 import neo.Game.Entity.idEntity;
 import neo.Game.Game_local.idEntityPtr;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
@@ -225,12 +226,12 @@ public class Camera {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -364,7 +365,7 @@ public class Camera {
 
             if (this.frameRate == USERCMD_HZ) {
                 frameTime = gameLocal.time - this.starttime;
-                frame = frameTime / gameLocal.msec;
+                frame = frameTime / idGameLocal.msec;
                 lerp = 0.0f;
             } else {
                 frameTime = (gameLocal.time - this.starttime) * this.frameRate;
@@ -384,7 +385,7 @@ public class Camera {
             }
 
             if (g_debugCinematic.GetBool()) {
-                final int prevFrameTime = (gameLocal.time - this.starttime - gameLocal.msec) * this.frameRate;
+                final int prevFrameTime = (gameLocal.time - this.starttime - idGameLocal.msec) * this.frameRate;
                 int prevFrame = prevFrameTime / 1000;
                 int prevCut;
 
@@ -532,7 +533,7 @@ public class Camera {
 
                 if (this.frameRate == USERCMD_HZ) {
                     frameTime = gameLocal.time - this.starttime;
-                    frame = frameTime / gameLocal.msec;
+                    frame = frameTime / idGameLocal.msec;
                 } else {
                     frameTime = (gameLocal.time - this.starttime) * this.frameRate;
                     frame = frameTime / 1000;
@@ -565,17 +566,17 @@ public class Camera {
 
             key = this.spawnArgs.GetString("anim");
             if (null == key) {
-                gameLocal.Error("Missing 'anim' key on '%s'", this.name);
+                idGameLocal.Error("Missing 'anim' key on '%s'", this.name);
             }
 
             filename = new idStr(this.spawnArgs.GetString(va("anim %s", key)));
             if (0 == filename.Length()) {
-                gameLocal.Error("Missing 'anim %s' key on '%s'", key, this.name);
+                idGameLocal.Error("Missing 'anim %s' key on '%s'", key, this.name);
             }
 
             filename.SetFileExtension(MD5_CAMERA_EXT);
             if (!parser.LoadFile(filename)) {
-                gameLocal.Error("Unable to load '%s' on '%s'", filename, this.name);
+                idGameLocal.Error("Unable to load '%s' on '%s'", filename, this.name);
             }
 
             this.cameraCuts.Clear();
@@ -716,12 +717,12 @@ public class Camera {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 

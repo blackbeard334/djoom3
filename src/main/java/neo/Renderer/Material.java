@@ -155,13 +155,14 @@ import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGESCAPECHARS;
 import static neo.idlib.Text.Token.TT_NUMBER;
 import static neo.idlib.precompiled.MAX_EXPRESSION_OPS;
 import static neo.idlib.precompiled.MAX_EXPRESSION_REGISTERS;
-import static neo.opengl.QGLConstantsIfc.GL_FRAGMENT_PROGRAM_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_VERTEX_PROGRAM_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_FRAGMENT_PROGRAM_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_VERTEX_PROGRAM_ARB;
 import static neo.ui.UserInterface.uiManager;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import neo.TempDump;
 import neo.TempDump.CPP_class;
 import neo.TempDump.CPP_class.Bool;
 import neo.TempDump.CPP_class.Pointer;
@@ -169,6 +170,7 @@ import neo.Renderer.Cinematic.idCinematic;
 import neo.Renderer.Cinematic.idSndWindow;
 import neo.Renderer.Image.cubeFiles_t;
 import neo.Renderer.Image.idImage;
+import neo.Renderer.Image.idImageManager;
 import neo.Renderer.Image.textureDepth_t;
 import neo.Renderer.MegaTexture.idMegaTexture;
 import neo.Renderer.tr_local.viewDef_s;
@@ -179,6 +181,7 @@ import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
+import neo.open.Nio;
 import neo.ui.UserInterface.idUserInterface;
 
 /*
@@ -344,7 +347,7 @@ public class Material {
         }
 
         private colorStage_t(colorStage_t color) {
-            System.arraycopy(color.registers, 0, this.registers, 0, this.registers.length);
+            Nio.arraycopy(color.registers, 0, this.registers, 0, this.registers.length);
         }
     }
 
@@ -394,8 +397,8 @@ public class Material {
             this.image[0] = texture.image[0];//pointer
             this.texgen = texture.texgen;
             this.hasMatrix = texture.hasMatrix;
-            System.arraycopy(texture.matrix[0], 0, this.matrix[0], 0, this.matrix[0].length);
-            System.arraycopy(texture.matrix[1], 0, this.matrix[1], 0, this.matrix[1].length);
+            Nio.arraycopy(texture.matrix[0], 0, this.matrix[0], 0, this.matrix[0].length);
+            Nio.arraycopy(texture.matrix[1], 0, this.matrix[1], 0, this.matrix[1].length);
             this.dynamic = texture.dynamic;
             this.width = texture.width;
             this.height = texture.height;
@@ -837,7 +840,7 @@ public class Material {
         @Override
         public boolean SetDefaultText() {
             // if there exists an image with the same name
-            if (true) { //fileSystem->ReadFile( GetName(), NULL ) != -1 ) {
+            if (!TempDump.isDeadCodeTrue()) { //fileSystem->ReadFile( GetName(), NULL ) != -1 ) {
                 final StringBuilder generated = new StringBuilder(2048);
                 idStr.snPrintf(generated, generated.capacity(),
                         "material %s // IMPLICITLY GENERATED\n"
@@ -1062,7 +1065,7 @@ public class Material {
             if (this.numRegisters != 0) {
                 this.expressionRegisters = new float[this.numRegisters];//R_StaticAlloc(numRegisters *sizeof( expressionRegisters[0] )
 //		memcpy( expressionRegisters, pd.shaderRegisters, numRegisters * sizeof( expressionRegisters[0] ) );
-                System.arraycopy(this.pd.shaderRegisters, 0, this.expressionRegisters, 0, this.numRegisters);
+                Nio.arraycopy(this.pd.shaderRegisters, 0, this.expressionRegisters, 0, this.numRegisters);
             }
 
             // see if the registers are completely constant, and don't need to be evaluated
@@ -1465,7 +1468,7 @@ public class Material {
         // returns the length, in milliseconds, of the videoMap on this material,
         // or zero if it doesn't have one
         public int CinematicLength() {
-            if (NOT(this.stages) || NOT(this.stages[0].texture.cinematic[0])) {
+            if (NOT((Object[])this.stages) || NOT(this.stages[0].texture.cinematic[0])) {
                 return 0;
             }
             return this.stages[0].texture.cinematic[0].AnimationLength();
@@ -1490,7 +1493,7 @@ public class Material {
         }
 
         public void UpdateCinematic(int time) {
-            if (NOT(this.stages) || NOT(this.stages[0].texture.cinematic[0]) || NOT(backEnd.viewDef)) {
+            if (NOT((Object[])this.stages) || NOT(this.stages[0].texture.cinematic[0]) || NOT(backEnd.viewDef)) {
                 return;
             }
             this.stages[0].texture.cinematic[0].ImageForTime(tr.primaryRenderView.time);
@@ -2285,7 +2288,7 @@ public class Material {
                 }
 
                 if ((0 == token.Icmp("uncompressed")) || (0 == token.Icmp("highquality"))) {
-                    if (0 == globalImages.image_ignoreHighQuality.GetInteger()) {
+                    if (0 == idImageManager.image_ignoreHighQuality.GetInteger()) {
                         td = TD_HIGH_QUALITY;
                     }
                     continue;
@@ -2505,7 +2508,7 @@ public class Material {
                     continue;
                 }
                 if ((0 == token.Icmp("uncompressed")) || (0 == token.Icmp("highquality"))) {
-                    if (0 == globalImages.image_ignoreHighQuality.GetInteger()) {
+                    if (0 == idImageManager.image_ignoreHighQuality.GetInteger()) {
                         td = TD_HIGH_QUALITY;
                     }
                     continue;
@@ -3423,14 +3426,14 @@ public class Material {
             if (!ts.hasMatrix) {
                 ts.hasMatrix = true;
 //		memcpy( ts.matrix, registers, sizeof( ts.matrix ) );
-                System.arraycopy(registers[0], 0, ts.matrix[0], 0, ts.matrix[0].length);
-                System.arraycopy(registers[1], 0, ts.matrix[1], 0, ts.matrix[1].length);
+                Nio.arraycopy(registers[0], 0, ts.matrix[0], 0, ts.matrix[0].length);
+                Nio.arraycopy(registers[1], 0, ts.matrix[1], 0, ts.matrix[1].length);
                 return;
             }
 
 //	memcpy( old, ts.matrix, sizeof( old ) );
-            System.arraycopy(ts.matrix[0], 0, old[0], 0, old[0].length);
-            System.arraycopy(ts.matrix[1], 0, old[1], 0, old[1].length);
+            Nio.arraycopy(ts.matrix[0], 0, old[0], 0, old[0].length);
+            Nio.arraycopy(ts.matrix[1], 0, old[1], 0, old[1].length);
 
             // multiply the two maticies
             ts.matrix[0][0] = EmitOp(

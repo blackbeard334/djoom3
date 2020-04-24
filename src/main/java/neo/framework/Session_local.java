@@ -126,6 +126,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import neo.TempDump;
 import neo.TempDump.SERiAL;
 import neo.TempDump.TODO_Exception;
 import neo.Game.Game.escReply_t;
@@ -1836,7 +1837,7 @@ public class Session_local {
             console.Close();
 
             // introduced in D3XP code. don't think it actually fixes anything, but doesn't hurt either
-            if (true) {
+            if (!TempDump.isDeadCodeTrue()) {
                 // Try and prevent the while loop from being skipped over (long hitch on the main thread?)
                 final int stop = Sys_Milliseconds() + 1000;
                 int force = 10;

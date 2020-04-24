@@ -5,7 +5,6 @@ import static neo.TempDump.isNotNullOrEmpty;
 import static neo.framework.Common.common;
 import static neo.framework.Licensee.GAME_NAME;
 import static neo.sys.RC.doom_resource.IDI_ICON1;
-import static neo.sys.win_local.win32;
 import static neo.sys.win_main.Sys_Error;
 
 import java.awt.Color;
@@ -32,6 +31,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import neo.framework.EditField.idEditField;
 import neo.idlib.Text.Str.idStr;
+import neo.sys.win_local.Win32Vars_t;
 
 /**
  *
@@ -433,7 +433,7 @@ public class win_syscon {
 //        wc.setVisible(true);
 
         // don't show it now that we have a splash screen up
-        if (win32.win_viewlog.GetBool()) {
+        if (Win32Vars_t.win_viewlog.GetBool()) {
             wc.setVisible(true);
 //		UpdateWindow( s_wcd.hWnd );
 //		SetForegroundWindow( s_wcd.hWnd );

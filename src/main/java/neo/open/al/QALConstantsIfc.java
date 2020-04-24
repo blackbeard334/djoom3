@@ -1,4 +1,4 @@
-package neo.openal;
+package neo.open.al;
 
 public interface QALConstantsIfc {
 

@@ -105,6 +105,7 @@ import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 import neo.sys.sys_public.sysEvent_s;
 import neo.ui.BindWindow.idBindWindow;
 import neo.ui.ChoiceWindow.idChoiceWindow;
@@ -1204,7 +1205,7 @@ public class Window {
                             AddChild(win);
                             SetFocus(win, false);
                             dwt.win = win;
-//                            System.out.println(dwt.win.text.c_str());
+//                            System.out.println(dwt.win.text.getData());
                             this.drawWindows.Append(dwt);
                             plainCount++;
                         }
@@ -1352,7 +1353,7 @@ public class Window {
 //                            src2.ParseBracedSectionExact(out, 1);
 //
 //                            // Save the script		
-//                            rvGEWindowWrapper.GetWrapper(this).GetScriptDict().Set(va("onEvent %s", token.c_str()), out);
+//                            rvGEWindowWrapper.GetWrapper(this).GetScriptDict().Set(va("onEvent %s", token.getData()), out);
 //                        }
 //                    }
                     this.namedEvents.Append(ev);
@@ -1418,7 +1419,7 @@ public class Window {
 //
 //                            // Grab the string from the last marker and save it in the wrapper
 //                            src.GetStringFromMarker(str, true);
-//                            rvGEWindowWrapper.GetWrapper(this).GetVariableDict().Set(va("definefloat\t\"%s\"", token.c_str()), str);
+//                            rvGEWindowWrapper.GetWrapper(this).GetVariableDict().Set(va("definefloat\t\"%s\"", token.getData()), str);
 //                        }
 //                    }
                 } else if (token.equals("definevec4")) {
@@ -1446,7 +1447,7 @@ public class Window {
 //
 //                            // Grab the string from the last marker and save it in the wrapper
 //                            src.GetStringFromMarker(str, true);
-//                            rvGEWindowWrapper.GetWrapper(this).GetVariableDict().Set(va("definevec4\t\"%s\"", token.c_str()), str);
+//                            rvGEWindowWrapper.GetWrapper(this).GetVariableDict().Set(va("definevec4\t\"%s\"", token.getData()), str);
 //                        }
 //                    }
                 } else if (token.equals("float")) {
@@ -1471,7 +1472,7 @@ public class Window {
 //
 //                            // Grab the string from the last marker and save it in the wrapper
 //                            src.GetStringFromMarker(str, true);
-//                            rvGEWindowWrapper.GetWrapper(this).GetVariableDict().Set(va("float\t\"%s\"", token.c_str()), str);
+//                            rvGEWindowWrapper.GetWrapper(this).GetVariableDict().Set(va("float\t\"%s\"", token.getData()), str);
 //                        }
 //                    }
                 } else if (ParseScriptEntry(token.getData(), src)) {
@@ -1831,13 +1832,13 @@ public class Window {
             }
 
             if ((this.flags & WIN_SHOWTIME) != 0) {
-                this.dc.DrawText(va(" %0.1f seconds\n%s", (float) (time - this.timeLine) / 1000, this.gui.State().GetString("name")), 0.35f, 0, this.dc.colorWhite, new idRectangle(100, 0, 80, 80), false);
+                this.dc.DrawText(va(" %0.1f seconds\n%s", (float) (time - this.timeLine) / 1000, this.gui.State().GetString("name")), 0.35f, 0, idDeviceContext.colorWhite, new idRectangle(100, 0, 80, 80), false);
             }
 
             if ((this.flags & WIN_SHOWCOORDS) != 0) {
                 this.dc.EnableClipping(false);
                 str = new idStr(String.format("x: %d y: %d  cursorx: %d cursory: %d", (int) this.rect.x(), (int) this.rect.y(), (int) this.gui.CursorX(), (int) this.gui.CursorY()));
-                this.dc.DrawText(str.getData(), 0.25f, 0, this.dc.colorWhite, new idRectangle(0, 0, 100, 20), false);
+                this.dc.DrawText(str.getData(), 0.25f, 0, idDeviceContext.colorWhite, new idRectangle(0, 0, 100, 20), false);
                 this.dc.EnableClipping(true);
             }
 
@@ -1913,8 +1914,8 @@ public class Window {
             if ((gui_debug.GetInteger() != 0) && ((this.flags & WIN_DESKTOP) != 0)) {
                 this.dc.EnableClipping(false);
                 str = new idStr(String.format("x: %.1f y: %.1f", this.gui.CursorX(), this.gui.CursorY()));
-                this.dc.DrawText(str.getData(), 0.25f, 0, this.dc.colorWhite, new idRectangle(0, 0, 100, 20), false);
-                this.dc.DrawText(this.gui.GetSourceFile(), 0.25f, 0, this.dc.colorWhite, new idRectangle(0, 20, 300, 20), false);
+                this.dc.DrawText(str.getData(), 0.25f, 0, idDeviceContext.colorWhite, new idRectangle(0, 0, 100, 20), false);
+                this.dc.DrawText(this.gui.GetSourceFile(), 0.25f, 0, idDeviceContext.colorWhite, new idRectangle(0, 20, 300, 20), false);
                 this.dc.EnableClipping(true);
             }
 
@@ -2017,8 +2018,8 @@ public class Window {
 
             if (gui_edit.GetBool()) {
                 this.dc.EnableClipping(false);
-                this.dc.DrawText(va("x: %d  y: %d", (int) this.rect.x(), (int) this.rect.y()), 0.25f, 0, this.dc.colorWhite, new idRectangle(this.rect.x(), this.rect.y() - 15, 100, 20), false);
-                this.dc.DrawText(va("w: %d  h: %d", (int) this.rect.w(), (int) this.rect.h()), 0.25f, 0, this.dc.colorWhite, new idRectangle(this.rect.x() + this.rect.w(), this.rect.w() + this.rect.h() + 5, 100, 20), false);
+                this.dc.DrawText(va("x: %d  y: %d", (int) this.rect.x(), (int) this.rect.y()), 0.25f, 0, idDeviceContext.colorWhite, new idRectangle(this.rect.x(), this.rect.y() - 15, 100, 20), false);
+                this.dc.DrawText(va("w: %d  h: %d", (int) this.rect.w(), (int) this.rect.h()), 0.25f, 0, idDeviceContext.colorWhite, new idRectangle(this.rect.x() + this.rect.w(), this.rect.w() + this.rect.h() + 5, 100, 20), false);
                 this.dc.EnableClipping(true);
             }
 
@@ -3000,7 +3001,7 @@ public class Window {
             return false;
         }
 
-        public boolean RunScript(Enum n) {
+        public boolean RunScript(Enum<?> n) {
             return this.RunScript(etoi(n));
         }
 
@@ -3450,7 +3451,7 @@ public class Window {
         protected void UpdateWinVars() {
             final int c = this.updateVars.Num();
             for (int i = 0; i < c; i++) {
-//                System.out.printf("%d %s\n", DEBUG_Activate, updateVars.oGet(i).c_str());
+//                System.out.printf("%d %s\n", DEBUG_Activate, updateVars.oGet(i).getData());
                 this.updateVars.oGet(i).Update();
             }
         }
@@ -4008,12 +4009,12 @@ public class Window {
         protected void SaveExpressionParseState() {
             this.saveTemps = new boolean[MAX_EXPRESSION_REGISTERS];
 //	memcpy(saveTemps, registerIsTemporary, MAX_EXPRESSION_REGISTERS * sizeof(bool));
-            System.arraycopy(registerIsTemporary, 0, this.saveTemps, 0, MAX_EXPRESSION_REGISTERS);
+            Nio.arraycopy(registerIsTemporary, 0, this.saveTemps, 0, MAX_EXPRESSION_REGISTERS);
         }
 
         protected void RestoreExpressionParseState() {
 //	memcpy(registerIsTemporary, saveTemps, MAX_EXPRESSION_REGISTERS * sizeof(bool));
-            System.arraycopy(this.saveTemps, 0, registerIsTemporary, 0, MAX_EXPRESSION_REGISTERS);
+            Nio.arraycopy(this.saveTemps, 0, registerIsTemporary, 0, MAX_EXPRESSION_REGISTERS);
 //            Mem_Free(saveTemps);
             this.saveTemps = null;
         }

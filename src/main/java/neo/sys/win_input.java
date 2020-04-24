@@ -40,14 +40,15 @@ import static neo.framework.KeyInput.K_SCROLL;
 import static neo.framework.KeyInput.K_SHIFT;
 import static neo.framework.KeyInput.K_UPARROW;
 import static neo.idlib.Lib.idLib.cvarSystem;
-import static neo.opengl.QUser.getShiftedScancode;
+import static neo.open.gl.QUser.getShiftedScancode;
 import static neo.sys.win_local.win32;
 
 import java.awt.event.InputEvent;
 
 import neo.TempDump.TODO_Exception;
 import neo.idlib.Text.Str.idStr;
-import neo.opengl.QUser;
+import neo.open.gl.QUser;
+import neo.sys.win_local.Win32Vars_t;
 
 /**
  *
@@ -495,7 +496,7 @@ static char[] keyScanTable = s_scantokey;
 
         common.Printf("\n------- Input Initialization -------\n");
 //        IN_InitDirectInput();
-        if (win32.in_mouse.GetBool()) {
+        if (Win32Vars_t.in_mouse.GetBool()) {
             IN_InitDIMouse();
             // don't grab the mouse on initialization
             Sys_GrabMouseCursor(false);
@@ -504,7 +505,7 @@ static char[] keyScanTable = s_scantokey;
         }
         IN_StartupKeyboard();
         common.Printf("------------------------------------\n");
-        win32.in_mouse.ClearModified();
+        Win32Vars_t.in_mouse.ClearModified();
     }
 
     /*

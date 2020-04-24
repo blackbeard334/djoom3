@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import neo.Game.Game_local.idGameLocal;
 import neo.Renderer.Model.modelSurface_s;
 import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.RenderWorld.deferredEntityCallback_t;
@@ -356,7 +357,7 @@ public class SmokeParticles {
                 }
                 final int quads = count * stage.NumQuadsPerParticle();
                 final srfTriangles_s tri = renderEntity.hModel.AllocSurfaceTriangles(quads * 4, quads * 6);
-                tri.numIndexes = quads * 6;
+                tri.getIndexes().setNumValues(quads * 6);
                 tri.numVerts = quads * 4;
 
                 // just always draw the particles
@@ -400,7 +401,7 @@ public class SmokeParticles {
                     last = smoke;
                 }
                 if (tri.numVerts > (quads * 4)) {
-                    gameLocal.Error("idSmokeParticles::UpdateRenderEntity: miscounted verts");
+                    idGameLocal.Error("idSmokeParticles::UpdateRenderEntity: miscounted verts");
                 }
 
                 if (tri.numVerts == 0) {
@@ -417,15 +418,15 @@ public class SmokeParticles {
                     // build the index list
                     int indexes = 0;
                     for (int i = 0; i < tri.numVerts; i += 4) {
-                        tri.indexes[indexes + 0] = i;
-                        tri.indexes[indexes + 1] = i + 2;
-                        tri.indexes[indexes + 2] = i + 3;
-                        tri.indexes[indexes + 3] = i;
-                        tri.indexes[indexes + 4] = i + 3;
-                        tri.indexes[indexes + 5] = i + 1;
+                        tri.getIndexes().getValues().put(indexes + 0, i);
+                        tri.getIndexes().getValues().put(indexes + 1, i + 2);
+                        tri.getIndexes().getValues().put(indexes + 2, i + 3);
+                        tri.getIndexes().getValues().put(indexes + 3, i);
+                        tri.getIndexes().getValues().put(indexes + 4, i + 3);
+                        tri.getIndexes().getValues().put(indexes + 5, i + 1);
                         indexes += 6;
                     }
-                    tri.numIndexes = indexes;
+                    tri.getIndexes().setNumValues(indexes);
 
                     final modelSurface_s surf = new modelSurface_s();
                     surf.geometry = tri;

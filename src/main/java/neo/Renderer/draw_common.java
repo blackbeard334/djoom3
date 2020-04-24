@@ -94,99 +94,99 @@ import static neo.Renderer.tr_render.RB_RenderDrawSurfListWithFunction;
 import static neo.Renderer.tr_rendertools.RB_RenderDebugTools;
 import static neo.TempDump.NOT;
 import static neo.framework.Common.common;
-import static neo.opengl.QGL.qglAlphaFunc;
-import static neo.opengl.QGL.qglBegin;
-import static neo.opengl.QGL.qglBindProgramARB;
-import static neo.opengl.QGL.qglColor3f;
-import static neo.opengl.QGL.qglColor3fv;
-import static neo.opengl.QGL.qglColor4f;
-import static neo.opengl.QGL.qglColor4fv;
-import static neo.opengl.QGL.qglColorPointer;
-import static neo.opengl.QGL.qglDepthBoundsEXT;
-import static neo.opengl.QGL.qglDisable;
-import static neo.opengl.QGL.qglDisableClientState;
-import static neo.opengl.QGL.qglDisableVertexAttribArrayARB;
-import static neo.opengl.QGL.qglEnable;
-import static neo.opengl.QGL.qglEnableClientState;
-import static neo.opengl.QGL.qglEnableVertexAttribArrayARB;
-import static neo.opengl.QGL.qglEnd;
-import static neo.opengl.QGL.qglGetError;
-import static neo.opengl.QGL.qglLoadIdentity;
-import static neo.opengl.QGL.qglLoadMatrixf;
-import static neo.opengl.QGL.qglMatrixMode;
-import static neo.opengl.QGL.qglNormalPointer;
-import static neo.opengl.QGL.qglOrtho;
-import static neo.opengl.QGL.qglPolygonOffset;
-import static neo.opengl.QGL.qglPopMatrix;
-import static neo.opengl.QGL.qglProgramEnvParameter4fvARB;
-import static neo.opengl.QGL.qglProgramLocalParameter4fvARB;
-import static neo.opengl.QGL.qglPushMatrix;
-import static neo.opengl.QGL.qglScissor;
-import static neo.opengl.QGL.qglStencilFunc;
-import static neo.opengl.QGL.qglStencilOp;
-import static neo.opengl.QGL.qglTexCoord2f;
-import static neo.opengl.QGL.qglTexCoordPointer;
-import static neo.opengl.QGL.qglTexEnvfv;
-import static neo.opengl.QGL.qglTexEnvi;
-import static neo.opengl.QGL.qglTexGenf;
-import static neo.opengl.QGL.qglTexGenfv;
-import static neo.opengl.QGL.qglVertex2f;
-import static neo.opengl.QGL.qglVertexAttribPointerARB;
-import static neo.opengl.QGL.qglVertexPointer;
-import static neo.opengl.QGLConstantsIfc.GL_ALPHA_SCALE;
-import static neo.opengl.QGLConstantsIfc.GL_ALPHA_TEST;
-import static neo.opengl.QGLConstantsIfc.GL_ALWAYS;
-import static neo.opengl.QGLConstantsIfc.GL_COLOR_ARRAY;
-import static neo.opengl.QGLConstantsIfc.GL_COMBINE_ALPHA_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_COMBINE_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_COMBINE_RGB_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_CONSTANT_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_DEPTH_BOUNDS_TEST_EXT;
-import static neo.opengl.QGLConstantsIfc.GL_DEPTH_TEST;
-import static neo.opengl.QGLConstantsIfc.GL_FLOAT;
-import static neo.opengl.QGLConstantsIfc.GL_FRAGMENT_PROGRAM_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_GEQUAL;
-import static neo.opengl.QGLConstantsIfc.GL_GREATER;
-import static neo.opengl.QGLConstantsIfc.GL_KEEP;
-import static neo.opengl.QGLConstantsIfc.GL_MODELVIEW;
-import static neo.opengl.QGLConstantsIfc.GL_MODULATE;
-import static neo.opengl.QGLConstantsIfc.GL_NORMAL_ARRAY;
-import static neo.opengl.QGLConstantsIfc.GL_OBJECT_LINEAR;
-import static neo.opengl.QGLConstantsIfc.GL_OBJECT_PLANE;
-import static neo.opengl.QGLConstantsIfc.GL_ONE_MINUS_SRC_COLOR;
-import static neo.opengl.QGLConstantsIfc.GL_OPERAND0_ALPHA_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_OPERAND0_RGB_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_OPERAND1_ALPHA_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_OPERAND1_RGB_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_POLYGON_OFFSET_FILL;
-import static neo.opengl.QGLConstantsIfc.GL_PREVIOUS_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_PRIMARY_COLOR_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_PROJECTION;
-import static neo.opengl.QGLConstantsIfc.GL_Q;
-import static neo.opengl.QGLConstantsIfc.GL_QUADS;
-import static neo.opengl.QGLConstantsIfc.GL_R;
-import static neo.opengl.QGLConstantsIfc.GL_REFLECTION_MAP;
-import static neo.opengl.QGLConstantsIfc.GL_RGB_SCALE_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_S;
-import static neo.opengl.QGLConstantsIfc.GL_SOURCE0_ALPHA_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_SOURCE0_RGB_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_SOURCE1_ALPHA_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_SOURCE1_RGB_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_SRC_ALPHA;
-import static neo.opengl.QGLConstantsIfc.GL_SRC_COLOR;
-import static neo.opengl.QGLConstantsIfc.GL_STENCIL_TEST;
-import static neo.opengl.QGLConstantsIfc.GL_T;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_COORD_ARRAY;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_ENV;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_ENV_COLOR;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_GEN_MODE;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_GEN_Q;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_GEN_R;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_GEN_S;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_GEN_T;
-import static neo.opengl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
-import static neo.opengl.QGLConstantsIfc.GL_VERTEX_PROGRAM_ARB;
+import static neo.open.gl.QGL.qglAlphaFunc;
+import static neo.open.gl.QGL.qglBegin;
+import static neo.open.gl.QGL.qglBindProgramARB;
+import static neo.open.gl.QGL.qglColor3f;
+import static neo.open.gl.QGL.qglColor3fv;
+import static neo.open.gl.QGL.qglColor4f;
+import static neo.open.gl.QGL.qglColor4fv;
+import static neo.open.gl.QGL.qglColorPointer;
+import static neo.open.gl.QGL.qglDepthBoundsEXT;
+import static neo.open.gl.QGL.qglDisable;
+import static neo.open.gl.QGL.qglDisableClientState;
+import static neo.open.gl.QGL.qglDisableVertexAttribArrayARB;
+import static neo.open.gl.QGL.qglEnable;
+import static neo.open.gl.QGL.qglEnableClientState;
+import static neo.open.gl.QGL.qglEnableVertexAttribArrayARB;
+import static neo.open.gl.QGL.qglEnd;
+import static neo.open.gl.QGL.qglGetError;
+import static neo.open.gl.QGL.qglLoadIdentity;
+import static neo.open.gl.QGL.qglLoadMatrixf;
+import static neo.open.gl.QGL.qglMatrixMode;
+import static neo.open.gl.QGL.qglNormalPointer;
+import static neo.open.gl.QGL.qglOrtho;
+import static neo.open.gl.QGL.qglPolygonOffset;
+import static neo.open.gl.QGL.qglPopMatrix;
+import static neo.open.gl.QGL.qglProgramEnvParameter4fvARB;
+import static neo.open.gl.QGL.qglProgramLocalParameter4fvARB;
+import static neo.open.gl.QGL.qglPushMatrix;
+import static neo.open.gl.QGL.qglScissor;
+import static neo.open.gl.QGL.qglStencilFunc;
+import static neo.open.gl.QGL.qglStencilOp;
+import static neo.open.gl.QGL.qglTexCoord2f;
+import static neo.open.gl.QGL.qglTexCoordPointer;
+import static neo.open.gl.QGL.qglTexEnvfv;
+import static neo.open.gl.QGL.qglTexEnvi;
+import static neo.open.gl.QGL.qglTexGenf;
+import static neo.open.gl.QGL.qglTexGenfv;
+import static neo.open.gl.QGL.qglVertex2f;
+import static neo.open.gl.QGL.qglVertexAttribPointerARB;
+import static neo.open.gl.QGL.qglVertexPointer;
+import static neo.open.gl.QGLConstantsIfc.GL_ALPHA_SCALE;
+import static neo.open.gl.QGLConstantsIfc.GL_ALPHA_TEST;
+import static neo.open.gl.QGLConstantsIfc.GL_ALWAYS;
+import static neo.open.gl.QGLConstantsIfc.GL_COLOR_ARRAY;
+import static neo.open.gl.QGLConstantsIfc.GL_COMBINE_ALPHA_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_COMBINE_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_COMBINE_RGB_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_CONSTANT_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_BOUNDS_TEST_EXT;
+import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_TEST;
+import static neo.open.gl.QGLConstantsIfc.GL_FLOAT;
+import static neo.open.gl.QGLConstantsIfc.GL_FRAGMENT_PROGRAM_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_GEQUAL;
+import static neo.open.gl.QGLConstantsIfc.GL_GREATER;
+import static neo.open.gl.QGLConstantsIfc.GL_KEEP;
+import static neo.open.gl.QGLConstantsIfc.GL_MODELVIEW;
+import static neo.open.gl.QGLConstantsIfc.GL_MODULATE;
+import static neo.open.gl.QGLConstantsIfc.GL_NORMAL_ARRAY;
+import static neo.open.gl.QGLConstantsIfc.GL_OBJECT_LINEAR;
+import static neo.open.gl.QGLConstantsIfc.GL_OBJECT_PLANE;
+import static neo.open.gl.QGLConstantsIfc.GL_ONE_MINUS_SRC_COLOR;
+import static neo.open.gl.QGLConstantsIfc.GL_OPERAND0_ALPHA_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_OPERAND0_RGB_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_OPERAND1_ALPHA_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_OPERAND1_RGB_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_POLYGON_OFFSET_FILL;
+import static neo.open.gl.QGLConstantsIfc.GL_PREVIOUS_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_PRIMARY_COLOR_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_PROJECTION;
+import static neo.open.gl.QGLConstantsIfc.GL_Q;
+import static neo.open.gl.QGLConstantsIfc.GL_QUADS;
+import static neo.open.gl.QGLConstantsIfc.GL_R;
+import static neo.open.gl.QGLConstantsIfc.GL_REFLECTION_MAP;
+import static neo.open.gl.QGLConstantsIfc.GL_RGB_SCALE_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_S;
+import static neo.open.gl.QGLConstantsIfc.GL_SOURCE0_ALPHA_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_SOURCE0_RGB_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_SOURCE1_ALPHA_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_SOURCE1_RGB_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_SRC_ALPHA;
+import static neo.open.gl.QGLConstantsIfc.GL_SRC_COLOR;
+import static neo.open.gl.QGLConstantsIfc.GL_STENCIL_TEST;
+import static neo.open.gl.QGLConstantsIfc.GL_T;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_COORD_ARRAY;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_ENV;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_ENV_COLOR;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_MODE;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_Q;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_R;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_S;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_T;
+import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
+import static neo.open.gl.QGLConstantsIfc.GL_VERTEX_PROGRAM_ARB;
 
 import java.nio.FloatBuffer;
 import java.util.Arrays;
@@ -209,7 +209,8 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.opengl.Nio;
+import neo.open.MatrixUtil;
+import neo.open.Nio;
 
 /**
  *
@@ -221,7 +222,7 @@ public class draw_common {
      =====================
      */
 
-    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/, final float[] textureMatrix) {
+    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/) {
         final float[] genMatrix = new float[16];
         final float[] finale = new float[16];
 
@@ -245,7 +246,7 @@ public class draw_common {
         genMatrix[11] = lightProject[2].oGet(2);
         genMatrix[15] = lightProject[2].oGet(3);
 
-        myGlMultMatrix(genMatrix, backEnd.lightTextureMatrix, finale);
+        myGlMultMatrix(genMatrix, backEnd.getLightTextureMatrix(), finale);
 
         lightProject[0].oSet(0, finale[0]);
         lightProject[0].oSet(1, finale[4]);
@@ -256,6 +257,17 @@ public class draw_common {
         lightProject[1].oSet(1, finale[5]);
         lightProject[1].oSet(2, finale[9]);
         lightProject[1].oSet(3, finale[13]);
+    }
+
+    /**
+     * 
+     * @param lightProject
+     * @param textureMatrix - why this ???
+     * 
+     * @deprecated use public static void RB_BakeTextureMatrixIntoTexgen(idVec4[] lightProject) instead
+     */
+    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/, final FloatBuffer textureMatrix) {
+    	RB_BakeTextureMatrixIntoTexgen(lightProject);
     }
 
     /*
@@ -350,10 +362,7 @@ public class draw_common {
                 qglEnableClientState(GL_NORMAL_ARRAY);
                 qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, ac.normalOffset());
 
-                qglMatrixMode(GL_TEXTURE);
-
-                qglLoadMatrixf(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.modelViewMatrix));
-                qglMatrixMode(GL_MODELVIEW);
+                MatrixUtil.loadTextureMatrix(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.getModelViewMatrix()));
             }
         }
     }
@@ -364,7 +373,7 @@ public class draw_common {
         qglEnable(GL_TEXTURE_GEN_Q);
 
         final float[] mat = new float[16]; //, plane = new float[4];
-        myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.projectionMatrix, mat);
+        myGlMultMatrix(surf.space.getModelViewMatrix(), backEnd.viewDef.getProjectionMatrix(), mat);
 
 //        plane[0] = mat[0];
 //        plane[1] = mat[4];
@@ -515,7 +524,7 @@ public class draw_common {
             idMaterial shader;
             shaderStage_t pStage;
             float[] regs;
-            final float[] color = new float[4];
+            final FloatBuffer color = Nio.newFloatBuffer(4);
             srfTriangles_s tri;
 
             tri = surf.geo;
@@ -538,7 +547,7 @@ public class draw_common {
             }
 
             // some deforms may disable themselves by setting numIndexes = 0
-            if (0 == tri.numIndexes) {
+            if (0 == tri.getIndexes().getNumValues()) {
                 return;
             }
 
@@ -574,15 +583,20 @@ public class draw_common {
                 qglPolygonOffset(r_offsetFactor.GetFloat(), r_offsetUnits.GetFloat() * shader.GetPolygonOffset());
             }
 
-            // subviews will just down-modulate the color buffer by overbright
-            if (shader.GetSort() == SS_SUBVIEW) {
-                GL_State(GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO | GLS_DEPTHFUNC_LESS);
-                color[0] = color[1] = color[2] = (1.0f / backEnd.overBright);
-                color[3] = 1;
-            } else {
-                // others just draw black
-                color[0] = color[1] = color[2] = 0;
-                color[3] = 1;
+            {
+                float colorValue;
+            	// subviews will just down-modulate the color buffer by overbright
+                if (shader.GetSort() == SS_SUBVIEW) {
+                    GL_State(GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO | GLS_DEPTHFUNC_LESS);
+                    colorValue = (1.0f / backEnd.overBright);
+                } else {
+                    // others just draw black
+                    colorValue = 0;
+                }
+                color.put(0, colorValue)
+                .put(1, colorValue)
+                .put(2, colorValue)
+                .put(3, 1);
             }
 
             final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
@@ -620,13 +634,13 @@ public class draw_common {
                     didDraw = true;
 
                     // set the alpha modulate
-                    color[3] = regs[ pStage.color.registers[3]];
+                    color.put(3, regs[ pStage.color.registers[3]]);
 
                     // skip the entire stage if alpha would be black
-                    if (color[3] <= 0) {
+                    if (color.get(3) <= 0) {
                         continue;
                     }
-                    qglColor4fv(Nio.wrap(color));
+                    qglColor4fv(color);
 
                     qglAlphaFunc(GL_GREATER, regs[ pStage.alphaTestRegister]);
 
@@ -649,7 +663,7 @@ public class draw_common {
 
             // draw the entire surface solid
             if (drawSolid) {
-                qglColor4fv(Nio.wrap(color));
+            	qglColor4fv(color);
                 globalImages.whiteImage.Bind();
 
                 // draw it
@@ -866,7 +880,7 @@ public class draw_common {
 
         // change the matrix if needed
         if (surf.space != backEnd.currentSpace) {
-            qglLoadMatrixf(Nio.wrap(surf.space.modelViewMatrix));
+            qglLoadMatrixf(surf.space.getModelViewMatrix());
             backEnd.currentSpace = surf.space;
             RB_SetProgramEnvironmentSpace();
         }
@@ -881,7 +895,7 @@ public class draw_common {
         }
 
         // some deforms may disable themselves by setting numIndexes = 0
-        if (0 == tri.numIndexes) {
+        if (0 == tri.getIndexes().getNumValues()) {
             return;
         }
 
@@ -1246,7 +1260,7 @@ public class draw_common {
             boolean external = false;
 
             if (0 == r_useExternalShadows.GetInteger()) {
-                numIndexes = tri.numIndexes;
+                numIndexes = tri.getIndexes().getNumValues();
             } else if (r_useExternalShadows.GetInteger() == 2) { // force to no caps for testing
                 numIndexes = tri.numShadowIndexesNoCaps;
             } else if (0 == (surf.dsFlags & DSF_VIEW_INSIDE_SHADOW)) {
@@ -1267,7 +1281,7 @@ public class draw_common {
                 external = true;
             } else {
                 // must draw everything
-                numIndexes = tri.numIndexes;
+                numIndexes = tri.getIndexes().getNumValues();
             }
 
             // set depth bounds
@@ -1287,13 +1301,13 @@ public class draw_common {
                 } else {
                     // draw different color for turboshadows
                     if ((surf.geo.shadowCapPlaneBits & SHADOW_CAP_INFINITE) != 0) {
-                        if (numIndexes == tri.numIndexes) {
+                        if (numIndexes == tri.getIndexes().getNumValues()) {
                             qglColor3f(1 / backEnd.overBright, 0.1f / backEnd.overBright, 0.1f / backEnd.overBright);
                         } else {
                             qglColor3f(1 / backEnd.overBright, 0.4f / backEnd.overBright, 0.1f / backEnd.overBright);
                         }
                     } else {
-                        if (numIndexes == tri.numIndexes) {
+                        if (numIndexes == tri.getIndexes().getNumValues()) {
                             qglColor3f(0.1f / backEnd.overBright, 1 / backEnd.overBright, 0.1f / backEnd.overBright);
                         } else if (numIndexes == tri.numShadowIndexesNoFrontCaps) {
                             qglColor3f(0.1f / backEnd.overBright, 1 / backEnd.overBright, 0.6f / backEnd.overBright);
@@ -1516,11 +1530,11 @@ public class draw_common {
             }
 
             // get the modulate values from the light, including alpha, unlike normal lights
-            backEnd.lightColor[0] = regs[ stage.color.registers[0]];
-            backEnd.lightColor[1] = regs[ stage.color.registers[1]];
-            backEnd.lightColor[2] = regs[ stage.color.registers[2]];
-            backEnd.lightColor[3] = regs[ stage.color.registers[3]];
-            qglColor4fv(Nio.wrap(backEnd.lightColor));
+            backEnd.getLightColor().put(0, regs[ stage.color.registers[0]]);
+            backEnd.getLightColor().put(1, regs[ stage.color.registers[1]]);
+            backEnd.getLightColor().put(2, regs[ stage.color.registers[2]]);
+            backEnd.getLightColor().put(3, regs[ stage.color.registers[3]]);
+            qglColor4fv(backEnd.getLightColor());
 
             RB_RenderDrawSurfChainWithFunction(drawSurfs, RB_T_BlendLight.INSTANCE);
             RB_RenderDrawSurfChainWithFunction(drawSurfs2, RB_T_BlendLight.INSTANCE);
@@ -1620,22 +1634,22 @@ public class draw_common {
         // assume fog shaders have only a single stage
         stage = lightShader.GetStage(0);
 
-        backEnd.lightColor[0] = regs[ stage.color.registers[0]];
-        backEnd.lightColor[1] = regs[ stage.color.registers[1]];
-        backEnd.lightColor[2] = regs[ stage.color.registers[2]];
-        backEnd.lightColor[3] = regs[ stage.color.registers[3]];
+        backEnd.getLightColor().put(0, regs[ stage.color.registers[0]]);
+        backEnd.getLightColor().put(1, regs[ stage.color.registers[1]]);
+        backEnd.getLightColor().put(2, regs[ stage.color.registers[2]]);
+        backEnd.getLightColor().put(3, regs[ stage.color.registers[3]]);
 
-        qglColor3fv(Nio.wrap(backEnd.lightColor));
+        qglColor3fv(backEnd.getLightColor());
 
         // calculate the falloff planes
         float a;
 
         // if they left the default value on, set a fog distance of 500
-        if (backEnd.lightColor[3] <= 1.0) {
+        if (backEnd.getLightColor().get(3) <= 1.0) {
             a = -0.5f / DEFAULT_FOG_DISTANCE;
         } else {
             // otherwise, distance = alpha color
-            a = -0.5f / backEnd.lightColor[3];
+            a = -0.5f / backEnd.getLightColor().get(3);
         }
 
         GL_State(GLS_DEPTHMASK | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_DEPTHFUNC_EQUAL);
@@ -1649,15 +1663,16 @@ public class draw_common {
         qglEnable(GL_TEXTURE_GEN_T);
         qglTexCoord2f(0.5f, 0.5f);		// make sure Q is set
 
-        fogPlanes[0].oSet(0, a * backEnd.viewDef.worldSpace.modelViewMatrix[2]);
-        fogPlanes[0].oSet(1, a * backEnd.viewDef.worldSpace.modelViewMatrix[6]);
-        fogPlanes[0].oSet(2, a * backEnd.viewDef.worldSpace.modelViewMatrix[10]);
-        fogPlanes[0].oSet(3, a * backEnd.viewDef.worldSpace.modelViewMatrix[14]);
+        FloatBuffer modelViewMatrix = backEnd.viewDef.worldSpace.getModelViewMatrix();
+        fogPlanes[0].oSet(0, a * modelViewMatrix.get(2));
+        fogPlanes[0].oSet(1, a * modelViewMatrix.get(6));
+        fogPlanes[0].oSet(2, a * modelViewMatrix.get(10));
+        fogPlanes[0].oSet(3, a * modelViewMatrix.get(14));
 
-        fogPlanes[1].oSet(0, a * backEnd.viewDef.worldSpace.modelViewMatrix[0]);
-        fogPlanes[1].oSet(1, a * backEnd.viewDef.worldSpace.modelViewMatrix[4]);
-        fogPlanes[1].oSet(2, a * backEnd.viewDef.worldSpace.modelViewMatrix[8]);
-        fogPlanes[1].oSet(3, a * backEnd.viewDef.worldSpace.modelViewMatrix[12]);
+        fogPlanes[1].oSet(0, a * modelViewMatrix.get(0));
+        fogPlanes[1].oSet(1, a * modelViewMatrix.get(4));
+        fogPlanes[1].oSet(2, a * modelViewMatrix.get(8));
+        fogPlanes[1].oSet(3, a * modelViewMatrix.get(12));
 
         // texture 1 is the entering plane fade correction
         GL_SelectTexture(1);

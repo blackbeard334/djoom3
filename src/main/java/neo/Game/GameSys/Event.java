@@ -6,6 +6,7 @@ import static neo.TempDump.etoi;
 
 import java.nio.ByteBuffer;
 
+import neo.TempDump;
 import neo.TempDump.CPP_class;
 import neo.TempDump.TODO_Exception;
 import neo.CM.CollisionModel.contactType_t;
@@ -15,6 +16,7 @@ import neo.Game.Actor;
 import neo.Game.Camera;
 import neo.Game.Entity;
 import neo.Game.FX;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Item;
 import neo.Game.Light;
 import neo.Game.Misc;
@@ -328,7 +330,7 @@ public class Event {
         private idEventArg[]    data;
         private int             time;
         private idClass         object;
-        private java.lang.Class typeinfo;
+        private java.lang.Class<?> typeinfo;
         //
         private final       idLinkList<idEvent> eventNode   = new idLinkList<>();
         //
@@ -348,7 +350,7 @@ public class Event {
             final String materialName;
 
             if (FreeEvents.IsListEmpty()) {
-                gameLocal.Error("idEvent::Alloc : No more free events");
+                idGameLocal.Error("idEvent::Alloc : No more free events");
             }
 
             ev = FreeEvents.Next();
@@ -357,7 +359,7 @@ public class Event {
             ev.eventdef = evdef;
 
             if (numargs != evdef.GetNumArgs()) {
-                gameLocal.Error("idEvent::Alloc : Wrong number of args for '%s' event.", evdef.GetName());
+                idGameLocal.Error("idEvent::Alloc : Wrong number of args for '%s' event.", evdef.GetName());
             }
 
             size = evdef.GetArgSize();
@@ -432,7 +434,7 @@ public class Event {
 
             format = evdef.GetArgFormat().toCharArray();
             if (numargs != evdef.GetNumArgs()) {
-                gameLocal.Error("idEvent::CopyArgs : Wrong number of args for '%s' event.", evdef.GetName());
+                idGameLocal.Error("idEvent::CopyArgs : Wrong number of args for '%s' event.", evdef.GetName());
             }
 
             for (i = 0; i < numargs; i++) {
@@ -440,7 +442,7 @@ public class Event {
                 if (format[i] != arg.type) {
                     // when NULL is passed in for an entity, it gets cast as an integer 0, so don't give an error when it happens
                     if (!(((format[i] == D_EVENT_TRACE) || (format[i] == D_EVENT_ENTITY)) && (arg.type == 'd') && (arg.value == Integer.valueOf(0)))) {
-                        gameLocal.Error("idEvent::CopyArgs : Wrong type passed in for arg # %d on '%s' event.", i, evdef.GetName());
+                        idGameLocal.Error("idEvent::CopyArgs : Wrong type passed in for arg # %d on '%s' event.", i, evdef.GetName());
                     }
                 }
 
@@ -463,7 +465,7 @@ public class Event {
             this.eventNode.AddToEnd(FreeEvents);
         }
 
-        public void Schedule(idClass obj, final java.lang.Class type, int time) {
+        public void Schedule(idClass obj, final java.lang.Class<?> type, int time) {
             idEvent event;
 
             assert (initialized);
@@ -572,7 +574,7 @@ public class Event {
                             args[i] = event.data[i];
                             break;
                         default:
-                            gameLocal.Error("idEvent::ServiceEvents : Invalid arg format '%s' string for '%s' event.", formatspec, ev.GetName());
+                            idGameLocal.Error("idEvent::ServiceEvents : Invalid arg format '%s' string for '%s' event.", formatspec, ev.GetName());
                     }//TODO:S ^^^^^^^^^^^^^^^^^^^^^
                 }
 
@@ -597,7 +599,7 @@ public class Event {
                 // of events being processed is evidence of an infinite loop of events.
                 num++;
                 if (num > MAX_EVENTSPERFRAME) {
-                    gameLocal.Error("Event overflow.  Possible infinite loop in script.");
+                    idGameLocal.Error("Event overflow.  Possible infinite loop in script.");
                 }
             }
         }
@@ -606,7 +608,7 @@ public class Event {
             gameLocal.Printf("Initializing event system\n");
 
             if (eventError) {
-                gameLocal.Error("%s", eventErrorMsg);
+                idGameLocal.Error("%s", eventErrorMsg);
             }
 
 // #ifdef CREATE_EVENT_CODE
@@ -719,7 +721,7 @@ public class Event {
 
             for (i = 0; i < num[0]; i++) {
                 if (FreeEvents.IsListEmpty()) {
-                    gameLocal.Error("idEvent::Restore : No more free events");
+                    idGameLocal.Error("idEvent::Restore : No more free events");
                 }
 
                 event = FreeEvents.Next();
@@ -751,7 +753,9 @@ public class Event {
                     savefile.Error("idEvent::Restore: arg size (%d) doesn't match saved arg size(%d) on event '%s'", event.eventdef.GetArgSize(), argsize[0], event.eventdef.GetName());
                 }
 
-                throw new TODO_Exception();
+                if (!TempDump.isDeadCodeTrue()) { // throws TODO_Exception, so Iteration will not be done
+                    throw new TODO_Exception();
+                }
 //                if (argsize[0] != 0) {
 //                    event.data = new Object[argsize[0]];//eventDataAllocator.Alloc(argsize[0]);
 //                    format = event.eventdef.GetArgFormat();

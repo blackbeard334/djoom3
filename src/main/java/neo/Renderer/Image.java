@@ -57,78 +57,81 @@ import static neo.idlib.Lib.LittleLong;
 import static neo.idlib.Text.Str.FILE_HASH_SIZE;
 import static neo.idlib.Text.Str.va;
 import static neo.idlib.hashing.MD4.MD4_BlockChecksum;
-import static neo.opengl.QGL.qglBindTexture;
-import static neo.opengl.QGL.qglColorTableEXT;
-import static neo.opengl.QGL.qglCompressedTexImage2DARB;
-import static neo.opengl.QGL.qglCopyTexImage2D;
-import static neo.opengl.QGL.qglCopyTexSubImage2D;
-import static neo.opengl.QGL.qglDeleteTextures;
-import static neo.opengl.QGL.qglDisable;
-import static neo.opengl.QGL.qglEnable;
-import static neo.opengl.QGL.qglGenTextures;
-import static neo.opengl.QGL.qglGetCompressedTexImageARB;
-import static neo.opengl.QGL.qglGetTexImage;
-import static neo.opengl.QGL.qglPixelStorei;
-import static neo.opengl.QGL.qglPrioritizeTextures;
-import static neo.opengl.QGL.qglReadBuffer;
-import static neo.opengl.QGL.qglTexImage2D;
-import static neo.opengl.QGL.qglTexImage3D;
-import static neo.opengl.QGL.qglTexParameterf;
-import static neo.opengl.QGL.qglTexParameteri;
-import static neo.opengl.QGL.qglTexSubImage2D;
-import static neo.opengl.QGLConstantsIfc.GL_ALPHA;
-import static neo.opengl.QGLConstantsIfc.GL_ALPHA8;
-import static neo.opengl.QGLConstantsIfc.GL_BACK;
-import static neo.opengl.QGLConstantsIfc.GL_BGRA_EXT;
-import static neo.opengl.QGLConstantsIfc.GL_BGR_EXT;
-import static neo.opengl.QGLConstantsIfc.GL_CLAMP_TO_BORDER;
-import static neo.opengl.QGLConstantsIfc.GL_CLAMP_TO_EDGE;
-import static neo.opengl.QGLConstantsIfc.GL_COLOR_INDEX;
-import static neo.opengl.QGLConstantsIfc.GL_COMPRESSED_RGBA_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-import static neo.opengl.QGLConstantsIfc.GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-import static neo.opengl.QGLConstantsIfc.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-import static neo.opengl.QGLConstantsIfc.GL_COMPRESSED_RGB_ARB;
-import static neo.opengl.QGLConstantsIfc.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-import static neo.opengl.QGLConstantsIfc.GL_DEPTH_COMPONENT;
-import static neo.opengl.QGLConstantsIfc.GL_INTENSITY8;
-import static neo.opengl.QGLConstantsIfc.GL_LINEAR;
-import static neo.opengl.QGLConstantsIfc.GL_LINEAR_MIPMAP_LINEAR;
-import static neo.opengl.QGLConstantsIfc.GL_LINEAR_MIPMAP_NEAREST;
-import static neo.opengl.QGLConstantsIfc.GL_LUMINANCE;
-import static neo.opengl.QGLConstantsIfc.GL_LUMINANCE8;
-import static neo.opengl.QGLConstantsIfc.GL_LUMINANCE8_ALPHA8;
-import static neo.opengl.QGLConstantsIfc.GL_LUMINANCE_ALPHA;
-import static neo.opengl.QGLConstantsIfc.GL_NEAREST;
-import static neo.opengl.QGLConstantsIfc.GL_NEAREST_MIPMAP_LINEAR;
-import static neo.opengl.QGLConstantsIfc.GL_NEAREST_MIPMAP_NEAREST;
-import static neo.opengl.QGLConstantsIfc.GL_PACK_ALIGNMENT;
-import static neo.opengl.QGLConstantsIfc.GL_REPEAT;
-import static neo.opengl.QGLConstantsIfc.GL_RGB;
-import static neo.opengl.QGLConstantsIfc.GL_RGB5;
-import static neo.opengl.QGLConstantsIfc.GL_RGB8;
-import static neo.opengl.QGLConstantsIfc.GL_RGBA;
-import static neo.opengl.QGLConstantsIfc.GL_RGBA4;
-import static neo.opengl.QGLConstantsIfc.GL_RGBA8;
-import static neo.opengl.QGLConstantsIfc.GL_SHARED_TEXTURE_PALETTE_EXT;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_2D;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_3D;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_CUBE_MAP;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_LOD_BIAS;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_MAG_FILTER;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_MAX_ANISOTROPY_EXT;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_MIN_FILTER;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_RECTANGLE;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_WRAP_R;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_WRAP_S;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_WRAP_T;
-import static neo.opengl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
+import static neo.open.gl.QGL.qglBindTexture;
+import static neo.open.gl.QGL.qglColorTableEXT;
+import static neo.open.gl.QGL.qglCompressedTexImage2DARB;
+import static neo.open.gl.QGL.qglCopyTexImage2D;
+import static neo.open.gl.QGL.qglCopyTexSubImage2D;
+import static neo.open.gl.QGL.qglDeleteTextures;
+import static neo.open.gl.QGL.qglDisable;
+import static neo.open.gl.QGL.qglEnable;
+import static neo.open.gl.QGL.qglGenTextures;
+import static neo.open.gl.QGL.qglGetCompressedTexImageARB;
+import static neo.open.gl.QGL.qglGetTexImage;
+import static neo.open.gl.QGL.qglPixelStorei;
+import static neo.open.gl.QGL.qglPrioritizeTextures;
+import static neo.open.gl.QGL.qglReadBuffer;
+import static neo.open.gl.QGL.qglTexImage2D;
+import static neo.open.gl.QGL.qglTexImage3D;
+import static neo.open.gl.QGL.qglTexParameterf;
+import static neo.open.gl.QGL.qglTexParameteri;
+import static neo.open.gl.QGL.qglTexSubImage2D;
+import static neo.open.gl.QGLConstantsIfc.GL_ALPHA;
+import static neo.open.gl.QGLConstantsIfc.GL_ALPHA8;
+import static neo.open.gl.QGLConstantsIfc.GL_BACK;
+import static neo.open.gl.QGLConstantsIfc.GL_BGRA_EXT;
+import static neo.open.gl.QGLConstantsIfc.GL_BGR_EXT;
+import static neo.open.gl.QGLConstantsIfc.GL_CLAMP_TO_BORDER;
+import static neo.open.gl.QGLConstantsIfc.GL_CLAMP_TO_EDGE;
+import static neo.open.gl.QGLConstantsIfc.GL_COLOR_INDEX;
+import static neo.open.gl.QGLConstantsIfc.GL_COMPRESSED_RGBA_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+import static neo.open.gl.QGLConstantsIfc.GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+import static neo.open.gl.QGLConstantsIfc.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+import static neo.open.gl.QGLConstantsIfc.GL_COMPRESSED_RGB_ARB;
+import static neo.open.gl.QGLConstantsIfc.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_COMPONENT;
+import static neo.open.gl.QGLConstantsIfc.GL_INTENSITY8;
+import static neo.open.gl.QGLConstantsIfc.GL_LINEAR;
+import static neo.open.gl.QGLConstantsIfc.GL_LINEAR_MIPMAP_LINEAR;
+import static neo.open.gl.QGLConstantsIfc.GL_LINEAR_MIPMAP_NEAREST;
+import static neo.open.gl.QGLConstantsIfc.GL_LUMINANCE;
+import static neo.open.gl.QGLConstantsIfc.GL_LUMINANCE8;
+import static neo.open.gl.QGLConstantsIfc.GL_LUMINANCE8_ALPHA8;
+import static neo.open.gl.QGLConstantsIfc.GL_LUMINANCE_ALPHA;
+import static neo.open.gl.QGLConstantsIfc.GL_NEAREST;
+import static neo.open.gl.QGLConstantsIfc.GL_NEAREST_MIPMAP_LINEAR;
+import static neo.open.gl.QGLConstantsIfc.GL_NEAREST_MIPMAP_NEAREST;
+import static neo.open.gl.QGLConstantsIfc.GL_PACK_ALIGNMENT;
+import static neo.open.gl.QGLConstantsIfc.GL_REPEAT;
+import static neo.open.gl.QGLConstantsIfc.GL_RGB;
+import static neo.open.gl.QGLConstantsIfc.GL_RGB5;
+import static neo.open.gl.QGLConstantsIfc.GL_RGB8;
+import static neo.open.gl.QGLConstantsIfc.GL_RGBA;
+import static neo.open.gl.QGLConstantsIfc.GL_RGBA4;
+import static neo.open.gl.QGLConstantsIfc.GL_RGBA8;
+import static neo.open.gl.QGLConstantsIfc.GL_SHARED_TEXTURE_PALETTE_EXT;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_2D;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_3D;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_CUBE_MAP;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_LOD_BIAS;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_MAG_FILTER;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_MAX_ANISOTROPY_EXT;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_MIN_FILTER;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_RECTANGLE;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_WRAP_R;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_WRAP_S;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_WRAP_T;
+import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
 import static neo.sys.win_shared.Sys_Milliseconds;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
+import neo.TempDump;
 import neo.TempDump.CPP_class;
 import neo.TempDump.CPP_class.Bool;
 import neo.TempDump.CPP_class.Pointer;
@@ -170,7 +173,7 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrList.idStrList;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *
@@ -650,8 +653,9 @@ public class Image {
             }
 
             if (com_purgeAll.GetBool()) {
-                final float/*GLclampf*/ priority = 1.0f;
-                qglPrioritizeTextures(Nio.wrap(new int[] {this.texNum}), Nio.wrap(new float[] {priority}));
+                final FloatBuffer/*GLclampf*/ priority = (FloatBuffer) Nio.newFloatBuffer(1).put(1.0f);
+                final IntBuffer/*GLuint*/       texNum = (IntBuffer) Nio.newIntBuffer(1).put(this.texNum);
+                qglPrioritizeTextures(texNum, priority);
             }
         }
         private static int DBG_Bind = 0;
@@ -889,7 +893,7 @@ public class Image {
                 R_SetBorderTexels(scaledBuffer, width, height, rgba);
             }
 
-            if ((this.generatorFunction == null) && (((this.depth == TD_BUMP) && globalImages.image_writeNormalTGA.GetBool()) || ((this.depth != TD_BUMP) && globalImages.image_writeTGA.GetBool()))) {
+            if ((this.generatorFunction == null) && (((this.depth == TD_BUMP) && idImageManager.image_writeNormalTGA.GetBool()) || ((this.depth != TD_BUMP) && idImageManager.image_writeTGA.GetBool()))) {
                 // Optionally write out the texture to a .tga
 //                String[] filename = {null};
                 final String[] filename = new String[1];
@@ -926,7 +930,7 @@ public class Image {
             // one fragment program
             // if the image is precompressed ( either in palletized mode or true rxgb mode )
             // then it is loaded above and the swap never happens here
-            if ((this.depth == TD_BUMP) && (globalImages.image_useNormalCompression.GetInteger() != 1)) {
+            if ((this.depth == TD_BUMP) && (idImageManager.image_useNormalCompression.GetInteger() != 1)) {
                 for (int i = 0; i < (scaled_width[0] * scaled_height[0] * 4); i += 4) {
                     scaledBuffer.put(i + 3, scaledBuffer.get(i));
                     scaledBuffer.put(i, (byte) 0);
@@ -974,7 +978,7 @@ public class Image {
                 // level with a different color so you can see the
                 // rasterizer's texture level selection algorithm
                 // Changing the color doesn't help with lumminance/alpha/intensity formats...
-                if ((this.depth == TD_DIFFUSE) && globalImages.image_colorMipLevels.GetBool()) {
+                if ((this.depth == TD_DIFFUSE) && idImageManager.image_colorMipLevels.GetBool()) {
                     R_BlendOverTexture(scaledBuffer, scaled_width[0] * scaled_height[0], mipBlendColors[miplevel]);
                 }
 
@@ -1440,7 +1444,7 @@ public class Image {
                 // these probably should be clamp, but we have a lot of issues with editor
                 // geometry coming out with texcoords slightly off one side, resulting in
                 // a smear across the entire polygon
-                if (true) {
+                if (!TempDump.isDeadCodeTrue()) {
                     qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
                     qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
                 } else {
@@ -1673,18 +1677,18 @@ public class Image {
             int size = 0;
 
             // perform optional picmip operation to save texture memory
-            if ((this.depth == TD_SPECULAR) && (globalImages.image_downSizeSpecular.GetInteger() != 0)) {
-                size = globalImages.image_downSizeSpecularLimit.GetInteger();
+            if ((this.depth == TD_SPECULAR) && (idImageManager.image_downSizeSpecular.GetInteger() != 0)) {
+                size = idImageManager.image_downSizeSpecularLimit.GetInteger();
                 if (size == 0) {
                     size = 64;
                 }
-            } else if ((this.depth == TD_BUMP) && (globalImages.image_downSizeBump.GetInteger() != 0)) {
-                size = globalImages.image_downSizeBumpLimit.GetInteger();
+            } else if ((this.depth == TD_BUMP) && (idImageManager.image_downSizeBump.GetInteger() != 0)) {
+                size = idImageManager.image_downSizeBumpLimit.GetInteger();
                 if (size == 0) {
                     size = 64;
                 }
-            } else if ((this.allowDownSize || globalImages.image_forceDownSize.GetBool()) && (globalImages.image_downSize.GetInteger() != 0)) {
-                size = globalImages.image_downSizeLimit.GetInteger();
+            } else if ((this.allowDownSize || idImageManager.image_forceDownSize.GetBool()) && (idImageManager.image_downSize.GetInteger() != 0)) {
+                size = idImageManager.image_downSizeLimit.GetInteger();
                 if (size == 0) {
                     size = 256;
                 }
@@ -1850,7 +1854,7 @@ public class Image {
                 return false;
             }
 
-            if (!globalImages.image_useCache.GetBool()) {
+            if (!idImageManager.image_useCache.GetBool()) {
                 return false;
             }
 
@@ -1859,7 +1863,7 @@ public class Image {
                 return false;
             }
 
-            if (globalImages.image_cacheMinK.GetInteger() <= 0) {
+            if (idImageManager.image_cacheMinK.GetInteger() <= 0) {
                 return false;
             }
 
@@ -1891,7 +1895,7 @@ public class Image {
             final int len = f.Length();
             fileSystem.CloseFile(f);
 
-            if (len <= (globalImages.image_cacheMinK.GetInteger() * 1024)) {
+            if (len <= (idImageManager.image_cacheMinK.GetInteger() * 1024)) {
                 return false;
             }
 
@@ -1911,7 +1915,7 @@ public class Image {
 
             // Always write the precompressed image if we're making a build
             if (!com_makingBuild.GetBool()) {
-                if (!globalImages.image_writePrecompressedTextures.GetBool() || !globalImages.image_usePrecompressedTextures.GetBool()) {
+                if (!idImageManager.image_writePrecompressedTextures.GetBool() || !idImageManager.image_usePrecompressedTextures.GetBool()) {
                     return;
                 }
             }
@@ -1969,7 +1973,7 @@ public class Image {
                     }
             }
 
-            if (globalImages.image_useOffLineCompression.GetBool() && FormatIsDXT(altInternalFormat)) {
+            if (idImageManager.image_useOffLineCompression.GetBool() && FormatIsDXT(altInternalFormat)) {
                 final String outFile = fileSystem.RelativePathToOSPath(filename, "fs_basepath");
                 final idStr inFile = new idStr(outFile);
                 inFile.StripFileExtension();
@@ -2153,7 +2157,7 @@ public class Image {
                 }
             }
 
-            if ((this.depth == TD_BUMP) && (globalImages.image_useNormalCompression.GetInteger() != 2)) {
+            if ((this.depth == TD_BUMP) && (idImageManager.image_useNormalCompression.GetInteger() != 2)) {
                 return false;
             }
 
@@ -2206,8 +2210,8 @@ public class Image {
                 return false;
             }
 
-            if (!fullLoad && (len > (globalImages.image_cacheMinK.GetInteger() * 1024))) {
-                len = globalImages.image_cacheMinK.GetInteger() * 1024;
+            if (!fullLoad && (len > (idImageManager.image_cacheMinK.GetInteger() * 1024))) {
+                len = idImageManager.image_cacheMinK.GetInteger() * 1024;
             }
 
             final ByteBuffer data = ByteBuffer.allocate(len);// R_StaticAlloc(len);
@@ -2470,7 +2474,7 @@ public class Image {
             } else {
                 // see if we have a pre-generated image file that is
                 // already image processed and compressed
-                if (checkForPrecompressed && globalImages.image_usePrecompressedTextures.GetBool()) {
+                if (checkForPrecompressed && idImageManager.image_usePrecompressedTextures.GetBool()) {
                     if (CheckPrecompressedImage(true)) {
                         // we got the precompressed image
                         return;
@@ -2521,7 +2525,7 @@ public class Image {
             if (imageManager.numActiveBackgroundImageLoads >= idImageManager.MAX_BACKGROUND_IMAGE_LOADS) {
                 return;
             }
-            if (globalImages.image_showBackgroundLoads.GetBool()) {
+            if (idImageManager.image_showBackgroundLoads.GetBool()) {
                 common.Printf("idImage::StartBackgroundImageLoad: %s\n", this.imgName.getData());
             }
             this.backgroundLoadInProgress = true;
@@ -2563,12 +2567,12 @@ public class Image {
             }
             final int needed = this.StorageSize();
 
-            while ((totalSize + needed) > (globalImages.image_cacheMegs.GetFloat() * 1024 * 1024)) {
+            while ((totalSize + needed) > (idImageManager.image_cacheMegs.GetFloat() * 1024 * 1024)) {
                 // purge the least recently used
                 final idImage check = globalImages.cacheLRU.cacheUsagePrev;
                 if (check.texNum != TEXTURE_NOT_LOADED) {
                     totalSize -= check.StorageSize();
-                    if (globalImages.image_showBackgroundLoads.GetBool()) {
+                    if (idImageManager.image_showBackgroundLoads.GetBool()) {
                         common.Printf("purging %s\n", check.imgName.getData());
                     }
                     check.PurgeImage();
@@ -2681,7 +2685,7 @@ public class Image {
 
             if (mipLevel == 0) {
                 // Optionally write out the paletized normal map to a .tga
-                if (globalImages.image_writeNormalTGAPalletized.GetBool()) {
+                if (idImageManager.image_writeNormalTGAPalletized.GetBool()) {
                     final String[] filename = {null};
                     ImageProgramStringToCompressedFileName(this.imgName, filename);
                     final int ext = filename[0].lastIndexOf('.');
@@ -2783,10 +2787,10 @@ public class Image {
 
             // catch normal maps first
             if (minimumDepth == TD_BUMP) {
-                if (globalImages.image_useCompression.GetBool() && (globalImages.image_useNormalCompression.GetInteger() == 1) && glConfig.sharedTexturePaletteAvailable) {
+                if (idImageManager.image_useCompression.GetBool() && (idImageManager.image_useNormalCompression.GetInteger() == 1) && glConfig.sharedTexturePaletteAvailable) {
                     // image_useNormalCompression should only be set to 1 on nv_10 and nv_20 paths
                     return 0x80E5;
-                } else if (globalImages.image_useCompression.GetBool() && (globalImages.image_useNormalCompression.GetInteger() != 0) && glConfig.textureCompressionAvailable) {
+                } else if (idImageManager.image_useCompression.GetBool() && (idImageManager.image_useNormalCompression.GetInteger() != 0) && glConfig.textureCompressionAvailable) {
                     // image_useNormalCompression == 2 uses rxgb format which produces really good quality for medium settings
                     return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
                 } else {
@@ -2796,7 +2800,7 @@ public class Image {
             }
 
             // allow a complete override of image compression with a cvar
-            if (!globalImages.image_useCompression.GetBool()) {
+            if (!idImageManager.image_useCompression.GetBool()) {
                 minimumDepth = TD_HIGH_QUALITY;
             }
 
@@ -2826,7 +2830,7 @@ public class Image {
             // there will probably be some drivers that don't
             // correctly handle the intensity/alpha/luminance/luminance+alpha
             // formats, so provide a fallback that only uses the rgb/rgba formats
-            if (!globalImages.image_useAllFormats.GetBool()) {
+            if (!idImageManager.image_useAllFormats.GetBool()) {
                 // pretend rgb is varying and inconsistant, which
                 // prevents any of the more compact forms
                 rgbDiffer = 1;
@@ -2853,7 +2857,7 @@ public class Image {
                 return GL_INTENSITY8;	// single byte for all channels
             }
 
-            if (false) {
+            if (TempDump.isDeadCodeTrue()) {
                 // we don't support alpha textures any more, because there
                 // is a discrepancy in the definition of TEX_ENV_COMBINE that
                 // causes them to be treated as 0 0 0 A, instead of 1 1 1 A as
@@ -2885,7 +2889,7 @@ public class Image {
             fileName[0] = "dds/";
             f = fileName[0].length();
 //            ff = fileName[0].toCharArray();
-            System.arraycopy(fileName[0].toCharArray(), 0, ff, 0, f);
+            Nio.arraycopy(fileName[0].toCharArray(), 0, ff, 0, f);
 
             int depth = 0;
 
@@ -3448,11 +3452,11 @@ public class Image {
                 }
 
                 if (!image.levelLoadReferenced && !image.referencedOutsideLevelLoad) {
-//			common.Printf( "Purging %s\n", image.imgName.c_str() );
+//			common.Printf( "Purging %s\n", image.imgName.getData() );
                     purgeCount++;
                     image.PurgeImage();
                 } else if (image.texNum != idImage.TEXTURE_NOT_LOADED) {
-//			common.Printf( "Keeping %s\n", image.imgName.c_str() );
+//			common.Printf( "Keeping %s\n", image.imgName.getData() );
                     keepCount++;
                 }
             }
@@ -3465,7 +3469,7 @@ public class Image {
                 }
 
                 if (image.levelLoadReferenced && (image.texNum == idImage.TEXTURE_NOT_LOADED) && (null == image.partialImage)) {
-//			common.Printf( "Loading %s\n", image.imgName.c_str() );
+//			common.Printf( "Loading %s\n", image.imgName.getData() );
                     loadCount++;
                     image.ActuallyLoadImage(true, false);
 
@@ -3727,7 +3731,7 @@ public class Image {
                 }
             }
 
-            if (false) {
+            if (TempDump.isDeadCodeTrue()) {
 //	for ( i = 0; i < 16; i++ ) {
 //		for ( j = 0 ; j < 16 ; j++ ) {
 //

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
 import neo.Game.GameSys.Class.idClass;
@@ -94,7 +95,7 @@ public class WorldSpawn {
             while (kv != null) {
                 func = gameLocal.program.FindFunction(kv.GetValue().getData());
                 if (func == null) {
-                    gameLocal.Error("Function '%s' not found in script for '%s' key on worldspawn", kv.GetValue(), kv.GetKey());
+                    idGameLocal.Error("Function '%s' not found in script for '%s' key on worldspawn", kv.GetValue(), kv.GetKey());
                 }
 
                 thread = new idThread(func);
@@ -120,11 +121,11 @@ public class WorldSpawn {
 
         @Override
         public void Event_Remove() {
-            gameLocal.Error("Tried to remove world");
+            idGameLocal.Error("Tried to remove world");
         }
 
         @Override
-        public java.lang.Class/*idTypeInfo*/ GetType() {
+        public java.lang.Class<?>/*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
@@ -139,7 +140,7 @@ public class WorldSpawn {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 

@@ -44,6 +44,7 @@ import java.util.Map;
 
 import neo.CM.CollisionModel_local;
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.Item.idItem;
 import neo.Game.Light.idLight;
 import neo.Game.Misc.idStaticEntity;
@@ -108,7 +109,7 @@ public class Target {
         }
 
         @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
+        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
@@ -149,7 +150,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -196,7 +197,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -242,7 +243,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -277,7 +278,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -340,7 +341,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -398,7 +399,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -437,7 +438,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -505,7 +506,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -554,7 +555,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -665,7 +666,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -722,7 +723,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -779,7 +780,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -844,7 +845,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -886,7 +887,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -939,7 +940,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1448,7 +1449,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1515,7 +1516,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1599,7 +1600,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1638,7 +1639,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1687,7 +1688,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1730,13 +1731,13 @@ public class Target {
                 if ((ent != null) && ent.scriptObject.HasObject()) {
                     func = ent.scriptObject.GetFunction(funcName);
                     if (NOT(func)) {
-                        gameLocal.Error("Function '%s' not found on entity '%s' for function call from '%s'", funcName, ent.name, this.name);
+                        idGameLocal.Error("Function '%s' not found on entity '%s' for function call from '%s'", funcName, ent.name, this.name);
                     }
                     if (func.type.NumParameters() != 1) {
-                        gameLocal.Error("Function '%s' on entity '%s' has the wrong number of parameters for function call from '%s'", funcName, ent.name, this.name);
+                        idGameLocal.Error("Function '%s' on entity '%s' has the wrong number of parameters for function call from '%s'", funcName, ent.name, this.name);
                     }
                     if (!ent.scriptObject.GetTypeDef().Inherits(func.type.GetParmType(0))) {
-                        gameLocal.Error("Function '%s' on entity '%s' is the wrong type for function call from '%s'", funcName, ent.name, this.name);
+                        idGameLocal.Error("Function '%s' on entity '%s' is the wrong type for function call from '%s'", funcName, ent.name, this.name);
                     }
                     // create a thread and call the function
                     thread = new idThread();
@@ -1747,7 +1748,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1804,7 +1805,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1822,7 +1823,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_Tip extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_Tip );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 2094155353115666956L;
+		// CLASS_PROTOTYPE( idTarget_Tip );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -1883,7 +1888,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1901,7 +1906,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_GiveSecurity extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_GiveSecurity );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 3913940394928897299L;
+		// CLASS_PROTOTYPE( idTarget_GiveSecurity );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -1917,7 +1926,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1936,7 +1945,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_RemoveWeapons extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_RemoveWeapons );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 2607166258106146719L;
+		// CLASS_PROTOTYPE( idTarget_RemoveWeapons );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -1959,7 +1972,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1978,7 +1991,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_LevelTrigger extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_LevelTrigger );//TODO:understand this fucking macro
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -5593521803491135026L;
+		// CLASS_PROTOTYPE( idTarget_LevelTrigger );//TODO:understand this fucking macro
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -1996,7 +2013,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2014,7 +2031,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_EnableStamina extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_EnableStamina );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -5439557550263933522L;
+		// CLASS_PROTOTYPE( idTarget_EnableStamina );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -2036,7 +2057,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2054,7 +2075,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_FadeSoundClass extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_FadeSoundClass );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -2562523365750867495L;
+		// CLASS_PROTOTYPE( idTarget_FadeSoundClass );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -2086,7 +2111,7 @@ public class Target {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t<?> getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 

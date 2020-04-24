@@ -7,6 +7,7 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVecX;
 import neo.idlib.math.Matrix.idMatX;
+import neo.open.Nio;
 
 /**
  *
@@ -532,7 +533,7 @@ public class Curve {
 
             final float[] bvals_1 = Arrays.copyOfRange(bvals, 1, bvals.length);
             Basis(order - 1, t, bvals_1);
-            System.arraycopy(bvals_1, 0, bvals, 1, bvals_1.length);
+            Nio.arraycopy(bvals_1, 0, bvals, 1, bvals_1.length);
 
             bvals[0] = 0.0f;
             for (i = 0; i < (order - 1); i++) {
@@ -552,7 +553,7 @@ public class Curve {
 
             final float[] bvals_1 = Arrays.copyOfRange(bvals, 1, bvals.length);
             BasisFirstDerivative(order - 1, t, bvals_1);
-            System.arraycopy(bvals_1, 0, bvals, 1, bvals_1.length);
+            Nio.arraycopy(bvals_1, 0, bvals, 1, bvals_1.length);
 
             bvals[0] = 0.0f;
             for (i = 0; i < (order - 1); i++) {
@@ -2060,7 +2061,7 @@ public class Curve {
 
             final float[] bvals_1 = Arrays.copyOfRange(bvals, 1, bvals.length);
             Basis(index, order - 1, t, bvals_1);
-            System.arraycopy(bvals_1, 0, bvals, 1, bvals_1.length);
+            Nio.arraycopy(bvals_1, 0, bvals, 1, bvals_1.length);
 
             bvals[0] = 0.0f;
             for (i = 0; i < (order - 1); i++) {
@@ -2082,7 +2083,7 @@ public class Curve {
 
             final float[] bvals_1 = Arrays.copyOfRange(bvals, 1, bvals.length);
             BasisFirstDerivative(index, order - 1, t, bvals_1);
-            System.arraycopy(bvals_1, 0, bvals, 1, bvals_1.length);
+            Nio.arraycopy(bvals_1, 0, bvals, 1, bvals_1.length);
 
             bvals[0] = 0.0f;
             for (i = 0; i < (order - 1); i++) {

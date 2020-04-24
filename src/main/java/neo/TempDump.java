@@ -1,9 +1,9 @@
 package neo;
 
-import static neo.openal.QAL.alGetError;
 import static neo.Renderer.Material.MAX_ENTITY_SHADER_PARMS;
 import static neo.Renderer.RenderWorld.MAX_GLOBAL_SHADER_PARMS;
 import static neo.Renderer.RenderWorld.MAX_RENDERENTITY_GUI;
+import static neo.open.al.QAL.alGetError;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -45,7 +45,7 @@ import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.math.Curve;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Matrix.idMat3;
-import neo.opengl.Nio;
+import neo.open.Nio;
 import neo.ui.UserInterface.idUserInterface;
 
 /**
@@ -196,7 +196,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         final byte[] output = new byte[height * width];
 
         for (final byte[] anInput : input) {
-            System.arraycopy(anInput, 0, output, width, width);
+            Nio.arraycopy(anInput, 0, output, width, width);
         }
 
         return output;
@@ -212,7 +212,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             final int x = a * width * length;
             for (int b = 0; b < width; b++) {
                 final int y = b * length;
-                System.arraycopy(input[a][b], 0, output, x + y, length);
+                Nio.arraycopy(input[a][b], 0, output, x + y, length);
             }
         }
 
@@ -295,7 +295,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
      *
      * ORDINALS!! mine arch enemy!!
      */
-    public static int etoi(Enum enumeration) {
+    public static int etoi(Enum<?> enumeration) {
         return enumeration.ordinal();
     }
 
@@ -576,7 +576,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         return temp;
     }
 
-    public static Object dynamic_cast(Class glass, Object object) {
+    public static Object dynamic_cast(Class<?> glass, Object object) {
         if (glass.isInstance(object)) {
             return object;
         }
@@ -800,7 +800,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         private final static String O_MINUS = "oMinus";
 
         public static int GetDimension(Object object) {
-            final Class clazz = object.getClass();
+            final Class<?> clazz = object.getClass();
             int returnValue = 0;
 
             try {
@@ -814,7 +814,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         }
 
         public static void Zero(Object object) {
-            final Class clazz = object.getClass();
+            final Class<?> clazz = object.getClass();
             Method getDimension;
 
             try {
@@ -827,7 +827,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         }
 
         public static Object _Get(Object object, final String declaredField) {
-            final Class clazz = object.getClass();
+            final Class<?> clazz = object.getClass();
             Field field;
             Object returnObject = null;
 
@@ -846,7 +846,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         }
 
         public static float _GetMul(Object object, int index, float value) {
-            final Class clazz = object.getClass();
+            final Class<?> clazz = object.getClass();
             float returnValue = 0;
             Method oGet, oMultiply;
             Object returnObject;
@@ -871,7 +871,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         }
 
         public static float _GetGet(Object object, int x, int y) {
-            final Class clazz = object.getClass();
+            final Class<?> clazz = object.getClass();
             float returnValue = 0;
             Method oGet, oGet2;
             Object returnObject;
@@ -889,7 +889,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         }
 
         public static float _GetSet(Object object, int x, int y, float value) {
-            final Class clazz = object.getClass();
+            final Class<?> clazz = object.getClass();
             float returnValue = 0;
             Method oGet, oGet2;
             Object returnObject;
@@ -929,8 +929,8 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
          * @return
          */
         private static Object ooOOoooOOoo(final Object object1, final Object object2, final String O_METHOD) {
-            final Class class1 = object1.getClass();
-            final Class class2 = object2.getClass();
+            final Class<?> class1 = object1.getClass();
+            final Class<?> class2 = object2.getClass();
             final Method method1;
             final Method method2;
             Object returnObject = null;
@@ -1164,5 +1164,17 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
                     "Only your willpower can leave footsteps there.");
             System.exit(666);
         }
+    }
+    
+    /**
+     * used to avoid dead code warnings
+     * 
+     * The method is named isDeadCodeTrue, because if its used in an if clause, the else block will be executed and if block will never be reached.
+     * 
+     * If time, check all references to this method to fix that code.
+     */
+    public static boolean isDeadCodeTrue() {
+    	// a comparison that always returns false => in if block will never be executed, only else will be reached!
+    	return (NeoFixStrings.BLA == NeoFixStrings.BLA1);
     }
 }

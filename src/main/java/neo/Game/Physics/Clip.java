@@ -26,6 +26,7 @@ import java.util.Arrays;
 import neo.CM.CollisionModel.contactInfo_t;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
 import neo.Renderer.Material.idMaterial;
@@ -503,7 +504,7 @@ public class Clip {
 
         public void GetMassProperties(final float density, float[] mass, idVec3 centerOfMass, idMat3 inertiaTensor) {
             if (this.traceModelIndex == -1) {
-                gameLocal.Error("idClipModel::GetMassProperties: clip model %d on '%s' is not a trace model\n", this.id, this.entity.name);
+                idGameLocal.Error("idClipModel::GetMassProperties: clip model %d on '%s' is not a trace model\n", this.id, this.entity.name);
             }
 
             final trmCache_s entry = traceModelCache.oGet(this.traceModelIndex);
@@ -1591,9 +1592,9 @@ public class Clip {
             } else {
                 if (!mdl.IsTraceModel()) {
                     if (mdl.GetEntity() != null) {
-                        gameLocal.Error("TraceModelForClipModel: clip model %d on '%s' is not a trace model\n", mdl.GetId(), mdl.GetEntity().name);
+                        idGameLocal.Error("TraceModelForClipModel: clip model %d on '%s' is not a trace model\n", mdl.GetId(), mdl.GetEntity().name);
                     } else {
-                        gameLocal.Error("TraceModelForClipModel: clip model %d is not a trace model\n", mdl.GetId());
+                        idGameLocal.Error("TraceModelForClipModel: clip model %d is not a trace model\n", mdl.GetId());
                     }
                 }
                 return idClipModel.GetCachedTraceModel(mdl.traceModelIndex);

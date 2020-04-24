@@ -63,74 +63,75 @@ import static neo.idlib.Lib.colorCyan;
 import static neo.idlib.Text.Str.va;
 import static neo.idlib.math.Vector.VectorMA;
 import static neo.idlib.math.Vector.VectorSubtract;
-import static neo.opengl.QGL.qglArrayElement;
-import static neo.opengl.QGL.qglBegin;
-import static neo.opengl.QGL.qglClear;
-import static neo.opengl.QGL.qglClearColor;
-import static neo.opengl.QGL.qglClearStencil;
-import static neo.opengl.QGL.qglColor3f;
-import static neo.opengl.QGL.qglColor3fv;
-import static neo.opengl.QGL.qglColor4f;
-import static neo.opengl.QGL.qglColor4fv;
-import static neo.opengl.QGL.qglColor4ubv;
-import static neo.opengl.QGL.qglDepthRange;
-import static neo.opengl.QGL.qglDisable;
-import static neo.opengl.QGL.qglDisableClientState;
-import static neo.opengl.QGL.qglDrawPixels;
-import static neo.opengl.QGL.qglEnable;
-import static neo.opengl.QGL.qglEnd;
-import static neo.opengl.QGL.qglLineWidth;
-import static neo.opengl.QGL.qglLoadIdentity;
-import static neo.opengl.QGL.qglLoadMatrixf;
-import static neo.opengl.QGL.qglMatrixMode;
-import static neo.opengl.QGL.qglOrtho;
-import static neo.opengl.QGL.qglPolygonOffset;
-import static neo.opengl.QGL.qglPopAttrib;
-import static neo.opengl.QGL.qglPopMatrix;
-import static neo.opengl.QGL.qglPushAttrib;
-import static neo.opengl.QGL.qglPushMatrix;
-import static neo.opengl.QGL.qglRasterPos2f;
-import static neo.opengl.QGL.qglReadPixels;
-import static neo.opengl.QGL.qglScissor;
-import static neo.opengl.QGL.qglStencilFunc;
-import static neo.opengl.QGL.qglStencilOp;
-import static neo.opengl.QGL.qglTexCoord2f;
-import static neo.opengl.QGL.qglVertex2f;
-import static neo.opengl.QGL.qglVertex3f;
-import static neo.opengl.QGL.qglVertex3fv;
-import static neo.opengl.QGL.qglVertexPointer;
-import static neo.opengl.QGLConstantsIfc.GL_ALL_ATTRIB_BITS;
-import static neo.opengl.QGLConstantsIfc.GL_ALWAYS;
-import static neo.opengl.QGLConstantsIfc.GL_COLOR_BUFFER_BIT;
-import static neo.opengl.QGLConstantsIfc.GL_CULL_FACE;
-import static neo.opengl.QGLConstantsIfc.GL_DEPTH_COMPONENT;
-import static neo.opengl.QGLConstantsIfc.GL_DEPTH_TEST;
-import static neo.opengl.QGLConstantsIfc.GL_EQUAL;
-import static neo.opengl.QGLConstantsIfc.GL_FLOAT;
-import static neo.opengl.QGLConstantsIfc.GL_INCR;
-import static neo.opengl.QGLConstantsIfc.GL_KEEP;
-import static neo.opengl.QGLConstantsIfc.GL_LINES;
-import static neo.opengl.QGLConstantsIfc.GL_LINE_LOOP;
-import static neo.opengl.QGLConstantsIfc.GL_MODELVIEW;
-import static neo.opengl.QGLConstantsIfc.GL_POLYGON;
-import static neo.opengl.QGLConstantsIfc.GL_POLYGON_OFFSET_FILL;
-import static neo.opengl.QGLConstantsIfc.GL_POLYGON_OFFSET_LINE;
-import static neo.opengl.QGLConstantsIfc.GL_PROJECTION;
-import static neo.opengl.QGLConstantsIfc.GL_QUADS;
-import static neo.opengl.QGLConstantsIfc.GL_RGBA;
-import static neo.opengl.QGLConstantsIfc.GL_SCISSOR_TEST;
-import static neo.opengl.QGLConstantsIfc.GL_STENCIL_BUFFER_BIT;
-import static neo.opengl.QGLConstantsIfc.GL_STENCIL_INDEX;
-import static neo.opengl.QGLConstantsIfc.GL_STENCIL_TEST;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_2D;
-import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_COORD_ARRAY;
-import static neo.opengl.QGLConstantsIfc.GL_TRIANGLES;
-import static neo.opengl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
+import static neo.open.gl.QGL.qglArrayElement;
+import static neo.open.gl.QGL.qglBegin;
+import static neo.open.gl.QGL.qglClear;
+import static neo.open.gl.QGL.qglClearColor;
+import static neo.open.gl.QGL.qglClearStencil;
+import static neo.open.gl.QGL.qglColor3f;
+import static neo.open.gl.QGL.qglColor3fv;
+import static neo.open.gl.QGL.qglColor4f;
+import static neo.open.gl.QGL.qglColor4fv;
+import static neo.open.gl.QGL.qglColor4ubv;
+import static neo.open.gl.QGL.qglDepthRange;
+import static neo.open.gl.QGL.qglDisable;
+import static neo.open.gl.QGL.qglDisableClientState;
+import static neo.open.gl.QGL.qglDrawPixels;
+import static neo.open.gl.QGL.qglEnable;
+import static neo.open.gl.QGL.qglEnd;
+import static neo.open.gl.QGL.qglLineWidth;
+import static neo.open.gl.QGL.qglLoadIdentity;
+import static neo.open.gl.QGL.qglLoadMatrixf;
+import static neo.open.gl.QGL.qglMatrixMode;
+import static neo.open.gl.QGL.qglOrtho;
+import static neo.open.gl.QGL.qglPolygonOffset;
+import static neo.open.gl.QGL.qglPopAttrib;
+import static neo.open.gl.QGL.qglPopMatrix;
+import static neo.open.gl.QGL.qglPushAttrib;
+import static neo.open.gl.QGL.qglPushMatrix;
+import static neo.open.gl.QGL.qglRasterPos2f;
+import static neo.open.gl.QGL.qglReadPixels;
+import static neo.open.gl.QGL.qglScissor;
+import static neo.open.gl.QGL.qglStencilFunc;
+import static neo.open.gl.QGL.qglStencilOp;
+import static neo.open.gl.QGL.qglTexCoord2f;
+import static neo.open.gl.QGL.qglVertex2f;
+import static neo.open.gl.QGL.qglVertex3f;
+import static neo.open.gl.QGL.qglVertex3fv;
+import static neo.open.gl.QGL.qglVertexPointer;
+import static neo.open.gl.QGLConstantsIfc.GL_ALL_ATTRIB_BITS;
+import static neo.open.gl.QGLConstantsIfc.GL_ALWAYS;
+import static neo.open.gl.QGLConstantsIfc.GL_COLOR_BUFFER_BIT;
+import static neo.open.gl.QGLConstantsIfc.GL_CULL_FACE;
+import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_COMPONENT;
+import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_TEST;
+import static neo.open.gl.QGLConstantsIfc.GL_EQUAL;
+import static neo.open.gl.QGLConstantsIfc.GL_FLOAT;
+import static neo.open.gl.QGLConstantsIfc.GL_INCR;
+import static neo.open.gl.QGLConstantsIfc.GL_KEEP;
+import static neo.open.gl.QGLConstantsIfc.GL_LINES;
+import static neo.open.gl.QGLConstantsIfc.GL_LINE_LOOP;
+import static neo.open.gl.QGLConstantsIfc.GL_MODELVIEW;
+import static neo.open.gl.QGLConstantsIfc.GL_POLYGON;
+import static neo.open.gl.QGLConstantsIfc.GL_POLYGON_OFFSET_FILL;
+import static neo.open.gl.QGLConstantsIfc.GL_POLYGON_OFFSET_LINE;
+import static neo.open.gl.QGLConstantsIfc.GL_PROJECTION;
+import static neo.open.gl.QGLConstantsIfc.GL_QUADS;
+import static neo.open.gl.QGLConstantsIfc.GL_RGBA;
+import static neo.open.gl.QGLConstantsIfc.GL_SCISSOR_TEST;
+import static neo.open.gl.QGLConstantsIfc.GL_STENCIL_BUFFER_BIT;
+import static neo.open.gl.QGLConstantsIfc.GL_STENCIL_INDEX;
+import static neo.open.gl.QGLConstantsIfc.GL_STENCIL_TEST;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_2D;
+import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_COORD_ARRAY;
+import static neo.open.gl.QGLConstantsIfc.GL_TRIANGLES;
+import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
 import static neo.ui.DeviceContext.idDeviceContext.colorBlue;
 import static neo.ui.DeviceContext.idDeviceContext.colorRed;
 import static neo.ui.DeviceContext.idDeviceContext.colorWhite;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 
 import neo.TempDump;
 import neo.Renderer.Cinematic.cinData_t;
@@ -155,7 +156,7 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
-import neo.opengl.Nio;
+import neo.open.Nio;
 
 /**
  *
@@ -278,7 +279,7 @@ public class tr_rendertools {
     public static void RB_SimpleSurfaceSetup(final drawSurf_s drawSurf) {
         // change the matrix if needed
         if (drawSurf.space != backEnd.currentSpace) {
-            qglLoadMatrixf(Nio.wrap(drawSurf.space.modelViewMatrix));
+            qglLoadMatrixf(drawSurf.space.getModelViewMatrix());
             backEnd.currentSpace = drawSurf.space;
         }
 
@@ -299,7 +300,7 @@ public class tr_rendertools {
      */
     public static void RB_SimpleWorldSetup() {
         backEnd.currentSpace = backEnd.viewDef.worldSpace;
-        qglLoadMatrixf(Nio.wrap(backEnd.viewDef.worldSpace.modelViewMatrix));
+        qglLoadMatrixf(backEnd.viewDef.worldSpace.getModelViewMatrix());
 
         backEnd.currentScissor = backEnd.viewDef.scissor;
         qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
@@ -414,16 +415,20 @@ public class tr_rendertools {
      3 = blue, ..., 7+ = white
      ===================
      */
-    private static final float[][] colors/*[8][3]*/ = {
-                {0, 0, 0},
-                {1, 0, 0},
-                {0, 1, 0},
-                {0, 0, 1},
-                {0, 1, 1},
-                {1, 0, 1},
-                {1, 1, 0},
-                {1, 1, 1}
+    private static final FloatBuffer[] colors/*[8][3]*/ = {
+                newColorFloatBuffer(0, 0, 0),
+                newColorFloatBuffer(1, 0, 0),
+                newColorFloatBuffer(0, 1, 0),
+                newColorFloatBuffer(0, 0, 1),
+                newColorFloatBuffer(0, 1, 1),
+                newColorFloatBuffer(1, 0, 1),
+                newColorFloatBuffer(1, 1, 0),
+                newColorFloatBuffer(1, 1, 1)
             };
+
+    private static FloatBuffer newColorFloatBuffer(float color1, float color2, float color3) {
+		return (FloatBuffer) Nio.newFloatBuffer(3).put(0, color1).put(1, color2).put(2, color3).flip();
+	}
 
     public static void R_ColorByStencilBuffer() {
         int i;
@@ -436,7 +441,7 @@ public class tr_rendertools {
         // now draw color for each stencil value
         qglStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
         for (i = 0; i < 6; i++) {
-            qglColor3fv(Nio.wrap(colors[i]));
+            qglColor3fv(colors[i]);
             qglStencilFunc(GL_EQUAL, i, 255);
             RB_PolygonClear();
         }
@@ -740,10 +745,10 @@ public class tr_rendertools {
                     }
                     qglBegin(GL_LINES);
 
-                    for (int j = 0; j < tri.numIndexes; j += 3) {
-                        final int i1 = tri.indexes[j + 0];
-                        final int i2 = tri.indexes[j + 1];
-                        final int i3 = tri.indexes[j + 2];
+                    for (int j = 0; j < tri.getIndexes().getNumValues(); j += 3) {
+                        final int i1 = tri.getIndexes().getValues().get(j + 0);
+                        final int i2 = tri.getIndexes().getValues().get(j + 1);
+                        final int i3 = tri.getIndexes().getValues().get(j + 2);
 
                         if (((i1 & 1) + (i2 & 1) + (i3 & 1)) == 1) {
                             if (((i1 & 1) + (i2 & 1)) == 0) {
@@ -812,13 +817,13 @@ public class tr_rendertools {
 
                     if (r_showShadowCount.GetInteger() == 3) {
                         // only show turboshadows
-                        if (tri.numShadowIndexesNoCaps != tri.numIndexes) {
+                        if (tri.numShadowIndexesNoCaps != tri.getIndexes().getNumValues()) {
                             continue;
                         }
                     }
                     if (r_showShadowCount.GetInteger() == 4) {
                         // only show static shadows
-                        if (tri.numShadowIndexesNoCaps == tri.numIndexes) {
+                        if (tri.numShadowIndexesNoCaps == tri.getIndexes().getNumValues()) {
                             continue;
                         }
                     }
@@ -863,7 +868,7 @@ public class tr_rendertools {
         }
 
         qglBegin(GL_LINES);
-        for (int i = 0; i < tri.numIndexes; i += 3) {
+        for (int i = 0; i < tri.getIndexes().getNumValues(); i += 3) {
             for (int j = 0; j < 3; j++) {
                 final int k = (j + 1) % 3;
                 qglVertex3fv(tri.verts[ tri.silIndexes[i + j]].xyz.toFloatBuffer());
@@ -1016,7 +1021,7 @@ public class tr_rendertools {
         for (; vModels != null; vModels = vModels.next) {
             idBounds b;
 
-            qglLoadMatrixf(Nio.wrap(vModels.modelViewMatrix));
+            qglLoadMatrixf(vModels.getModelViewMatrix());
 //            System.out.println("vModels.modelViewMatrix="+vModels.modelViewMatrix[0]);
 
             if (null == vModels.entityDef) {
@@ -1073,21 +1078,21 @@ public class tr_rendertools {
         for (i = 0; i < numDrawSurfs; i++) {
             drawSurf = drawSurfs[i];
             tri = drawSurf.geo;
-            if (NOT(tri.verts)) {
+            if (NOT((Object[])tri.verts)) {
                 continue;
             }
 
             RB_SimpleSurfaceSetup(drawSurf);
 
             qglBegin(GL_TRIANGLES);
-            for (j = 0; j < tri.numIndexes; j += 3) {
+            for (j = 0; j < tri.getIndexes().getNumValues(); j += 3) {
                 idDrawVert a, b, c;
                 final float[] d0 = new float[5], d1 = new float[5];
                 float area;
 
-                a = tri.verts[tri.indexes[j]];
-                b = tri.verts[tri.indexes[j + 1]];
-                c = tri.verts[tri.indexes[j + 2]];
+                a = tri.verts[tri.getIndexes().getValues().get(j)];
+                b = tri.verts[tri.getIndexes().getValues().get(j + 1)];
+                c = tri.verts[tri.getIndexes().getValues().get(j + 2)];
 
                 // VectorSubtract( b.xyz, a.xyz, d0 );
                 d0[3] = b.st.oGet(0) - a.st.oGet(0);
@@ -1150,12 +1155,12 @@ public class tr_rendertools {
 
             tri = drawSurf.geo;
             qglBegin(GL_TRIANGLES);
-            for (j = 0; j < tri.numIndexes; j += 3) {
+            for (j = 0; j < tri.getIndexes().getNumValues(); j += 3) {
                 idDrawVert a, b, c;
 
-                a = tri.verts[tri.indexes[j]];
-                b = tri.verts[tri.indexes[j + 1]];
-                c = tri.verts[tri.indexes[j + 2]];
+                a = tri.verts[tri.getIndexes().getValues().get(j)];
+                b = tri.verts[tri.getIndexes().getValues().get(j + 1)];
+                c = tri.verts[tri.getIndexes().getValues().get(j + 2)];
 
                 qglVertex3fv(a.xyz.toFloatBuffer());
                 qglVertex3fv(b.xyz.toFloatBuffer());
@@ -1202,10 +1207,10 @@ public class tr_rendertools {
                 continue;
             }
             qglBegin(GL_TRIANGLES);
-            for (j = 0; j < tri.numIndexes; j++) {
+            for (j = 0; j < tri.getIndexes().getNumValues(); j++) {
                 final idDrawVert v;
 
-                v = tri.verts[tri.indexes[j]];
+                v = tri.verts[tri.getIndexes().getValues().get(j)];
 
                 if (r_showTangentSpace.GetInteger() == 1) {
                     qglColor4f(0.5f + (0.5f * v.tangents[0].oGet(0)),
@@ -1262,11 +1267,11 @@ public class tr_rendertools {
                 continue;
             }
             qglBegin(GL_TRIANGLES);
-            for (j = 0; j < tri.numIndexes; j++) {
+            for (j = 0; j < tri.getIndexes().getNumValues(); j++) {
                 final idDrawVert v;
 
-                v = tri.verts[tri.indexes[j]];
-                qglColor4ubv(Nio.wrap(v.color));
+                v = tri.verts[tri.getIndexes().getValues().get(j)];
+                qglColor4ubv(v.getColor());
                 qglVertex3fv(v.xyz.toFloatBuffer());
             }
             qglEnd();
@@ -1358,9 +1363,9 @@ public class tr_rendertools {
                     RB_DrawText(va("%d", j), pos, 0.01f, colorWhite, backEnd.viewDef.renderView.viewaxis, 1);
                 }
 
-                for (j = 0; j < tri.numIndexes; j += 3) {
+                for (j = 0; j < tri.getIndexes().getNumValues(); j += 3) {
                     pos = R_LocalPointToGlobal(drawSurf.space.modelMatrix,
-                            (tri.verts[ tri.indexes[ j + 0]].xyz.oPlus(tri.verts[ tri.indexes[ j + 1]].xyz.oPlus(tri.verts[ tri.indexes[ j + 2]].xyz))).oMultiply(1.0f / 3.0f).oPlus(tri.verts[ tri.indexes[ j + 0]].normal.oMultiply(0.2f)));
+                            (tri.verts[ tri.getIndexes().getValues().get( j + 0)].xyz.oPlus(tri.verts[ tri.getIndexes().getValues().get( j + 1)].xyz.oPlus(tri.verts[ tri.getIndexes().getValues().get( j + 2)].xyz))).oMultiply(1.0f / 3.0f).oPlus(tri.verts[ tri.getIndexes().getValues().get( j + 0)].normal.oMultiply(0.2f)));
                     RB_DrawText(va("%d", j / 3), pos, 0.01f, colorCyan, backEnd.viewDef.renderView.viewaxis, 1);
                 }
             }
@@ -1401,13 +1406,13 @@ public class tr_rendertools {
 
             tri = drawSurf.geo;
             qglBegin(GL_LINES);
-            for (j = 0; j < tri.numIndexes; j += 3) {
+            for (j = 0; j < tri.getIndexes().getNumValues(); j += 3) {
                 final idDrawVert[] v = new idDrawVert[3];
                 idVec3 mid;
 
-                v[0] = tri.verts[tri.indexes[j + 0]];
-                v[1] = tri.verts[tri.indexes[j + 1]];
-                v[2] = tri.verts[tri.indexes[j + 2]];
+                v[0] = tri.verts[tri.getIndexes().getValues().get(j + 0)];
+                v[1] = tri.verts[tri.getIndexes().getValues().get(j + 1)];
+                v[2] = tri.verts[tri.getIndexes().getValues().get(j + 2)];
 
                 // make the midpoint slightly above the triangle
                 mid = (v[0].xyz.oPlus(v[1].xyz).oPlus(v[2].xyz)).oMultiply(1.0f / 3.0f);
@@ -1484,7 +1489,7 @@ public class tr_rendertools {
             // draw non-shared edges in yellow
             qglBegin(GL_LINES);
 
-            for (j = 0; j < tri.numIndexes; j += 3) {
+            for (j = 0; j < tri.getIndexes().getNumValues(); j += 3) {
                 final idDrawVert a, b, c;
                 float area, inva;
                 final idVec3 temp = new idVec3();
@@ -1492,9 +1497,9 @@ public class tr_rendertools {
                 idVec3 mid;
                 final idVec3[] tangents = {new idVec3(), new idVec3()};
 
-                a = tri.verts[tri.indexes[j + 0]];
-                b = tri.verts[tri.indexes[j + 1]];
-                c = tri.verts[tri.indexes[j + 2]];
+                a = tri.verts[tri.getIndexes().getValues().get(j + 0)];
+                b = tri.verts[tri.getIndexes().getValues().get(j + 1)];
+                c = tri.verts[tri.getIndexes().getValues().get(j + 2)];
 
                 // make the midpoint slightly above the triangle
                 mid = (a.xyz.oPlus(b.xyz).oPlus(c.xyz)).oMultiply(1.0f / 3.0f);
@@ -1643,18 +1648,18 @@ public class tr_rendertools {
             qglColor3f(1, 1, 0);
             qglBegin(GL_LINES);
 
-            for (j = 0; j < tri.numIndexes; j += 3) {
+            for (j = 0; j < tri.getIndexes().getNumValues(); j += 3) {
                 for (k = 0; k < 3; k++) {
                     int l, i1, i2;
                     l = (k == 2) ? 0 : k + 1;
-                    i1 = tri.indexes[j + k];
-                    i2 = tri.indexes[j + l];
+                    i1 = tri.getIndexes().getValues().get(j + k);
+                    i2 = tri.getIndexes().getValues().get(j + l);
 
                     // if these are used backwards, the edge is shared
-                    for (m = 0; m < tri.numIndexes; m += 3) {
+                    for (m = 0; m < tri.getIndexes().getNumValues(); m += 3) {
                         for (n = 0; n < 3; n++) {
                             o = (n == 2) ? 0 : n + 1;
-                            if ((tri.indexes[m + n] == i2) && (tri.indexes[m + o] == i1)) {
+                            if ((tri.getIndexes().getValues().get(m + n) == i2) && (tri.getIndexes().getValues().get(m + o) == i1)) {
                                 break;
                             }
                         }
@@ -1664,7 +1669,7 @@ public class tr_rendertools {
                     }
 
                     // if we didn't find a backwards listing, draw it in yellow
-                    if (m == tri.numIndexes) {
+                    if (m == tri.getIndexes().getNumValues()) {
                         qglVertex3fv(ac[ i1].xyz.toFloatBuffer());
                         qglVertex3fv(ac[ i2].xyz.toFloatBuffer());
                     }
@@ -1681,7 +1686,7 @@ public class tr_rendertools {
 
             // the plane number after all real planes
             // is the dangling edge
-            danglePlane = tri.numIndexes / 3;
+            danglePlane = tri.getIndexes().getNumValues() / 3;
 
             qglColor3f(1, 0, 0);
 
