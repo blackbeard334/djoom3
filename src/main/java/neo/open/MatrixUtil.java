@@ -11,16 +11,10 @@ import java.nio.FloatBuffer;
 public class MatrixUtil {
 
 	public static void emitFullScreenModelView(FloatBuffer modelViewMatrix) {
-        modelViewMatrix.clear();
-
         modelViewMatrix.put( 0, 1.0f);
         modelViewMatrix.put( 5, 1.0f);
         modelViewMatrix.put(10, 1.0f);
         modelViewMatrix.put(15, 1.0f);
-
-        modelViewMatrix.position(modelViewMatrix.capacity());
-        modelViewMatrix.flip();
-        modelViewMatrix.rewind();
 	}
 
 	public static void emitFullScreenProjection(FloatBuffer projectionMatrix) {
@@ -34,30 +28,27 @@ public class MatrixUtil {
 	}
 
 	public static void enterModelDepthHack(FloatBuffer projectionMatrix, float depth) {
-		float f = projectionMatrix.get(14)- depth;
-		projectionMatrix.put(14, f);
-
-		projectionMatrix.position(projectionMatrix.capacity());
-		projectionMatrix.flip();
-		projectionMatrix.rewind();
+		float f = projectionMatrix.get(14);
+		projectionMatrix.put(14, f - depth);
 
         qglMatrixMode(GL_PROJECTION);
         qglLoadMatrixf(projectionMatrix);
         qglMatrixMode(GL_MODELVIEW);
 
-        projectionMatrix.clear();
+		projectionMatrix.put(14, f);
 	}
 
-	public static void loadProjectioMatrix(FloatBuffer projectionMatrix) {
-		projectionMatrix.position(projectionMatrix.capacity());
-		projectionMatrix.flip();
-		projectionMatrix.rewind();
+	public static void loadModelViewMatrix(FloatBuffer modelViewMatrix) {
+		//qglMatrixMode(GL_MODELVIEW);
+        qglLoadMatrixf(modelViewMatrix);
+        //qglMatrixMode(GL_MODELVIEW);
+	}
+
+	public static void loadProjectionMatrix(FloatBuffer projectionMatrix) {
 
 		qglMatrixMode(GL_PROJECTION);
-        qglLoadMatrixf(Nio.wrap(projectionMatrix));
+        qglLoadMatrixf(projectionMatrix);
         qglMatrixMode(GL_MODELVIEW);
-
-        projectionMatrix.clear();
 	}
 
 	public static void loadTextureMatrix(FloatBuffer textureMatrix) {
@@ -84,11 +75,11 @@ public class MatrixUtil {
 		int j;
 		for (int i = 0; i < 4; i++) {
 			j = 0;
-			set.oSet(i, (get.oGet(j) * matrix.get(i + (j * 4)))
+			set.oSet(i, (get.oGet(j) * matrix.get((j * 4) + i))
 					// increment j
-					+ (get.oGet(++j) * matrix.get(i + (j * 4)))
+					+ (get.oGet(++j) * matrix.get((j * 4) + i))
 					// increment j
-					+ (get.oGet(++j) * matrix.get(i + (j * 4)))
+					+ (get.oGet(++j) * matrix.get((j * 4) + i))
 					// increment j
 					+ (matrix.get(i + (++j * 4))));
 		}
@@ -98,13 +89,13 @@ public class MatrixUtil {
 		int j;
 		for (int i = 0; i < 4; i++) {
 			j = 0;
-			set.oSet(i, (get.oGet(j) * matrix.get(i + (j * 4)))
+			set.oSet(i, (get.oGet(j) * matrix.get((j * 4) + i))
 					// increment j
-					+ (get.oGet(++j) * matrix.get(i + (j * 4)))
+					+ (get.oGet(++j) * matrix.get((j * 4) + i))
 					// increment j
-					+ (get.oGet(++j) * matrix.get(i + (j * 4)))
+					+ (get.oGet(++j) * matrix.get((j * 4) + i))
 					// increment j
-					+ (get.oGet(++j) * matrix.get(i + (j * 4))));
+					+ (get.oGet(++j) * matrix.get((j * 4) + i)));
 		}
 	}
 

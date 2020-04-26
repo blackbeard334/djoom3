@@ -156,6 +156,7 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.MatrixUtil;
 import neo.open.Nio;
 
 /**
@@ -279,7 +280,7 @@ public class tr_rendertools {
     public static void RB_SimpleSurfaceSetup(final drawSurf_s drawSurf) {
         // change the matrix if needed
         if (drawSurf.space != backEnd.currentSpace) {
-            qglLoadMatrixf(drawSurf.space.getModelViewMatrix());
+        	MatrixUtil.loadModelViewMatrix(drawSurf.space.getModelViewMatrix());
             backEnd.currentSpace = drawSurf.space;
         }
 
@@ -300,7 +301,7 @@ public class tr_rendertools {
      */
     public static void RB_SimpleWorldSetup() {
         backEnd.currentSpace = backEnd.viewDef.worldSpace;
-        qglLoadMatrixf(backEnd.viewDef.worldSpace.getModelViewMatrix());
+        MatrixUtil.loadModelViewMatrix(backEnd.viewDef.worldSpace.getModelViewMatrix());
 
         backEnd.currentScissor = backEnd.viewDef.scissor;
         qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
@@ -1021,7 +1022,7 @@ public class tr_rendertools {
         for (; vModels != null; vModels = vModels.next) {
             idBounds b;
 
-            qglLoadMatrixf(vModels.getModelViewMatrix());
+            MatrixUtil.loadModelViewMatrix(vModels.getModelViewMatrix());
 //            System.out.println("vModels.modelViewMatrix="+vModels.modelViewMatrix[0]);
 
             if (null == vModels.entityDef) {

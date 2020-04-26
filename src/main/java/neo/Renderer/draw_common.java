@@ -880,7 +880,7 @@ public class draw_common {
 
         // change the matrix if needed
         if (surf.space != backEnd.currentSpace) {
-            qglLoadMatrixf(surf.space.getModelViewMatrix());
+            MatrixUtil.loadModelViewMatrix(surf.space.getModelViewMatrix());
             backEnd.currentSpace = surf.space;
             RB_SetProgramEnvironmentSpace();
         }
