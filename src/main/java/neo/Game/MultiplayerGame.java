@@ -987,7 +987,14 @@ public class MultiplayerGame {
                 int n = str.indexOf(";");
                 if (n >= 0) {
                     skin = str.substring(0, n);
-                    str = str.substring(str.length() - n - 1);
+                    //Fix idMultiplayerGame:
+                    /*Game freezes at
+                    loaded collision model models/mapobjects/turrets/ceilingturret1a.lwo
+                    ...1969 entities spawned, 0 inhibited
+
+                    ==== Processing events ====
+                    ^3WARNING: ^1idChoiceWindow::InitVars: gui 'guis/mpmain.gui' window 'SNDBPrimary' references undefined cvar 's_driver'*/
+                    str = str.substring(/*str.length() - n - 1*/ n + 1);
                 } else {
                     skin = str;
                     str = "";
