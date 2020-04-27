@@ -3824,7 +3824,20 @@ public class Anim_Blend {
                     AFPoseJointMods.oGet(jointNum).axis = axis;
                     AFPoseJointMods.oGet(jointNum).origin = origin;
 
-                    int index = idBinSearch_GreaterEqual(AFPoseJoints.Ptr(), AFPoseJoints.Num(), jointNum);
+                    // Fix ClassCastException on null values
+                    Object[] objects = AFPoseJoints.Ptr();
+                    Number[] array = new Number[objects.length];
+                    for (int i = 0; i < objects.length; i++) {
+						if (objects[i] == null) {
+							array[i] = null;
+						} else {
+							array[i] = (Number)objects[i];
+						}
+					}
+                    int arraySize = AFPoseJoints.Num();
+                    Number value = jointNum; 
+                    int index = idBinSearch_GreaterEqual(array, arraySize, value);
+
                     if (index >= AFPoseJoints.Num() || jointNum != AFPoseJoints.oGet(index)) {
                         AFPoseJoints.Insert(jointNum, index);
                     }
