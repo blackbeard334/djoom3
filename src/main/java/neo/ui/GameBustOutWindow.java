@@ -29,7 +29,6 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec4;
-import neo.open.Nio;
 import neo.sys.sys_public.sysEvent_s;
 import neo.ui.DeviceContext.idDeviceContext;
 import neo.ui.SimpleWindow.drawWin_t;
@@ -55,7 +54,7 @@ public class GameBustOutWindow {
         POWERUP_NONE,//= 0,
         POWERUP_BIGPADDLE,
         POWERUP_MULTIBALL
-    }
+    };
 
     static class BOEntity {
 
@@ -77,109 +76,109 @@ public class GameBustOutWindow {
         //
 
         public BOEntity(idGameBustOutWindow _game) {
-            this.game = _game;
-            this.visible = true;
+            game = _game;
+            visible = true;
 
-            this.materialName = new idStr("");
-            this.material = null;
-            this.width = this.height = 8;
-            this.color = colorWhite;
-            this.powerup = POWERUP_NONE;
+            materialName = new idStr("");
+            material = null;
+            width = height = 8;
+            color = colorWhite;
+            powerup = POWERUP_NONE;
 
-            this.position.Zero();
-            this.velocity.Zero();
+            position.Zero();
+            velocity.Zero();
 
-            this.removed = false;
-            this.fadeOut = false;//0;
+            removed = false;
+            fadeOut = false;//0;
         }
         // virtual					~BOEntity();
 
         public void WriteToSaveGame(idFile savefile) {
 
-            savefile.WriteBool(this.visible);
+            savefile.WriteBool(visible);
 
-            this.game.WriteSaveGameString(this.materialName.getData(), savefile);
+            game.WriteSaveGameString(materialName.toString(), savefile);
 
-            savefile.WriteFloat(this.width);
-            savefile.WriteFloat(this.height);
+            savefile.WriteFloat(width);
+            savefile.WriteFloat(height);
 
-            savefile.Write(this.color);
-            savefile.Write(this.position);
-            savefile.Write(this.velocity);
+            savefile.Write(color);
+            savefile.Write(position);
+            savefile.Write(velocity);
 
-            savefile.WriteInt(this.powerup);
-            savefile.WriteBool(this.removed);
-            savefile.WriteBool(this.fadeOut);
+            savefile.WriteInt(powerup);
+            savefile.WriteBool(removed);
+            savefile.WriteBool(fadeOut);
         }
 
         public void ReadFromSaveGame(idFile savefile, idGameBustOutWindow _game) {
-            this.game = _game;
+            game = _game;
 
-            this.visible = savefile.ReadBool();
+            visible = savefile.ReadBool();
 
-            this.game.ReadSaveGameString(this.materialName, savefile);
-            SetMaterial(this.materialName.getData());
+            game.ReadSaveGameString(materialName, savefile);
+            SetMaterial(materialName.toString());
 
-            this.width = savefile.ReadFloat();
-            this.height = savefile.ReadFloat();
+            width = savefile.ReadFloat();
+            height = savefile.ReadFloat();
 
-            savefile.Read(this.color);
-            savefile.Read(this.position);
-            savefile.Read(this.velocity);
+            savefile.Read(color);
+            savefile.Read(position);
+            savefile.Read(velocity);
 
-            this.powerup = powerupType_t.values()[savefile.ReadInt()];
-            this.removed = savefile.ReadBool();
-            this.fadeOut = savefile.ReadBool();
+            powerup = powerupType_t.values()[savefile.ReadInt()];
+            removed = savefile.ReadBool();
+            fadeOut = savefile.ReadBool();
         }
 
         public void SetMaterial(final String name) {
-            this.materialName.oSet(name);
-            this.material = declManager.FindMaterial(name);
-            this.material.SetSort(SS_GUI);
+            materialName.oSet(name);
+            material = declManager.FindMaterial(name);
+            material.SetSort(SS_GUI);
         }
 
         public void SetSize(float _width, float _height) {
-            this.width = _width;
-            this.height = _height;
+            width = _width;
+            height = _height;
         }
 
         public void SetColor(float r, float g, float b, float a) {
-            this.color.x = r;
-            this.color.y = g;
-            this.color.z = b;
-            this.color.w = a;
+            color.x = r;
+            color.y = g;
+            color.z = b;
+            color.w = a;
         }
 
         public void SetVisible(boolean isVisible) {
-            this.visible = isVisible;
+            visible = isVisible;
         }
 
         public void Update(float timeslice, int guiTime) {
 
-            if (!this.visible) {
+            if (!visible) {
                 return;
             }
 
             // Move the entity
-            this.position.oPluSet(this.velocity.oMultiply(timeslice));
+            position.oPluSet(velocity.oMultiply(timeslice));
 
             // Fade out the ent
-            if (this.fadeOut) {
-                this.color.w -= timeslice * 2.5;
+            if (fadeOut) {
+                color.w -= timeslice * 2.5;
 
-                if (this.color.w <= 0.f) {
-                    this.color.w = 0.f;
-                    this.removed = true;
+                if (color.w <= 0.f) {
+                    color.w = 0.f;
+                    removed = true;
                 }
             }
         }
 
         public void Draw(idDeviceContext dc) {
-            if (this.visible) {
-                dc.DrawMaterialRotated(this.position.x, this.position.y, this.width, this.height, this.material, this.color, 1.0f, 1.0f, DEG2RAD(0.f));
+            if (visible) {
+                dc.DrawMaterialRotated(position.x, position.y, width, height, material, color, 1.0f, 1.0f, (float) DEG2RAD(0.f));
             }
         }
-    }
+    };
 
     public enum collideDir_t {
 
@@ -188,7 +187,7 @@ public class GameBustOutWindow {
         COLLIDE_UP,
         COLLIDE_LEFT,
         COLLIDE_RIGHT
-    }
+    };
 
     /*
      *****************************************************************************
@@ -209,69 +208,69 @@ public class GameBustOutWindow {
 //        
 
         public BOBrick() {
-            this.ent = null;
-            this.x = this.y = this.width = this.height = 0;
-            this.powerup = POWERUP_NONE;
-            this.isBroken = false;
+            ent = null;
+            x = y = width = height = 0;
+            powerup = POWERUP_NONE;
+            isBroken = false;
         }
 
         public BOBrick(BOEntity _ent, float _x, float _y, float _width, float _height) {
-            this.ent = _ent;
-            this.x = _x;
-            this.y = _y;
-            this.width = _width;
-            this.height = _height;
-            this.powerup = POWERUP_NONE;
+            ent = _ent;
+            x = _x;
+            y = _y;
+            width = _width;
+            height = _height;
+            powerup = POWERUP_NONE;
 
-            this.isBroken = false;
+            isBroken = false;
 
-            this.ent.position.x = this.x;
-            this.ent.position.y = this.y;
-            this.ent.SetSize(this.width, this.height);
-            this.ent.SetMaterial("game/bustout/brick");
+            ent.position.x = x;
+            ent.position.y = y;
+            ent.SetSize(width, height);
+            ent.SetMaterial("game/bustout/brick");
 
-            this.ent.game.entities.Append(this.ent);
+            ent.game.entities.Append(ent);
         }
         // ~BOBrick();
 
         public void WriteToSaveGame(idFile savefile) {
-            savefile.WriteFloat(this.x);
-            savefile.WriteFloat(this.y);
-            savefile.WriteFloat(this.width);
-            savefile.WriteFloat(this.height);
+            savefile.WriteFloat(x);
+            savefile.WriteFloat(y);
+            savefile.WriteFloat(width);
+            savefile.WriteFloat(height);
 
-            savefile.WriteInt(this.powerup);
-            savefile.WriteBool(this.isBroken);
+            savefile.WriteInt(powerup);
+            savefile.WriteBool(isBroken);
 
-            final int index = this.ent.game.entities.FindIndex(this.ent);
+            int index = ent.game.entities.FindIndex(ent);
             savefile.WriteInt(index);
         }
 
         public void ReadFromSaveGame(idFile savefile, idGameBustOutWindow game) {
-            this.x = savefile.ReadFloat();
-            this.y = savefile.ReadFloat();
-            this.width = savefile.ReadFloat();
-            this.height = savefile.ReadFloat();
+            x = savefile.ReadFloat();
+            y = savefile.ReadFloat();
+            width = savefile.ReadFloat();
+            height = savefile.ReadFloat();
 
-            this.powerup = powerupType_t.values()[savefile.ReadInt()];
-            this.isBroken = savefile.ReadBool();
+            powerup = powerupType_t.values()[savefile.ReadInt()];
+            isBroken = savefile.ReadBool();
 
             int index;
             index = savefile.ReadInt();
-            this.ent = game.entities.oGet(index);
+            ent = game.entities.oGet(index);
         }
 
         public void SetColor(idVec4 bcolor) {
-            this.ent.SetColor(bcolor.x, bcolor.y, bcolor.z, bcolor.w);
+            ent.SetColor(bcolor.x, bcolor.y, bcolor.z, bcolor.w);
         }
 
         public collideDir_t checkCollision(idVec2 pos, idVec2 vel) {
-            final idVec2 ptA = new idVec2(), ptB = new idVec2();
+            idVec2 ptA = new idVec2(), ptB = new idVec2();
             float dist;
 
             collideDir_t result = COLLIDE_NONE;
 
-            if (this.isBroken) {
+            if (isBroken) {
                 return result;
             }
 
@@ -279,14 +278,14 @@ public class GameBustOutWindow {
             idVec2 vec;
 
             // Bottom
-            ptA.x = this.x;
-            ptA.y = this.y + this.height;
+            ptA.x = x;
+            ptA.y = y + height;
 
-            ptB.x = this.x + this.width;
-            ptB.y = this.y + this.height;
+            ptB.x = x + width;
+            ptB.y = y + height;
 
-            if ((vel.y < 0) && (pos.y > ptA.y)) {
-                if ((pos.x > ptA.x) && (pos.x < ptB.x)) {
+            if (vel.y < 0 && pos.y > ptA.y) {
+                if (pos.x > ptA.x && pos.x < ptB.x) {
                     dist = pos.y - ptA.y;
 
                     if (dist < BALL_RADIUS) {
@@ -307,11 +306,11 @@ public class GameBustOutWindow {
 
             if (result == COLLIDE_NONE) {
                 // Top
-                ptA.y = this.y;
-                ptB.y = this.y;
+                ptA.y = y;
+                ptB.y = y;
 
-                if ((vel.y > 0) && (pos.y < ptA.y)) {
-                    if ((pos.x > ptA.x) && (pos.x < ptB.x)) {
+                if (vel.y > 0 && pos.y < ptA.y) {
+                    if (pos.x > ptA.x && pos.x < ptB.x) {
                         dist = ptA.y - pos.y;
 
                         if (dist < BALL_RADIUS) {
@@ -332,14 +331,14 @@ public class GameBustOutWindow {
 
                 if (result == COLLIDE_NONE) {
                     // Left side
-                    ptA.x = this.x;
-                    ptA.y = this.y;
+                    ptA.x = x;
+                    ptA.y = y;
 
-                    ptB.x = this.x;
-                    ptB.y = this.y + this.height;
+                    ptB.x = x;
+                    ptB.y = y + height;
 
-                    if ((vel.x > 0) && (pos.x < ptA.x)) {
-                        if ((pos.y > ptA.y) && (pos.y < ptB.y)) {
+                    if (vel.x > 0 && pos.x < ptA.x) {
+                        if (pos.y > ptA.y && pos.y < ptB.y) {
                             dist = ptA.x - pos.x;
 
                             if (dist < BALL_RADIUS) {
@@ -360,11 +359,11 @@ public class GameBustOutWindow {
 
                     if (result == COLLIDE_NONE) {
                         // Right side
-                        ptA.x = this.x + this.width;
-                        ptB.x = this.x + this.width;
+                        ptA.x = x + width;
+                        ptB.x = x + width;
 
-                        if ((vel.x < 0) && (pos.x > ptA.x)) {
-                            if ((pos.y > ptA.y) && (pos.y < ptB.y)) {
+                        if (vel.x < 0 && pos.x > ptA.x) {
+                            if (pos.y > ptA.y && pos.y < ptB.y) {
                                 dist = pos.x - ptA.x;
 
                                 if (dist < BALL_RADIUS) {
@@ -389,7 +388,7 @@ public class GameBustOutWindow {
 
             return result;
         }
-    }
+    };
 //    
     public static final int BOARD_ROWS = 12;
 //    
@@ -433,7 +432,7 @@ public class GameBustOutWindow {
         private idList<BOEntity> powerUps;
         //
         private BOBrick paddle;
-        private final idList<BOBrick>[] board = new idList[BOARD_ROWS];
+        private idList<BOBrick>[] board = new idList[BOARD_ROWS];
         //
         //
 
@@ -455,66 +454,66 @@ public class GameBustOutWindow {
         public void WriteToSaveGame(idFile savefile) {
             super.WriteToSaveGame(savefile);
 
-            this.gamerunning.WriteToSaveGame(savefile);
-            this.onFire.WriteToSaveGame(savefile);
-            this.onContinue.WriteToSaveGame(savefile);
-            this.onNewGame.WriteToSaveGame(savefile);
-            this.onNewLevel.WriteToSaveGame(savefile);
+            gamerunning.WriteToSaveGame(savefile);
+            onFire.WriteToSaveGame(savefile);
+            onContinue.WriteToSaveGame(savefile);
+            onNewGame.WriteToSaveGame(savefile);
+            onNewLevel.WriteToSaveGame(savefile);
 
-            savefile.WriteFloat(this.timeSlice);
-            savefile.WriteBool(this.gameOver);
-            savefile.WriteInt(this.numLevels);
+            savefile.WriteFloat(timeSlice);
+            savefile.WriteBool(gameOver);
+            savefile.WriteInt(numLevels);
 
             // Board Data is loaded when GUI is loaded, don't need to save
-            savefile.WriteInt(this.numBricks);
-            savefile.WriteInt(this.currentLevel);
+            savefile.WriteInt(numBricks);
+            savefile.WriteInt(currentLevel);
 
-            savefile.WriteBool(this.updateScore);
-            savefile.WriteInt(this.gameScore);
-            savefile.WriteInt(this.nextBallScore);
+            savefile.WriteBool(updateScore);
+            savefile.WriteInt(gameScore);
+            savefile.WriteInt(nextBallScore);
 
-            savefile.WriteInt(this.bigPaddleTime);
-            savefile.WriteFloat(this.paddleVelocity);
+            savefile.WriteInt(bigPaddleTime);
+            savefile.WriteFloat(paddleVelocity);
 
-            savefile.WriteFloat(this.ballSpeed);
-            savefile.WriteInt(this.ballsRemaining);
-            savefile.WriteInt(this.ballsInPlay);
-            savefile.WriteBool(this.ballHitCeiling);
+            savefile.WriteFloat(ballSpeed);
+            savefile.WriteInt(ballsRemaining);
+            savefile.WriteInt(ballsInPlay);
+            savefile.WriteBool(ballHitCeiling);
 
             // Write Entities
             int i;
-            int numberOfEnts = this.entities.Num();
+            int numberOfEnts = entities.Num();
             savefile.WriteInt(numberOfEnts);
             for (i = 0; i < numberOfEnts; i++) {
-                this.entities.oGet(i).WriteToSaveGame(savefile);
+                entities.oGet(i).WriteToSaveGame(savefile);
             }
 
             // Write Balls
-            numberOfEnts = this.balls.Num();
+            numberOfEnts = balls.Num();
             savefile.WriteInt(numberOfEnts);
             for (i = 0; i < numberOfEnts; i++) {
-                final int ballIndex = this.entities.FindIndex(this.balls.oGet(i));
+                int ballIndex = entities.FindIndex(balls.oGet(i));
                 savefile.WriteInt(ballIndex);
             }
 
             // Write Powerups
-            numberOfEnts = this.powerUps.Num();
+            numberOfEnts = powerUps.Num();
             savefile.WriteInt(numberOfEnts);
             for (i = 0; i < numberOfEnts; i++) {
-                final int powerIndex = this.entities.FindIndex(this.powerUps.oGet(i));
+                int powerIndex = entities.FindIndex(powerUps.oGet(i));
                 savefile.WriteInt(powerIndex);
             }
 
             // Write paddle
-            this.paddle.WriteToSaveGame(savefile);
+            paddle.WriteToSaveGame(savefile);
 
             // Write Bricks
             int row;
             for (row = 0; row < BOARD_ROWS; row++) {
-                numberOfEnts = this.board[row].Num();
+                numberOfEnts = board[row].Num();
                 savefile.WriteInt(numberOfEnts);
                 for (i = 0; i < numberOfEnts; i++) {
-                    this.board[row].oGet(i).WriteToSaveGame(savefile);
+                    board[row].oGet(i).WriteToSaveGame(savefile);
                 }
             }
         }
@@ -525,33 +524,33 @@ public class GameBustOutWindow {
 
             // Clear out existing paddle and entities from GUI load
 //	delete paddle;
-            this.entities.DeleteContents(true);
+            entities.DeleteContents(true);
 
-            this.gamerunning.ReadFromSaveGame(savefile);
-            this.onFire.ReadFromSaveGame(savefile);
-            this.onContinue.ReadFromSaveGame(savefile);
-            this.onNewGame.ReadFromSaveGame(savefile);
-            this.onNewLevel.ReadFromSaveGame(savefile);
+            gamerunning.ReadFromSaveGame(savefile);
+            onFire.ReadFromSaveGame(savefile);
+            onContinue.ReadFromSaveGame(savefile);
+            onNewGame.ReadFromSaveGame(savefile);
+            onNewLevel.ReadFromSaveGame(savefile);
 
-            this.timeSlice = savefile.ReadFloat();
-            this.gameOver = savefile.ReadBool();
-            this.numLevels = savefile.ReadInt();
+            timeSlice = savefile.ReadFloat();
+            gameOver = savefile.ReadBool();
+            numLevels = savefile.ReadInt();
 
             // Board Data is loaded when GUI is loaded, don't need to save
-            this.numBricks = savefile.ReadInt();
-            this.currentLevel = savefile.ReadInt();
+            numBricks = savefile.ReadInt();
+            currentLevel = savefile.ReadInt();
 
-            this.updateScore = savefile.ReadBool();
-            this.gameScore = savefile.ReadInt();
-            this.nextBallScore = savefile.ReadInt();
+            updateScore = savefile.ReadBool();
+            gameScore = savefile.ReadInt();
+            nextBallScore = savefile.ReadInt();
 
-            this.bigPaddleTime = savefile.ReadInt();
-            this.paddleVelocity = savefile.ReadFloat();
+            bigPaddleTime = savefile.ReadInt();
+            paddleVelocity = savefile.ReadFloat();
 
-            this.ballSpeed = savefile.ReadFloat();
-            this.ballsRemaining = savefile.ReadInt();
-            this.ballsInPlay = savefile.ReadInt();
-            this.ballHitCeiling = savefile.ReadBool();
+            ballSpeed = savefile.ReadFloat();
+            ballsRemaining = savefile.ReadInt();
+            ballsInPlay = savefile.ReadInt();
+            ballHitCeiling = savefile.ReadBool();
 
             int i;
             int numberOfEnts;
@@ -563,7 +562,7 @@ public class GameBustOutWindow {
 
                 ent = new BOEntity(this);
                 ent.ReadFromSaveGame(savefile, this);
-                this.entities.Append(ent);
+                entities.Append(ent);
             }
 
             // Read balls
@@ -571,7 +570,7 @@ public class GameBustOutWindow {
             for (i = 0; i < numberOfEnts; i++) {
                 int ballIndex;
                 ballIndex = savefile.ReadInt();
-                this.balls.Append(this.entities.oGet(ballIndex));
+                balls.Append(entities.oGet(ballIndex));
             }
 
             // Read powerups
@@ -579,28 +578,28 @@ public class GameBustOutWindow {
             for (i = 0; i < numberOfEnts; i++) {
                 int powerIndex;
                 powerIndex = savefile.ReadInt();
-                this.balls.Append(this.entities.oGet(powerIndex));
+                balls.Append(entities.oGet(powerIndex));
             }
 
             // Read paddle
-            this.paddle = new BOBrick();
-            this.paddle.ReadFromSaveGame(savefile, this);
+            paddle = new BOBrick();
+            paddle.ReadFromSaveGame(savefile, this);
 
             // Read board
             int row;
             for (row = 0; row < BOARD_ROWS; row++) {
                 numberOfEnts = savefile.ReadInt();
                 for (i = 0; i < numberOfEnts; i++) {
-                    final BOBrick brick = new BOBrick();
+                    BOBrick brick = new BOBrick();
                     brick.ReadFromSaveGame(savefile, this);
-                    this.board[row].Append(brick);
+                    board[row].Append(brick);
                 }
             }
         }
 
         @Override
         public String HandleEvent(final sysEvent_s event, boolean[] updateVisuals) {
-            final int key = event.evValue;
+            int key = event.evValue;
 
             // need to call this to allow proper focus and capturing on embedded children
             final String ret = super.HandleEvent(event, updateVisuals);
@@ -612,17 +611,17 @@ public class GameBustOutWindow {
                 }
                 if (key == K_MOUSE1) {
                     // Mouse was clicked
-                    if (this.ballsInPlay == 0) {
-                        final BOEntity ball = CreateNewBall();
+                    if (ballsInPlay == 0) {
+                        BOEntity ball = CreateNewBall();
 
                         ball.SetVisible(true);
-                        ball.position.x = this.paddle.ent.position.x + 48.f;
+                        ball.position.x = paddle.ent.position.x + 48.f;
                         ball.position.y = 430.f;
 
-                        ball.velocity.x = this.ballSpeed;
-                        ball.velocity.y = -this.ballSpeed * 2.f;
+                        ball.velocity.x = ballSpeed;
+                        ball.velocity.y = -ballSpeed * 2.f;
                         ball.velocity.NormalizeFast();
-                        ball.velocity.oMulSet(this.ballSpeed);
+                        ball.velocity.oMulSet(ballSpeed);
                     }
                 } else {
                     return ret;
@@ -644,8 +643,8 @@ public class GameBustOutWindow {
             //Update the game every frame before drawing
             UpdateGame();
 
-            for (i = this.entities.Num() - 1; i >= 0; i--) {
-                this.entities.oGet(i).Draw(this.dc);
+            for (i = entities.Num() - 1; i >= 0; i--) {
+                entities.oGet(i).Draw(dc);
             }
         }
 
@@ -658,15 +657,15 @@ public class GameBustOutWindow {
             idWinVar retVar = null;
 
             if (idStr.Icmp(_name, "gamerunning") == 0) {
-                retVar = this.gamerunning;
+                retVar = gamerunning;
             } else if (idStr.Icmp(_name, "onFire") == 0) {
-                retVar = this.onFire;
+                retVar = onFire;
             } else if (idStr.Icmp(_name, "onContinue") == 0) {
-                retVar = this.onContinue;
+                retVar = onContinue;
             } else if (idStr.Icmp(_name, "onNewGame") == 0) {
-                retVar = this.onNewGame;
+                retVar = onNewGame;
             } else if (idStr.Icmp(_name, "onNewLevel") == 0) {
-                retVar = this.onNewLevel;
+                retVar = onNewLevel;
             }
 
             if (retVar != null) {
@@ -699,35 +698,35 @@ public class GameBustOutWindow {
 
             ResetGameState();
 
-            this.numLevels = 0;
-            this.boardDataLoaded = false;
-            this.levelBoardData = null;
+            numLevels = 0;
+            boardDataLoaded = false;
+            levelBoardData = null;
 
             // Create Paddle
             ent = new BOEntity(this);
-            this.paddle = new BOBrick(ent, 260.f, 440.f, 96.f, 24.f);
-            this.paddle.ent.SetMaterial("game/bustout/paddle");
+            paddle = new BOBrick(ent, 260.f, 440.f, 96.f, 24.f);
+            paddle.ent.SetMaterial("game/bustout/paddle");
         }
 
         private void ResetGameState() {
-            this.gamerunning.data = false;
-            this.gameOver = false;
-            this.onFire.data = false;
-            this.onContinue.data = false;
-            this.onNewGame.data = false;
-            this.onNewLevel.data = false;
+            gamerunning.data = false;
+            gameOver = false;
+            onFire.data = false;
+            onContinue.data = false;
+            onNewGame.data = false;
+            onNewLevel.data = false;
 
             // Game moves forward 16 milliseconds every frame
-            this.timeSlice = 0.016f;
-            this.ballsRemaining = 3;
-            this.ballSpeed = BALL_SPEED;
-            this.ballsInPlay = 0;
-            this.updateScore = false;
-            this.numBricks = 0;
-            this.currentLevel = 1;
-            this.gameScore = 0;
-            this.bigPaddleTime = 0;
-            this.nextBallScore = this.gameScore + 10000;
+            timeSlice = 0.016f;
+            ballsRemaining = 3;
+            ballSpeed = BALL_SPEED;
+            ballsInPlay = 0;
+            updateScore = false;
+            numBricks = 0;
+            currentLevel = 1;
+            gameScore = 0;
+            bigPaddleTime = 0;
+            nextBallScore = gameScore + 10000;
 
             ClearBoard();
         }
@@ -737,53 +736,53 @@ public class GameBustOutWindow {
 
             ClearPowerups();
 
-            this.ballHitCeiling = false;
+            ballHitCeiling = false;
 
             for (i = 0; i < BOARD_ROWS; i++) {
-                for (j = 0; j < this.board[i].Num(); j++) {
+                for (j = 0; j < board[i].Num(); j++) {
 
-                    final BOBrick brick = this.board[i].oGet(j);
+                    BOBrick brick = board[i].oGet(j);
                     brick.ent.removed = true;
                 }
 
-                this.board[i].DeleteContents(true);
+                board[i].DeleteContents(true);
             }
         }
 
         private void ClearPowerups() {
-            while (this.powerUps.Num() != 0) {
-                this.powerUps.oGet(0).removed = true;
-                this.powerUps.RemoveIndex(0);
+            while (powerUps.Num() != 0) {
+                powerUps.oGet(0).removed = true;
+                powerUps.RemoveIndex(0);
             }
         }
 
         private void ClearBalls() {
-            while (this.balls.Num() != 0) {
-                this.balls.oGet(0).removed = true;
-                this.balls.RemoveIndex(0);
+            while (balls.Num() != 0) {
+                balls.oGet(0).removed = true;
+                balls.RemoveIndex(0);
             }
 
-            this.ballsInPlay = 0;
+            ballsInPlay = 0;
         }
 
         private void LoadBoardFiles() {
             int i;
-            final int[] w = new int[1], h = new int[1];
-            final long[]/*ID_TIME_T*/ time = new long[1];
+            int[] w = new int[1], h = new int[1];
+            long[]/*ID_TIME_T*/ time = new long[1];
             int boardSize;
             byte[] currentBoard;
             int boardIndex = 0;
 
-            if (this.boardDataLoaded) {
+            if (boardDataLoaded) {
                 return;
             }
 
             boardSize = 9 * 12 * 4;
-            this.levelBoardData = new byte[boardSize * this.numLevels];// Mem_Alloc(boardSize * numLevels);
+            levelBoardData = new byte[boardSize * numLevels];// Mem_Alloc(boardSize * numLevels);
 
-            currentBoard = this.levelBoardData;
+            currentBoard = levelBoardData;
 
-            for (i = 0; i < this.numLevels; i++) {
+            for (i = 0; i < numLevels; i++) {
                 String name = "guis/assets/bustout/level";
                 name += (i + 1);
                 name += ".tga";
@@ -791,30 +790,30 @@ public class GameBustOutWindow {
                 ByteBuffer pic = R_LoadImage(name, w, h, time, false);
 
                 if (pic != null) {
-                    if ((w[0] != 9) || (h[0] != 12)) {
+                    if (w[0] != 9 || h[0] != 12) {
                         common.DWarning("Hell Bust-Out level image not correct dimensions! (%d x %d)", w, h);
                     }
 
 //			memcpy( currentBoard, pic, boardSize );
-                    Nio.arraycopy(pic.array(), 0, currentBoard, boardIndex, boardSize);
+                    System.arraycopy(pic.array(), 0, currentBoard, boardIndex, boardSize);
                     pic = null;//Mem_Free(pic);
                 }
 
                 boardIndex += boardSize;
             }
 
-            this.boardDataLoaded = true;
+            boardDataLoaded = true;
         }
 
         private void SetCurrentBoard() {
             int i, j;
-            final int realLevel = ((this.currentLevel - 1) % this.numLevels);
+            final int realLevel = ((currentLevel - 1) % numLevels);
             final int boardSize;
             final int currentBoard;
             float bx = 11f;
             float by = 24f;
-            final float stepx = 619.f / 9.f;
-            final float stepy = (256 / 12.f);
+            float stepx = 619.f / 9.f;
+            float stepy = (256 / 12.f);
 
             boardSize = 9 * 12 * 4;
             currentBoard = realLevel * boardSize;
@@ -823,23 +822,23 @@ public class GameBustOutWindow {
                 bx = 11.f;
 
                 for (i = 0; i < 9; i++) {
-                    final int pixelindex = (j * 9 * 4) + (i * 4);
+                    int pixelindex = (j * 9 * 4) + (i * 4);
 
-                    if (this.levelBoardData[currentBoard + pixelindex + 3] != 0) {
-                        final idVec4 bcolor = new idVec4();
+                    if (levelBoardData[currentBoard + pixelindex + 3] != 0) {
+                        idVec4 bcolor = new idVec4();
                         float pType;//= 0f;
 
-                        final BOEntity bent = new BOEntity(this);
-                        final BOBrick brick = new BOBrick(bent, bx, by, stepx, stepy);
+                        BOEntity bent = new BOEntity(this);
+                        BOBrick brick = new BOBrick(bent, bx, by, stepx, stepy);
 
-                        bcolor.x = this.levelBoardData[currentBoard + pixelindex + 0] / 255.f;
-                        bcolor.y = this.levelBoardData[currentBoard + pixelindex + 1] / 255.f;
-                        bcolor.z = this.levelBoardData[currentBoard + pixelindex + 2] / 255.f;
+                        bcolor.x = levelBoardData[currentBoard + pixelindex + 0] / 255.f;
+                        bcolor.y = levelBoardData[currentBoard + pixelindex + 1] / 255.f;
+                        bcolor.z = levelBoardData[currentBoard + pixelindex + 2] / 255.f;
                         bcolor.w = 1.f;
                         brick.SetColor(bcolor);
 
-                        pType = this.levelBoardData[pixelindex + 3] / 255.f;
-                        if ((pType > 0.f) && (pType < 1.f)) {
+                        pType = levelBoardData[pixelindex + 3] / 255.f;
+                        if (pType > 0.f && pType < 1.f) {
                             if (pType < 0.5f) {
                                 brick.powerup = POWERUP_BIGPADDLE;
                             } else {
@@ -847,8 +846,8 @@ public class GameBustOutWindow {
                             }
                         }
 
-                        this.board[j].Append(brick);
-                        this.numBricks++;
+                        board[j].Append(brick);
+                        numBricks++;
                     }
 
                     bx += stepx;
@@ -861,70 +860,70 @@ public class GameBustOutWindow {
         private void UpdateGame() {
             int i;
 
-            if (this.onNewGame.oCastBoolean()) {
+            if (onNewGame.oCastBoolean()) {
                 ResetGameState();
 
                 // Create Board
                 SetCurrentBoard();
 
-                this.gamerunning.oSet(true);
+                gamerunning.oSet(true);
             }
-            if (this.onContinue.oCastBoolean()) {
-                this.gameOver = false;
-                this.ballsRemaining = 3;
+            if (onContinue.oCastBoolean()) {
+                gameOver = false;
+                ballsRemaining = 3;
 
-                this.onContinue.oSet(false);
+                onContinue.oSet(false);
             }
-            if (this.onNewLevel.oCastBoolean()) {
-                this.currentLevel++;
+            if (onNewLevel.oCastBoolean()) {
+                currentLevel++;
 
                 ClearBoard();
                 SetCurrentBoard();
 
-                this.ballSpeed = BALL_SPEED * (1f + (this.currentLevel / 5f));
-                if (this.ballSpeed > BALL_MAXSPEED) {
-                    this.ballSpeed = BALL_MAXSPEED;
+                ballSpeed = BALL_SPEED * (1f + ((float) currentLevel / 5f));
+                if (ballSpeed > BALL_MAXSPEED) {
+                    ballSpeed = BALL_MAXSPEED;
                 }
-                this.updateScore = true;
-                this.onNewLevel.oSet(false);
+                updateScore = true;
+                onNewLevel.oSet(false);
             }
 
-            if (this.gamerunning.oCastBoolean() == true) {
+            if (gamerunning.oCastBoolean() == true) {
 
                 UpdatePaddle();
                 UpdateBall();
                 UpdatePowerups();
 
-                for (i = 0; i < this.entities.Num(); i++) {
-                    this.entities.oGet(i).Update(this.timeSlice, this.gui.GetTime());
+                for (i = 0; i < entities.Num(); i++) {
+                    entities.oGet(i).Update(timeSlice, gui.GetTime());
                 }
 
                 // Delete entities that need to be deleted
-                for (i = this.entities.Num() - 1; i >= 0; i--) {
-                    if (this.entities.oGet(i).removed) {
-                        final BOEntity ent = this.entities.oGet(i);
+                for (i = entities.Num() - 1; i >= 0; i--) {
+                    if (entities.oGet(i).removed) {
+                        BOEntity ent = entities.oGet(i);
 //				delete ent;
-                        this.entities.RemoveIndex(i);
+                        entities.RemoveIndex(i);
                     }
                 }
 
-                if (this.updateScore) {
+                if (updateScore) {
                     UpdateScore();
-                    this.updateScore = false;
+                    updateScore = false;
                 }
             }
         }
 
         private void UpdatePowerups() {
-            final idVec2 pos = new idVec2();
+            idVec2 pos = new idVec2();
 
-            for (int i = 0; i < this.powerUps.Num(); i++) {
-                final BOEntity pUp = this.powerUps.oGet(i);
+            for (int i = 0; i < powerUps.Num(); i++) {
+                BOEntity pUp = powerUps.oGet(i);
 
                 // Check for powerup falling below screen
                 if (pUp.position.y > 480) {
 
-                    this.powerUps.RemoveIndex(i);
+                    powerUps.RemoveIndex(i);
                     pUp.removed = true;
                     continue;
                 }
@@ -933,21 +932,21 @@ public class GameBustOutWindow {
                 pos.x = pUp.position.x + (pUp.width / 2);
                 pos.y = pUp.position.y + (pUp.height / 2);
 
-                final collideDir_t collision = this.paddle.checkCollision(pos, pUp.velocity);
+                collideDir_t collision = paddle.checkCollision(pos, pUp.velocity);
                 if (collision != COLLIDE_NONE) {
                     BOEntity ball;
 
                     // Give the powerup to the player
                     switch (pUp.powerup) {
                         case POWERUP_BIGPADDLE:
-                            this.bigPaddleTime = this.gui.GetTime() + 15000;
+                            bigPaddleTime = gui.GetTime() + 15000;
                             break;
                         case POWERUP_MULTIBALL:
                             // Create 2 new balls in the spot of the existing ball
                             for (int b = 0; b < 2; b++) {
                                 ball = CreateNewBall();
-                                ball.position = this.balls.oGet(0).position;
-                                ball.velocity = this.balls.oGet(0).velocity;
+                                ball.position = balls.oGet(0).position;
+                                ball.velocity = balls.oGet(0).velocity;
 
                                 if (b == 0) {
                                     ball.velocity.x -= 35.f;
@@ -955,7 +954,7 @@ public class GameBustOutWindow {
                                     ball.velocity.x += 35.f;
                                 }
                                 ball.velocity.NormalizeFast();
-                                ball.velocity.oMulSet(this.ballSpeed);
+                                ball.velocity.oMulSet(ballSpeed);
 
                                 ball.SetVisible(true);
                             }
@@ -968,33 +967,33 @@ public class GameBustOutWindow {
                     session.sw.PlayShaderDirectly("arcade_powerup", S_UNIQUE_CHANNEL);
 
                     // Remove it
-                    this.powerUps.RemoveIndex(i);
+                    powerUps.RemoveIndex(i);
                     pUp.removed = true;
                 }
             }
         }
 
         private void UpdatePaddle() {
-            final idVec2 cursorPos = new idVec2();
-            final float oldPos = this.paddle.x;
+            idVec2 cursorPos = new idVec2();
+            float oldPos = paddle.x;
 
-            cursorPos.x = this.gui.CursorX();
-            cursorPos.y = this.gui.CursorY();
+            cursorPos.x = gui.CursorX();
+            cursorPos.y = gui.CursorY();
 
-            if (this.bigPaddleTime > this.gui.GetTime()) {
-                this.paddle.x = cursorPos.x - 80f;
-                this.paddle.width = 160;
-                this.paddle.ent.width = 160;
-                this.paddle.ent.SetMaterial("game/bustout/doublepaddle");
+            if (bigPaddleTime > gui.GetTime()) {
+                paddle.x = cursorPos.x - 80f;
+                paddle.width = 160;
+                paddle.ent.width = 160;
+                paddle.ent.SetMaterial("game/bustout/doublepaddle");
             } else {
-                this.paddle.x = cursorPos.x - 48f;
-                this.paddle.width = 96;
-                this.paddle.ent.width = 96;
-                this.paddle.ent.SetMaterial("game/bustout/paddle");
+                paddle.x = cursorPos.x - 48f;
+                paddle.width = 96;
+                paddle.ent.width = 96;
+                paddle.ent.SetMaterial("game/bustout/paddle");
             }
-            this.paddle.ent.position.x = this.paddle.x;
+            paddle.ent.position.x = paddle.x;
 
-            this.paddleVelocity = (this.paddle.x - oldPos);
+            paddleVelocity = (paddle.x - oldPos);
         }
         private static int bounceChannel = 1;
 
@@ -1003,12 +1002,12 @@ public class GameBustOutWindow {
             boolean playSoundBounce = false;
             boolean playSoundBrick = false;
 
-            if (this.ballsInPlay == 0) {
+            if (ballsInPlay == 0) {
                 return;
             }
 
-            for (ballnum = 0; ballnum < this.balls.Num(); ballnum++) {
-                final BOEntity ball = this.balls.oGet(ballnum);
+            for (ballnum = 0; ballnum < balls.Num(); ballnum++) {
+                BOEntity ball = balls.oGet(ballnum);
 
                 // Check for ball going below screen, lost ball
                 if (ball.position.y > 480f) {
@@ -1017,38 +1016,38 @@ public class GameBustOutWindow {
                 }
 
                 // Check world collision
-                if ((ball.position.y < 20) && (ball.velocity.y < 0)) {
+                if (ball.position.y < 20 && ball.velocity.y < 0) {
                     ball.velocity.y = -ball.velocity.y;
 
                     // Increase ball speed when it hits ceiling
-                    if (!this.ballHitCeiling) {
-                        this.ballSpeed *= 1.25f;
-                        this.ballHitCeiling = true;
+                    if (!ballHitCeiling) {
+                        ballSpeed *= 1.25f;
+                        ballHitCeiling = true;
                     }
                     playSoundBounce = true;
                 }
 
-                if ((ball.position.x > 608) && (ball.velocity.x > 0)) {
+                if (ball.position.x > 608 && ball.velocity.x > 0) {
                     ball.velocity.x = -ball.velocity.x;
                     playSoundBounce = true;
-                } else if ((ball.position.x < 8) && (ball.velocity.x < 0)) {
+                } else if (ball.position.x < 8 && ball.velocity.x < 0) {
                     ball.velocity.x = -ball.velocity.x;
                     playSoundBounce = true;
                 }
 
                 // Check for Paddle collision
-                final idVec2 ballCenter = ball.position.oPlus(new idVec2(BALL_RADIUS, BALL_RADIUS));
-                collideDir_t collision = this.paddle.checkCollision(ballCenter, ball.velocity);
+                idVec2 ballCenter = ball.position.oPlus(new idVec2(BALL_RADIUS, BALL_RADIUS));
+                collideDir_t collision = paddle.checkCollision(ballCenter, ball.velocity);
 
                 if (collision == COLLIDE_UP) {
                     if (ball.velocity.y > 0) {
-                        final idVec2 paddleVec = new idVec2(this.paddleVelocity * 2, 0);
+                        idVec2 paddleVec = new idVec2(paddleVelocity * 2, 0);
                         float centerX;
 
-                        if (this.bigPaddleTime > this.gui.GetTime()) {
-                            centerX = this.paddle.x + 80f;
+                        if (bigPaddleTime > gui.GetTime()) {
+                            centerX = paddle.x + 80f;
                         } else {
-                            centerX = this.paddle.x + 48f;
+                            centerX = paddle.x + 48f;
                         }
 
                         ball.velocity.y = -ball.velocity.y;
@@ -1057,11 +1056,11 @@ public class GameBustOutWindow {
 
                         ball.velocity.oPluSet(paddleVec);
                         ball.velocity.NormalizeFast();
-                        ball.velocity.oMulSet(this.ballSpeed);
+                        ball.velocity.oMulSet(ballSpeed);
 
                         playSoundBounce = true;
                     }
-                } else if ((collision == COLLIDE_LEFT) || (collision == COLLIDE_RIGHT)) {
+                } else if (collision == COLLIDE_LEFT || collision == COLLIDE_RIGHT) {
                     if (ball.velocity.y > 0) {
                         ball.velocity.x = -ball.velocity.x;
                         playSoundBounce = true;
@@ -1072,10 +1071,10 @@ public class GameBustOutWindow {
 
                 // Check for collision with bricks
                 for (i = 0; i < BOARD_ROWS; i++) {
-                    final int num = this.board[i].Num();
+                    int num = board[i].Num();
 
                     for (j = 0; j < num; j++) {
-                        final BOBrick brick = (this.board[i]).oGet(j);
+                        BOBrick brick = (board[i]).oGet(j);
 
                         collision = brick.checkCollision(ballCenter, ball.velocity);
                         if (collision != null) {
@@ -1084,18 +1083,18 @@ public class GameBustOutWindow {
                             brick.ent.fadeOut = true;
 
                             if (brick.powerup.ordinal() > POWERUP_NONE.ordinal()) {
-                                final BOEntity pUp = CreatePowerup(brick);
+                                BOEntity pUp = CreatePowerup(brick);
                             }
 
-                            this.numBricks--;
-                            this.gameScore += 100;
-                            this.updateScore = true;
+                            numBricks--;
+                            gameScore += 100;
+                            updateScore = true;
 
                             // Go ahead an forcibly remove the last brick, no fade
-                            if (this.numBricks == 0) {
+                            if (numBricks == 0) {
                                 brick.ent.removed = true;
                             }
-                            this.board[i].Remove(brick);
+                            board[i].Remove(brick);
                             break;
                         }
                     }
@@ -1106,9 +1105,9 @@ public class GameBustOutWindow {
                     }
                 }
 
-                if ((collision == COLLIDE_DOWN) || (collision == COLLIDE_UP)) {
+                if (collision == COLLIDE_DOWN || collision == COLLIDE_UP) {
                     ball.velocity.y *= -1;
-                } else if ((collision == COLLIDE_LEFT) || (collision == COLLIDE_RIGHT)) {
+                } else if (collision == COLLIDE_LEFT || collision == COLLIDE_RIGHT) {
                     ball.velocity.x *= -1;
                 }
 
@@ -1127,61 +1126,61 @@ public class GameBustOutWindow {
             }
 
             // Check to see if any balls were removed from play
-            for (ballnum = 0; ballnum < this.balls.Num(); ballnum++) {
-                if (this.balls.oGet(ballnum).removed) {
-                    this.ballsInPlay--;
-                    this.balls.RemoveIndex(ballnum);
+            for (ballnum = 0; ballnum < balls.Num(); ballnum++) {
+                if (balls.oGet(ballnum).removed) {
+                    ballsInPlay--;
+                    balls.RemoveIndex(ballnum);
                 }
             }
 
             // If all the balls were removed, update the game accordingly
-            if (this.ballsInPlay == 0) {
-                if (this.ballsRemaining == 0) {
-                    this.gameOver = true;
+            if (ballsInPlay == 0) {
+                if (ballsRemaining == 0) {
+                    gameOver = true;
 
                     // Game Over sound
                     session.sw.PlayShaderDirectly("arcade_sadsound", S_UNIQUE_CHANNEL);
                 } else {
-                    this.ballsRemaining--;
+                    ballsRemaining--;
 
                     // Ball was lost, but game is not over
                     session.sw.PlayShaderDirectly("arcade_missedball", S_UNIQUE_CHANNEL);
                 }
 
                 ClearPowerups();
-                this.updateScore = true;
+                updateScore = true;
             }
         }
 
         private void UpdateScore() {
 
-            if (this.gameOver) {
-                this.gui.HandleNamedEvent("GameOver");//TODO:put text in property files for localization.
+            if (gameOver) {
+                gui.HandleNamedEvent("GameOver");//TODO:put text in property files for localization.
                 return;
             }
 
             // Check for level progression
-            if (this.numBricks == 0) {
+            if (numBricks == 0) {
                 ClearBalls();
 
-                this.gui.HandleNamedEvent("levelComplete");
+                gui.HandleNamedEvent("levelComplete");
             }
 
             // Check for new ball score
-            if (this.gameScore >= this.nextBallScore) {
-                this.ballsRemaining++;
-                this.gui.HandleNamedEvent("extraBall");
+            if (gameScore >= nextBallScore) {
+                ballsRemaining++;
+                gui.HandleNamedEvent("extraBall");
 
                 // Play sound
                 session.sw.PlayShaderDirectly("arcade_extraball", S_UNIQUE_CHANNEL);
 
-                this.nextBallScore = this.gameScore + 10000;
+                nextBallScore = gameScore + 10000;
             }
 
-            this.gui.SetStateString("player_score", va("%d", this.gameScore));
-            this.gui.SetStateString("balls_remaining", va("%d", this.ballsRemaining));
-            this.gui.SetStateString("current_level", va("%d", this.currentLevel));
-            this.gui.SetStateString("next_ball_score", va("%d", this.nextBallScore));
+            gui.SetStateString("player_score", va("%d", gameScore));
+            gui.SetStateString("balls_remaining", va("%d", ballsRemaining));
+            gui.SetStateString("current_level", va("%d", currentLevel));
+            gui.SetStateString("next_ball_score", va("%d", nextBallScore));
         }
 
         private BOEntity CreateNewBall() {
@@ -1194,16 +1193,16 @@ public class GameBustOutWindow {
             ball.SetSize(BALL_RADIUS * 2f, BALL_RADIUS * 2f);
             ball.SetVisible(false);
 
-            this.ballsInPlay++;
+            ballsInPlay++;
 
-            this.balls.Append(ball);
-            this.entities.Append(ball);
+            balls.Append(ball);
+            entities.Append(ball);
 
             return ball;
         }
 
         private BOEntity CreatePowerup(BOBrick brick) {
-            final BOEntity powerEnt = new BOEntity(this);
+            BOEntity powerEnt = new BOEntity(this);
 
             powerEnt.position.x = brick.x;
             powerEnt.position.y = brick.y;
@@ -1227,8 +1226,8 @@ public class GameBustOutWindow {
             powerEnt.SetSize(619 / 9, 256 / 12);
             powerEnt.SetVisible(true);
 
-            this.powerUps.Append(powerEnt);
-            this.entities.Append(powerEnt);
+            powerUps.Append(powerEnt);
+            entities.Append(powerEnt);
 
             return powerEnt;
         }
@@ -1236,27 +1235,27 @@ public class GameBustOutWindow {
         @Override
         protected boolean ParseInternalVar(final String _name, idParser src) {
             if (idStr.Icmp(_name, "gamerunning") == 0) {
-                this.gamerunning.oSet(src.ParseBool());
+                gamerunning.oSet(src.ParseBool());
                 return true;
             }
             if (idStr.Icmp(_name, "onFire") == 0) {
-                this.onFire.oSet(src.ParseBool());
+                onFire.oSet(src.ParseBool());
                 return true;
             }
             if (idStr.Icmp(_name, "onContinue") == 0) {
-                this.onContinue.oSet(src.ParseBool());
+                onContinue.oSet(src.ParseBool());
                 return true;
             }
             if (idStr.Icmp(_name, "onNewGame") == 0) {
-                this.onNewGame.oSet(src.ParseBool());
+                onNewGame.oSet(src.ParseBool());
                 return true;
             }
             if (idStr.Icmp(_name, "onNewLevel") == 0) {
-                this.onNewLevel.oSet(src.ParseBool());
+                onNewLevel.oSet(src.ParseBool());
                 return true;
             }
             if (idStr.Icmp(_name, "numLevels") == 0) {
-                this.numLevels = src.ParseInt();
+                numLevels = src.ParseInt();
 
                 // Load all the level images
                 LoadBoardFiles();
@@ -1265,5 +1264,5 @@ public class GameBustOutWindow {
 
             return super.ParseInternalVar(_name, src);
         }
-    }
+    };
 }

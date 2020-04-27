@@ -49,7 +49,7 @@ public class win_net {
             this.ip = ip_a;
             this.mask = ip_m;
         }
-    }
+    };
 
     static final int             MAX_INTERFACES = 32;
     static       int             num_interfaces = 0;
@@ -632,7 +632,7 @@ public class win_net {
      ====================
      */
     public static void Sys_InitNetworking() {
-        final int r;
+        int r;
 //
 //        r = WSAStartup(MAKEWORD(1, 1),  & winsockdata);
 //        if (r) {
@@ -691,7 +691,7 @@ public class win_net {
 //                    foundLoopback |= pIPAddr.isLoopbackAddress();
 
                     ip_a = ntohl(pIPAddr.getAddress());
-                    if ((pAdapter.getInterfaceAddresses() != null) && (pAdapter.getInterfaceAddresses().size() > 0)) {
+                    if (pAdapter.getInterfaceAddresses() != null && pAdapter.getInterfaceAddresses().size() > 0) {
                         ip_m = pAdapter.getInterfaceAddresses().get(0).getNetworkPrefixLength();
                     }
 
@@ -712,7 +712,7 @@ public class win_net {
                 }
                 common.Printf("\n");
             }
-        } catch (final SocketException ex) {
+        } catch (SocketException ex) {
             Logger.getLogger(win_net.class.getName()).log(Level.SEVERE, null, ex);
             // happens if you have no network connection
             common.Printf("Sys_InitNetworking: GetAdaptersInfo failed (%ld).\n", -1/*dwRetVal*/);
@@ -859,12 +859,12 @@ public class win_net {
         int size;
         int time;
         udpMsg_s next;
-    }
+    };
 
     static class idUDPLag {
 
         public idUDPLag() {
-            this.sendFirst = this.sendLast = this.recieveFirst = this.recieveLast = null;//TODO:check this
+            sendFirst = sendLast = recieveFirst = recieveLast = null;//TODO:check this
         }
 //						~idUDPLag( void );
 
@@ -873,6 +873,6 @@ public class win_net {
         public udpMsg_s recieveFirst;
         public udpMsg_s recieveLast;
 //        public idBlockAlloc<udpMsg_t> udpMsgAllocator = new idBlockAlloc(64);
-    }
+    };
 
 }

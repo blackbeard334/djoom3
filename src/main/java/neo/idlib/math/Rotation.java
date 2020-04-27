@@ -30,17 +30,17 @@ public class Rotation {
 //
 //public:
         public idRotation() {
-            this.origin = new idVec3();
-            this.vec = new idVec3();
-            this.axis = new idMat3();
+            origin = new idVec3();
+            vec = new idVec3();
+            axis = new idMat3();
         }
 
         public idRotation(final idVec3 rotationOrigin, final idVec3 rotationVec, final float rotationAngle) {
             this();
-            this.origin.oSet(rotationOrigin);
-            this.vec.oSet(rotationVec);
-            this.angle = rotationAngle;
-            this.axisValid = false;
+            origin.oSet(rotationOrigin);
+            vec.oSet(rotationVec);
+            angle = rotationAngle;
+            axisValid = false;
         }
 
         public idRotation(final idRotation rotation) {
@@ -49,71 +49,71 @@ public class Rotation {
         }
 
         public void Set(final idVec3 rotationOrigin, final idVec3 rotationVec, final float rotationAngle) {
-            this.origin.oSet(rotationOrigin);
-            this.vec.oSet(rotationVec);
-            this.angle = rotationAngle;
-            this.axisValid = false;
+            origin.oSet(rotationOrigin);
+            vec.oSet(rotationVec);
+            angle = rotationAngle;
+            axisValid = false;
         }
 
         public void SetOrigin(final idVec3 rotationOrigin) {
-            this.origin.oSet(rotationOrigin);
+            origin.oSet(rotationOrigin);
         }
 
         // has to be normalized	
         public void SetVec(final idVec3 rotationVec) {
-            this.vec.oSet(rotationVec);
-            this.axisValid = false;
+            vec.oSet(rotationVec);
+            axisValid = false;
         }
 
         // has to be normalized
         public void SetVec(final float x, final float y, final float z) {
-            this.vec.oSet(0, x);
-            this.vec.oSet(1, y);
-            this.vec.oSet(2, x);
-            this.axisValid = false;
+            vec.oSet(0, x);
+            vec.oSet(1, y);
+            vec.oSet(2, x);
+            axisValid = false;
         }
 
         public void SetAngle(final float rotationAngle) {
-            this.angle = rotationAngle;
-            this.axisValid = false;
+            angle = rotationAngle;
+            axisValid = false;
         }
 
         public void Scale(final float s) {
-            this.angle *= s;
-            this.axisValid = false;
+            angle *= s;
+            axisValid = false;
         }
 
         public void ReCalculateMatrix() {
-            this.axisValid = false;
+            axisValid = false;
             ToMat3();
         }
 
         public idVec3 GetOrigin() {
-            return this.origin;
+            return origin;
         }
 
         public idVec3 GetVec() {
-            return this.vec;
+            return vec;
         }
 
         public float GetAngle() {
-            return this.angle;
+            return angle;
         }
 //
 //	idRotation			operator-() const;										// flips rotation
 
         public idRotation oMultiply(final float s) {// scale rotation
-            return new idRotation(this.origin, this.vec, this.angle * s);
+            return new idRotation(origin, vec, angle * s);
         }
 //	idRotation			operator/( const float s ) const;						// scale rotation
 //	idRotation &		operator*=( const float s );							// scale rotation
 //	idRotation &		operator/=( const float s );							// scale rotation
 
         public idVec3 oMultiply(final idVec3 v) {// rotate vector
-            if (!this.axisValid) {
+            if (!axisValid) {
                 ToMat3();
             }
-            return (this.axis.oMultiply(v.oMinus(this.origin))).oPlus(this.origin);
+            return (axis.oMultiply(v.oMinus(origin))).oPlus(origin);
         }
 //
 //	friend idRotation	operator*( const float s, const idRotation &r );		// scale rotation
@@ -133,16 +133,16 @@ public class Rotation {
             float a, x, y, z;
             final float[] c = new float[1], s = new float[1];
 
-            if (this.axisValid) {
-                return this.axis;
+            if (axisValid) {
+                return axis;
             }
 
-            a = this.angle * (idMath.M_DEG2RAD * 0.5f);
+            a = angle * (idMath.M_DEG2RAD * 0.5f);
             idMath.SinCos(a, s, c);
 
-            x = this.vec.oGet(0) * s[0];
-            y = this.vec.oGet(1) * s[0];
-            z = this.vec.oGet(2) * s[0];
+            x = vec.oGet(0) * s[0];
+            y = vec.oGet(1) * s[0];
+            z = vec.oGet(2) * s[0];
 
             x2 = x + x;
             y2 = y + y;
@@ -160,52 +160,52 @@ public class Rotation {
             wy = c[0] * y2;
             wz = c[0] * z2;
 
-            this.axis.oSet(0, 0, 1.0f - (yy + zz));
-            this.axis.oSet(0, 1, xy - wz);
-            this.axis.oSet(0, 2, xz + wy);
+            axis.oSet(0, 0, 1.0f - (yy + zz));
+            axis.oSet(0, 1, xy - wz);
+            axis.oSet(0, 2, xz + wy);
 
-            this.axis.oSet(1, 0, xy + wz);
-            this.axis.oSet(1, 1, 1.0f - (xx + zz));
-            this.axis.oSet(1, 2, yz - wx);
+            axis.oSet(1, 0, xy + wz);
+            axis.oSet(1, 1, 1.0f - (xx + zz));
+            axis.oSet(1, 2, yz - wx);
 
-            this.axis.oSet(2, 0, xz - wy);
-            this.axis.oSet(2, 1, yz + wx);
-            this.axis.oSet(2, 2, 1.0f - (xx + yy));
+            axis.oSet(2, 0, xz - wy);
+            axis.oSet(2, 1, yz + wx);
+            axis.oSet(2, 2, 1.0f - (xx + yy));
 
-            this.axisValid = true;
+            axisValid = true;
 
-            return this.axis;
+            return axis;
         }
 //	idMat4				ToMat4( void ) const;
 
         public idVec3 ToAngularVelocity() {
-            return this.vec.oMultiply(DEG2RAD(this.angle));
+            return vec.oMultiply((float) DEG2RAD(angle));
         }
 
         public void RotatePoint(idVec3 point) {
-            if (!this.axisValid) {
+            if (!axisValid) {
                 ToMat3();
             }
-            point.oSet((point.oMinus(this.origin)).oMultiply(this.axis).oPlus(this.origin));
+            point.oSet((point.oMinus(origin)).oMultiply(axis).oPlus(origin));
         }
 
         public void Normalize180() {
-            this.angle -= floor(this.angle / 360.0f) * 360.0f;
-            if (this.angle > 180.0f) {
-                this.angle -= 360.0f;
-            } else if (this.angle < -180.0f) {
-                this.angle += 360.0f;
+            angle -= floor(angle / 360.0f) * 360.0f;
+            if (angle > 180.0f) {
+                angle -= 360.0f;
+            } else if (angle < -180.0f) {
+                angle += 360.0f;
             }
-            final int a = 0;
+            int a = 0;
         }
 //	void				Normalize360( void );
 //
 
         public void oSet(final idRotation other) {
-            this.origin.oSet(other.origin);
-            this.vec.oSet(other.vec);
-            this.angle = other.angle;
-            this.axisValid = other.axisValid;
+            origin.oSet(other.origin);
+            vec.oSet(other.vec);
+            angle = other.angle;
+            axisValid = other.axisValid;
         }
-    }
+    };
 }

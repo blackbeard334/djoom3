@@ -79,32 +79,32 @@ public class ListWindow {
         int type;
         idVec2 iconSize = new idVec2();
         float iconVOffset;
-    }
+    };
 
     public static class idListWindow extends idWindow {
 
-        private final idList<idTabRect> tabInfo = new idList<>();
+        private idList<idTabRect> tabInfo = new idList<>();
         private int top;
         private float sizeBias;
         private boolean horizontal;
-        private final idStr tabStopStr = new idStr();
-        private final idStr tabAlignStr = new idStr();
-        private final idStr tabVAlignStr = new idStr();
-        private final idStr tabTypeStr = new idStr();
-        private final idStr tabIconSizeStr = new idStr();
-        private final idStr tabIconVOffsetStr = new idStr();
-        private final idHashTable< idMaterial> iconMaterials = new idHashTable<>();
+        private idStr tabStopStr = new idStr();
+        private idStr tabAlignStr = new idStr();
+        private idStr tabVAlignStr = new idStr();
+        private idStr tabTypeStr = new idStr();
+        private idStr tabIconSizeStr = new idStr();
+        private idStr tabIconVOffsetStr = new idStr();
+        private idHashTable< idMaterial> iconMaterials = new idHashTable<>();
         private boolean multipleSel;
         //
-        private final idStrList listItems = new idStrList();
+        private idStrList listItems = new idStrList();
         private idSliderWindow scroller;
-        private final idList<Integer> currentSel = new idList<>();
-        private final idStr listName = new idStr();
+        private idList<Integer> currentSel = new idList<>();
+        private idStr listName = new idStr();
         //
         private int clickTime;
         //
         private int typedTime;
-        private final idStr typed = new idStr();
+        private idStr typed = new idStr();
         //
         //
 
@@ -126,8 +126,8 @@ public class ListWindow {
             // need to call this to allow proper focus and capturing on embedded children
             final String ret = super.HandleEvent(event, updateVisuals);
 
-            final float vert = GetMaxCharHeight();
-            final int numVisibleLines = (int) (this.textRect.h / vert);
+            float vert = GetMaxCharHeight();
+            int numVisibleLines = (int) (textRect.h / vert);
 
             int key = event.evValue;
 
@@ -137,16 +137,16 @@ public class ListWindow {
                     return ret;
                 }
 
-                if ((key == K_MOUSE1) || (key == K_MOUSE2)) {
+                if (key == K_MOUSE1 || key == K_MOUSE2) {
                     // If the user clicked in the scroller, then ignore it
-                    if (this.scroller.Contains(this.gui.CursorX(), this.gui.CursorY())) {
+                    if (scroller.Contains(gui.CursorX(), gui.CursorY())) {
                         return ret;
                     }
                 }
 
-                if (((key == K_ENTER) || (key == K_KP_ENTER))) {
+                if ((key == K_ENTER || key == K_KP_ENTER)) {
                     RunScript(etoi(ON_ENTER));
-                    return this.cmd.getData();
+                    return cmd.toString();
                 }
 
                 if (key == K_MWHEELUP) {
@@ -156,42 +156,42 @@ public class ListWindow {
                 }
 
                 if (key == K_MOUSE1) {
-                    if (Contains(this.gui.CursorX(), this.gui.CursorY())) {
-                        final int cur = (int) ((this.gui.CursorY() - this.actualY - pixelOffset) / vert) + this.top;
-                        if ((cur >= 0) && (cur < this.listItems.Num())) {
-                            if (this.multipleSel && idKeyInput.IsDown(K_CTRL)) {
+                    if (Contains(gui.CursorX(), gui.CursorY())) {
+                        int cur = (int) ((gui.CursorY() - actualY - pixelOffset) / vert) + top;
+                        if (cur >= 0 && cur < listItems.Num()) {
+                            if (multipleSel && idKeyInput.IsDown(K_CTRL)) {
                                 if (IsSelected(cur)) {
                                     ClearSelection(cur);
                                 } else {
                                     AddCurrentSel(cur);
                                 }
                             } else {
-                                if (IsSelected(cur) && (this.gui.GetTime() < (this.clickTime + doubleClickSpeed))) {
+                                if (IsSelected(cur) && (gui.GetTime() < clickTime + doubleClickSpeed)) {
                                     // Double-click causes ON_ENTER to get run
                                     RunScript(etoi(ON_ENTER));
-                                    return this.cmd.getData();
+                                    return cmd.toString();
                                 }
                                 SetCurrentSel(cur);
 
-                                this.clickTime = this.gui.GetTime();
+                                clickTime = gui.GetTime();
                             }
                         } else {
-                            SetCurrentSel(this.listItems.Num() - 1);
+                            SetCurrentSel(listItems.Num() - 1);
                         }
                     }
-                } else if ((key == K_UPARROW) || (key == K_PGUP) || (key == K_DOWNARROW) || (key == K_PGDN)) {
+                } else if (key == K_UPARROW || key == K_PGUP || key == K_DOWNARROW || key == K_PGDN) {
                     int numLines = 1;
 
-                    if ((key == K_PGUP) || (key == K_PGDN)) {
+                    if (key == K_PGUP || key == K_PGDN) {
                         numLines = numVisibleLines / 2;
                     }
 
-                    if ((key == K_UPARROW) || (key == K_PGUP)) {
+                    if (key == K_UPARROW || key == K_PGUP) {
                         numLines = -numLines;
                     }
 
                     if (idKeyInput.IsDown(K_CTRL)) {
-                        this.top += numLines;
+                        top += numLines;
                     } else {
                         SetCurrentSel(GetCurrentSel() + numLines);
                     }
@@ -203,14 +203,14 @@ public class ListWindow {
                     return ret;
                 }
 
-                if (this.gui.GetTime() > (this.typedTime + 1000)) {
-                    this.typed.oSet("");
+                if (gui.GetTime() > typedTime + 1000) {
+                    typed.oSet("");
                 }
-                this.typedTime = this.gui.GetTime();
-                this.typed.Append((char) key);
+                typedTime = gui.GetTime();
+                typed.Append((char) key);
 
-                for (int i = 0; i < this.listItems.Num(); i++) {
-                    if (idStr.Icmpn(this.typed, this.listItems.oGet(i), this.typed.Length()) == 0) {
+                for (int i = 0; i < listItems.Num(); i++) {
+                    if (idStr.Icmpn(typed, listItems.oGet(i), typed.Length()) == 0) {
                         SetCurrentSel(i);
                         break;
                     }
@@ -224,30 +224,30 @@ public class ListWindow {
                 SetCurrentSel(0);
             }
 
-            if (GetCurrentSel() >= this.listItems.Num()) {
-                SetCurrentSel(this.listItems.Num() - 1);
+            if (GetCurrentSel() >= listItems.Num()) {
+                SetCurrentSel(listItems.Num() - 1);
             }
 
-            if (this.scroller.GetHigh() > 0.0f) {
+            if (scroller.GetHigh() > 0.0f) {
                 if (!idKeyInput.IsDown(K_CTRL)) {
-                    if (this.top > (GetCurrentSel() - 1)) {
-                        this.top = GetCurrentSel() - 1;
+                    if (top > GetCurrentSel() - 1) {
+                        top = GetCurrentSel() - 1;
                     }
-                    if (this.top < ((GetCurrentSel() - numVisibleLines) + 2)) {
-                        this.top = (GetCurrentSel() - numVisibleLines) + 2;
+                    if (top < GetCurrentSel() - numVisibleLines + 2) {
+                        top = GetCurrentSel() - numVisibleLines + 2;
                     }
                 }
 
-                if (this.top > (this.listItems.Num() - 2)) {
-                    this.top = this.listItems.Num() - 2;
+                if (top > listItems.Num() - 2) {
+                    top = listItems.Num() - 2;
                 }
-                if (this.top < 0) {
-                    this.top = 0;
+                if (top < 0) {
+                    top = 0;
                 }
-                this.scroller.SetValue(this.top);
+                scroller.SetValue(top);
             } else {
-                this.top = 0;
-                this.scroller.SetValue(0.0f);
+                top = 0;
+                scroller.SetValue(0.0f);
             }
 
             if (key != K_MOUSE1) {
@@ -256,14 +256,14 @@ public class ListWindow {
                 super.HandleEvent(ev, updateVisuals);
             }
 
-            if (this.currentSel.Num() > 0) {
-                for (int i = 0; i < this.currentSel.Num(); i++) {
-                    this.gui.SetStateInt(va("%s_sel_%d", this.listName, i), this.currentSel.oGet(i));
+            if (currentSel.Num() > 0) {
+                for (int i = 0; i < currentSel.Num(); i++) {
+                    gui.SetStateInt(va("%s_sel_%d", listName, i), currentSel.oGet(i));
                 }
             } else {
-                this.gui.SetStateInt(va("%s_sel_0", this.listName), 0);
+                gui.SetStateInt(va("%s_sel_0", listName), 0);
             }
-            this.gui.SetStateInt(va("%s_numsel", this.listName), this.currentSel.Num());
+            gui.SetStateInt(va("%s_numsel", listName), currentSel.Num());
 
             return ret;
         }
@@ -272,90 +272,90 @@ public class ListWindow {
         public void PostParse() {
             super.PostParse();
 
-            InitScroller(this.horizontal);
+            InitScroller(horizontal);
 
-            final idList<Integer> tabStops = new idList<>();
-            final idList<Integer> tabAligns = new idList<>();
-            if (this.tabStopStr.Length() != 0) {
-                final idParser src = new idParser(this.tabStopStr.getData(), this.tabStopStr.Length(), "tabstops", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                final idToken token = new idToken();
-                while (src.ReadToken(token)) {
-                    if (token.equals(",")) {
+            idList<Integer> tabStops = new idList<>();
+            idList<Integer> tabAligns = new idList<>();
+            if (tabStopStr.Length() != 0) {
+                idParser src = new idParser(tabStopStr.toString(), tabStopStr.Length(), "tabstops", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                idToken tok = new idToken();
+                while (src.ReadToken(tok)) {
+                    if (tok.equals(",")) {
                         continue;
                     }
-                    tabStops.Append(Integer.parseInt(token.getData()));
+                    tabStops.Append(Integer.parseInt(tok.toString()));
                 }
             }
-            if (this.tabAlignStr.Length() != 0) {
-                final idParser src = new idParser(this.tabAlignStr.getData(), this.tabAlignStr.Length(), "tabaligns", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                final idToken token = new idToken();
-                while (src.ReadToken(token)) {
-                    if (token.equals(",")) {
+            if (tabAlignStr.Length() != 0) {
+                idParser src = new idParser(tabAlignStr.toString(), tabAlignStr.Length(), "tabaligns", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                idToken tok = new idToken();
+                while (src.ReadToken(tok)) {
+                    if (tok.equals(",")) {
                         continue;
                     }
-                    tabAligns.Append(Integer.parseInt(token.getData()));
+                    tabAligns.Append(Integer.parseInt(tok.toString()));
                 }
             }
-            final idList<Integer> tabVAligns = new idList<>();
-            if (this.tabVAlignStr.Length() != 0) {
-                final idParser src = new idParser(this.tabVAlignStr.getData(), this.tabVAlignStr.Length(), "tabvaligns", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                final idToken token = new idToken();
-                while (src.ReadToken(token)) {
-                    if (token.equals(",")) {
+            idList<Integer> tabVAligns = new idList<>();
+            if (tabVAlignStr.Length() != 0) {
+                idParser src = new idParser(tabVAlignStr.toString(), tabVAlignStr.Length(), "tabvaligns", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                idToken tok = new idToken();
+                while (src.ReadToken(tok)) {
+                    if (tok.equals(",")) {
                         continue;
                     }
-                    tabVAligns.Append(Integer.parseInt(token.getData()));
+                    tabVAligns.Append(Integer.parseInt(tok.toString()));
                 }
             }
 
-            final idList<Integer> tabTypes = new idList<>();
-            if (this.tabTypeStr.Length() != 0) {
-                final idParser src = new idParser(this.tabTypeStr.getData(), this.tabTypeStr.Length(), "tabtypes", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                final idToken token = new idToken();
-                while (src.ReadToken(token)) {
-                    if (token.equals(",")) {
+            idList<Integer> tabTypes = new idList<>();
+            if (tabTypeStr.Length() != 0) {
+                idParser src = new idParser(tabTypeStr.toString(), tabTypeStr.Length(), "tabtypes", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                idToken tok = new idToken();
+                while (src.ReadToken(tok)) {
+                    if (tok.equals(",")) {
                         continue;
                     }
-                    tabTypes.Append(Integer.parseInt(token.getData()));
+                    tabTypes.Append(Integer.parseInt(tok.toString()));
                 }
             }
-            final idList<idVec2> tabSizes = new idList<>();
-            if (this.tabIconSizeStr.Length() != 0) {
-                final idParser src = new idParser(this.tabIconSizeStr.getData(), this.tabIconSizeStr.Length(), "tabiconsizes", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                final idToken token = new idToken();
-                while (src.ReadToken(token)) {
-                    if (token.equals(",")) {
+            idList<idVec2> tabSizes = new idList<>();
+            if (tabIconSizeStr.Length() != 0) {
+                idParser src = new idParser(tabIconSizeStr.toString(), tabIconSizeStr.Length(), "tabiconsizes", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                idToken tok = new idToken();
+                while (src.ReadToken(tok)) {
+                    if (tok.equals(",")) {
                         continue;
                     }
-                    final idVec2 size = new idVec2();
-                    size.x = Integer.parseInt(token.getData());
+                    idVec2 size = new idVec2();
+                    size.x = Integer.parseInt(tok.toString());
 
-                    src.ReadToken(token);	//","
-                    src.ReadToken(token);
+                    src.ReadToken(tok);	//","
+                    src.ReadToken(tok);
 
-                    size.y = Integer.parseInt(token.getData());
+                    size.y = Integer.parseInt(tok.toString());
                     tabSizes.Append(size);
                 }
             }
 
-            final idList<Float> tabIconVOffsets = new idList<>();
-            if (this.tabIconVOffsetStr.Length() != 0) {
-                final idParser src = new idParser(this.tabIconVOffsetStr.getData(), this.tabIconVOffsetStr.Length(), "tabiconvoffsets", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                final idToken token = new idToken();
-                while (src.ReadToken(token)) {
-                    if (token.equals(",")) {
+            idList<Float> tabIconVOffsets = new idList<>();
+            if (tabIconVOffsetStr.Length() != 0) {
+                idParser src = new idParser(tabIconVOffsetStr.toString(), tabIconVOffsetStr.Length(), "tabiconvoffsets", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                idToken tok = new idToken();
+                while (src.ReadToken(tok)) {
+                    if (tok.equals(",")) {
                         continue;
                     }
-                    tabIconVOffsets.Append(Float.parseFloat(token.getData()));
+                    tabIconVOffsets.Append(Float.parseFloat(tok.toString()));
                 }
             }
 
-            final int c = tabStops.Num();
-            final boolean doAligns = (tabAligns.Num() == tabStops.Num());
+            int c = tabStops.Num();
+            boolean doAligns = (tabAligns.Num() == tabStops.Num());
             for (int i = 0; i < c; i++) {
-                final idTabRect r = new idTabRect();
+                idTabRect r = new idTabRect();
                 r.x = tabStops.oGet(i);
-                r.w = (i < (c - 1)) ? tabStops.oGet(i + 1) - r.x - tabBorder : -1;
+                r.w = (i < c - 1) ? tabStops.oGet(i + 1) - r.x - tabBorder : -1;
                 r.align = (doAligns) ? tabAligns.oGet(i) : 0;
                 if (tabVAligns.Num() > 0) {
                     r.valign = tabVAligns.oGet(i);
@@ -377,74 +377,74 @@ public class ListWindow {
                 } else {
                     r.iconVOffset = 0;
                 }
-                this.tabInfo.Append(r);
+                tabInfo.Append(r);
             }
-            this.flags |= WIN_CANFOCUS;
+            flags |= WIN_CANFOCUS;
         }
 
         @Override
         public void Draw(int time, float x, float y) {
             idVec4 color;
-            final idStr work = new idStr();
-            final int count = this.listItems.Num();
-            final idRectangle rect = this.textRect;
-            final float scale = this.textScale.data;
-            final float lineHeight = GetMaxCharHeight();
+            idStr work = new idStr();
+            int count = listItems.Num();
+            idRectangle rect = textRect;
+            float scale = textScale.data;
+            float lineHeight = GetMaxCharHeight();
 
-            float bottom = this.textRect.Bottom();
-            float width = this.textRect.w;
+            float bottom = textRect.Bottom();
+            float width = textRect.w;
 
-            if (this.scroller.GetHigh() > 0.0f) {
-                if (this.horizontal) {
-                    bottom -= this.sizeBias;
+            if (scroller.GetHigh() > 0.0f) {
+                if (horizontal) {
+                    bottom -= sizeBias;
                 } else {
-                    width -= this.sizeBias;
+                    width -= sizeBias;
                     rect.w = width;
                 }
             }
 
-            if (this.noEvents.oCastBoolean() || !Contains(this.gui.CursorX(), this.gui.CursorY())) {
-                this.hover = false;
+            if (noEvents.oCastBoolean() || !Contains(gui.CursorX(), gui.CursorY())) {
+                hover = false;
             }
 
-            for (int i = this.top; i < count; i++) {
+            for (int i = top; i < count; i++) {
                 if (IsSelected(i)) {
                     rect.h = lineHeight;
-                    this.dc.DrawFilledRect(rect.x, rect.y + pixelOffset, rect.w, rect.h, this.borderColor.data);
-                    if ((this.flags & WIN_FOCUS) != 0) {
-                        final idVec4 color2 = this.borderColor.data;
+                    dc.DrawFilledRect(rect.x, rect.y + pixelOffset, rect.w, rect.h, borderColor.data);
+                    if ((flags & WIN_FOCUS) != 0) {
+                        idVec4 color2 = borderColor.data;
                         color2.w = 1.0f;
-                        this.dc.DrawRect(rect.x, rect.y + pixelOffset, rect.w, rect.h, 1.0f, color2);
+                        dc.DrawRect(rect.x, rect.y + pixelOffset, rect.w, rect.h, 1.0f, color2);
                     }
                 }
                 rect.y++;
                 rect.h = lineHeight - 1;
-                if (this.hover && !this.noEvents.oCastBoolean() && Contains(rect, this.gui.CursorX(), this.gui.CursorY())) {
-                    color = this.hoverColor.data;
+                if (hover && !noEvents.oCastBoolean() && Contains(rect, gui.CursorX(), gui.CursorY())) {
+                    color = hoverColor.data;
                 } else {
-                    color = this.foreColor.data;
+                    color = foreColor.data;
                 }
                 rect.h = lineHeight + pixelOffset;
                 rect.y--;
 
-                if (this.tabInfo.Num() > 0) {
+                if (tabInfo.Num() > 0) {
                     int start = 0;
                     int tab = 0;
-                    int stop = this.listItems.oGet(i).Find('\t', 0);
-                    while (start < this.listItems.oGet(i).Length()) {
-                        if (tab >= this.tabInfo.Num()) {
-                            common.Warning("idListWindow::Draw: gui '%s' window '%s' tabInfo.Num() exceeded", this.gui.GetSourceFile(), this.name);
+                    int stop = listItems.oGet(i).Find('\t', 0);
+                    while (start < listItems.oGet(i).Length()) {
+                        if (tab >= tabInfo.Num()) {
+                            common.Warning("idListWindow::Draw: gui '%s' window '%s' tabInfo.Num() exceeded", gui.GetSourceFile(), name);
                             break;
                         }
-                        this.listItems.oGet(i).Mid(start, stop - start, work);
+                        listItems.oGet(i).Mid(start, stop - start, work);
 
-                        rect.x = this.textRect.x + this.tabInfo.oGet(tab).x;
-                        rect.w = (this.tabInfo.oGet(tab).w == -1) ? width - this.tabInfo.oGet(tab).x : this.tabInfo.oGet(tab).w;
-                        this.dc.PushClipRect(rect);
+                        rect.x = textRect.x + tabInfo.oGet(tab).x;
+                        rect.w = (tabInfo.oGet(tab).w == -1) ? width - tabInfo.oGet(tab).x : tabInfo.oGet(tab).w;
+                        dc.PushClipRect(rect);
 
-                        if (this.tabInfo.oGet(tab).type == TAB_TYPE_TEXT) {
-                            this.dc.DrawText(work, scale, this.tabInfo.oGet(tab).align, color, rect, false, -1);
-                        } else if (this.tabInfo.oGet(tab).type == TAB_TYPE_ICON) {
+                        if (tabInfo.oGet(tab).type == TAB_TYPE_TEXT) {
+                            dc.DrawText(work, scale, tabInfo.oGet(tab).align, color, rect, false, -1);
+                        } else if (tabInfo.oGet(tab).type == TAB_TYPE_ICON) {
 
                             final idMaterial[] hashMat = {null};
                             idMaterial iconMat;
@@ -452,49 +452,49 @@ public class ListWindow {
                             // leaving the icon name empty doesn't draw anything
                             if (isNotNullOrEmpty(work)) {
 
-                                if (this.iconMaterials.Get(work.getData(), hashMat) == false) {
+                                if (iconMaterials.Get(work.toString(), hashMat) == false) {
                                     iconMat = declManager.FindMaterial("_default");
                                 } else {
                                     iconMat = hashMat[0];
                                 }
 
-                                final idRectangle iconRect = new idRectangle();
-                                iconRect.w = this.tabInfo.oGet(tab).iconSize.x;
-                                iconRect.h = this.tabInfo.oGet(tab).iconSize.y;
+                                idRectangle iconRect = new idRectangle();
+                                iconRect.w = tabInfo.oGet(tab).iconSize.x;
+                                iconRect.h = tabInfo.oGet(tab).iconSize.y;
 
-                                if (this.tabInfo.oGet(tab).align == etoi(ALIGN_LEFT)) {
+                                if (tabInfo.oGet(tab).align == etoi(ALIGN_LEFT)) {
                                     iconRect.x = rect.x;
-                                } else if (this.tabInfo.oGet(tab).align == etoi(ALIGN_CENTER)) {
-                                    iconRect.x = (rect.x + (rect.w / 2.0f)) - (iconRect.w / 2.0f);
-                                } else if (this.tabInfo.oGet(tab).align == etoi(ALIGN_RIGHT)) {
-                                    iconRect.x = (rect.x + rect.w) - iconRect.w;
+                                } else if (tabInfo.oGet(tab).align == etoi(ALIGN_CENTER)) {
+                                    iconRect.x = rect.x + rect.w / 2.0f - iconRect.w / 2.0f;
+                                } else if (tabInfo.oGet(tab).align == etoi(ALIGN_RIGHT)) {
+                                    iconRect.x = rect.x + rect.w - iconRect.w;
                                 }
 
-                                if (this.tabInfo.oGet(tab).valign == 0) { //Top
-                                    iconRect.y = rect.y + this.tabInfo.oGet(tab).iconVOffset;
-                                } else if (this.tabInfo.oGet(tab).valign == 1) { //Center
-                                    iconRect.y = ((rect.y + (rect.h / 2.0f)) - (iconRect.h / 2.0f)) + this.tabInfo.oGet(tab).iconVOffset;
-                                } else if (this.tabInfo.oGet(tab).valign == 2) { //Bottom
-                                    iconRect.y = ((rect.y + rect.h) - iconRect.h) + this.tabInfo.oGet(tab).iconVOffset;
+                                if (tabInfo.oGet(tab).valign == 0) { //Top
+                                    iconRect.y = rect.y + tabInfo.oGet(tab).iconVOffset;
+                                } else if (tabInfo.oGet(tab).valign == 1) { //Center
+                                    iconRect.y = rect.y + rect.h / 2.0f - iconRect.h / 2.0f + tabInfo.oGet(tab).iconVOffset;
+                                } else if (tabInfo.oGet(tab).valign == 2) { //Bottom
+                                    iconRect.y = rect.y + rect.h - iconRect.h + tabInfo.oGet(tab).iconVOffset;
                                 }
 
-                                this.dc.DrawMaterial(iconRect.x, iconRect.y, iconRect.w, iconRect.h, iconMat, new idVec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 1.0f);
+                                dc.DrawMaterial(iconRect.x, iconRect.y, iconRect.w, iconRect.h, iconMat, new idVec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 1.0f);
                             }
                         }
 
-                        this.dc.PopClipRect();
+                        dc.PopClipRect();
 
                         start = stop + 1;
-                        stop = this.listItems.oGet(i).Find('\t', start);
+                        stop = listItems.oGet(i).Find('\t', start);
                         if (stop < 0) {
-                            stop = this.listItems.oGet(i).Length();
+                            stop = listItems.oGet(i).Length();
                         }
                         tab++;
                     }
-                    rect.x = this.textRect.x;
+                    rect.x = textRect.x;
                     rect.w = width;
                 } else {
-                    this.dc.DrawText(this.listItems.oGet(i), scale, 0, color, rect, false, -1);
+                    dc.DrawText(listItems.oGet(i), scale, 0, color, rect, false, -1);
                 }
                 rect.y += lineHeight;
                 if (rect.y > bottom) {
@@ -514,7 +514,7 @@ public class ListWindow {
 
         @Override
         public void HandleBuddyUpdate(idWindow buddy) {
-            this.top = (int) this.scroller.GetValue();
+            top = (int) scroller.GetValue();
         }
 
         @Override
@@ -533,93 +533,93 @@ public class ListWindow {
         }
 
         public void UpdateList() {
-            final idStr str = new idStr(), strName;
-            this.listItems.Clear();
+            idStr str = new idStr(), strName;
+            listItems.Clear();
             for (int i = 0; i < MAX_LIST_ITEMS; i++) {
-                if (this.gui.State().GetString(va("%s_item_%d", this.listName, i), "", str)) {
+                if (gui.State().GetString(va("%s_item_%d", listName, i), "", str)) {
                     if (str.Length() != 0) {
-                        this.listItems.Append(str);
+                        listItems.Append(str);
                     }
                 } else {
                     break;
                 }
             }
-            final float vert = GetMaxCharHeight();
-            final int fit = (int) (this.textRect.h / vert);
-            if (this.listItems.Num() < fit) {
-                this.scroller.SetRange(0.0f, 0.0f, 1.0f);
+            float vert = GetMaxCharHeight();
+            int fit = (int) (textRect.h / vert);
+            if (listItems.Num() < fit) {
+                scroller.SetRange(0.0f, 0.0f, 1.0f);
             } else {
-                this.scroller.SetRange(0.0f, (this.listItems.Num() - fit) + 1.0f, 1.0f);
+                scroller.SetRange(0.0f, (listItems.Num() - fit) + 1.0f, 1.0f);
             }
 
-            SetCurrentSel(this.gui.State().GetInt(va("%s_sel_0", this.listName)));
+            SetCurrentSel(gui.State().GetInt(va("%s_sel_0", listName)));
 
-            float value = this.scroller.GetValue();
-            if (value > (this.listItems.Num() - 1)) {
-                value = this.listItems.Num() - 1;
+            float value = scroller.GetValue();
+            if (value > listItems.Num() - 1) {
+                value = listItems.Num() - 1;
             }
             if (value < 0.0f) {
                 value = 0.0f;
             }
-            this.scroller.SetValue(value);
-            this.top = (int) value;
+            scroller.SetValue(value);
+            top = (int) value;
 
-            this.typedTime = 0;
-            this.clickTime = 0;
-            this.typed.oSet("");
+            typedTime = 0;
+            clickTime = 0;
+            typed.oSet("");
         }
 
         @Override
         protected boolean ParseInternalVar(final String _name, idParser src) {
             if (idStr.Icmp(_name, "horizontal") == 0) {
-                this.horizontal = src.ParseBool();
+                horizontal = src.ParseBool();
                 return true;
             }
             if (idStr.Icmp(_name, "listname") == 0) {
-                ParseString(src, this.listName);
+                ParseString(src, listName);
                 return true;
             }
             if (idStr.Icmp(_name, "tabstops") == 0) {
-                ParseString(src, this.tabStopStr);
+                ParseString(src, tabStopStr);
                 return true;
             }
             if (idStr.Icmp(_name, "tabaligns") == 0) {
-                ParseString(src, this.tabAlignStr);
+                ParseString(src, tabAlignStr);
                 return true;
             }
             if (idStr.Icmp(_name, "multipleSel") == 0) {
-                this.multipleSel = src.ParseBool();
+                multipleSel = src.ParseBool();
                 return true;
             }
             if (idStr.Icmp(_name, "tabvaligns") == 0) {
-                ParseString(src, this.tabVAlignStr);
+                ParseString(src, tabVAlignStr);
                 return true;
             }
             if (idStr.Icmp(_name, "tabTypes") == 0) {
-                ParseString(src, this.tabTypeStr);
+                ParseString(src, tabTypeStr);
                 return true;
             }
             if (idStr.Icmp(_name, "tabIconSizes") == 0) {
-                ParseString(src, this.tabIconSizeStr);
+                ParseString(src, tabIconSizeStr);
                 return true;
             }
             if (idStr.Icmp(_name, "tabIconVOffset") == 0) {
-                ParseString(src, this.tabIconVOffsetStr);
+                ParseString(src, tabIconVOffsetStr);
                 return true;
             }
 
-            final idStr strName = new idStr(_name);
+            idStr strName = new idStr(_name);
             if (idStr.Icmp(strName.Left(4), "mtr_") == 0) {
-                final idStr matName = new idStr();
+                idStr matName = new idStr();
                 final idMaterial mat;
 
                 ParseString(src, matName);
                 mat = declManager.FindMaterial(matName);
                 mat.SetImageClassifications(1);	// just for resource tracking
-                if ((mat != null) && !mat.TestMaterialFlag(MF_DEFAULTED)) {
+                if (mat != null && !mat.TestMaterialFlag(MF_DEFAULTED)) {
                     mat.SetSort(SS_GUI);
                 }
-                this.iconMaterials.Set(_name, mat);
+                iconMaterials.Set(_name, mat);
                 return true;
             }
 
@@ -627,15 +627,15 @@ public class ListWindow {
         }
 
         private void CommonInit() {
-            this.typed.oSet("");
-            this.typedTime = 0;
-            this.clickTime = 0;
-            this.currentSel.Clear();
-            this.top = 0;
-            this.sizeBias = 0;
-            this.horizontal = false;
-            this.scroller = new idSliderWindow(this.dc, this.gui);
-            this.multipleSel = false;
+            typed.oSet("");
+            typedTime = 0;
+            clickTime = 0;
+            currentSel.Clear();
+            top = 0;
+            sizeBias = 0;
+            horizontal = false;
+            scroller = new idSliderWindow(dc, gui);
+            multipleSel = false;
         }
 
         /*
@@ -646,7 +646,7 @@ public class ListWindow {
          ================
          */
         private void InitScroller(boolean horizontal) {
-            final String thumbImage = "guis/assets/scrollbar_thumb.tga";
+            String thumbImage = "guis/assets/scrollbar_thumb.tga";
             String barImage = "guis/assets/scrollbarv.tga";
             String scrollerName = "_scrollerWinV";
 
@@ -657,49 +657,49 @@ public class ListWindow {
 
             final idMaterial mat = declManager.FindMaterial(barImage);
             mat.SetSort(SS_GUI);
-            this.sizeBias = mat.GetImageWidth();
+            sizeBias = mat.GetImageWidth();
 
-            final idRectangle scrollRect = new idRectangle();
+            idRectangle scrollRect = new idRectangle();
             if (horizontal) {
-                this.sizeBias = mat.GetImageHeight();
+                sizeBias = mat.GetImageHeight();
                 scrollRect.x = 0;
-                scrollRect.y = (this.clientRect.h - this.sizeBias);
-                scrollRect.w = this.clientRect.w;
-                scrollRect.h = this.sizeBias;
+                scrollRect.y = (clientRect.h - sizeBias);
+                scrollRect.w = clientRect.w;
+                scrollRect.h = sizeBias;
             } else {
-                scrollRect.x = (this.clientRect.w - this.sizeBias);
+                scrollRect.x = (clientRect.w - sizeBias);
                 scrollRect.y = 0;
-                scrollRect.w = this.sizeBias;
-                scrollRect.h = this.clientRect.h;
+                scrollRect.w = sizeBias;
+                scrollRect.h = clientRect.h;
             }
 
-            this.scroller.InitWithDefaults(scrollerName, scrollRect, this.foreColor.data, this.matColor.data, mat.GetName(), thumbImage, !horizontal, true);
-            InsertChild(this.scroller, null);
-            this.scroller.SetBuddy(this);
+            scroller.InitWithDefaults(scrollerName, scrollRect, foreColor.data, matColor.data, mat.GetName(), thumbImage, !horizontal, true);
+            InsertChild(scroller, null);
+            scroller.SetBuddy(this);
         }
 
         private void SetCurrentSel(int sel) {
-            this.currentSel.Clear();
-            this.currentSel.Append(sel);
+            currentSel.Clear();
+            currentSel.Append(sel);
         }
 
         private void AddCurrentSel(int sel) {
-            this.currentSel.Append(sel);
+            currentSel.Append(sel);
         }
 
         private int GetCurrentSel() {
-            return (this.currentSel.Num() != 0) ? this.currentSel.oGet(0) : 0;
+            return (currentSel.Num() != 0) ? currentSel.oGet(0) : 0;
         }
 
         private boolean IsSelected(int index) {
-            return (this.currentSel.FindIndex(index) >= 0);
+            return (currentSel.FindIndex(index) >= 0);
         }
 
         private void ClearSelection(int sel) {
-            final int cur = this.currentSel.FindIndex(sel);
+            int cur = currentSel.FindIndex(sel);
             if (cur >= 0) {
-                this.currentSel.RemoveIndex(cur);
+                currentSel.RemoveIndex(cur);
             }
         }
-    }
+    };
 }

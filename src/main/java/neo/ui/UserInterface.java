@@ -28,12 +28,7 @@ public class UserInterface {
      */
     public static abstract class idUserInterface implements SERiAL {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		// virtual						~idUserInterface() {};
+        // virtual						~idUserInterface() {};
         // Returns the name of the gui.
         public abstract String Name();
 
@@ -59,7 +54,7 @@ public class UserInterface {
         }
 
         public final boolean InitFromFile(final idStr qpath) {
-            return InitFromFile(qpath.getData(), true);
+            return InitFromFile(qpath.toString(), true);
         }
 
         // handles an event, can return an action string, the caller interprets
@@ -206,8 +201,8 @@ public class UserInterface {
 
             // De-allocates a list gui
             public abstract void FreeListGUI(idListGUI listgui);
-        }
-    }
+        };
+    };
 
     public static void setUiManager(idUserInterfaceManager uiManager) {
         UserInterface.uiManager = UserInterface.uiManagerLocal = (idUserInterfaceManagerLocal) uiManager;

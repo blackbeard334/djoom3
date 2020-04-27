@@ -34,7 +34,7 @@ public class Model_ase {
         public idVec3 faceNormal;
         public final idVec3[] vertexNormals = new idVec3[3];
         public final byte[][] vertexColors = new byte[3][4];
-    }
+    };
 
     public static class aseMesh_t {
 
@@ -59,12 +59,12 @@ public class Model_ase {
         private final  int DBG_count   = DBG_counter++;
 
         public aseMesh_t() {
-            this.transform = new idVec3[4];
-            for (int i = 0; i < this.transform.length; i++) {
-                this.transform[i] = new idVec3();
+            transform = new idVec3[4];
+            for (int i = 0; i < transform.length; i++) {
+                transform[i] = new idVec3();
             }
         }
-    }
+    };
 
     public static class aseMaterial_t {
 
@@ -73,7 +73,7 @@ public class Model_ase {
         float uOffset, vOffset;		// max lets you offset by material without changing texCoords
         float uTiling, vTiling;		// multiply tex coords by this
         float angle;					// in clockwise radians
-    }
+    };
 
     public static class aseObject_t {
 
@@ -89,7 +89,7 @@ public class Model_ase {
             this.mesh = new aseMesh_t();
             this.frames = new idList<>();
         }
-    }
+    };
 
     public static class aseModel_s {
 
@@ -102,7 +102,7 @@ public class Model_ase {
             this.materials = new idList<>();
             this.objects = new idList<>();
         }
-    }
+    };
 
     /*
      =================
@@ -115,7 +115,7 @@ public class Model_ase {
         aseModel_s ase;
 
         fileSystem.ReadFile(fileName, buf, timeStamp);
-        if ((buf == null) || (buf.length == 0)) {
+        if (null == buf) {
             return null;
         }
 
@@ -136,7 +136,7 @@ public class Model_ase {
         int i, j;
         aseObject_t obj;
         aseMesh_t mesh;
-        final aseMaterial_t material;
+        aseMaterial_t material;
 
         if (null == ase) {
             return;
@@ -233,7 +233,7 @@ public class Model_ase {
         aseMaterial_t currentMaterial;
         int currentFace;
         int currentVertex;
-    }
+    };
 
     public static aseMesh_t ASE_GetCurrentMesh() {
         return ase.currentMesh;
@@ -331,7 +331,7 @@ public class Model_ase {
     public static abstract class ASE {
 
         public abstract void run(final String token);
-    }
+    };
 
     public static class ASE_KeyMAP_DIFFUSE extends ASE {
 
@@ -354,15 +354,15 @@ public class Model_ase {
                     idStr matname;
                     ASE_GetToken(false);
                     // remove the quotes
-                    final int s = ase.token.substring(1).indexOf('\"');
+                    int s = ase.token.substring(1).indexOf('\"');
                     if (s > 0) {
                         ase.token = ase.token.substring(0, s + 1);
                     }
                     matname = new idStr(ase.token.substring(1));
                     // convert the 3DSMax material pathname to a qpath
                     matname.BackSlashesToSlashes();
-                    qpath = new idStr(fileSystem.OSPathToRelativePath(matname.getData()));
-                    idStr.Copynz(ase.currentMaterial.name, qpath.getData(), ase.currentMaterial.name.length);
+                    qpath = new idStr(fileSystem.OSPathToRelativePath(matname.toString()));
+                    idStr.Copynz(ase.currentMaterial.name, qpath.toString(), ase.currentMaterial.name.length);
                     break;
                 case "*UVW_U_OFFSET":
                     material = ase.model.materials.oGet(ase.model.materials.Num() - 1);
@@ -393,7 +393,7 @@ public class Model_ase {
                     break;
             }
         }
-    }
+    };
 
     public static class ASE_KeyMATERIAL extends ASE {
 
@@ -415,7 +415,7 @@ public class Model_ase {
                 }
             }
         }
-    }
+    };
 
     public static class ASE_KeyMATERIAL_LIST extends ASE {
 
@@ -446,7 +446,7 @@ public class Model_ase {
                 ASE_ParseBracedBlock(ASE_KeyMATERIAL.getInstance());
             }
         }
-    }
+    };
 
     public static class ASE_KeyNODE_TM extends ASE {
 
@@ -481,12 +481,12 @@ public class Model_ase {
                     j = -1;
             }
             
-            for (i = 0; (i < 3) && (j != -1); i++) {
+            for (i = 0; i < 3 && j != -1; i++) {
                 ASE_GetToken(false);
                 ase.currentObject.mesh.transform[j].oSet(i, Float.parseFloat(ase.token));
             }
         }
-    }
+    };
 
     public static class ASE_KeyMESH_VERTEX_LIST extends ASE {
 
@@ -502,7 +502,7 @@ public class Model_ase {
         @Override
         public void run(final String token) {
             {
-                final aseMesh_t pMesh = ASE_GetCurrentMesh();
+                aseMesh_t pMesh = ASE_GetCurrentMesh();
 
                 if ("*MESH_VERTEX".equals(token)) {
                     ASE_GetToken(false);		// skip number
@@ -527,7 +527,7 @@ public class Model_ase {
                 }
             }
         }
-    }
+    };
 
     public static class ASE_KeyMESH_FACE_LIST extends ASE {
 
@@ -542,7 +542,7 @@ public class Model_ase {
 
         @Override
         public void run(final String token) {
-            final aseMesh_t pMesh = ASE_GetCurrentMesh();
+            aseMesh_t pMesh = ASE_GetCurrentMesh();
 
             if ("*MESH_FACE".equals(token)) {
                 ASE_GetToken(false);	// skip face number
@@ -581,7 +581,7 @@ public class Model_ase {
                 common.Error("Unknown token '%s' while parsing MESH_FACE_LIST", token);
             }
         }
-    }
+    };
 
     public static class ASE_KeyTFACE_LIST extends ASE {
 
@@ -596,7 +596,7 @@ public class Model_ase {
 
         @Override
         public void run(final String token) {
-            final aseMesh_t pMesh = ASE_GetCurrentMesh();
+            aseMesh_t pMesh = ASE_GetCurrentMesh();
 
             if ("*MESH_TFACE".equals(token)) {
                 int a, b, c;
@@ -619,7 +619,7 @@ public class Model_ase {
                 common.Error("Unknown token '%s' in MESH_TFACE", token);
             }
         }
-    }
+    };
 
     public static class ASE_KeyCFACE_LIST extends ASE {
 
@@ -635,14 +635,14 @@ public class Model_ase {
 
         @Override
         public void run(final String token) {
-            final aseMesh_t pMesh = ASE_GetCurrentMesh();
+            aseMesh_t pMesh = ASE_GetCurrentMesh();
 
             if ("*MESH_CFACE".equals(token)) {
                 ASE_GetToken(false);
 
                 for (int i = 0; i < 3; i++) {
                     ASE_GetToken(false);
-                    final int a = Integer.parseInt(ase.token);
+                    int a = Integer.parseInt(ase.token);
 
                     // we flip the vertex order to change the face direction to our style
                     pMesh.faces[ase.currentFace].vertexColors[remap[i]][0] = (byte) (pMesh.cvertexes[a].oGet(0) * 255);
@@ -655,7 +655,7 @@ public class Model_ase {
                 common.Error("Unknown token '%s' in MESH_CFACE", token);
             }
         }
-    }
+    };
 
     public static class ASE_KeyMESH_TVERTLIST extends ASE {
 
@@ -670,7 +670,7 @@ public class Model_ase {
 
         @Override
         public void run(final String token) {
-            final aseMesh_t pMesh = ASE_GetCurrentMesh();
+            aseMesh_t pMesh = ASE_GetCurrentMesh();
 
             if ("*MESH_TVERT".equals(token)) {
 //		char u[80], v[80], w[80];
@@ -704,7 +704,7 @@ public class Model_ase {
                 common.Error("Unknown token '%s' while parsing MESH_TVERTLIST", token);
             }
         }
-    }
+    };
 
     public static class ASE_KeyMESH_CVERTLIST extends ASE {
 
@@ -719,7 +719,7 @@ public class Model_ase {
 
         @Override
         public void run(final String token) {
-            final aseMesh_t pMesh = ASE_GetCurrentMesh();
+            aseMesh_t pMesh = ASE_GetCurrentMesh();
 
             pMesh.colorsParsed = true;
 
@@ -744,7 +744,7 @@ public class Model_ase {
                 common.Error("Unknown token '%s' while parsing MESH_CVERTLIST", token);
             }
         }
-    }
+    };
 
     public static class ASE_KeyMESH_NORMALS extends ASE {
 
@@ -759,9 +759,9 @@ public class Model_ase {
 
         @Override
         public void run(final String token) {
-            final aseMesh_t pMesh = ASE_GetCurrentMesh();
+            aseMesh_t pMesh = ASE_GetCurrentMesh();
             aseFace_t f;
-            final idVec3 n = new idVec3();
+            idVec3 n = new idVec3();
 
             pMesh.normalsParsed = true;
 
@@ -771,7 +771,7 @@ public class Model_ase {
                 ASE_GetToken(false);
                 num = Integer.parseInt(ase.token);
 
-                if ((num >= pMesh.numFaces) || (num < 0)) {
+                if (num >= pMesh.numFaces || num < 0) {
                     common.Error("MESH_NORMALS face index out of range: %d", num);
                 }
                 
@@ -789,9 +789,9 @@ public class Model_ase {
                 n.oSet(2, Float.parseFloat(ase.token));
 
                 f.faceNormal = new idVec3();
-                f.faceNormal.oSet(0, (n.oGet(0) * pMesh.transform[0].oGet(0)) + (n.oGet(1) * pMesh.transform[1].oGet(0)) + (n.oGet(2) * pMesh.transform[2].oGet(0)));
-                f.faceNormal.oSet(1, (n.oGet(0) * pMesh.transform[0].oGet(1)) + (n.oGet(1) * pMesh.transform[1].oGet(1)) + (n.oGet(2) * pMesh.transform[2].oGet(1)));
-                f.faceNormal.oSet(2, (n.oGet(0) * pMesh.transform[0].oGet(2)) + (n.oGet(1) * pMesh.transform[1].oGet(2)) + (n.oGet(2) * pMesh.transform[2].oGet(2)));
+                f.faceNormal.oSet(0, n.oGet(0) * pMesh.transform[0].oGet(0) + n.oGet(1) * pMesh.transform[1].oGet(0) + n.oGet(2) * pMesh.transform[2].oGet(0));
+                f.faceNormal.oSet(1, n.oGet(0) * pMesh.transform[0].oGet(1) + n.oGet(1) * pMesh.transform[1].oGet(1) + n.oGet(2) * pMesh.transform[2].oGet(1));
+                f.faceNormal.oSet(2, n.oGet(0) * pMesh.transform[0].oGet(2) + n.oGet(1) * pMesh.transform[1].oGet(2) + n.oGet(2) * pMesh.transform[2].oGet(2));
 
                 f.faceNormal.Normalize();
 
@@ -803,7 +803,7 @@ public class Model_ase {
                 ASE_GetToken(false);
                 num = Integer.parseInt(ase.token);
 
-                if ((num >= pMesh.numVertexes) || (num < 0)) {
+                if (num >= pMesh.numVertexes || num < 0) {
                     common.Error("MESH_NORMALS vertex index out of range: %d", num);
                 }
 
@@ -827,14 +827,14 @@ public class Model_ase {
                 n.oSet(2, Float.parseFloat(ase.token));
 
                 f.vertexNormals[v] = new idVec3();
-                f.vertexNormals[v].oSet(0, (n.oGet(0) * pMesh.transform[0].oGet(0)) + (n.oGet(1) * pMesh.transform[1].oGet(0)) + (n.oGet(2) * pMesh.transform[2].oGet(0)));
-                f.vertexNormals[v].oSet(0, (n.oGet(0) * pMesh.transform[0].oGet(1)) + (n.oGet(1) * pMesh.transform[1].oGet(1)) + (n.oGet(2) * pMesh.transform[2].oGet(2)));
-                f.vertexNormals[v].oSet(0, (n.oGet(0) * pMesh.transform[0].oGet(2)) + (n.oGet(1) * pMesh.transform[1].oGet(2)) + (n.oGet(2) * pMesh.transform[2].oGet(1)));
+                f.vertexNormals[v].oSet(0, n.oGet(0) * pMesh.transform[0].oGet(0) + n.oGet(1) * pMesh.transform[1].oGet(0) + n.oGet(2) * pMesh.transform[2].oGet(0));
+                f.vertexNormals[v].oSet(0, n.oGet(0) * pMesh.transform[0].oGet(1) + n.oGet(1) * pMesh.transform[1].oGet(1) + n.oGet(2) * pMesh.transform[2].oGet(2));
+                f.vertexNormals[v].oSet(0, n.oGet(0) * pMesh.transform[0].oGet(2) + n.oGet(1) * pMesh.transform[1].oGet(2) + n.oGet(2) * pMesh.transform[2].oGet(1));
 
                 f.vertexNormals[v].Normalize();
             }
         }
-    }
+    };
 
     public static class ASE_KeyMESH extends ASE {
 
@@ -849,7 +849,7 @@ public class Model_ase {
 
         @Override
         public void run(final String token) {
-            final aseMesh_t pMesh = ASE_GetCurrentMesh();
+            aseMesh_t pMesh = ASE_GetCurrentMesh();
 
             if (null != token) {
                 switch (token) {
@@ -945,7 +945,7 @@ public class Model_ase {
                 }
             }
         }
-    }
+    };
 
     public static class ASE_KeyMESH_ANIMATION extends ASE {
 
@@ -978,7 +978,7 @@ public class Model_ase {
                 common.Error("Unknown token '%s' while parsing MESH_ANIMATION", token);
             }
         }
-    }
+    };
 
     public static class ASE_KeyGEOMOBJECT extends ASE {
 
@@ -1015,7 +1015,7 @@ public class Model_ase {
 
                 // ignore regular meshes that aren't part of animation
                 case "*MESH":
-                    final idVec3[] transform = ase.currentObject.mesh.transform;//copied from the bfg sources
+                    idVec3[] transform = ase.currentObject.mesh.transform;//copied from the bfg sources
                     ase.currentMesh = ase.currentObject.mesh = new aseMesh_t();
                     System.arraycopy(transform, 0, ase.currentMesh.transform, 0, transform.length);
                     ASE_ParseBracedBlock(ASE_KeyMESH.getInstance());
@@ -1041,7 +1041,7 @@ public class Model_ase {
                     break;
             }
         }
-    }
+    };
 
     public static void ASE_ParseGeomObject() {
         aseObject_t object;
@@ -1076,7 +1076,7 @@ public class Model_ase {
                 ASE_ParseGeomObject();
             }
         }
-    }
+    };
 
     /*
      =================

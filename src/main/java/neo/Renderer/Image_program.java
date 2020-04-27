@@ -12,12 +12,13 @@ import static neo.idlib.math.Vector.getVec3_origin;
 
 import java.nio.ByteBuffer;
 
+import org.lwjgl.BufferUtils;
+
 import neo.Renderer.Image.textureDepth_t;
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
-import neo.open.Nio;
 
 /**
  *
@@ -39,8 +40,8 @@ public class Image_program {
      ===================
      */
     static ByteBuffer R_LoadImageProgram(final String name, int[] width, int[] height, /*ID_TIME_T */ long[] timestamps, textureDepth_t[] depth) {
-        final idLexer src = new idLexer();
-        final ByteBuffer[] pic = {null};
+        idLexer src = new idLexer();
+        ByteBuffer[] pic = {null};
 
         src.LoadMemory(name, name.length(), name);
         src.SetFlags(LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS | LEXFL_ALLOWPATHNAMES);
@@ -71,9 +72,9 @@ public class Image_program {
      ===================
      */
     static boolean R_ParseImageProgram_r(idLexer src, ByteBuffer[] pic, int[] width, int[] height, long[] timestamps, textureDepth_t[] depth) {
-        final idToken token = new idToken();
+        idToken token = new idToken();
         float scale;
-        final long[] timestamp = {0};
+        long[] timestamp = {0};
 
         src.ReadToken(token);
         AppendToken(token);
@@ -92,7 +93,7 @@ public class Image_program {
             scale = token.GetFloatValue();
 
             // process it
-            if ((pic != null) && (pic[0] != null)) {
+            if (pic != null && pic[0] != null) {
                 R_HeightmapToNormalMap(pic[0], width[0], height[0], scale);
                 if (depth != null) {
                     depth[0] = TD_BUMP;
@@ -104,8 +105,8 @@ public class Image_program {
         }
 
         if (0 == token.Icmp("addnormals")) {
-            ByteBuffer[] pic2 = {(pic != null) && (pic[0] != null) ? ByteBuffer.allocate(pic[0].capacity()) : null};
-            final int[] width2 = {0}, height2 = {0};
+            ByteBuffer[] pic2 = {pic != null && pic[0] != null ? ByteBuffer.allocate(pic[0].capacity()) : null};
+            int[] width2 = {0}, height2 = {0};
 
             MatchAndAppendToken(src, "(");
 
@@ -116,14 +117,14 @@ public class Image_program {
             MatchAndAppendToken(src, ",");
 
             if (!R_ParseImageProgram_r(src, pic2, width2, height2, timestamps, depth)) {
-                if ((pic != null) && (pic[0] != null)) {
+                if (pic != null && pic[0] != null) {
                     pic[0].clear();//R_StaticFree(pic);
                 }
                 return false;
             }
 
             // process it
-            if ((pic != null) && (pic[0] != null)) {
+            if (pic != null && pic[0] != null) {
                 R_AddNormalMaps(pic[0], width[0], height[0], pic2[0], width2[0], height2[0]);
 //                R_StaticFree(pic2);
                 pic2 = null;
@@ -143,7 +144,7 @@ public class Image_program {
                 return false;
             }
 
-            if ((pic != null) && (pic[0] != null)) {
+            if (pic != null && pic[0] != null) {
                 R_SmoothNormalMap(pic[0], width[0], height[0]);
                 if (depth != null) {
                     depth[0] = TD_BUMP;
@@ -155,8 +156,8 @@ public class Image_program {
         }
 
         if (0 == token.Icmp("add")) {
-            final ByteBuffer[] pic2 = {pic != null ? ByteBuffer.allocate(pic[0].capacity()) : null};
-            final int[] width2 = {0}, height2 = {0};
+            ByteBuffer[] pic2 = {pic != null ? ByteBuffer.allocate(pic[0].capacity()) : null};
+            int[] width2 = {0}, height2 = {0};
 
             MatchAndAppendToken(src, "(");
 
@@ -167,14 +168,14 @@ public class Image_program {
             MatchAndAppendToken(src, ",");
 
             if (!R_ParseImageProgram_r(src, pic2, width2, height2, timestamps, depth)) {
-                if ((pic != null) && (pic[0] != null)) {
+                if (pic != null && pic[0] != null) {
                     pic[0].clear();//R_StaticFree(pic[0]);
                 }
                 return false;
             }
 
             // process it
-            if ((pic != null) && (pic[0] != null)) {
+            if (pic != null && pic[0] != null) {
                 R_ImageAdd(pic[0], width[0], height[0], pic2[0], width2[0], height2[0]);
 //                R_StaticFree(pic2);
             }
@@ -199,7 +200,7 @@ public class Image_program {
             }
 
             // process it
-            if ((pic != null) && (pic[0] != null)) {
+            if (pic != null && pic[0] != null) {
                 R_ImageScale(pic[0], width[0], height[0], scale2);
             }
 
@@ -213,7 +214,7 @@ public class Image_program {
             R_ParseImageProgram_r(src, pic, width, height, timestamps, depth);
 
             // process it
-            if ((pic != null) && (pic[0] != null)) {
+            if (pic != null && pic[0] != null) {
                 R_InvertAlpha(pic[0], width[0], height[0]);
             }
 
@@ -227,7 +228,7 @@ public class Image_program {
             R_ParseImageProgram_r(src, pic, width, height, timestamps, depth);
 
             // process it
-            if ((pic != null) && (pic[0] != null)) {
+            if (pic != null && pic[0] != null) {
                 R_InvertColor(pic[0], width[0], height[0]);
             }
 
@@ -243,7 +244,7 @@ public class Image_program {
             R_ParseImageProgram_r(src, pic, width, height, timestamps, depth);
 
             // copy red to green, blue, and alpha
-            if ((pic != null) && (pic[0] != null)) {
+            if (pic != null && pic[0] != null) {
                 int c;
                 c = width[0] * height[0] * 4;
                 pic[0].position(0);
@@ -266,7 +267,7 @@ public class Image_program {
             R_ParseImageProgram_r(src, pic, width, height, timestamps, depth);
 
             // average RGB into alpha, then set RGB to white
-            if ((pic != null) && (pic[0] != null)) {
+            if (pic != null && pic[0] != null) {
                 int c;
                 pic[0].position(0);
                 c = width[0] * height[0] * 4;
@@ -283,12 +284,12 @@ public class Image_program {
 
         // if we are just parsing instead of loading or checking,
         // don't do the R_LoadImage
-        if ((null == timestamps) && (null == pic)) {
+        if (null == timestamps && null == pic) {
             return true;
         }
 
         // load it as an image
-        pic[0] = R_LoadImage(token.getData(), width, height, timestamp, true);
+        pic[0] = R_LoadImage(token.toString(), width, height, timestamp, true);
 
         if (timestamp[0] == -1) {
             return false;
@@ -315,8 +316,8 @@ public class Image_program {
 //            idStr.Append(parseBuffer, MAX_IMAGE_NAME, " ");
             parseBuffer.append(" ");
         }
-//        idStr.Append(parseBuffer, MAX_IMAGE_NAME, token.getData());
-        parseBuffer.append(token.getData());
+//        idStr.Append(parseBuffer, MAX_IMAGE_NAME, token.toString());
+        parseBuffer.append(token.toString());
     }
 
     /*
@@ -352,10 +353,10 @@ public class Image_program {
         j = width * height;
         depth = new byte[j];//R_StaticAlloc(j);
         for (i = 0; i < j; i++) {
-            depth[i] = (byte) ((data.get(i * 4) + data.get((i * 4) + 1) + data.get((i * 4) + 2)) / 3);
+            depth[i] = (byte) ((data.get(i * 4) + data.get(i * 4 + 1) + data.get(i * 4 + 2)) / 3);
         }
 
-        final idVec3 dir = new idVec3(), dir2 = new idVec3();
+        idVec3 dir = new idVec3(), dir2 = new idVec3();
         for (i = 0; i < height; i++) {
             for (j = 0; j < width; j++) {
                 int d1, d2, d3, d4;
@@ -363,10 +364,10 @@ public class Image_program {
 
                 // FIXME: look at five points?
                 // look at three points to estimate the gradient
-                a1 = d1 = depth[ ((i * width) + j)];
-                a2 = d2 = depth[ ((i * width) + ((j + 1) & (width - 1)))];
-                a3 = d3 = depth[ ((((i + 1) & (height - 1)) * width) + j)];
-                a4 = d4 = depth[ ((((i + 1) & (height - 1)) * width) + ((j + 1) & (width - 1)))];
+                a1 = d1 = depth[ (i * width + j)];
+                a2 = d2 = depth[ (i * width + ((j + 1) & (width - 1)))];
+                a3 = d3 = depth[ (((i + 1) & (height - 1)) * width + j)];
+                a4 = d4 = depth[ (((i + 1) & (height - 1)) * width + ((j + 1) & (width - 1)))];
 
                 d2 -= d1;
                 d3 -= d1;
@@ -387,10 +388,10 @@ public class Image_program {
                 dir.oPluSet(dir2);
                 dir.NormalizeFast();
 
-                a1 = ((i * width) + j) * 4;
-                data.put(a1 + 0, (byte) ((dir.oGet(0) * 127) + 128));
-                data.put(a1 + 1, (byte) ((dir.oGet(1) * 127) + 128));
-                data.put(a1 + 2, (byte) ((dir.oGet(2) * 127) + 128));
+                a1 = (i * width + j) * 4;
+                data.put(a1 + 0, (byte) (dir.oGet(0) * 127 + 128));
+                data.put(a1 + 1, (byte) (dir.oGet(1) * 127 + 128));
+                data.put(a1 + 2, (byte) (dir.oGet(2) * 127 + 128));
                 data.put(a1 + 3, (byte) 255);
             }
         }
@@ -411,7 +412,7 @@ public class Image_program {
 
         orig = new byte[width * height * 4];// R_StaticAlloc(width * height * 4);
 //	memcpy( orig, data, width * height * 4 );
-        Nio.arraycopy(data.array(), 0, orig, 0, width * height * 4);
+        System.arraycopy(data.array(), 0, orig, 0, width * height * 4);
 
         for (i = 0; i < width; i++) {
             for (j = 0; j < height; j++) {
@@ -420,13 +421,13 @@ public class Image_program {
                     for (l = -1; l < 2; l++) {
                         int in;
 
-                        in = /*orig +*/ ((((j + l) & (height - 1)) * width) + ((i + k) & (width - 1))) * 4;
+                        in = /*orig +*/ (((j + l) & (height - 1)) * width + ((i + k) & (width - 1))) * 4;
 
                         // ignore 000 and -1 -1 -1
-                        if ((orig[in + 0] == 0) && (orig[in + 1] == 0) && (orig[in + 2] == 0)) {
+                        if (orig[in + 0] == 0 && orig[in + 1] == 0 && orig[in + 2] == 0) {
                             continue;
                         }
-                        if ((orig[in + 0] == 128) && (orig[in + 1] == 128) && (orig[in + 2] == 128)) {
+                        if (orig[in + 0] == 128 && orig[in + 1] == 128 && orig[in + 2] == 128) {
                             continue;
                         }
 
@@ -436,10 +437,10 @@ public class Image_program {
                     }
                 }
                 normal.Normalize();
-                out = /*data +*/ ((j * width) + i) * 4;
-                data.put(out + 0, (byte) (128 + (127 * normal.oGet(0))));
-                data.put(out + 1, (byte) (128 + (127 * normal.oGet(1))));
-                data.put(out + 2, (byte) (128 + (127 * normal.oGet(2))));
+                out = /*data +*/ (j * width + i) * 4;
+                data.put(out + 0, (byte) (128 + 127 * normal.oGet(0)));
+                data.put(out + 1, (byte) (128 + 127 * normal.oGet(1)));
+                data.put(out + 2, (byte) (128 + 127 * normal.oGet(2)));
             }
         }
 
@@ -458,7 +459,7 @@ public class Image_program {
         byte[] newMap;
 
         // resample pic2 to the same size as pic1
-        if ((width2 != width1) || (height2 != height1)) {
+        if (width2 != width1 || height2 != height1) {
             newMap = R_Dropsample(data2, width2, height2, width1, height1);
             data2.put(newMap);//TODO:not overwrite reference. EDIT:is this enough?
         } else {
@@ -547,9 +548,9 @@ public class Image_program {
         byte[] newMap;
 
         // resample pic2 to the same size as pic1
-        if ((width2 != width1) || (height2 != height1)) {
+        if (width2 != width1 || height2 != height1) {
             newMap = R_Dropsample(data2, width2, height2, width1, height1);
-            data2 = (ByteBuffer) Nio.newByteBuffer(newMap.length).put(newMap).flip();
+            data2 = (ByteBuffer) BufferUtils.createByteBuffer(newMap.length).put(newMap).flip();
         } else {
             newMap = null;
         }
@@ -558,11 +559,11 @@ public class Image_program {
         for (i = 0; i < height1; i++) {
             for (j = 0; j < width1; j++) {
                 int d1, d2;
-                final idVec3 n = new idVec3();
+                idVec3 n = new idVec3();
                 float len;
 
-                d1 =/* data1 + */ ((i * width1) + j) * 4;
-                d2 = /*data2 + */ ((i * width1) + j) * 4;
+                d1 =/* data1 + */ (i * width1 + j) * 4;
+                d2 = /*data2 + */ (i * width1 + j) * 4;
 
                 n.oSet(0, (data1.get(d1 + 0) - 128) / 127.0f);
                 n.oSet(1, (data1.get(d1 + 1) - 128) / 127.0f);
@@ -579,9 +580,9 @@ public class Image_program {
                 n.oPluSet(1, (data2.get(d2 + 1) - 128) / 127.0f);
                 n.Normalize();
 
-                data1.put(d1 + 0, (byte) ((n.oGet(0) * 127) + 128));
-                data1.put(d1 + 1, (byte) ((n.oGet(1) * 127) + 128));
-                data1.put(d1 + 2, (byte) ((n.oGet(2) * 127) + 128));
+                data1.put(d1 + 0, (byte) (n.oGet(0) * 127 + 128));
+                data1.put(d1 + 1, (byte) (n.oGet(1) * 127 + 128));
+                data1.put(d1 + 2, (byte) (n.oGet(2) * 127 + 128));
                 data1.put(d1 + 3, (byte) 255);
             }
         }

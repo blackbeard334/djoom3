@@ -28,23 +28,23 @@ public class snd_efxfile {
 //			data = NULL;
 //		}
 //	}
-    }
+    };
 
     static class idEFXFile {
 
         public idList<idSoundEffect> effects;
 
         public idEFXFile() {
-            this.effects = new idList<>();
+            effects = new idList<>();
         }
 //	~idEFXFile();
 
         public boolean FindEffect(idStr name, idSoundEffect[] effect, int[] index) {
             int i;
 
-            for (i = 0; i < this.effects.Num(); i++) {
-                if ((this.effects.oGet(i) != null) && (this.effects.oGet(i).name.equals(name))) {
-                    effect[0] = this.effects.oGet(i);
+            for (i = 0; i < effects.Num(); i++) {
+                if (effects.oGet(i) != null && (effects.oGet(i).name.equals(name))) {
+                    effect[0] = effects.oGet(i);
                     index[0] = i;
                     return true;
                 }
@@ -72,7 +72,7 @@ public class snd_efxfile {
 //                    }
 //
 //                    if (!token.equals("{")) {
-//                        src.Error("idEFXFile::ReadEffect: { not found, found %s", token.getData());
+//                        src.Error("idEFXFile::ReadEffect: { not found, found %s", token.c_str());
 ////				Mem_Free( reverb );
 //                        return false;
 //                    }
@@ -188,8 +188,8 @@ public class snd_efxfile {
         }
 
         public boolean LoadFile(final String filename, boolean OSPath /*= false*/) {
-            final idLexer src = new idLexer(LEXFL_NOSTRINGCONCAT);
-            final idToken token;
+            idLexer src = new idLexer(LEXFL_NOSTRINGCONCAT);
+            idToken token;
 
             src.LoadFile(filename, OSPath);
             if (!src.IsLoaded()) {
@@ -224,8 +224,8 @@ public class snd_efxfile {
         }
 
         public void Clear() {
-            this.effects.DeleteContents(true);
+            effects.DeleteContents(true);
         }
 
-    }
+    };
 }

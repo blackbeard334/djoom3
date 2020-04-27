@@ -13,7 +13,6 @@ import static neo.framework.Common.common;
 import static neo.idlib.math.Simd.SIMDProcessor;
 import static neo.idlib.math.Vector.getVec3_origin;
 
-import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -32,7 +31,6 @@ import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
-import neo.open.Nio;
 
 /**
  *
@@ -313,7 +311,7 @@ public class tr_trisurf {
 //                    + triMirroredVertAllocator.GetBaseBlockMemory()
 //                    + triDupVertAllocator.GetBaseBlockMemory()) >> 10);
         }
-    }
+    };
 
     /*
      =================
@@ -337,20 +335,20 @@ public class tr_trisurf {
         if (tri.shadowVertexes != null) {
             total += tri.numVerts;//* sizeof( tri.shadowVertexes[0] );
         } else if (tri.verts != null) {
-            if ((tri.ambientSurface == null) || (tri.verts != tri.ambientSurface.verts)) {
+            if (tri.ambientSurface == null || tri.verts != tri.ambientSurface.verts) {
                 total += tri.numVerts;// * sizeof( tri.verts[0] );
             }
         }
         if (tri.facePlanes != null) {
-            total += tri.getIndexes().getNumValues() / 3;//* sizeof( tri.facePlanes[0] );
+            total += tri.numIndexes / 3;//* sizeof( tri.facePlanes[0] );
         }
-        if (tri.getIndexes().getValues() != null) {
-            if ((tri.ambientSurface == null) || (tri.getIndexes().getValues() != tri.ambientSurface.getIndexes().getValues())) {
-                total += tri.getIndexes().getNumValues();// * sizeof( tri.indexes[0] );
+        if (tri.indexes != null) {
+            if (tri.ambientSurface == null || tri.indexes != tri.ambientSurface.indexes) {
+                total += tri.numIndexes;// * sizeof( tri.indexes[0] );
             }
         }
         if (tri.silIndexes != null) {
-            total += tri.getIndexes().getNumValues();//* sizeof( tri.silIndexes[0] );
+            total += tri.numIndexes;//* sizeof( tri.silIndexes[0] );
         }
         if (tri.silEdges != null) {
             total += tri.numSilEdges * sizeof(tri.silEdges[0]);
@@ -394,7 +392,7 @@ public class tr_trisurf {
             vertexCache.Free(tri.indexCache);
             tri.indexCache = null;
         }
-        if ((tri.shadowCache != null) && ((tri.shadowVertexes != null) || (tri.verts != null))) {
+        if ((tri.shadowCache != null) && (tri.shadowVertexes != null || tri.verts != null)) {
             // if we don't have tri.shadowVertexes, these are a reference to a
             // shadowCache on the original surface, which a vertex program
             // will take care of making unique for each light
@@ -583,14 +581,13 @@ public class tr_trisurf {
 
         newTri = R_AllocStaticTriSurf();
         R_AllocStaticTriSurfVerts(newTri, tri.numVerts);
-        R_AllocStaticTriSurfIndexes(newTri, tri.getIndexes().getNumValues());
+        R_AllocStaticTriSurfIndexes(newTri, tri.numIndexes);
         newTri.numVerts = tri.numVerts;
-        newTri.getIndexes().setNumValues(tri.getIndexes().getNumValues());
+        newTri.numIndexes = tri.numIndexes;
 //	memcpy( newTri.verts, tri.verts, tri.numVerts * sizeof( newTri.verts[0] ) );
         System.arraycopy(tri.verts, 0, newTri.verts, 0, tri.numVerts);
 //	memcpy( newTri.indexes, tri.indexes, tri.numIndexes * sizeof( newTri.indexes[0] ) );
-        //System.arraycopy(tri.getIndexes().getValues(), 0, newTri.getIndexes().getValues(), 0, tri.getIndexes().getNumValues());
-        Nio.buffercopy(tri.getIndexes().getValues(), 0, newTri.getIndexes().getValues(), 0, tri.getIndexes().getNumValues());
+        System.arraycopy(tri.indexes, 0, newTri.indexes, 0, tri.numIndexes);
 
         return newTri;
     }
@@ -614,8 +611,8 @@ public class tr_trisurf {
      =================
      */
     public static void R_AllocStaticTriSurfIndexes(srfTriangles_s tri, int numIndexes) {
-        assert (tri.getIndexes().getValues() == null);
-        tri.getIndexes().createValues(numIndexes);// triIndexAllocator.Alloc(numIndexes);
+        assert (tri.indexes == null);
+        tri.indexes = new int[numIndexes];// triIndexAllocator.Alloc(numIndexes);
     }
 
     /*
@@ -666,7 +663,7 @@ public class tr_trisurf {
      */
     public static void R_ResizeStaticTriSurfIndexes(srfTriangles_s tri, int numIndexes) {
         if (USE_TRI_DATA_ALLOCATOR) {
-            tri.getIndexes().setValues(/*triIndexAllocator.*/ Resize(tri.getIndexes().getValues(), numIndexes));
+            tri.indexes = /*triIndexAllocator.*/ Resize(tri.indexes, numIndexes);
         } else {
             assert (false);
         }
@@ -700,7 +697,7 @@ public class tr_trisurf {
      =================
      */
     public static void R_ReferenceStaticTriSurfIndexes(srfTriangles_s tri, final srfTriangles_s reference) {
-        tri.getIndexes().setValues(reference.getIndexes().getValues());
+        tri.indexes = reference.indexes;
     }
 
     /*
@@ -728,7 +725,7 @@ public class tr_trisurf {
     public static void R_RangeCheckIndexes(final srfTriangles_s tri) {
         int i;
 
-        if (tri.getIndexes().getNumValues() < 0) {
+        if (tri.numIndexes < 0) {
             common.Error("R_RangeCheckIndexes: numIndexes < 0");
         }
         if (tri.numVerts < 0) {
@@ -736,18 +733,18 @@ public class tr_trisurf {
         }
 
         // must specify an integral number of triangles
-        if ((tri.getIndexes().getNumValues() % 3) != 0) {
+        if (tri.numIndexes % 3 != 0) {
             common.Error("R_RangeCheckIndexes: numIndexes %% 3");
         }
 
-        for (i = 0; i < tri.getIndexes().getNumValues(); i++) {
-            if ((tri.getIndexes().getValues().get(i) < 0) || (tri.getIndexes().getValues().get(i) >= tri.numVerts)) {
+        for (i = 0; i < tri.numIndexes; i++) {
+            if (tri.indexes[i] < 0 || tri.indexes[i] >= tri.numVerts) {
                 common.Error("R_RangeCheckIndexes: index out of range");
             }
         }
 
         // this should not be possible unless there are unused verts
-        if (tri.numVerts > tri.getIndexes().getNumValues()) {
+        if (tri.numVerts > tri.numIndexes) {
             // FIXME: find the causes of these
             // common.Printf( "R_RangeCheckIndexes: tri.numVerts > tri.numIndexes\n" );
         }
@@ -782,7 +779,7 @@ public class tr_trisurf {
             return remap;
         }
 
-        final idHashIndex hash = new idHashIndex(1024, tri.numVerts);
+        idHashIndex hash = new idHashIndex(1024, tri.numVerts);
 
         c_removed = 0;
         c_unique = 0;
@@ -793,9 +790,9 @@ public class tr_trisurf {
             hashKey = hash.GenerateKey(v1.xyz);
             for (j = hash.First(hashKey); j >= 0; j = hash.Next(j)) {
                 v2 = tri.verts[j];
-                if ((v2.xyz.oGet(0) == v1.xyz.oGet(0))
-                        && (v2.xyz.oGet(1) == v1.xyz.oGet(1))
-                        && (v2.xyz.oGet(2) == v1.xyz.oGet(2))) {
+                if (v2.xyz.oGet(0) == v1.xyz.oGet(0)
+                        && v2.xyz.oGet(1) == v1.xyz.oGet(1)
+                        && v2.xyz.oGet(2) == v1.xyz.oGet(2)) {
                     c_removed++;
                     remap[i] = j;
                     break;
@@ -831,9 +828,9 @@ public class tr_trisurf {
         remap = R_CreateSilRemap(tri);
 
         // remap indexes to the first one
-        tri.silIndexes = new int[tri.getIndexes().getNumValues()];//triSilIndexAllocator.Alloc(tri.numIndexes);
-        for (i = 0; i < tri.getIndexes().getNumValues(); i++) {
-            tri.silIndexes[i] = remap[tri.getIndexes().getValues().get(i)];
+        tri.silIndexes = new int[tri.numIndexes];//triSilIndexAllocator.Alloc(tri.numIndexes);
+        for (i = 0; i < tri.numIndexes; i++) {
+            tri.silIndexes[i] = remap[tri.indexes[i]];
         }
 
 //        R_StaticFree(remap);
@@ -847,7 +844,7 @@ public class tr_trisurf {
     public static void R_CreateDupVerts(srfTriangles_s tri) {
         int i;
 
-        final int[] remap = new int[tri.numVerts];
+        int[] remap = new int[tri.numVerts];
 
         // initialize vertex remap in case there are unused verts
         for (i = 0; i < tri.numVerts; i++) {
@@ -855,24 +852,24 @@ public class tr_trisurf {
         }
 
         // set the remap based on how the silhouette indexes are remapped
-        for (i = 0; i < tri.getIndexes().getNumValues(); i++) {
-            remap[tri.getIndexes().getValues().get(i)] = tri.silIndexes[i];
+        for (i = 0; i < tri.numIndexes; i++) {
+            remap[tri.indexes[i]] = tri.silIndexes[i];
         }
 
         // create duplicate vertex index based on the vertex remap
-        final int[] tempDupVerts = new int[tri.numVerts * 2];
+        int[] tempDupVerts = new int[tri.numVerts * 2];
         tri.numDupVerts = 0;
         for (i = 0; i < tri.numVerts; i++) {
             if (remap[i] != i) {
-                tempDupVerts[(tri.numDupVerts * 2) + 0] = i;
-                tempDupVerts[(tri.numDupVerts * 2) + 1] = remap[i];
+                tempDupVerts[tri.numDupVerts * 2 + 0] = i;
+                tempDupVerts[tri.numDupVerts * 2 + 1] = remap[i];
                 tri.numDupVerts++;
             }
         }
 
         tri.dupVerts = new int[tri.numDupVerts * 2];// triDupVertAllocator.Alloc(tri.numDupVerts * 2);
 //	memcpy( tri.dupVerts, tempDupVerts, tri.numDupVerts * 2 * sizeof( tri.dupVerts[0] ) );
-        Nio.arraycopy(tempDupVerts, 0, tri.dupVerts, 0, tri.numDupVerts * 2);
+        System.arraycopy(tempDupVerts, 0, tri.dupVerts, 0, tri.numDupVerts * 2);
     }
 
     /*
@@ -886,13 +883,13 @@ public class tr_trisurf {
         idPlane[] planes;
 
         if (null == tri.facePlanes) {
-            R_AllocStaticTriSurfPlanes(tri, tri.getIndexes().getNumValues());
+            R_AllocStaticTriSurfPlanes(tri, tri.numIndexes);
         }
         planes = tri.facePlanes;
 
         if (true) {
 
-            SIMDProcessor.DeriveTriPlanes(planes, tri.verts, tri.numVerts, tri.getIndexes().getValues(), tri.getIndexes().getNumValues());
+            SIMDProcessor.DeriveTriPlanes(planes, tri.verts, tri.numVerts, tri.indexes, tri.numIndexes);
 
 //}else{
 //
@@ -953,24 +950,24 @@ public class tr_trisurf {
             tri.verts[i].normal.Zero();
         }
 
-        if ((null == tri.facePlanes) || !tri.facePlanesCalculated) {
+        if (null == tri.facePlanes || !tri.facePlanesCalculated) {
             R_DeriveFacePlanes(tri);
         }
         if (null == tri.silIndexes) {
             R_CreateSilIndexes(tri);
         }
         plane = tri.facePlanes[p = 0];
-        for (i = 0; i < tri.getIndexes().getNumValues(); i += 3, plane = tri.facePlanes[++p]) {
+        for (i = 0; i < tri.numIndexes; i += 3, plane = tri.facePlanes[++p]) {
             for (j = 0; j < 3; j++) {
-                final int index = tri.silIndexes[i + j];
+                int index = tri.silIndexes[i + j];
                 tri.verts[index].normal.oPluSet(plane.Normal());
             }
         }
 
         // normalize and replicate from silIndexes to all indexes
-        for (i = 0; i < tri.getIndexes().getNumValues(); i++) {
-            tri.verts[tri.getIndexes().getValues().get(i)].normal = tri.verts[tri.silIndexes[i]].normal;
-            tri.verts[tri.getIndexes().getValues().get(i)].normal.Normalize();
+        for (i = 0; i < tri.numIndexes; i++) {
+            tri.verts[tri.indexes[i]].normal = tri.verts[tri.silIndexes[i]].normal;
+            tri.verts[tri.indexes[i]].normal.Normalize();
         }
     }
 
@@ -990,13 +987,13 @@ public class tr_trisurf {
         }
         hashKey = silEdgeHash.GenerateKey(v1, v2);
         // search for a matching other side
-        for (i = silEdgeHash.First(hashKey); (i >= 0) && (i < MAX_SIL_EDGES); i = silEdgeHash.Next(i)) {
-            if ((silEdges[i].v1 == v1) && (silEdges[i].v2 == v2)) {
+        for (i = silEdgeHash.First(hashKey); i >= 0 && i < MAX_SIL_EDGES; i = silEdgeHash.Next(i)) {
+            if (silEdges[i].v1 == v1 && silEdges[i].v2 == v2) {
                 c_duplicatedEdges++;
                 // allow it to still create a new edge
                 continue;
             }
-            if ((silEdges[i].v2 == v1) && (silEdges[i].v1 == v2)) {
+            if (silEdges[i].v2 == v1 && silEdges[i].v1 == v2) {
                 if (silEdges[i].p2 != numPlanes) {
                     c_tripledEdges++;
                     // allow it to still create a new edge
@@ -1048,7 +1045,7 @@ public class tr_trisurf {
             }
             return 0;
         }
-    }
+    };
 
     /*
      =================
@@ -1068,7 +1065,7 @@ public class tr_trisurf {
 
         omitCoplanarEdges = false;	// optimization doesn't work for some reason
 
-        numTris = tri.getIndexes().getNumValues() / 3;
+        numTris = tri.numIndexes / 3;
 
         numSilEdges = 0;
         silEdgeHash.Clear();
@@ -1080,9 +1077,9 @@ public class tr_trisurf {
         for (i = 0; i < numTris; i++) {
             int i1, i2, i3;
 
-            i1 = tri.silIndexes[(i * 3) + 0];
-            i2 = tri.silIndexes[(i * 3) + 1];
-            i3 = tri.silIndexes[(i * 3) + 2];
+            i1 = tri.silIndexes[i * 3 + 0];
+            i2 = tri.silIndexes[i * 3 + 1];
+            i3 = tri.silIndexes[i * 3 + 2];
 
             // create the edges
             R_DefineEdge(i1, i2, i);
@@ -1090,7 +1087,7 @@ public class tr_trisurf {
             R_DefineEdge(i3, i1, i);
         }
 
-        if ((c_duplicatedEdges != 0) || (c_tripledEdges != 0)) {
+        if (c_duplicatedEdges != 0 || c_tripledEdges != 0) {
             common.DWarning("%d duplicated edge directions, %d tripled edges", c_duplicatedEdges, c_tripledEdges);
         }
 
@@ -1107,7 +1104,7 @@ public class tr_trisurf {
         if (omitCoplanarEdges) {
             for (i = 0; i < numSilEdges; i++) {
                 int i1, i2, i3;
-                final idPlane plane = new idPlane();
+                idPlane plane = new idPlane();
                 int base;
                 int j;
                 float d;
@@ -1136,7 +1133,7 @@ public class tr_trisurf {
                 if (j == 3) {
                     // we can cull this sil edge
 //				memmove( &silEdges[i], &silEdges[i+1], (numSilEdges-i-1) * sizeof( silEdges[i] ) );
-                	System.arraycopy(silEdges, i + 1, silEdges, i, numSilEdges - i - 1);
+                    System.arraycopy(silEdges, i + 1, silEdges, i, numSilEdges - i - 1);
                     c_coplanarCulled++;
                     numSilEdges--;
                     i--;
@@ -1191,11 +1188,11 @@ public class tr_trisurf {
     public static boolean R_FaceNegativePolarity(final srfTriangles_s tri, int firstIndex) {
         idDrawVert a, b, c;
         float area;
-        final float[] d0 = new float[5], d1 = new float[5];
+        float[] d0 = new float[5], d1 = new float[5];
 
-        a = tri.verts[tri.getIndexes().getValues().get(firstIndex + 0)];
-        b = tri.verts[tri.getIndexes().getValues().get(firstIndex + 1)];
-        c = tri.verts[tri.getIndexes().getValues().get(firstIndex + 2)];
+        a = tri.verts[tri.indexes[firstIndex + 0]];
+        b = tri.verts[tri.indexes[firstIndex + 1]];
+        c = tri.verts[tri.indexes[firstIndex + 2]];
 
         d0[3] = b.st.oGet(0) - a.st.oGet(0);
         d0[4] = b.st.oGet(1) - a.st.oGet(1);
@@ -1203,7 +1200,7 @@ public class tr_trisurf {
         d1[3] = c.st.oGet(0) - a.st.oGet(0);
         d1[4] = c.st.oGet(1) - a.st.oGet(1);
 
-        area = (d0[3] * d1[4]) - (d0[4] * d1[3]);
+        area = d0[3] * d1[4] - d0[4] * d1[3];
         if (area >= 0) {
             return false;
         }
@@ -1227,7 +1224,7 @@ public class tr_trisurf {
                     limit(length).
                     toArray(faceTangents_t[]::new);
         }
-    }
+    };
 
     public static void R_DeriveFaceTangents(final srfTriangles_s tri, faceTangents_t[] faceTangents) {
         int i;
@@ -1242,16 +1239,16 @@ public class tr_trisurf {
         c_positive = 0;
         c_negative = 0;
         c_textureDegenerateFaces = 0;
-        for (i = 0; i < tri.getIndexes().getNumValues(); i += 3) {
+        for (i = 0; i < tri.numIndexes; i += 3) {
             float area;
             idVec3 temp;
-            final float[] d0 = new float[5], d1 = new float[5];
+            float[] d0 = new float[5], d1 = new float[5];
 
             ft = faceTangents[i / 3];
 
-            a = tri.verts[tri.getIndexes().getValues().get(i + 0)];
-            b = tri.verts[tri.getIndexes().getValues().get(i + 1)];
-            c = tri.verts[tri.getIndexes().getValues().get(i + 2)];
+            a = tri.verts[tri.indexes[i + 0]];
+            b = tri.verts[tri.indexes[i + 1]];
+            c = tri.verts[tri.indexes[i + 2]];
 
             d0[0] = b.xyz.oGet(0) - a.xyz.oGet(0);
             d0[1] = b.xyz.oGet(1) - a.xyz.oGet(1);
@@ -1265,7 +1262,7 @@ public class tr_trisurf {
             d1[3] = c.st.oGet(0) - a.st.oGet(0);
             d1[4] = c.st.oGet(1) - a.st.oGet(1);
 
-            area = (d0[3] * d1[4]) - (d0[4] * d1[3]);
+            area = d0[3] * d1[4] - d0[4] * d1[3];
             if (Math.abs(area) < 1e-20f) {
                 ft.negativePolarity = false;
                 ft.degenerate = true;
@@ -1287,30 +1284,30 @@ public class tr_trisurf {
                 final float inva = area < .0f ? -1 : 1;// was = 1.0f / area;
 
                 temp = new idVec3(
-                        ((d0[0] * d1[4]) - (d0[4] * d1[0])) * inva,
-                        ((d0[1] * d1[4]) - (d0[4] * d1[1])) * inva,
-                        ((d0[2] * d1[4]) - (d0[4] * d1[2])) * inva);
+                        (d0[0] * d1[4] - d0[4] * d1[0]) * inva,
+                        (d0[1] * d1[4] - d0[4] * d1[1]) * inva,
+                        (d0[2] * d1[4] - d0[4] * d1[2]) * inva);
                 temp.Normalize();
                 ft.tangents[0] = temp;
 
                 temp = new idVec3(
-                        ((d0[3] * d1[0]) - (d0[0] * d1[3])) * inva,
-                        ((d0[3] * d1[1]) - (d0[1] * d1[3])) * inva,
-                        ((d0[3] * d1[2]) - (d0[2] * d1[3])) * inva);
+                        (d0[3] * d1[0] - d0[0] * d1[3]) * inva,
+                        (d0[3] * d1[1] - d0[1] * d1[3]) * inva,
+                        (d0[3] * d1[2] - d0[2] * d1[3]) * inva);
                 temp.Normalize();
                 ft.tangents[1] = temp;
             } else {
                 temp = new idVec3(
-                        ((d0[0] * d1[4]) - (d0[4] * d1[0])),
-                        ((d0[1] * d1[4]) - (d0[4] * d1[1])),
-                        ((d0[2] * d1[4]) - (d0[4] * d1[2])));
+                        (d0[0] * d1[4] - d0[4] * d1[0]),
+                        (d0[1] * d1[4] - d0[4] * d1[1]),
+                        (d0[2] * d1[4] - d0[4] * d1[2]));
                 temp.Normalize();
                 ft.tangents[0] = temp;
 
                 temp = new idVec3(
-                        ((d0[3] * d1[0]) - (d0[0] * d1[3])),
-                        ((d0[3] * d1[1]) - (d0[1] * d1[3])),
-                        ((d0[3] * d1[2]) - (d0[2] * d1[3])));
+                        (d0[3] * d1[0] - d0[0] * d1[3]),
+                        (d0[3] * d1[1] - d0[1] * d1[3]),
+                        (d0[3] * d1[2] - d0[2] * d1[3]));
                 temp.Normalize();
                 ft.tangents[1] = temp;
             }
@@ -1339,7 +1336,7 @@ public class tr_trisurf {
 
         final boolean[] polarityUsed = new boolean[2];
         int negativeRemap;
-    }
+    };
 
     public static void R_DuplicateMirroredVertexes(srfTriangles_s tri) {
         tangentVert_t[] tVerts;
@@ -1356,12 +1353,12 @@ public class tr_trisurf {
 
         // determine texture polarity of each surface
         // mark each vert with the polarities it uses
-        for (i = 0; i < tri.getIndexes().getNumValues(); i += 3) {
+        for (i = 0; i < tri.numIndexes; i += 3) {
             int polarity;
 
             polarity = btoi(R_FaceNegativePolarity(tri, i));
             for (j = 0; j < 3; j++) {
-                tVerts[tri.getIndexes().getValues().get(i + j)].polarityUsed[polarity] = true;
+                tVerts[tri.indexes[i + j]].polarityUsed[polarity] = true;
             }
         }
 
@@ -1388,7 +1385,7 @@ public class tr_trisurf {
         if (USE_TRI_DATA_ALLOCATOR) {
             tri.verts = /*triVertexAllocator.*/ Resize(tri.verts, totalVerts);
         } else {
-            final idDrawVert[] oldVerts = tri.verts;
+            idDrawVert[] oldVerts = tri.verts;
             R_AllocStaticTriSurfVerts(tri, totalVerts);
 //	memcpy( tri.verts, oldVerts, tri.numVerts * sizeof( tri.verts[0] ) );
             System.arraycopy(oldVerts, 0, tri.verts, 0, tri.numVerts);
@@ -1408,10 +1405,10 @@ public class tr_trisurf {
 
         tri.numVerts = totalVerts;
         // change the indexes
-        for (i = 0; i < tri.getIndexes().getNumValues(); i++) {
-            if ((tVerts[tri.getIndexes().getValues().get(i)].negativeRemap != 0)
+        for (i = 0; i < tri.numIndexes; i++) {
+            if (tVerts[tri.indexes[i]].negativeRemap != 0
                     && R_FaceNegativePolarity(tri, 3 * (i / 3))) {
-                tri.getIndexes().getValues().put(i, tVerts[tri.getIndexes().getValues().get(i)].negativeRemap);
+                tri.indexes[i] = tVerts[tri.indexes[i]].negativeRemap;
             }
         }
 
@@ -1459,7 +1456,7 @@ public class tr_trisurf {
         faceTangents_t ft;
         idDrawVert vert;
 
-        faceTangents = faceTangents_t.generateArray(tri.getIndexes().getNumValues() / 3);
+        faceTangents = faceTangents_t.generateArray(tri.numIndexes / 3);
         R_DeriveFaceTangents(tri, faceTangents);
 
         // clear the tangents
@@ -1469,13 +1466,13 @@ public class tr_trisurf {
         }
 
         // sum up the neighbors
-        for (i = 0; i < tri.getIndexes().getNumValues(); i += 3) {
+        for (i = 0; i < tri.numIndexes; i += 3) {
             ft = faceTangents[i / 3];
 
             // for each vertex on this face
             for (j = 0; j < 3; j++) {
                 DEBUG_R_DeriveTangentsWithoutNormals++;
-                vert = tri.verts[tri.getIndexes().getValues().get(i + j)];
+                vert = tri.verts[tri.indexes[i + j]];
 
 //                System.out.println("--" + System.identityHashCode(vert.tangents[0])
 //                        + "--" + i + j
@@ -1522,7 +1519,7 @@ public class tr_trisurf {
     public static /*ID_INLINE*/ void VectorNormalizeFast2(final idVec3 v, idVec3 out) {
         float length;
 
-        length = idMath.RSqrt((v.oGet(0) * v.oGet(0)) + (v.oGet(1) * v.oGet(1)) + (v.oGet(2) * v.oGet(2)));
+        length = idMath.RSqrt(v.oGet(0) * v.oGet(0) + v.oGet(1) * v.oGet(1) + v.oGet(2) * v.oGet(2));
         out.oSet(0, v.oGet(0) * length);
         out.oSet(1, v.oGet(1) * length);
         out.oSet(2, v.oGet(2) * length);
@@ -1539,7 +1536,7 @@ public class tr_trisurf {
 
         int vertexNum;
         int faceNum;
-    }
+    };
 
     static class IndexSort implements cmp_t<indexSort_t> {
 
@@ -1553,35 +1550,35 @@ public class tr_trisurf {
             }
             return 0;
         }
-    }
+    };
 
     public static void R_BuildDominantTris(srfTriangles_s tri) {
         int i, j;
         dominantTri_s[] dt;
-        final indexSort_t[] ind = new indexSort_t[tri.getIndexes().getNumValues()];// R_StaticAlloc(tri.numIndexes);
+        indexSort_t[] ind = new indexSort_t[tri.numIndexes];// R_StaticAlloc(tri.numIndexes);
 
-        for (i = 0; i < tri.getIndexes().getNumValues(); i++) {
+        for (i = 0; i < tri.numIndexes; i++) {
             ind[i] = new indexSort_t();
-            ind[i].vertexNum = tri.getIndexes().getValues().get(i);
+            ind[i].vertexNum = tri.indexes[i];
             ind[i].faceNum = i / 3;
         }
 //        qsort(ind, tri.numIndexes, sizeof(ind[]), IndexSort);
-        Arrays.sort(ind, 0, tri.getIndexes().getNumValues(), new IndexSort());
+        Arrays.sort(ind, 0, tri.numIndexes, new IndexSort());
 
         tri.dominantTris = dt = new dominantTri_s[tri.numVerts];// triDominantTrisAllocator.Alloc(tri.numVerts);
 //	memset( dt, 0, tri.numVerts * sizeof( dt[0] ) );
 
-        for (i = 0; i < tri.getIndexes().getNumValues(); i += j) {
+        for (i = 0; i < tri.numIndexes; i += j) {
             float maxArea = 0;
-            final int vertNum = ind[i].vertexNum;
-            for (j = 0; ((i + j) < tri.getIndexes().getNumValues()) && (ind[i + j].vertexNum == vertNum); j++) {
-                final float[] d0 = new float[5], d1 = new float[5];
+            int vertNum = ind[i].vertexNum;
+            for (j = 0; i + j < tri.numIndexes && ind[i + j].vertexNum == vertNum; j++) {
+                float[] d0 = new float[5], d1 = new float[5];
                 idDrawVert a, b, c;
-                final idVec3 normal = new idVec3(), tangent = new idVec3(), bitangent = new idVec3();
+                idVec3 normal = new idVec3(), tangent = new idVec3(), bitangent = new idVec3();
 
-                final int i1 = tri.getIndexes().getValues().get((ind[i + j].faceNum * 3) + 0);
-                final int i2 = tri.getIndexes().getValues().get((ind[i + j].faceNum * 3) + 1);
-                final int i3 = tri.getIndexes().getValues().get((ind[i + j].faceNum * 3) + 2);
+                int i1 = tri.indexes[ind[i + j].faceNum * 3 + 0];
+                int i2 = tri.indexes[ind[i + j].faceNum * 3 + 1];
+                int i3 = tri.indexes[ind[i + j].faceNum * 3 + 2];
 
                 a = tri.verts[i1];
                 b = tri.verts[i2];
@@ -1599,9 +1596,9 @@ public class tr_trisurf {
                 d1[3] = c.st.oGet(0) - a.st.oGet(0);
                 d1[4] = c.st.oGet(1) - a.st.oGet(1);
 
-                normal.oSet(0, ((d1[1] * d0[2]) - (d1[2] * d0[1])));
-                normal.oSet(1, ((d1[2] * d0[0]) - (d1[0] * d0[2])));
-                normal.oSet(2, ((d1[0] * d0[1]) - (d1[1] * d0[0])));
+                normal.oSet(0, (d1[1] * d0[2] - d1[2] * d0[1]));
+                normal.oSet(1, (d1[2] * d0[0] - d1[0] * d0[2]));
+                normal.oSet(2, (d1[0] * d0[1] - d1[1] * d0[0]));
 
                 float area = normal.Length();
 
@@ -1630,20 +1627,20 @@ public class tr_trisurf {
                 dt[vertNum].normalizationScale[2] = 1.0f / len;		// normal
 
                 // texture area
-                area = (d0[3] * d1[4]) - (d0[4] * d1[3]);
+                area = d0[3] * d1[4] - d0[4] * d1[3];
 
-                tangent.oSet(0, ((d0[0] * d1[4]) - (d0[4] * d1[0])));
-                tangent.oSet(1, ((d0[1] * d1[4]) - (d0[4] * d1[1])));
-                tangent.oSet(2, ((d0[2] * d1[4]) - (d0[4] * d1[2])));
+                tangent.oSet(0, (d0[0] * d1[4] - d0[4] * d1[0]));
+                tangent.oSet(1, (d0[1] * d1[4] - d0[4] * d1[1]));
+                tangent.oSet(2, (d0[2] * d1[4] - d0[4] * d1[2]));
                 len = tangent.Length();
                 if (len < 0.001f) {
                     len = 0.001f;
                 }
                 dt[vertNum].normalizationScale[0] = (area > 0 ? 1 : -1) / len;	// tangents[0]
 
-                bitangent.oSet(0, ((d0[3] * d1[0]) - (d0[0] * d1[3])));
-                bitangent.oSet(1, ((d0[3] * d1[1]) - (d0[1] * d1[3])));
-                bitangent.oSet(2, ((d0[3] * d1[2]) - (d0[2] * d1[3])));
+                bitangent.oSet(0, (d0[3] * d1[0] - d0[0] * d1[3]));
+                bitangent.oSet(1, (d0[3] * d1[1] - d0[1] * d1[3]));
+                bitangent.oSet(2, (d0[3] * d1[2] - d0[2] * d1[3]));
                 len = bitangent.Length();
                 if (len < 0.001f) {
                     len = 0.001f;
@@ -1747,20 +1744,20 @@ public class tr_trisurf {
             return;
         }
 
-        tr.pc.c_tangentIndexes += tri.getIndexes().getNumValues();
+        tr.pc.c_tangentIndexes += tri.numIndexes;
 
-        if ((null == tri.facePlanes) && allocFacePlanes) {
-            R_AllocStaticTriSurfPlanes(tri, tri.getIndexes().getNumValues());
+        if (null == tri.facePlanes && allocFacePlanes) {
+            R_AllocStaticTriSurfPlanes(tri, tri.numIndexes);
         }
         planes = tri.facePlanes;
 
         if (true) {
 
             if (null == planes) {
-                planes = Stream.generate(idPlane::new).limit(tri.getIndexes().getNumValues() / 3).toArray(idPlane[]::new);
+                planes = Stream.generate(idPlane::new).limit(tri.numIndexes / 3).toArray(idPlane[]::new);
             }
 
-            SIMDProcessor.DeriveTangents(planes, tri.verts, tri.numVerts, tri.getIndexes().getValues(), tri.getIndexes().getNumValues());
+            SIMDProcessor.DeriveTangents(planes, tri.verts, tri.numVerts, tri.indexes, tri.numIndexes);
 
 //}else{
 //
@@ -1856,17 +1853,17 @@ public class tr_trisurf {
 //}else
         {
 
-            final int[] dupVerts = tri.dupVerts;
-            final idDrawVert[] verts = tri.verts;
+            int[] dupVerts = tri.dupVerts;
+            idDrawVert[] verts = tri.verts;
 
             // add the normal of a duplicated vertex to the normal of the first vertex with the same XYZ
             for (i = 0; i < tri.numDupVerts; i++) {
-                verts[dupVerts[(i * 2) + 0]].normal.oPluSet(verts[dupVerts[(i * 2) + 1]].normal);
+                verts[dupVerts[i * 2 + 0]].normal.oPluSet(verts[dupVerts[i * 2 + 1]].normal);
             }
 
             // copy vertex normals to duplicated vertices
             for (i = 0; i < tri.numDupVerts; i++) {
-                verts[dupVerts[(i * 2) + 1]].normal = verts[dupVerts[(i * 2) + 0]].normal;
+                verts[dupVerts[i * 2 + 1]].normal = verts[dupVerts[i * 2 + 0]].normal;
             }
 
         }
@@ -1942,20 +1939,19 @@ public class tr_trisurf {
         // check for completely duplicated triangles
         // any rotation of the triangle is still the same, but a mirroring
         // is considered different
-        for (i = 0; i < tri.getIndexes().getNumValues(); i += 3) {
+        for (i = 0; i < tri.numIndexes; i += 3) {
             for (r = 0; r < 3; r++) {
                 a = tri.silIndexes[i + r];
-                b = tri.silIndexes[i + ((r + 1) % 3)];
-                c = tri.silIndexes[i + ((r + 2) % 3)];
-                for (j = i + 3; j < tri.getIndexes().getNumValues(); j += 3) {
-                    if ((tri.silIndexes[j] == a) && (tri.silIndexes[j + 1] == b) && (tri.silIndexes[j + 2] == c)) {
+                b = tri.silIndexes[i + (r + 1) % 3];
+                c = tri.silIndexes[i + (r + 2) % 3];
+                for (j = i + 3; j < tri.numIndexes; j += 3) {
+                    if (tri.silIndexes[j] == a && tri.silIndexes[j + 1] == b && tri.silIndexes[j + 2] == c) {
                         c_removed++;
 //					memmove( tri.indexes + j, tri.indexes + j + 3, ( tri.numIndexes - j - 3 ) * sizeof( tri.indexes[0] ) );
-                        //System.arraycopy(tri.getIndexes().getValues(), j + 3, tri.getIndexes().getValues(), j, tri.getIndexes().getNumValues() - j - 3);
-                        Nio.buffercopy(tri.getIndexes().getValues(), j + 3, tri.getIndexes().getValues(), j, tri.getIndexes().getNumValues() - j - 3);
+                        System.arraycopy(tri.indexes, j + 3, tri.indexes, j, tri.numIndexes - j - 3);
 //					memmove( tri.silIndexes + j, tri.silIndexes + j + 3, ( tri.numIndexes - j - 3 ) * sizeof( tri.silIndexes[0] ) );
-                        Nio.arraycopy(tri.silIndexes, j + 3, tri.silIndexes, j, tri.getIndexes().getNumValues() - j - 3);
-                        tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() - 3);
+                        System.arraycopy(tri.silIndexes, j + 3, tri.silIndexes, j, tri.numIndexes - j - 3);
+                        tri.numIndexes -= 3;
                         j -= 3;
                     }
                 }
@@ -1982,20 +1978,19 @@ public class tr_trisurf {
 
         // check for completely degenerate triangles
         c_removed = 0;
-        for (i = 0; i < tri.getIndexes().getNumValues(); i += 3) {
+        for (i = 0; i < tri.numIndexes; i += 3) {
             a = tri.silIndexes[i];
             b = tri.silIndexes[i + 1];
             c = tri.silIndexes[i + 2];
-            if ((a == b) || (a == c) || (b == c)) {
+            if (a == b || a == c || b == c) {
                 c_removed++;
 //			memmove( tri.indexes + i, tri.indexes + i + 3, ( tri.numIndexes - i - 3 ) * sizeof( tri.indexes[0] ) );
-                //System.arraycopy(tri.getIndexes().getValues(), i + 3, tri.getIndexes().getValues(), i, tri.getIndexes().getNumValues() - i - 3);
-                Nio.buffercopy(tri.getIndexes().getValues(), i + 3, tri.getIndexes().getValues(), i, tri.getIndexes().getNumValues() - i - 3);
+                System.arraycopy(tri.indexes, i + 3, tri.indexes, i, tri.numIndexes - i - 3);
                 if (tri.silIndexes != null) {
 //				memmove( tri.silIndexes + i, tri.silIndexes + i + 3, ( tri.numIndexes - i - 3 ) * sizeof( tri.silIndexes[0] ) );
-                    Nio.arraycopy(tri.silIndexes, i + 3, tri.silIndexes, i, tri.getIndexes().getNumValues() - i - 3);
+                    System.arraycopy(tri.silIndexes, i + 3, tri.silIndexes, i, tri.numIndexes - i - 3);
                 }
-                tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() - 3);
+                tri.numIndexes -= 3;
                 i -= 3;
             }
         }
@@ -2017,12 +2012,12 @@ public class tr_trisurf {
 
         // check for triangles with a degenerate texture space
         c_degenerate = 0;
-        for (i = 0; i < tri.getIndexes().getNumValues(); i += 3) {
-            final idDrawVert a = tri.verts[tri.getIndexes().getValues().get(i + 0)];
-            final idDrawVert b = tri.verts[tri.getIndexes().getValues().get(i + 1)];
-            final idDrawVert c = tri.verts[tri.getIndexes().getValues().get(i + 2)];
+        for (i = 0; i < tri.numIndexes; i += 3) {
+            final idDrawVert a = tri.verts[tri.indexes[i + 0]];
+            final idDrawVert b = tri.verts[tri.indexes[i + 1]];
+            final idDrawVert c = tri.verts[tri.indexes[i + 2]];
 
-            if ((a.st == b.st) || (b.st == c.st) || (c.st == a.st)) {
+            if (a.st == b.st || b.st == c.st || c.st == a.st) {
                 c_degenerate++;
             }
         }
@@ -2045,16 +2040,16 @@ public class tr_trisurf {
 
         mark = new int[tri.numVerts];// R_ClearedStaticAlloc(tri.numVerts);
 
-        for (i = 0; i < tri.getIndexes().getNumValues(); i++) {
-            index = tri.getIndexes().getValues().get(i);
-            if ((index < 0) || (index >= tri.numVerts)) {
+        for (i = 0; i < tri.numIndexes; i++) {
+            index = tri.indexes[i];
+            if (index < 0 || index >= tri.numVerts) {
                 common.Error("R_RemoveUnusedVerts: bad index");
             }
             mark[index] = 1;
 
             if (tri.silIndexes != null) {
                 index = tri.silIndexes[i];
-                if ((index < 0) || (index >= tri.numVerts)) {
+                if (index < 0 || index >= tri.numVerts) {
                     common.Error("R_RemoveUnusedVerts: bad index");
                 }
                 mark[index] = 1;
@@ -2071,8 +2066,8 @@ public class tr_trisurf {
         }
 
         if (used != tri.numVerts) {
-            for (i = 0; i < tri.getIndexes().getNumValues(); i++) {
-                tri.getIndexes().getValues().put(i, mark[tri.getIndexes().getValues().get(i)] - 1);
+            for (i = 0; i < tri.numIndexes; i++) {
+                tri.indexes[i] = mark[tri.indexes[i]] - 1;
                 if (tri.silIndexes != null) {
                     tri.silIndexes[i] = mark[tri.silIndexes[i]] - 1;
                 }
@@ -2112,14 +2107,14 @@ public class tr_trisurf {
         totalIndexes = 0;
         for (i = 0; i < numSurfaces; i++) {
             totalVerts += surfaces[i].numVerts;
-            totalIndexes += surfaces[i].getIndexes().getNumValues();
+            totalIndexes += surfaces[i].numIndexes;
         }
 
         newTri = R_AllocStaticTriSurf();
         newTri.numVerts = totalVerts;
-        newTri.getIndexes().setNumValues(totalIndexes);
+        newTri.numIndexes = totalIndexes;
         R_AllocStaticTriSurfVerts(newTri, newTri.numVerts);
-        R_AllocStaticTriSurfIndexes(newTri, newTri.getIndexes().getNumValues());
+        R_AllocStaticTriSurfIndexes(newTri, newTri.numIndexes);
 
         totalVerts = 0;
         totalIndexes = 0;
@@ -2127,11 +2122,11 @@ public class tr_trisurf {
             tri = surfaces[i];
 //		memcpy( newTri.verts + totalVerts, tri.verts, tri.numVerts * sizeof( *tri.verts ) );
             System.arraycopy(tri.verts, 0, newTri.verts, totalVerts, tri.numVerts);
-            for (j = 0; j < tri.getIndexes().getNumValues(); j++) {
-                newTri.getIndexes().getValues().put(totalIndexes + j, totalVerts + tri.getIndexes().getValues().get(j));
+            for (j = 0; j < tri.numIndexes; j++) {
+                newTri.indexes[totalIndexes + j] = totalVerts + tri.indexes[j];
             }
             totalVerts += tri.numVerts;
-            totalIndexes += tri.getIndexes().getNumValues();
+            totalIndexes += tri.numIndexes;
         }
 
         return newTri;
@@ -2176,12 +2171,12 @@ public class tr_trisurf {
         }
 
         // flip the index order to make them back sided
-        for (i = 0; i < tri.getIndexes().getNumValues(); i += 3) {
+        for (i = 0; i < tri.numIndexes; i += 3) {
             int/*glIndex_t*/ temp;
 
-            temp = tri.getIndexes().getValues().get(i + 0);
-            tri.getIndexes().getValues().put(i + 0, tri.getIndexes().getValues().get(i + 1));
-            tri.getIndexes().getValues().put(i + 1, temp);
+            temp = tri.indexes[i + 0];
+            tri.indexes[i + 0] = tri.indexes[i + 1];
+            tri.indexes[i + 1] = temp;
         }
     }
 
@@ -2255,12 +2250,12 @@ public class tr_trisurf {
         R_AllocStaticTriSurfVerts(tri, tri.numVerts);
         SIMDProcessor.Memcpy(tri.verts, verts, tri.numVerts);
 
-        tri.getIndexes().setNumValues(numIndexes);
-        R_AllocStaticTriSurfIndexes(tri, tri.getIndexes().getNumValues());
+        tri.numIndexes = numIndexes;
+        R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
 
         // don't memcpy, so we can change the index type from int to short without changing the interface
-        for (i = 0; i < tri.getIndexes().getNumValues(); i++) {
-            tri.getIndexes().getValues().put(i, indexes[i]);
+        for (i = 0; i < tri.numIndexes; i++) {
+            tri.indexes[i] = indexes[i];
         }
 
         R_RangeCheckIndexes(tri);
@@ -2286,10 +2281,8 @@ public class tr_trisurf {
         deform.numSourceVerts = numVerts;
         deform.numOutputVerts = tri.numVerts;
 
-        //deform.numIndexes = numIndexes;
-        //deform.indexes = tri.getIndexes().getValues();
-        deform.getIndexes().setNumValues(numIndexes);
-        deform.getIndexes().setValues(tri.getIndexes().getValues());
+        deform.numIndexes = numIndexes;
+        deform.indexes = tri.indexes;
 
         deform.silIndexes = tri.silIndexes;
 
@@ -2328,12 +2321,12 @@ public class tr_trisurf {
         R_AllocStaticTriSurfVerts(tri, tri.numVerts);
         SIMDProcessor.Memcpy(tri.verts, verts, tri.numVerts);
 
-        tri.getIndexes().setNumValues(numIndexes);
-        R_AllocStaticTriSurfIndexes(tri, tri.getIndexes().getNumValues());
+        tri.numIndexes = numIndexes;
+        R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
 
         // don't memcpy, so we can change the index type from int to short without changing the interface
-        for (i = 0; i < tri.getIndexes().getNumValues(); i++) {
-            tri.getIndexes().getValues().put(i, indexes.oGet(i));
+        for (i = 0; i < tri.numIndexes; i++) {
+            tri.indexes[i] = indexes.oGet(i);
         }
 
         R_RangeCheckIndexes(tri);
@@ -2359,10 +2352,8 @@ public class tr_trisurf {
         deform.numSourceVerts = numVerts;
         deform.numOutputVerts = tri.numVerts;
 
-        //deform.numIndexes = numIndexes;
-        //deform.indexes = tri.getIndexes().getValues();
-        deform.getIndexes().setNumValues(numIndexes);
-        deform.getIndexes().setValues(tri.getIndexes().getValues());
+        deform.numIndexes = numIndexes;
+        deform.indexes = tri.indexes;
 
         deform.silIndexes = tri.silIndexes;
 
@@ -2422,13 +2413,11 @@ public class tr_trisurf {
     public static int R_DeformInfoMemoryUsed(deformInfo_s deformInfo) {
         int total = 0;
 
-        if (deformInfo.getIndexes().getValues() != null) {
-            //total += deformInfo.numIndexes;// * sizeof( deformInfo.indexes[0] );
-            total += deformInfo.getIndexes().getNumValues();// * sizeof( deformInfo.indexes[0] );
+        if (deformInfo.indexes != null) {
+            total += deformInfo.numIndexes;// * sizeof( deformInfo.indexes[0] );
         }
         if (deformInfo.silIndexes != null) {
-            //total += deformInfo.numIndexes;// * sizeof( deformInfo.silIndexes[0] );
-            total += deformInfo.getIndexes().getNumValues();// * sizeof( deformInfo.indexes[0] );
+            total += deformInfo.numIndexes;// * sizeof( deformInfo.silIndexes[0] );
         }
         if (deformInfo.silEdges != null) {
             total += deformInfo.numSilEdges;//* sizeof( deformInfo.silEdges[0] );
@@ -2448,7 +2437,7 @@ public class tr_trisurf {
     }
 
     private static idDrawVert[] Resize(idDrawVert[] verts, int totalVerts) {
-        final idDrawVert[] newVerts = new idDrawVert[totalVerts];
+        idDrawVert[] newVerts = new idDrawVert[totalVerts];
 
         System.arraycopy(verts, 0, newVerts, 0, verts.length);
 
@@ -2456,26 +2445,24 @@ public class tr_trisurf {
     }
 
     private static shadowCache_s[] Resize(shadowCache_s[] shadowVertexes, int numVerts) {
-        final shadowCache_s[] newArray = new shadowCache_s[numVerts];
+        shadowCache_s[] newArray = new shadowCache_s[numVerts];
         System.arraycopy(shadowVertexes, 0, newArray, 0, Math.min(shadowVertexes.length, numVerts));
         return newArray;
     }
 
-    private static IntBuffer Resize(IntBuffer indexes, int numIndexes) {
+    private static int[] Resize(int[] indexes, int numIndexes) {
         if (indexes == null) {
-            return Nio.newIntBuffer(numIndexes);
+            return new int[numIndexes];
         }
 
         if (numIndexes <= 0) {
-            return Nio.newIntBuffer(0);
+            return null;
         }
 
-        final int size = numIndexes > indexes.limit() ? indexes.limit() : numIndexes;
-        final IntBuffer newIndexes = Nio.newIntBuffer(numIndexes);
+        final int size = numIndexes > indexes.length ? indexes.length : numIndexes;
+        int[] newIndexes = new int[numIndexes];
 
-        for (int i = 0; i < size; i++) {
-			newIndexes.put(i, indexes.get(i));
-		}
+        System.arraycopy(indexes, 0, newIndexes, 0, size);
 
         return newIndexes;
     }

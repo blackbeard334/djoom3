@@ -76,14 +76,14 @@ public class ModelManager {
         public abstract idRenderModel FindModel(final String modelName);
 
         public idRenderModel FindModel(final idStr modelName) {
-            return FindModel(modelName.getData());
+            return FindModel(modelName.toString());
         }
 
         // returns NULL if not loadable
         public abstract idRenderModel CheckModel(final String modelName);
 
         public idRenderModel CheckModel(final idStr modelName) {
-            return CheckModel(modelName.getData());
+            return CheckModel(modelName.toString());
         }
 
         // returns the default cube model
@@ -113,16 +113,16 @@ public class ModelManager {
 
         // print memory info
         public abstract void PrintMemInfo(MemInfo_t mi);
-    }
+    };
 
     public static class idRenderModelManagerLocal extends idRenderModelManager {
 
-        private final idList<idRenderModel> models;
-        private final idHashIndex hash;
+        private idList<idRenderModel> models;
+        private idHashIndex hash;
         private idRenderModel defaultModel;
         private idRenderModel beamModel;
         private idRenderModel spriteModel;
-        private final idRenderModel trailModel;
+        private idRenderModel trailModel;
         private boolean insideLevelLoad;		// don't actually load now
         //
         //
@@ -130,11 +130,11 @@ public class ModelManager {
         public idRenderModelManagerLocal() {
             this.models = new idList<>();
             this.hash = new idHashIndex();
-            this.defaultModel = null;
-            this.beamModel = null;
-            this.spriteModel = null;
-            this.trailModel = null;
-            this.insideLevelLoad = false;
+            defaultModel = null;
+            beamModel = null;
+            spriteModel = null;
+            trailModel = null;
+            insideLevelLoad = false;
         }
         // virtual					~idRenderModelManagerLocal() {}
 
@@ -145,34 +145,34 @@ public class ModelManager {
             cmdSystem.AddCommand("reloadModels", ReloadModels_f.getInstance(), CMD_FL_RENDERER | CMD_FL_CHEAT, "reloads models");
             cmdSystem.AddCommand("touchModel", TouchModel_f.getInstance(), CMD_FL_RENDERER, "touches a model", idCmdSystem.ArgCompletion_ModelName.getInstance());
 
-            this.insideLevelLoad = false;
+            insideLevelLoad = false;
 
             // create a default model
-            final idRenderModelStatic model = new idRenderModelStatic();
+            idRenderModelStatic model = new idRenderModelStatic();
             model.InitEmpty("_DEFAULT");
             model.MakeDefaultModel();
             model.SetLevelLoadReferenced(true);
-            this.defaultModel = model;
+            defaultModel = model;
             AddModel(model);
 
             // create the beam model
-            final idRenderModelStatic beam = new idRenderModelBeam();
+            idRenderModelStatic beam = new idRenderModelBeam();
             beam.InitEmpty("_BEAM");
             beam.SetLevelLoadReferenced(true);
-            this.beamModel = beam;
+            beamModel = beam;
             AddModel(beam);
 
-            final idRenderModelStatic sprite = new idRenderModelSprite();
+            idRenderModelStatic sprite = new idRenderModelSprite();
             sprite.InitEmpty("_SPRITE");
             sprite.SetLevelLoadReferenced(true);
-            this.spriteModel = sprite;
+            spriteModel = sprite;
             AddModel(sprite);
         }
 
         @Override
         public void Shutdown() {
-            this.models.DeleteContents(true);
-            this.hash.Free();
+            models.DeleteContents(true);
+            hash.Free();
         }
 
         @Override
@@ -185,21 +185,19 @@ public class ModelManager {
             if (null == model) {
                 return;
             }
-            try {
-            	((idRenderModelStatic) model).getClass();
-			} catch (Exception e) {
+            if (null == ((idRenderModelStatic) model)) {//TODO:always false?
                 common.Error("idRenderModelManager::FreeModel: model '%s' is not a static model", model.Name());
                 return;
             }
-            if (model == this.defaultModel) {
+            if (model == defaultModel) {
                 common.Error("idRenderModelManager::FreeModel: can't free the default model");
                 return;
             }
-            if (model == this.beamModel) {
+            if (model == beamModel) {
                 common.Error("idRenderModelManager::FreeModel: can't free the beam model");
                 return;
             }
-            if (model == this.spriteModel) {
+            if (model == spriteModel) {
                 common.Error("idRenderModelManager::FreeModel: can't free the sprite model");
                 return;
             }
@@ -221,19 +219,19 @@ public class ModelManager {
 
         @Override
         public idRenderModel DefaultModel() {
-            return this.defaultModel;
+            return defaultModel;
         }
 
         @Override
         public void AddModel(idRenderModel model) {
-            this.hash.Add(this.hash.GenerateKey(model.Name(), false), this.models.Append(model));
+            hash.Add(hash.GenerateKey(model.Name(), false), models.Append(model));
         }
 
         @Override
         public void RemoveModel(idRenderModel model) {
-            final int index = this.models.FindIndex(model);
-            this.hash.RemoveIndex(this.hash.GenerateKey(model.Name(), false), index);
-            this.models.RemoveIndex(index);
+            int index = models.FindIndex(model);
+            hash.RemoveIndex(hash.GenerateKey(model.Name(), false), index);
+            models.RemoveIndex(index);
         }
 
         @Override
@@ -247,8 +245,8 @@ public class ModelManager {
             R_FreeDerivedData();
 
             // skip the default model at index 0
-            for (int i = 1; i < this.models.Num(); i++) {
-                final idRenderModel model = this.models.oGet(i);
+            for (int i = 1; i < models.Num(); i++) {
+                idRenderModel model = models.oGet(i);
 
                 // we may want to allow world model reloading in the future, but we don't now
                 if (!model.IsReloadable()) {
@@ -277,16 +275,16 @@ public class ModelManager {
 
         @Override
         public void FreeModelVertexCaches() {
-            for (int i = 0; i < this.models.Num(); i++) {
-                final idRenderModel model = this.models.oGet(i);
+            for (int i = 0; i < models.Num(); i++) {
+                idRenderModel model = models.oGet(i);
                 model.FreeVertexCache();
             }
         }
 
         @Override
         public void WritePrecacheCommands(idFile f) {
-            for (int i = 0; i < this.models.Num(); i++) {
-                final idRenderModel model = this.models.oGet(i);
+            for (int i = 0; i < models.Num(); i++) {
+                idRenderModel model = models.oGet(i);
 
                 if (null == model) {
                     continue;
@@ -304,10 +302,10 @@ public class ModelManager {
 
         @Override
         public void BeginLevelLoad() {
-            this.insideLevelLoad = true;
+            insideLevelLoad = true;
 
-            for (int i = 0; i < this.models.Num(); i++) {
-                final idRenderModel model = this.models.oGet(i);
+            for (int i = 0; i < models.Num(); i++) {
+                idRenderModel model = models.oGet(i);
 
                 if (com_purgeAll.GetBool() && model.IsReloadable()) {
                     R_CheckForEntityDefsUsingModel(model);
@@ -325,16 +323,16 @@ public class ModelManager {
         public void EndLevelLoad() {
             common.Printf("----- idRenderModelManagerLocal::EndLevelLoad -----\n");
 
-            final int start = Sys_Milliseconds();
+            int start = Sys_Milliseconds();
 
-            this.insideLevelLoad = false;
+            insideLevelLoad = false;
             int purgeCount = 0;
             int keepCount = 0;
             int loadCount = 0;
 
             // purge any models not touched
-            for (int i = 0; i < this.models.Num(); i++) {
-                final idRenderModel model = this.models.oGet(i);
+            for (int i = 0; i < models.Num(); i++) {
+                idRenderModel model = models.oGet(i);
 
                 if (!model.IsLevelLoadReferenced() && model.IsLoaded() && model.IsReloadable()) {
 
@@ -356,8 +354,8 @@ public class ModelManager {
             R_PurgeTriSurfData(frameData);
 
             // load any new ones
-            for (int i = 0; i < this.models.Num(); i++) {
-                final idRenderModel model = this.models.oGet(i);
+            for (int i = 0; i < models.Num(); i++) {
+                idRenderModel model = models.oGet(i);
 
                 if (model.IsLevelLoadReferenced() && !model.IsLoaded() && model.IsReloadable()) {
 
@@ -371,7 +369,7 @@ public class ModelManager {
             }
 
             // _D3XP added this
-            final int end = Sys_Milliseconds();
+            int end = Sys_Milliseconds();
             common.Printf("%5d models purged from previous level, ", purgeCount);
             common.Printf("%5d models kept.\n", keepCount);
             if (loadCount != 0) {
@@ -398,7 +396,7 @@ public class ModelManager {
                 sortIndex[i] = i;
             }
 
-            for (i = 0; i < (localModelManager.models.Num() - 1); i++) {
+            for (i = 0; i < localModelManager.models.Num() - 1; i++) {
                 for (j = i + 1; j < localModelManager.models.Num(); j++) {
                     if (localModelManager.models.oGet(sortIndex[i]).Memory() < localModelManager.models.oGet(sortIndex[j]).Memory()) {
                         final int temp = sortIndex[i];
@@ -410,7 +408,7 @@ public class ModelManager {
 
             // print next
             for (i = 0; i < localModelManager.models.Num(); i++) {
-                final idRenderModel model = localModelManager.models.oGet(sortIndex[i]);
+                idRenderModel model = localModelManager.models.oGet(sortIndex[i]);
                 int mem;
 
                 if (!model.IsLoaded()) {
@@ -419,21 +417,21 @@ public class ModelManager {
 
                 mem = model.Memory();
                 totalMem += mem;
-                f.Printf("%s %s\n", idStr.FormatNumber(mem).getData(), model.Name());
+                f.Printf("%s %s\n", idStr.FormatNumber(mem).toString(), model.Name());
             }
 
 //	delete sortIndex;
             mi.modelAssetsTotal = totalMem;
 
-            f.Printf("\nTotal model bytes allocated: %s\n", idStr.FormatNumber(totalMem).getData());
+            f.Printf("\nTotal model bytes allocated: %s\n", idStr.FormatNumber(totalMem).toString());
             fileSystem.CloseFile(f);
         }
 
         private idRenderModel GetModel(final String modelName, boolean createIfNotFound) {
             idStr canonical;
-            final idStr extension = new idStr();
+            idStr extension = new idStr();
 
-            if ((null == modelName) || modelName.isEmpty()) {
+            if (null == modelName || modelName.isEmpty()) {
                 return null;
             }
 
@@ -441,15 +439,15 @@ public class ModelManager {
             canonical.ToLower();
 
             // see if it is already present
-            final int key = this.hash.GenerateKey(modelName, false);
-            for (int i = this.hash.First(key); i != -1; i = this.hash.Next(i)) {
-                final idRenderModel model = this.models.oGet(i);
+            int key = hash.GenerateKey(modelName, false);
+            for (int i = hash.First(key); i != -1; i = hash.Next(i)) {
+                idRenderModel model = models.oGet(i);
 
                 if (canonical.Icmp(model.Name()) == 0) {
                     if (!model.IsLoaded()) {
                         // reload it if it was purged
                         model.LoadModel();
-                    } else if (this.insideLevelLoad && !model.IsLevelLoadReferenced()) {
+                    } else if (insideLevelLoad && !model.IsLevelLoadReferenced()) {
                         // we are reusing a model already in memory, but
                         // touch all the materials to make sure they stay
                         // in memory as well
@@ -503,7 +501,7 @@ public class ModelManager {
                     return null;
                 }
 
-                final idRenderModelStatic smodel = new idRenderModelStatic();
+                idRenderModelStatic smodel = new idRenderModelStatic();
                 smodel.InitEmpty(modelName);
                 smodel.MakeDefaultModel();
 
@@ -558,7 +556,7 @@ public class ModelManager {
 
                 model.Print();
             }
-        }
+        };
 
         /*
          ==============
@@ -585,7 +583,7 @@ public class ModelManager {
                 common.Printf(" ---   --- ----- ----\n");
 
                 for (int i = 0; i < localModelManager.models.Num(); i++) {
-                    final idRenderModel model = localModelManager.models.oGet(i);
+                    idRenderModel model = localModelManager.models.oGet(i);
 
                     if (!model.IsLoaded()) {
                         continue;
@@ -601,7 +599,7 @@ public class ModelManager {
                 common.Printf("%d loaded models\n", inUse);
                 common.Printf("total memory: %4.1fM\n", (float) totalMem / (1024 * 1024));
             }
-        }
+        };
 
         /*
          ==============
@@ -627,7 +625,7 @@ public class ModelManager {
                     localModelManager.ReloadModels(false);
                 }
             }
-        }
+        };
 
         /*
          ==============
@@ -649,7 +647,7 @@ public class ModelManager {
 
             @Override
             public void run(idCmdArgs args) {
-                final String model = args.Argv(1);
+                String model = args.Argv(1);
 
                 if (model.isEmpty()) {
                     common.Printf("usage: touchModel <modelName>\n");
@@ -658,13 +656,13 @@ public class ModelManager {
 
                 common.Printf("touchModel %s\n", model);
                 session.UpdateScreen();
-                final idRenderModel m = renderModelManager.CheckModel(model);
+                idRenderModel m = renderModelManager.CheckModel(model);
                 if (null == m) {
                     common.Printf("...not found\n");
                 }
             }
-        }
-    }
+        };
+    };
 
     public static void setRenderModelManager(idRenderModelManager renderModelManager) {
         ModelManager.renderModelManager = ModelManager.localModelManager = (idRenderModelManagerLocal) renderModelManager;

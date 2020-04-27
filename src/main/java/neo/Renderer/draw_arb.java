@@ -6,6 +6,21 @@ import static neo.Renderer.Material.stageVertexColor_t.SVC_INVERSE_MODULATE;
 import static neo.Renderer.RenderSystem_init.r_useTripleTextureARB;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.draw_common.RB_StencilShadowPass;
+import static neo.Renderer.qgl.qglClear;
+import static neo.Renderer.qgl.qglColor3f;
+import static neo.Renderer.qgl.qglColor4fv;
+import static neo.Renderer.qgl.qglColorPointer;
+import static neo.Renderer.qgl.qglDisable;
+import static neo.Renderer.qgl.qglDisableClientState;
+import static neo.Renderer.qgl.qglEnable;
+import static neo.Renderer.qgl.qglEnableClientState;
+import static neo.Renderer.qgl.qglScissor;
+import static neo.Renderer.qgl.qglStencilFunc;
+import static neo.Renderer.qgl.qglTexCoord2f;
+import static neo.Renderer.qgl.qglTexCoordPointer;
+import static neo.Renderer.qgl.qglTexEnvi;
+import static neo.Renderer.qgl.qglTexGenfv;
+import static neo.Renderer.qgl.qglVertexPointer;
 import static neo.Renderer.tr_backend.GL_SelectTexture;
 import static neo.Renderer.tr_backend.GL_State;
 import static neo.Renderer.tr_backend.GL_TexEnv;
@@ -24,51 +39,36 @@ import static neo.Renderer.tr_local.glConfig;
 import static neo.Renderer.tr_render.RB_CreateSingleDrawInteractions;
 import static neo.Renderer.tr_render.RB_DrawElementsWithCounters;
 import static neo.TempDump.NOT;
-import static neo.open.gl.QGL.qglClear;
-import static neo.open.gl.QGL.qglColor3f;
-import static neo.open.gl.QGL.qglColor4fv;
-import static neo.open.gl.QGL.qglColorPointer;
-import static neo.open.gl.QGL.qglDisable;
-import static neo.open.gl.QGL.qglDisableClientState;
-import static neo.open.gl.QGL.qglEnable;
-import static neo.open.gl.QGL.qglEnableClientState;
-import static neo.open.gl.QGL.qglScissor;
-import static neo.open.gl.QGL.qglStencilFunc;
-import static neo.open.gl.QGL.qglTexCoord2f;
-import static neo.open.gl.QGL.qglTexCoordPointer;
-import static neo.open.gl.QGL.qglTexEnvi;
-import static neo.open.gl.QGL.qglTexGenfv;
-import static neo.open.gl.QGL.qglVertexPointer;
-import static neo.open.gl.QGLConstantsIfc.GL_ALPHA_SCALE;
-import static neo.open.gl.QGLConstantsIfc.GL_ALWAYS;
-import static neo.open.gl.QGLConstantsIfc.GL_COLOR_ARRAY;
-import static neo.open.gl.QGLConstantsIfc.GL_COMBINE_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_COMBINE_RGB_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_DOT3_RGBA_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_FLOAT;
-import static neo.open.gl.QGLConstantsIfc.GL_MODULATE;
-import static neo.open.gl.QGLConstantsIfc.GL_OBJECT_PLANE;
-import static neo.open.gl.QGLConstantsIfc.GL_ONE_MINUS_SRC_COLOR;
-import static neo.open.gl.QGLConstantsIfc.GL_OPERAND0_RGB_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_OPERAND1_RGB_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_PREVIOUS_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_PRIMARY_COLOR_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_Q;
-import static neo.open.gl.QGLConstantsIfc.GL_RGB_SCALE_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_S;
-import static neo.open.gl.QGLConstantsIfc.GL_SOURCE0_RGB_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_SOURCE1_RGB_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_SRC_COLOR;
-import static neo.open.gl.QGLConstantsIfc.GL_STENCIL_BUFFER_BIT;
-import static neo.open.gl.QGLConstantsIfc.GL_STENCIL_TEST;
-import static neo.open.gl.QGLConstantsIfc.GL_T;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_COORD_ARRAY;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_ENV;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_Q;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_S;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_T;
-import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_COMBINE_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_COMBINE_RGB_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_OPERAND0_RGB_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_OPERAND1_RGB_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_PREVIOUS_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_PRIMARY_COLOR_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_RGB_SCALE_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_SOURCE0_RGB_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_SOURCE1_RGB_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvDot3.GL_DOT3_RGBA_ARB;
+import static org.lwjgl.opengl.GL11.GL_ALPHA_SCALE;
+import static org.lwjgl.opengl.GL11.GL_ALWAYS;
+import static org.lwjgl.opengl.GL11.GL_COLOR_ARRAY;
+import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.GL_MODULATE;
+import static org.lwjgl.opengl.GL11.GL_OBJECT_PLANE;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_COLOR;
+import static org.lwjgl.opengl.GL11.GL_Q;
+import static org.lwjgl.opengl.GL11.GL_S;
+import static org.lwjgl.opengl.GL11.GL_SRC_COLOR;
+import static org.lwjgl.opengl.GL11.GL_STENCIL_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_STENCIL_TEST;
+import static org.lwjgl.opengl.GL11.GL_T;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_ENV;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_GEN_Q;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_GEN_S;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_GEN_T;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 
 import neo.Renderer.Model.lightingCache_s;
 import neo.Renderer.Model.srfTriangles_s;
@@ -142,14 +142,14 @@ public class draw_arb {
 
         @Override
         public void run(final drawInteraction_t din) {
-            final drawSurf_s surf = din.surf;
-            final srfTriangles_s tri = din.surf.geo;
+            drawSurf_s surf = din.surf;
+            srfTriangles_s tri = din.surf.geo;
 
             // set the vertex arrays, which may not all be enabled on a given pass
-            final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
-            qglVertexPointer(3, GL_FLOAT, 0/*sizeof(idDrawVert)*/, ac.xyz.toFloatBuffer());
+            idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
+            qglVertexPointer(3, GL_FLOAT, 0/*sizeof(idDrawVert)*/, ac.xyz.ToFloatPtr());
             GL_SelectTexture(0);
-            qglTexCoordPointer(2, GL_FLOAT, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.st.toFloatBuffer());
+            qglTexCoordPointer(2, GL_FLOAT, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.st.ToFloatPtr());
 
             //-----------------------------------------------------
             //
@@ -165,27 +165,27 @@ public class draw_arb {
             qglColor3f(1, 1, 1);
             qglDisableClientState(GL_TEXTURE_COORD_ARRAY);
             qglEnable(GL_TEXTURE_GEN_S);
-            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[3].toFloatBuffer());
+            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[3].ToFloatPtr());
             qglTexCoord2f(0, 0.5f);
 
 // ATI R100 can't do partial texgens
             final boolean NO_MIXED_TEXGEN = true;
 
             if (NO_MIXED_TEXGEN) {
-                final idVec4 plane = new idVec4(0, 0, 0, 0.5f);
+                idVec4 plane = new idVec4(0, 0, 0, 0.5f);
 //plane[0] = 0;
 //plane[1] = 0;
 //plane[2] = 0;
 //plane[3] = 0.5;
                 qglEnable(GL_TEXTURE_GEN_T);
-                qglTexGenfv(GL_T, GL_OBJECT_PLANE, plane.toFloatBuffer());
+                qglTexGenfv(GL_T, GL_OBJECT_PLANE, plane.ToFloatPtr());
 
                 plane.oSet(0, 0f);
                 plane.oSet(1, 0f);
                 plane.oSet(2, 0f);
                 plane.oSet(3, 1f);
                 qglEnable(GL_TEXTURE_GEN_Q);
-                qglTexGenfv(GL_Q, GL_OBJECT_PLANE, plane.toFloatBuffer());
+                qglTexGenfv(GL_Q, GL_OBJECT_PLANE, plane.ToFloatPtr());
 
             }
 
@@ -236,8 +236,8 @@ public class draw_arb {
                 }
                 qglEnableClientState(GL_TEXTURE_COORD_ARRAY);
                 //TODO:figure out how to work these damn casts.
-                final lightingCache_s c = new lightingCache_s(vertexCache.Position(tri.lightingCache));
-                qglTexCoordPointer(3, GL_FLOAT, 0/*sizeof(lightingCache_s)*/, c.localLightVector.toFloatBuffer());
+                lightingCache_s c = new lightingCache_s(vertexCache.Position(tri.lightingCache));
+                qglTexCoordPointer(3, GL_FLOAT, 0/*sizeof(lightingCache_s)*/, c.localLightVector.ToFloatPtr());
 
                 // I just want alpha = Dot( texture0, texture1 )
                 GL_TexEnv(GL_COMBINE_ARB);
@@ -276,10 +276,10 @@ public class draw_arb {
 
             // select the vertex color source
             if (din.vertexColor == SVC_IGNORE) {
-                qglColor4fv(din.diffuseColor.toFloatBuffer());
+                qglColor4fv(din.diffuseColor.ToFloatPtr());
             } else {
                 // FIXME: does this not get diffuseColor blended in?
-                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.getColor());
+                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.color);
                 qglEnableClientState(GL_COLOR_ARRAY);
 
                 if (din.vertexColor == SVC_INVERSE_MODULATE) {
@@ -304,9 +304,9 @@ public class draw_arb {
             qglEnable(GL_TEXTURE_GEN_S);
             qglEnable(GL_TEXTURE_GEN_T);
             qglEnable(GL_TEXTURE_GEN_Q);
-            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[0].toFloatBuffer());
-            qglTexGenfv(GL_T, GL_OBJECT_PLANE, din.lightProjection[1].toFloatBuffer());
-            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, din.lightProjection[2].toFloatBuffer());
+            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[0].ToFloatPtr());
+            qglTexGenfv(GL_T, GL_OBJECT_PLANE, din.lightProjection[1].ToFloatPtr());
+            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, din.lightProjection[2].ToFloatPtr());
 
             din.lightImage.Bind();
 
@@ -327,7 +327,7 @@ public class draw_arb {
 
 //	RB_FinishStageTexture( &surfaceStage.texture, surf );
         }
-    }
+    };
 
     /*
      ==================
@@ -351,11 +351,11 @@ public class draw_arb {
 
         @Override
         public void run(final drawInteraction_t din) {
-            final drawSurf_s surf = din.surf;
-            final srfTriangles_s tri = din.surf.geo;
+            drawSurf_s surf = din.surf;
+            srfTriangles_s tri = din.surf.geo;
 
             // set the vertex arrays, which may not all be enabled on a given pass
-            final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
+            idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
             qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
             GL_SelectTexture(0);
             qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, ac.stOffset());
@@ -382,8 +382,8 @@ public class draw_arb {
                 globalImages.normalCubeMapImage.Bind();
             }
             qglEnableClientState(GL_TEXTURE_COORD_ARRAY);
-            final lightingCache_s c = new lightingCache_s(vertexCache.Position(tri.lightingCache));//{//TODO:figure out how to work these damn casts.
-            qglTexCoordPointer(3, GL_FLOAT, 0/*sizeof(lightingCache_s)*/, c.localLightVector.toFloatBuffer());
+            lightingCache_s c = new lightingCache_s(vertexCache.Position(tri.lightingCache));//{//TODO:figure out how to work these damn casts.
+            qglTexCoordPointer(3, GL_FLOAT, 0/*sizeof(lightingCache_s)*/, c.localLightVector.ToFloatPtr());
 
             // I just want alpha = Dot( texture0, texture1 )
             GL_TexEnv(GL_COMBINE_ARB);
@@ -421,10 +421,10 @@ public class draw_arb {
 
             // select the vertex color source
             if (din.vertexColor == SVC_IGNORE) {
-                qglColor4fv(din.diffuseColor.toFloatBuffer());
+                qglColor4fv(din.diffuseColor.ToFloatPtr());
             } else {
                 // FIXME: does this not get diffuseColor blended in?
-                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.getColor());
+                qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.color);
                 qglEnableClientState(GL_COLOR_ARRAY);
 
                 if (din.vertexColor == SVC_INVERSE_MODULATE) {
@@ -449,9 +449,9 @@ public class draw_arb {
             qglEnable(GL_TEXTURE_GEN_S);
             qglEnable(GL_TEXTURE_GEN_T);
             qglEnable(GL_TEXTURE_GEN_Q);
-            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[0].toFloatBuffer());
-            qglTexGenfv(GL_T, GL_OBJECT_PLANE, din.lightProjection[1].toFloatBuffer());
-            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, din.lightProjection[2].toFloatBuffer());
+            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[0].ToFloatPtr());
+            qglTexGenfv(GL_T, GL_OBJECT_PLANE, din.lightProjection[1].ToFloatPtr());
+            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, din.lightProjection[2].ToFloatPtr());
             din.lightImage.Bind();
 
             // texture 2 will get the light falloff texture
@@ -461,20 +461,20 @@ public class draw_arb {
             qglEnable(GL_TEXTURE_GEN_T);
             qglEnable(GL_TEXTURE_GEN_Q);
 
-            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[3].toFloatBuffer());
+            qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[3].ToFloatPtr());
 
-            final idVec4 plane = new idVec4();
+            idVec4 plane = new idVec4();
             plane.oSet(0, 0f);
             plane.oSet(1, 0f);
             plane.oSet(2, 0f);
             plane.oSet(3, 0.5f);
-            qglTexGenfv(GL_T, GL_OBJECT_PLANE, plane.toFloatBuffer());
+            qglTexGenfv(GL_T, GL_OBJECT_PLANE, plane.ToFloatPtr());
 
             plane.oSet(0, 0f);
             plane.oSet(1, 0f);
             plane.oSet(2, 0f);
             plane.oSet(3, 1f);
-            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, plane.toFloatBuffer());
+            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, plane.ToFloatPtr());
 
             din.lightFalloffImage.Bind();
 
@@ -501,7 +501,7 @@ public class draw_arb {
 
 //	RB_FinishStageTexture( &surfaceStage.texture, surf );
         }
-    }
+    };
 
 
     /*
@@ -518,7 +518,7 @@ public class draw_arb {
         // force a space calculation
         backEnd.currentSpace = null;
 
-        if (r_useTripleTextureARB.GetBool() && (glConfig.maxTextureUnits >= 3)) {
+        if (r_useTripleTextureARB.GetBool() && glConfig.maxTextureUnits >= 3) {
             for (; surf != null; surf = surf.nextOnLight) {
                 // break it up into multiple primitive draw interactions if necessary
                 RB_CreateSingleDrawInteractions(surf, RB_ARB_DrawThreeTextureInteraction.INSTANCE);
@@ -551,13 +551,13 @@ public class draw_arb {
         RB_LogComment("---------- RB_RenderViewLight 0x%p ----------\n", vLight);
 
         // clear the stencil buffer if needed
-        if ((vLight.globalShadows[0] != null) || (vLight.localShadows[0] != null)) {
+        if (vLight.globalShadows[0] != null || vLight.localShadows[0] != null) {
             backEnd.currentScissor = new idScreenRect(vLight.scissorRect);
             if (RenderSystem_init.r_useScissor.GetBool()) {
                 qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
                         backEnd.viewDef.viewport.y1 + backEnd.currentScissor.y1,
-                        (backEnd.currentScissor.x2 + 1) - backEnd.currentScissor.x1,
-                        (backEnd.currentScissor.y2 + 1) - backEnd.currentScissor.y1);
+                        backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
+                        backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1);
             }
             qglClear(GL_STENCIL_BUFFER_BIT);
         } else {

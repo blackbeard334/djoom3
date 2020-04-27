@@ -221,7 +221,7 @@ public class tr_font {
      ============
      */
     public static int readInt() {
-        final int i = fdFile[fdOffset] + (fdFile[fdOffset + 1] << 8) + (fdFile[fdOffset + 2] << 16) + (fdFile[fdOffset + 3] << 24);
+        int i = fdFile[fdOffset] + (fdFile[fdOffset + 1] << 8) + (fdFile[fdOffset + 2] << 16) + (fdFile[fdOffset + 3] << 24);
         fdOffset += 4;
         return i;
     }
@@ -231,17 +231,17 @@ public class tr_font {
         private final ByteBuffer fred = ByteBuffer.allocate(4);
 
         public poor() {
-            this.fred.order(ByteOrder.LITTLE_ENDIAN);
+            fred.order(ByteOrder.LITTLE_ENDIAN);
         }
 
         public float getFfred() {
-            return this.fred.getFloat(0);
+            return fred.getFloat(0);
         }
 
         public void setFfred(byte[] fred, int offset) {
             this.fred.put(fred, offset, 4).flip();
         }
-    }
+    };
 
     /*
      ============
@@ -249,7 +249,7 @@ public class tr_font {
      ============
      */
     public static float readFloat() {
-        final poor me = new poor();
+        poor me = new poor();
         if (__ppc__) {
 //            me.fred[0] = fdFile[fdOffset + 3];
 //            me.fred[1] = fdFile[fdOffset + 2];

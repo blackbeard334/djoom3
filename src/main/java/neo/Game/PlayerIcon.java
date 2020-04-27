@@ -31,7 +31,7 @@ public class PlayerIcon {
         ICON_LAG,
         ICON_CHAT,
         ICON_NONE
-    }
+    };
     public static final String[] iconKeys/*[ ICON_NONE ]*/ = {
                 "mtr_icon_lag",
                 "mtr_icon_chat"
@@ -46,14 +46,14 @@ public class PlayerIcon {
         //
 
         public idPlayerIcon() {
-            this.iconHandle = -1;
-            this.iconType = ICON_NONE;
+            iconHandle = -1;
+            iconType = ICON_NONE;
         }
         // ~idPlayerIcon();
 
         public void Draw(idPlayer player, int/*jointHandle_t*/ joint) {
-            final idVec3 origin = new idVec3();
-            final idMat3 axis = new idMat3();
+            idVec3 origin = new idVec3();
+            idMat3 axis = new idMat3();
 
             if (joint == INVALID_JOINT) {
                 FreeIcon();
@@ -67,13 +67,13 @@ public class PlayerIcon {
         }
 
         public void Draw(idPlayer player, final idVec3 origin) {
-            final idPlayer localPlayer = gameLocal.GetLocalPlayer();
-            if ((null == localPlayer) || (null == localPlayer.GetRenderView())) {
+            idPlayer localPlayer = gameLocal.GetLocalPlayer();
+            if (null == localPlayer || null == localPlayer.GetRenderView()) {
                 FreeIcon();
                 return;
             }
 
-            final idMat3 axis = localPlayer.GetRenderView().viewaxis;
+            idMat3 axis = localPlayer.GetRenderView().viewaxis;
 
             if (player.isLagged) {
                 // create the icon if necessary, or update if already created
@@ -90,45 +90,45 @@ public class PlayerIcon {
         }
 
         public void FreeIcon() {
-            if (this.iconHandle != - 1) {
-                gameRenderWorld.FreeEntityDef(this.iconHandle);
-                this.iconHandle = -1;
+            if (iconHandle != - 1) {
+                gameRenderWorld.FreeEntityDef(iconHandle);
+                iconHandle = -1;
             }
-            this.iconType = ICON_NONE;
+            iconType = ICON_NONE;
         }
 
         public boolean CreateIcon(idPlayer player, playerIconType_t type, final String mtr, final idVec3 origin, final idMat3 axis) {
             assert (type != ICON_NONE);
 
-            if (type == this.iconType) {
+            if (type == iconType) {
                 return false;
             }
 
             FreeIcon();
 
 //	memset( &renderEnt, 0, sizeof( renderEnt ) );
-            this.renderEnt = new renderEntity_s();
-            this.renderEnt.origin.oSet(origin);
-            this.renderEnt.axis.oSet(axis);
-            this.renderEnt.shaderParms[SHADERPARM_RED] = 1.0f;
-            this.renderEnt.shaderParms[SHADERPARM_GREEN] = 1.0f;
-            this.renderEnt.shaderParms[SHADERPARM_BLUE] = 1.0f;
-            this.renderEnt.shaderParms[SHADERPARM_ALPHA] = 1.0f;
-            this.renderEnt.shaderParms[SHADERPARM_SPRITE_WIDTH] = 16.0f;
-            this.renderEnt.shaderParms[SHADERPARM_SPRITE_HEIGHT] = 16.0f;
-            this.renderEnt.hModel = renderModelManager.FindModel("_sprite");
-            this.renderEnt.callback = null;
-            this.renderEnt.numJoints = 0;
-            this.renderEnt.joints = null;
-            this.renderEnt.customSkin = null;
-            this.renderEnt.noShadow = true;
-            this.renderEnt.noSelfShadow = true;
-            this.renderEnt.customShader = declManager.FindMaterial(mtr);
-            this.renderEnt.referenceShader = null;
-            this.renderEnt.bounds.oSet(this.renderEnt.hModel.Bounds(this.renderEnt));
+            renderEnt = new renderEntity_s();
+            renderEnt.origin.oSet(origin);
+            renderEnt.axis.oSet(axis);
+            renderEnt.shaderParms[SHADERPARM_RED] = 1.0f;
+            renderEnt.shaderParms[SHADERPARM_GREEN] = 1.0f;
+            renderEnt.shaderParms[SHADERPARM_BLUE] = 1.0f;
+            renderEnt.shaderParms[SHADERPARM_ALPHA] = 1.0f;
+            renderEnt.shaderParms[SHADERPARM_SPRITE_WIDTH] = 16.0f;
+            renderEnt.shaderParms[SHADERPARM_SPRITE_HEIGHT] = 16.0f;
+            renderEnt.hModel = renderModelManager.FindModel("_sprite");
+            renderEnt.callback = null;
+            renderEnt.numJoints = 0;
+            renderEnt.joints = null;
+            renderEnt.customSkin = null;
+            renderEnt.noShadow = true;
+            renderEnt.noSelfShadow = true;
+            renderEnt.customShader = declManager.FindMaterial(mtr);
+            renderEnt.referenceShader = null;
+            renderEnt.bounds.oSet(renderEnt.hModel.Bounds(renderEnt));
 
-            this.iconHandle = gameRenderWorld.AddEntityDef(this.renderEnt);
-            this.iconType = type;
+            iconHandle = gameRenderWorld.AddEntityDef(renderEnt);
+            iconType = type;
 
             return true;
         }
@@ -140,11 +140,11 @@ public class PlayerIcon {
         }
 
         public void UpdateIcon(idPlayer player, final idVec3 origin, final idMat3 axis) {
-            assert (this.iconHandle >= 0);
+            assert (iconHandle >= 0);
 
-            this.renderEnt.origin.oSet(origin);
-            this.renderEnt.axis.oSet(axis);
-            gameRenderWorld.UpdateEntityDef(this.iconHandle, this.renderEnt);
+            renderEnt.origin.oSet(origin);
+            renderEnt.axis.oSet(axis);
+            gameRenderWorld.UpdateEntityDef(iconHandle, renderEnt);
         }
-    }
+    };
 }

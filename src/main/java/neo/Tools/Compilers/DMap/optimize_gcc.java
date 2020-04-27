@@ -40,7 +40,7 @@ public class optimize_gcc {
 
         // should we match based on the t-junction fixing hash verts?
         for (i = 0; i < numOptVerts; i++) {
-            if ((optVerts[i].pv.oGet(0) == x) && (optVerts[i].pv.oGet(1) == y)) {
+            if (optVerts[i].pv.oGet(0) == x && optVerts[i].pv.oGet(1) == y) {
                 return optVerts[i];
             }
         }

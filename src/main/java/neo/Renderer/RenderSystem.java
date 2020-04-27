@@ -117,13 +117,13 @@ public class RenderSystem {
         public boolean allowARB2Path;
 //   
         public boolean isInitialized;
-    }
+    };
     // font support 
     public static final int GLYPH_START = 0;
     public static final int GLYPH_END = 255;
     public static final int GLYPH_CHARSTART = 32;
     public static final int GLYPH_CHAREND = 127;
-    public static final int GLYPHS_PER_FONT = (GLYPH_END - GLYPH_START) + 1;
+    public static final int GLYPHS_PER_FONT = GLYPH_END - GLYPH_START + 1;
 
     public static class glyphInfo_t {
 
@@ -156,7 +156,7 @@ public class RenderSystem {
         public idMaterial glyph;	// shader with the glyph
         // char				shaderName[32];
         String shaderName;
-    }
+    };
 
     public static class fontInfo_t {
 
@@ -171,11 +171,11 @@ public class RenderSystem {
         public StringBuilder name = new StringBuilder(64);
 
         public fontInfo_t() {
-            for (int g = 0; g < this.glyphs.length; g++) {
-                this.glyphs[g] = new glyphInfo_t();
+            for (int g = 0; g < glyphs.length; g++) {
+                glyphs[g] = new glyphInfo_t();
             }
         }
-    }
+    };
 
     public static class fontInfoEx_t {
 
@@ -205,7 +205,7 @@ public class RenderSystem {
                     = this.maxWidthMedium = this.maxHeightLarge = this.maxWidthLarge = 0;
             this.name = null;
         }
-    }
+    };
     public static final int SMALLCHAR_WIDTH = 8;
     public static final int SMALLCHAR_HEIGHT = 16;
     public static final int BIGCHAR_WIDTH = 16;
@@ -361,7 +361,7 @@ public class RenderSystem {
         // texture filter / mipmapping / repeat won't be modified by the upload
         // returns false if the image wasn't found
         public abstract boolean UploadImage(final String imageName, final ByteBuffer data, int width, int height);
-    }
+    };
 
     /*
      =====================
@@ -374,7 +374,7 @@ public class RenderSystem {
     static void R_PerformanceCounters() {
         if (r_showPrimitives.GetInteger() != 0) {
 
-            final float megaBytes = globalImages.SumOfUsedImages() / (1024 * 1024.0f);
+            float megaBytes = globalImages.SumOfUsedImages() / (1024 * 1024.0f);
 
             if (r_showPrimitives.GetInteger() > 1) {
                 common.Printf("v:%d ds:%d t:%d/%d v:%d/%d st:%d sv:%d image:%5.1f MB\n",
@@ -432,7 +432,7 @@ public class RenderSystem {
                     tr.pc.c_lightUpdates, tr.pc.c_lightReferences);
         }
         if (r_showMemory.GetBool()) {
-            final int m1 = frameData != null ? frameData.memoryHighwater : 0;
+            int m1 = frameData != null ? frameData.memoryHighwater : 0;
             common.Printf("frameData: %d (%d)\n", R_CountFrameData(), m1);
         }
         if (r_showLightScale.GetBool()) {
@@ -453,7 +453,7 @@ public class RenderSystem {
      ====================
      */
     static void R_IssueRenderCommands() {
-        if ((RC_NOP == frameData.cmdHead.commandId) && NOT(frameData.cmdHead.next)) {
+        if (RC_NOP == frameData.cmdHead.commandId && NOT(frameData.cmdHead.next)) {
             // nothing to issue
             return;
         }
@@ -567,7 +567,7 @@ public class RenderSystem {
      ======================
      */
     static void R_LockSurfaceScene(viewDef_s parms) {
-        final drawSurfsCommand_t cmd;
+        drawSurfsCommand_t cmd;
         viewEntity_s vModel;
 
         // set the matrix for world space to eye space
@@ -578,8 +578,8 @@ public class RenderSystem {
         // the entity matricies
         for (vModel = tr.lockSurfacesCmd.viewDef.viewEntitys; vModel != null; vModel = vModel.next) {
             myGlMultMatrix(vModel.modelMatrix,
-                    tr.lockSurfacesCmd.viewDef.worldSpace.getModelViewMatrix(),
-                    vModel.getModelViewMatrix());
+                    tr.lockSurfacesCmd.viewDef.worldSpace.modelViewMatrix,
+                    vModel.modelViewMatrix);
         }
 
         // add the stored off surface commands again

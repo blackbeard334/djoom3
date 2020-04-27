@@ -78,7 +78,7 @@ public class AASCluster {
 
         public boolean BuildSingleCluster(idAASFileLocal file) {
             int i, numAreas;
-            final aasCluster_s cluster = new aasCluster_s();
+            aasCluster_s cluster = new aasCluster_s();
 
             common.Printf("[Clustering]\n");
 
@@ -125,18 +125,18 @@ public class AASCluster {
             aasPortal_s portal;
 
             // find the portal for this area
-            for (portalNum = 1; portalNum < this.file.portals.Num(); portalNum++) {
-                if (this.file.portals.oGet(portalNum).areaNum == areaNum) {
+            for (portalNum = 1; portalNum < file.portals.Num(); portalNum++) {
+                if (file.portals.oGet(portalNum).areaNum == areaNum) {
                     break;
                 }
             }
 
-            if (portalNum >= this.file.portals.Num()) {
+            if (portalNum >= file.portals.Num()) {
                 common.Error("no portal for area %d", areaNum);
                 return true;
             }
 
-            portal = this.file.portals.oGet(portalNum);
+            portal = file.portals.oGet(portalNum);
 
             // if the portal is already fully updated
             if (portal.clusters[0] == clusterNum) {
@@ -153,16 +153,16 @@ public class AASCluster {
                 portal.clusters[1] = (short) clusterNum;
             } else {
                 // remove the cluster portal flag contents
-                this.file.areas.oGet(areaNum).contents &= ~AREACONTENTS_CLUSTERPORTAL;
+                file.areas.oGet(areaNum).contents &= ~AREACONTENTS_CLUSTERPORTAL;
                 return false;
             }
 
             // set the area cluster number to the negative portal number
-            this.file.areas.oGet(areaNum).cluster = (short) -portalNum;
+            file.areas.oGet(areaNum).cluster = (short) -portalNum;
 
             // add the portal to the cluster using the portal index
-            this.file.portalIndex.Append(portalNum);
-            this.file.clusters.oGet(clusterNum).numPortals++;
+            file.portalIndex.Append(portalNum);
+            file.clusters.oGet(clusterNum).numPortals++;
             return true;
         }
 
@@ -172,7 +172,7 @@ public class AASCluster {
             int faceNum, i;
             idReachability reach;
 
-            area = this.file.areas.oGet(areaNum);
+            area = file.areas.oGet(areaNum);
 
             // if the area is already part of a cluster
             if (area.cluster > 0) {
@@ -180,7 +180,7 @@ public class AASCluster {
                     return true;
                 }
                 // there's a reachability going from one cluster to another only in one direction
-                common.Error("cluster %d touched cluster %d at area %d\r\n", clusterNum, this.file.areas.oGet(areaNum).cluster, areaNum);
+                common.Error("cluster %d touched cluster %d at area %d\r\n", clusterNum, file.areas.oGet(areaNum).cluster, areaNum);
                 return false;
             }
 
@@ -192,11 +192,11 @@ public class AASCluster {
             // set the area cluster number
             area.cluster = (short) clusterNum;
 
-            if (!this.noFaceFlood) {
+            if (!noFaceFlood) {
                 // use area faces to flood into adjacent areas
                 for (i = 0; i < area.numFaces; i++) {
-                    faceNum = abs(this.file.faceIndex.oGet(area.firstFace + i));
-                    face = this.file.faces.oGet(faceNum);
+                    faceNum = abs(file.faceIndex.oGet(area.firstFace + i));
+                    face = file.faces.oGet(faceNum);
                     if (face.areas[0] == areaNum) {
                         if (face.areas[1] != 0) {
                             if (!FloodClusterAreas_r(face.areas[1], clusterNum)) {
@@ -214,14 +214,14 @@ public class AASCluster {
             }
 
             // use the reachabilities to flood into other areas
-            for (reach = this.file.areas.oGet(areaNum).reach; reach != null; reach = reach.next) {
+            for (reach = file.areas.oGet(areaNum).reach; reach != null; reach = reach.next) {
                 if (!FloodClusterAreas_r(reach.toAreaNum, clusterNum)) {
                     return false;
                 }
             }
 
             // use the reversed reachabilities to flood into other areas
-            for (reach = this.file.areas.oGet(areaNum).rev_reach; reach != null; reach = reach.rev_next) {
+            for (reach = file.areas.oGet(areaNum).rev_reach; reach != null; reach = reach.rev_next) {
                 if (!FloodClusterAreas_r(reach.fromAreaNum, clusterNum)) {
                     return false;
                 }
@@ -233,8 +233,8 @@ public class AASCluster {
         private void RemoveAreaClusterNumbers() {
             int i;
 
-            for (i = 1; i < this.file.areas.Num(); i++) {
-                this.file.areas.oGet(i).cluster = 0;
+            for (i = 1; i < file.areas.Num(); i++) {
+                file.areas.oGet(i).cluster = 0;
             }
         }
 
@@ -243,31 +243,31 @@ public class AASCluster {
             aasCluster_s cluster;
             aasPortal_s portal;
 
-            cluster = this.file.clusters.oGet(clusterNum);
+            cluster = file.clusters.oGet(clusterNum);
             cluster.numAreas = 0;
             cluster.numReachableAreas = 0;
 
             // number all areas in this cluster WITH reachabilities
-            for (i = 1; i < this.file.areas.Num(); i++) {
+            for (i = 1; i < file.areas.Num(); i++) {
 
-                if (this.file.areas.oGet(i).cluster != clusterNum) {
+                if (file.areas.oGet(i).cluster != clusterNum) {
                     continue;
                 }
 
-                if (0 == (this.file.areas.oGet(i).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY))) {
+                if (0 == (file.areas.oGet(i).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY))) {
                     continue;
                 }
 
-                this.file.areas.oGet(i).clusterAreaNum = (short) cluster.numAreas++;
+                file.areas.oGet(i).clusterAreaNum = (short) cluster.numAreas++;
                 cluster.numReachableAreas++;
             }
 
             // number all portals in this cluster WITH reachabilities
             for (i = 0; i < cluster.numPortals; i++) {
-                portalNum = this.file.portalIndex.oGet(cluster.firstPortal + i);
-                portal = this.file.portals.oGet(portalNum);
+                portalNum = file.portalIndex.oGet(cluster.firstPortal + i);
+                portal = file.portals.oGet(portalNum);
 
-                if (0 == (this.file.areas.oGet(portal.areaNum).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY))) {
+                if (0 == (file.areas.oGet(portal.areaNum).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY))) {
                     continue;
                 }
 
@@ -280,25 +280,25 @@ public class AASCluster {
             }
 
             // number all areas in this cluster WITHOUT reachabilities
-            for (i = 1; i < this.file.areas.Num(); i++) {
+            for (i = 1; i < file.areas.Num(); i++) {
 
-                if (this.file.areas.oGet(i).cluster != clusterNum) {
+                if (file.areas.oGet(i).cluster != clusterNum) {
                     continue;
                 }
 
-                if ((this.file.areas.oGet(i).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY)) != 0) {
+                if ((file.areas.oGet(i).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY)) != 0) {
                     continue;
                 }
 
-                this.file.areas.oGet(i).clusterAreaNum = (short) cluster.numAreas++;
+                file.areas.oGet(i).clusterAreaNum = (short) cluster.numAreas++;
             }
 
             // number all portals in this cluster WITHOUT reachabilities
             for (i = 0; i < cluster.numPortals; i++) {
-                portalNum = this.file.portalIndex.oGet(cluster.firstPortal + i);
-                portal = this.file.portals.oGet(portalNum);
+                portalNum = file.portalIndex.oGet(cluster.firstPortal + i);
+                portal = file.portals.oGet(portalNum);
 
-                if ((this.file.areas.oGet(portal.areaNum).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY)) != 0) {
+                if ((file.areas.oGet(portal.areaNum).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY)) != 0) {
                     continue;
                 }
 
@@ -312,34 +312,34 @@ public class AASCluster {
 
         private boolean FindClusters() {
             int i, clusterNum;
-            final aasCluster_s cluster = new aasCluster_s();
+            aasCluster_s cluster = new aasCluster_s();
 
             RemoveAreaClusterNumbers();
 
-            for (i = 1; i < this.file.areas.Num(); i++) {
+            for (i = 1; i < file.areas.Num(); i++) {
                 // if the area is already part of a cluster
-                if (this.file.areas.oGet(i).cluster != 0) {
+                if (file.areas.oGet(i).cluster != 0) {
                     continue;
                 }
 
                 // if not flooding through faces only use areas that have reachabilities
-                if (this.noFaceFlood) {
-                    if (0 == (this.file.areas.oGet(i).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY))) {
+                if (noFaceFlood) {
+                    if (0 == (file.areas.oGet(i).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY))) {
                         continue;
                     }
                 }
 
                 // if the area is a cluster portal
-                if ((this.file.areas.oGet(i).contents & AREACONTENTS_CLUSTERPORTAL) != 0) {
+                if ((file.areas.oGet(i).contents & AREACONTENTS_CLUSTERPORTAL) != 0) {
                     continue;
                 }
 
                 cluster.numAreas = 0;
                 cluster.numReachableAreas = 0;
-                cluster.firstPortal = this.file.portalIndex.Num();
+                cluster.firstPortal = file.portalIndex.Num();
                 cluster.numPortals = 0;
-                clusterNum = this.file.clusters.Num();
-                this.file.clusters.Append(cluster);
+                clusterNum = file.clusters.Num();
+                file.clusters.Append(cluster);
 
                 // flood the areas in this cluster
                 if (!FloodClusterAreas_r(i, clusterNum)) {
@@ -356,14 +356,13 @@ public class AASCluster {
             int i;
             aasPortal_s portal = null;
 
-            for (i = 1; i < this.file.areas.Num(); i++) {
+            for (i = 1; i < file.areas.Num(); i++) {
                 // if the area is a cluster portal
-                if ((this.file.areas.oGet(i).contents & AREACONTENTS_CLUSTERPORTAL) != 0) {
-                	portal = new aasPortal_s();
-                	portal.areaNum = (short) i;
+                if ((file.areas.oGet(i).contents & AREACONTENTS_CLUSTERPORTAL) != 0) {
+                    portal.areaNum = (short) i;
                     portal.clusters[0] = portal.clusters[1] = 0;
                     portal.maxAreaTravelTime = 0;
-                    this.file.portals.Append(portal);
+                    file.portals.Append(portal);
                 }
             }
         }
@@ -376,9 +375,9 @@ public class AASCluster {
             boolean ok;
 
             ok = true;
-            for (i = 1; i < this.file.portals.Num(); i++) {
-                portal = this.file.portals.oGet(i);
-                area = this.file.areas.oGet(portal.areaNum);
+            for (i = 1; i < file.portals.Num(); i++) {
+                portal = file.portals.oGet(i);
+                area = file.areas.oGet(portal.areaNum);
 
                 // if this portal was already removed
                 if (0 == (area.contents & AREACONTENTS_CLUSTERPORTAL)) {
@@ -387,7 +386,7 @@ public class AASCluster {
 
                 // may not removed this portal if it has a reachability to a removed portal
                 for (reach = area.reach; reach != null; reach = reach.next) {
-                    area2 = this.file.areas.oGet(reach.toAreaNum);
+                    area2 = file.areas.oGet(reach.toAreaNum);
                     if ((area2.contents & AREACONTENTS_CLUSTERPORTAL) != 0) {
                         continue;
                     }
@@ -401,7 +400,7 @@ public class AASCluster {
 
                 // may not removed this portal if it has a reversed reachability to a removed portal
                 for (reach = area.rev_reach; reach != null; reach = reach.rev_next) {
-                    area2 = this.file.areas.oGet(reach.toAreaNum);
+                    area2 = file.areas.oGet(reach.toAreaNum);
                     if ((area2.contents & AREACONTENTS_CLUSTERPORTAL) != 0) {
                         continue;
                     }
@@ -427,7 +426,7 @@ public class AASCluster {
 
                 // this portal may not have reachabilities to a portal that doesn't seperate the same clusters
                 for (reach = area.reach; reach != null; reach = reach.next) {
-                    area2 = this.file.areas.oGet(reach.toAreaNum);
+                    area2 = file.areas.oGet(reach.toAreaNum);
 
                     if (0 == (area2.contents & AREACONTENTS_CLUSTERPORTAL)) {
                         continue;
@@ -439,10 +438,10 @@ public class AASCluster {
                         continue;
                     }
 
-                    portal2 = this.file.portals.oGet(-this.file.areas.oGet(reach.toAreaNum).cluster);
+                    portal2 = file.portals.oGet(-file.areas.oGet(reach.toAreaNum).cluster);
 
-                    if (((portal2.clusters[0] != portal.clusters[0]) && (portal2.clusters[0] != portal.clusters[1]))
-                            || ((portal2.clusters[1] != portal.clusters[0]) && (portal2.clusters[1] != portal.clusters[1]))) {
+                    if ((portal2.clusters[0] != portal.clusters[0] && portal2.clusters[0] != portal.clusters[1])
+                            || (portal2.clusters[1] != portal.clusters[0] && portal2.clusters[1] != portal.clusters[1])) {
                         area2.contents &= ~AREACONTENTS_CLUSTERPORTAL;
                         ok = false;
 //                        continue;
@@ -459,15 +458,15 @@ public class AASCluster {
             aasFace_s face1, face2;
 
             numInvalidPortals = 0;
-            for (i = 0; i < this.file.areas.Num(); i++) {
-                if (0 == (this.file.areas.oGet(i).contents & AREACONTENTS_CLUSTERPORTAL)) {
+            for (i = 0; i < file.areas.Num(); i++) {
+                if (0 == (file.areas.oGet(i).contents & AREACONTENTS_CLUSTERPORTAL)) {
                     continue;
                 }
 
                 numOpenAreas = 0;
-                for (j = 0; j < this.file.areas.oGet(i).numFaces; j++) {
-                    face1Num = this.file.faceIndex.oGet(this.file.areas.oGet(i).firstFace + j);
-                    face1 = this.file.faces.oGet(abs(face1Num));
+                for (j = 0; j < file.areas.oGet(i).numFaces; j++) {
+                    face1Num = file.faceIndex.oGet(file.areas.oGet(i).firstFace + j);
+                    face1 = file.faces.oGet(abs(face1Num));
                     otherAreaNum = face1.areas[ face1Num < 0 ? 1 : 0];
 
                     if (0 == otherAreaNum) {
@@ -475,8 +474,8 @@ public class AASCluster {
                     }
 
                     for (k = 0; k < j; k++) {
-                        face2Num = this.file.faceIndex.oGet(this.file.areas.oGet(i).firstFace + k);
-                        face2 = this.file.faces.oGet(abs(face2Num));
+                        face2Num = file.faceIndex.oGet(file.areas.oGet(i).firstFace + k);
+                        face2 = file.faces.oGet(abs(face2Num));
                         if (otherAreaNum == face2.areas[ face2Num < 0 ? 1 : 0]) {
                             break;
                         }
@@ -485,18 +484,18 @@ public class AASCluster {
                         continue;
                     }
 
-                    if (0 == (this.file.areas.oGet(otherAreaNum).contents & AREACONTENTS_CLUSTERPORTAL)) {
+                    if (0 == (file.areas.oGet(otherAreaNum).contents & AREACONTENTS_CLUSTERPORTAL)) {
                         numOpenAreas++;
                     }
                 }
 
                 if (numOpenAreas <= 1) {
-                    this.file.areas.oGet(i).contents &= AREACONTENTS_CLUSTERPORTAL;
+                    file.areas.oGet(i).contents &= AREACONTENTS_CLUSTERPORTAL;
                     numInvalidPortals++;
                 }
             }
 
             common.Printf("\r%6d invalid portals removed\n", numInvalidPortals);
         }
-    }
+    };
 }

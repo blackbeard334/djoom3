@@ -57,13 +57,13 @@ public class Quat {
         public float oGet(final int index) {
             switch (index) {
                 default:
-                    return this.x;
+                    return x;
                 case 1:
-                    return this.y;
+                    return y;
                 case 2:
-                    return this.z;
+                    return z;
                 case 3:
-                    return this.w;
+                    return w;
             }
         }
 //	float &			operator[]( int index );
@@ -71,65 +71,65 @@ public class Quat {
         public void oSet(final int index, final float value) {
             switch (index) {
                 default:
-                    this.x = value;
+                    x = value;
                     break;
                 case 1:
-                    this.y = value;
+                    y = value;
                     break;
                 case 2:
-                    this.z = value;
+                    z = value;
                     break;
                 case 3:
-                    this.w = value;
+                    w = value;
                     break;
             }
         }
 
         public idQuat oNegative() {
-            return new idQuat(-this.x, -this.y, -this.z, -this.w);
+            return new idQuat(-x, -y, -z, -w);
         }
 
         public idQuat oSet(final idQuat a) {
-            this.x = a.x;
-            this.y = a.y;
-            this.z = a.z;
-            this.w = a.w;
+            x = a.x;
+            y = a.y;
+            z = a.z;
+            w = a.w;
 
             return this;
         }
 
         public idQuat oPlus(final idQuat a) {
-            return new idQuat(this.x + a.x, this.y + a.y, this.z + a.z, this.w + a.w);
+            return new idQuat(x + a.x, y + a.y, z + a.z, w + a.w);
         }
 
         public idQuat oPluSet(final idQuat a) {
-            this.x += a.x;
-            this.y += a.y;
-            this.z += a.z;
-            this.w += a.w;
+            x += a.x;
+            y += a.y;
+            z += a.z;
+            w += a.w;
 
             return this;
         }
 
         public idQuat oMinus(final idQuat a) {
-            return new idQuat(this.x - a.x, this.y - a.y, this.z - a.z, this.w - a.w);
+            return new idQuat(x - a.x, y - a.y, z - a.z, w - a.w);
         }
 
         public idQuat oMinSet(final idQuat a) {
-            this.x -= a.x;
-            this.y -= a.y;
-            this.z -= a.z;
-            this.w -= a.w;
+            x -= a.x;
+            y -= a.y;
+            z -= a.z;
+            w -= a.w;
 
             return this;
         }
 
         public idQuat oMultiply(final idQuat a) {
             return new idQuat(
-                    ((this.w * a.x) + (this.x * a.w) + (this.y * a.z)) - (this.z * a.y),
-                    ((this.w * a.y) + (this.y * a.w) + (this.z * a.x)) - (this.x * a.z),
-                    ((this.w * a.z) + (this.z * a.w) + (this.x * a.y)) - (this.y * a.x),
-                    (this.w * a.w) - (this.x * a.x) - (this.y * a.y) - (this.z * a.z));
+                    w * a.x + x * a.w + y * a.z - z * a.y,
+                    w * a.y + y * a.w + z * a.x - x * a.z,
+                    w * a.z + z * a.w + x * a.y - y * a.x,
+                    w * a.w - x * a.x - y * a.y - z * a.z);
         }
 
         public idVec3 oMultiply(final idVec3 a) {
@@ -138,25 +138,25 @@ public class Quat {
 //            return (ToMat3() * a);
 //#else
             // result = this->Inverse() * idQuat( a.x, a.y, a.z, 0.0f ) * (*this)
-            final float xxzz = (this.x * this.x) - (this.z * this.z);
-            final float wwyy = (this.w * this.w) - (this.y * this.y);
+            float xxzz = x * x - z * z;
+            float wwyy = w * w - y * y;
 
-            final float xw2 = this.x * this.w * 2.0f;
-            final float xy2 = this.x * this.y * 2.0f;
-            final float xz2 = this.x * this.z * 2.0f;
-            final float yw2 = this.y * this.w * 2.0f;
-            final float yz2 = this.y * this.z * 2.0f;
-            final float zw2 = this.z * this.w * 2.0f;
+            float xw2 = x * w * 2.0f;
+            float xy2 = x * y * 2.0f;
+            float xz2 = x * z * 2.0f;
+            float yw2 = y * w * 2.0f;
+            float yz2 = y * z * 2.0f;
+            float zw2 = z * w * 2.0f;
 
             return new idVec3(
-                    ((xxzz + wwyy) * a.x) + ((xy2 + zw2) * a.y) + ((xz2 - yw2) * a.z),
-                    ((xy2 - zw2) * a.x) + ((((this.y * this.y) + (this.w * this.w)) - (this.x * this.x) - (this.z * this.z)) * a.y) + ((yz2 + xw2) * a.z),
-                    ((xz2 + yw2) * a.x) + ((yz2 - xw2) * a.y) + ((wwyy - xxzz) * a.z));
+                    (xxzz + wwyy) * a.x + (xy2 + zw2) * a.y + (xz2 - yw2) * a.z,
+                    (xy2 - zw2) * a.x + (y * y + w * w - x * x - z * z) * a.y + (yz2 + xw2) * a.z,
+                    (xz2 + yw2) * a.x + (yz2 - xw2) * a.y + (wwyy - xxzz) * a.z);
 //#endif
         }
 
         public idQuat oMultiply(float a) {
-            return new idQuat(this.x * a, this.y * a, this.z * a, this.w * a);
+            return new idQuat(x * a, y * a, z * a, w * a);
         }
 
         public idQuat oMulSet(final idQuat a) {
@@ -166,10 +166,10 @@ public class Quat {
         }
 
         public idQuat oMulSet(float a) {
-            this.x *= a;
-            this.y *= a;
-            this.z *= a;
-            this.w *= a;
+            x *= a;
+            y *= a;
+            z *= a;
+            w *= a;
 
             return this;
         }
@@ -185,20 +185,20 @@ public class Quat {
 //
 
         public boolean Compare(final idQuat a) {// exact compare, no epsilon
-            return ((this.x == a.x) && (this.y == a.y) && (this.z == a.z) && (this.w == a.w));
+            return ((x == a.x) && (y == a.y) && (z == a.z) && (w == a.w));
         }
 
         public boolean Compare(final idQuat a, final float epsilon) {// compare with epsilon
-            if (idMath.Fabs(this.x - a.x) > epsilon) {
+            if (idMath.Fabs(x - a.x) > epsilon) {
                 return false;
             }
-            if (idMath.Fabs(this.y - a.y) > epsilon) {
+            if (idMath.Fabs(y - a.y) > epsilon) {
                 return false;
             }
-            if (idMath.Fabs(this.z - a.z) > epsilon) {
+            if (idMath.Fabs(z - a.z) > epsilon) {
                 return false;
             }
-            if (idMath.Fabs(this.w - a.w) > epsilon) {
+            if (idMath.Fabs(w - a.w) > epsilon) {
                 return false;
             }
             return true;
@@ -209,10 +209,10 @@ public class Quat {
         @Override
         public int hashCode() {
             int hash = 5;
-            hash = (31 * hash) + Float.floatToIntBits(this.x);
-            hash = (31 * hash) + Float.floatToIntBits(this.y);
-            hash = (31 * hash) + Float.floatToIntBits(this.z);
-            hash = (31 * hash) + Float.floatToIntBits(this.w);
+            hash = 31 * hash + Float.floatToIntBits(this.x);
+            hash = 31 * hash + Float.floatToIntBits(this.y);
+            hash = 31 * hash + Float.floatToIntBits(this.z);
+            hash = 31 * hash + Float.floatToIntBits(this.w);
             return hash;
         }
 
@@ -242,13 +242,13 @@ public class Quat {
 //
 
         public idQuat Inverse() {
-            return new idQuat(-this.x, -this.y, -this.z, this.w);
+            return new idQuat(-x, -y, -z, w);
         }
 
         public float Length() {
             float len;
 
-            len = (this.x * this.x) + (this.y * this.y) + (this.z * this.z) + (this.w * this.w);
+            len = x * x + y * y + z * z + w * w;
             return idMath.Sqrt(len);
         }
 
@@ -259,10 +259,10 @@ public class Quat {
             len = this.Length();
             if (len != 0) {
                 ilength = 1 / len;
-                this.x *= ilength;
-                this.y *= ilength;
-                this.z *= ilength;
-                this.w *= ilength;
+                x *= ilength;
+                y *= ilength;
+                z *= ilength;
+                w *= ilength;
             }
             return this;
         }
@@ -270,7 +270,7 @@ public class Quat {
 
         public float CalcW() {
             // take the absolute value because floating point rounding may cause the dot of x,y,z to be larger than 1
-            return (float) Math.sqrt(Math.abs(1.0f - ((this.x * this.x) + (this.y * this.y) + (this.z * this.z))));
+            return (float) Math.sqrt(Math.abs(1.0f - (x * x + y * y + z * z)));
         }
 
         public int GetDimension() {
@@ -283,13 +283,13 @@ public class Quat {
         }
 
         public idRotation ToRotation() {
-            final idVec3 vec = new idVec3();
+            idVec3 vec = new idVec3();
             float angle;
 
-            vec.x = this.x;
-            vec.y = this.y;
-            vec.z = this.z;
-            angle = idMath.ACos(this.w);
+            vec.x = x;
+            vec.y = y;
+            vec.z = z;
+            angle = idMath.ACos(w);
             if (angle == 0.0f) {
                 vec.Set(0.0f, 0.0f, 1.0f);
             } else {
@@ -302,27 +302,27 @@ public class Quat {
         }
 
         public idMat3 ToMat3() {
-            final idMat3 mat = new idMat3();
+            idMat3 mat = new idMat3();
             float wx, wy, wz;
             float xx, yy, yz;
             float xy, xz, zz;
             float x2, y2, z2;
 
-            x2 = this.x + this.x;
-            y2 = this.y + this.y;
-            z2 = this.z + this.z;
+            x2 = x + x;
+            y2 = y + y;
+            z2 = z + z;
 
-            xx = this.x * x2;
-            xy = this.x * y2;
-            xz = this.x * z2;
+            xx = x * x2;
+            xy = x * y2;
+            xz = x * z2;
 
-            yy = this.y * y2;
-            yz = this.y * z2;
-            zz = this.z * z2;
+            yy = y * y2;
+            yz = y * z2;
+            zz = z * z2;
 
-            wx = this.w * x2;
-            wy = this.w * y2;
-            wz = this.w * z2;
+            wx = w * x2;
+            wy = w * y2;
+            wz = w * z2;
 
             mat.oSet(0, 0, 1.0f - ( yy + zz ));
             mat.oSet(0, 1, xy - wz);
@@ -344,26 +344,26 @@ public class Quat {
         }
 
         public idCQuat ToCQuat() {
-            if (this.w < 0.0f) {
-                return new idCQuat(-this.x, -this.y, -this.z);
+            if (w < 0.0f) {
+                return new idCQuat(-x, -y, -z);
             }
-            return new idCQuat(this.x, this.y, this.z);
+            return new idCQuat(x, y, z);
         }
 
         public idVec3 ToAngularVelocity() {
-            final idVec3 vec = new idVec3();
+            idVec3 vec = new idVec3();
 
-            vec.x = this.x;
-            vec.y = this.y;
-            vec.z = this.z;
+            vec.x = x;
+            vec.y = y;
+            vec.z = z;
             vec.Normalize();
-            return vec.oMultiply(idMath.ACos(this.w));
+            return vec.oMultiply(idMath.ACos(w));
         }
 
 //public 	const float *	ToFloatPtr( void ) const;
         @Deprecated
         public float[] ToFloatPtr() {
-            return new float[]{this.x, this.y, this.z, this.w};//TODO:array!?
+            return new float[]{x, y, z, w};//TODO:array!?
         }
 
         public String ToString(int precision) {
@@ -396,7 +396,7 @@ public class Quat {
                 return this;
             }
 
-            cosom = (from.x * to.x) + (from.y * to.y) + (from.z * to.z) + (from.w * to.w);
+            cosom = from.x * to.x + from.y * to.y + from.z * to.z + from.w * to.w;
             if (cosom < 0.0f) {
                 this.oSet(to.oNegative());
                 cosom = -cosom;
@@ -411,7 +411,7 @@ public class Quat {
 //		scale0 = sin( ( 1.0f - t ) * omega ) * sinom;
 //		scale1 = sin( t * omega ) * sinom;
 //#else
-                scale0 = 1.0f - (cosom * cosom);
+                scale0 = 1.0f - cosom * cosom;
                 sinom = idMath.InvSqrt(scale0);
                 omega = idMath.ATan16(scale0 * sinom, cosom);
                 scale0 = idMath.Sin16((1.0f - t) * omega) * sinom;
@@ -425,7 +425,7 @@ public class Quat {
             this.oSet(from.oMultiply(scale0).oPlus(temp.oMultiply(scale1)));
             return this;
         }
-    }
+    };
 
     /**
      * ===============================================================================
@@ -463,11 +463,11 @@ public class Quat {
         public float oGet(final int index) {
             switch (index) {
                 default:
-                    return this.x;
+                    return x;
                 case 1:
-                    return this.y;
+                    return y;
                 case 2:
-                    return this.z;
+                    return z;
             }
         }
 
@@ -475,30 +475,30 @@ public class Quat {
         public void oSet(final int index, final float value) {
             switch (index) {
                 default:
-                    this.x = value;
+                    x = value;
                     break;
                 case 1:
-                    this.y = value;
+                    y = value;
                     break;
                 case 2:
-                    this.z = value;
+                    z = value;
                     break;
             }
         }
 //
 
         public boolean Compare(final idCQuat a) {// exact compare, no epsilon
-            return ((this.x == a.x) && (this.y == a.y) && (this.z == a.z));
+            return ((x == a.x) && (y == a.y) && (z == a.z));
         }
 
         public boolean Compare(final idCQuat a, final float epsilon) {// compare with epsilon
-            if (idMath.Fabs(this.x - a.x) > epsilon) {
+            if (idMath.Fabs(x - a.x) > epsilon) {
                 return false;
             }
-            if (idMath.Fabs(this.y - a.y) > epsilon) {
+            if (idMath.Fabs(y - a.y) > epsilon) {
                 return false;
             }
-            if (idMath.Fabs(this.z - a.z) > epsilon) {
+            if (idMath.Fabs(z - a.z) > epsilon) {
                 return false;
             }
             return true;
@@ -509,9 +509,9 @@ public class Quat {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = (37 * hash) + Float.floatToIntBits(this.x);
-            hash = (37 * hash) + Float.floatToIntBits(this.y);
-            hash = (37 * hash) + Float.floatToIntBits(this.z);
+            hash = 37 * hash + Float.floatToIntBits(this.x);
+            hash = 37 * hash + Float.floatToIntBits(this.y);
+            hash = 37 * hash + Float.floatToIntBits(this.z);
             return hash;
         }
 
@@ -560,16 +560,16 @@ public class Quat {
 
         public idQuat ToQuat() {
             // take the absolute value because floating point rounding may cause the dot of x,y,z to be larger than 1
-            return new idQuat(this.x, this.y, this.z, (float) Math.sqrt(Math.abs(1.0f - ((this.x * this.x) + (this.y * this.y) + (this.z * this.z)))));
+            return new idQuat(x, y, z, (float) Math.sqrt(Math.abs(1.0f - (x * x + y * y + z * z))));
         }
 //	const float *	ToFloatPtr( void ) const;
 
         public float[] ToFloatPtr() {
-            return new float[]{this.x, this.y, this.z};//TODO:back redf
+            return new float[]{x, y, z};//TODO:back redf
         }
 
         public String ToString(int precision) {
             return idStr.FloatArrayToString(ToFloatPtr(), GetDimension(), precision);
         }
-    }
+    };
 }

@@ -61,29 +61,29 @@ public class EventLoop {
         //
 
         public idEventLoop() {
-            this.com_journalFile = null;
-            this.com_journalDataFile = null;
-            this.initialTimeOffset = 0;
+            com_journalFile = null;
+            com_journalDataFile = null;
+            initialTimeOffset = 0;
         }
 //					~idEventLoop( void );
 
         public void Init() throws idException {
 
-            this.initialTimeOffset = Sys_Milliseconds();
+            initialTimeOffset = Sys_Milliseconds();
 
             common.StartupVariable("journal", false);
 
             if (com_journal.GetInteger() == 1) {
                 common.Printf("Journaling events\n");
-                this.com_journalFile = fileSystem.OpenFileWrite("journal.dat");
-                this.com_journalDataFile = fileSystem.OpenFileWrite("journaldata.dat");
+                com_journalFile = fileSystem.OpenFileWrite("journal.dat");
+                com_journalDataFile = fileSystem.OpenFileWrite("journaldata.dat");
             } else if (com_journal.GetInteger() == 2) {
                 common.Printf("Replaying journaled events\n");
-                this.com_journalFile = fileSystem.OpenFileRead("journal.dat");
-                this.com_journalDataFile = fileSystem.OpenFileRead("journaldata.dat");
+                com_journalFile = fileSystem.OpenFileRead("journal.dat");
+                com_journalDataFile = fileSystem.OpenFileRead("journaldata.dat");
             }
 
-            if ((null == this.com_journalFile) || (null == this.com_journalDataFile)) {
+            if (null == com_journalFile || null == com_journalDataFile) {
                 com_journal.SetInteger(0);
 //		com_journalFile = 0;
 //		com_journalDataFile = 0;
@@ -93,22 +93,22 @@ public class EventLoop {
 
         // Closes the journal file if needed.
         public void Shutdown() {
-            if (this.com_journalFile != null) {
-                fileSystem.CloseFile(this.com_journalFile);
-                this.com_journalFile = null;
+            if (com_journalFile != null) {
+                fileSystem.CloseFile(com_journalFile);
+                com_journalFile = null;
             }
-            if (this.com_journalDataFile != null) {
-                fileSystem.CloseFile(this.com_journalDataFile);
-                this.com_journalDataFile = null;
+            if (com_journalDataFile != null) {
+                fileSystem.CloseFile(com_journalDataFile);
+                com_journalDataFile = null;
             }
         }
 
         // It is possible to get an event at the beginning of a frame that
         // has a time stamp lower than the last event from the previous frame.
         public sysEvent_s GetEvent() throws idException {
-            if (this.com_pushedEventsHead > this.com_pushedEventsTail) {
-                this.com_pushedEventsTail++;
-                return this.com_pushedEvents[(this.com_pushedEventsTail - 1) & (MAX_PUSHED_EVENTS - 1)];
+            if (com_pushedEventsHead > com_pushedEventsTail) {
+                com_pushedEventsTail++;
+                return com_pushedEvents[(com_pushedEventsTail - 1) & (MAX_PUSHED_EVENTS - 1)];
             }
             return GetRealEvent();
         }
@@ -151,7 +151,7 @@ public class EventLoop {
         // as opposed to Sys_Milliseconds(), which always reads a real timer.
         public int Milliseconds() {
 //            if (true) {// FIXME!
-            return Sys_Milliseconds() - this.initialTimeOffset;
+            return Sys_Milliseconds() - initialTimeOffset;
 //            } else {
 //                sysEvent_s ev;
 //
@@ -181,14 +181,14 @@ public class EventLoop {
             // either get an event from the system or the journal file
             if (com_journal.GetInteger() == 2) {
                 event = ByteBuffer.allocate(sysEvent_s.BYTES);
-                r = this.com_journalFile.Read(event);
+                r = com_journalFile.Read(event);
                 ev = new sysEvent_s(event);
-                if (r != sysEvent_s.BYTES) {
+                if (r != ev.BYTES) {
                     common.FatalError("Error reading from journal file");
                 }
                 if (ev.evPtrLength != 0) {
                     ev.evPtr = ByteBuffer.allocate(ev.evPtrLength);//Mem_ClearedAlloc(ev.evPtrLength);
-                    r = this.com_journalFile.Read(ev.evPtr);//, ev.evPtrLength);
+                    r = com_journalFile.Read(ev.evPtr);//, ev.evPtrLength);
                     if (r != ev.evPtrLength) {
                         common.FatalError("Error reading from journal file");
                     }
@@ -198,12 +198,12 @@ public class EventLoop {
 
                 // write the journal value out if needed
                 if (com_journal.GetInteger() == 1) {
-                    r = this.com_journalFile.Write(ev.Write());
-                    if (r != sysEvent_s.BYTES) {
+                    r = com_journalFile.Write(ev.Write());
+                    if (r != ev.BYTES) {
                         common.FatalError("Error writing to journal file");
                     }
                     if (ev.evPtrLength != 0) {
-                        r = this.com_journalFile.Write(ev.evPtr, ev.evPtrLength);
+                        r = com_journalFile.Write(ev.evPtr, ev.evPtrLength);
                         if (r != ev.evPtrLength) {
                             common.FatalError("Error writing to journal file");
                         }
@@ -239,9 +239,9 @@ public class EventLoop {
         private void PushEvent(sysEvent_s event) throws idException {
             sysEvent_s ev;
 
-            ev = this.com_pushedEvents[this.com_pushedEventsHead & (MAX_PUSHED_EVENTS - 1)];
+            ev = com_pushedEvents[com_pushedEventsHead & (MAX_PUSHED_EVENTS - 1)];
 
-            if ((this.com_pushedEventsHead - this.com_pushedEventsTail) >= MAX_PUSHED_EVENTS) {
+            if (com_pushedEventsHead - com_pushedEventsTail >= MAX_PUSHED_EVENTS) {
 
                 // don't print the warning constantly, or it can give time for more...
                 if (!printedWarning) {
@@ -253,13 +253,13 @@ public class EventLoop {
 //                    Mem_Free(ev.evPtr);
                     ev.evPtr = null;
                 }
-                this.com_pushedEventsTail++;
+                com_pushedEventsTail++;
             } else {
                 printedWarning = false;
             }
 
-            this.com_pushedEvents[this.com_pushedEventsHead & (MAX_PUSHED_EVENTS - 1)] = event;
-            this.com_pushedEventsHead++;
+            com_pushedEvents[com_pushedEventsHead & (MAX_PUSHED_EVENTS - 1)] = event;
+            com_pushedEventsHead++;
         }
-    }
+    };
 }

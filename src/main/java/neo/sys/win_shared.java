@@ -51,7 +51,7 @@ public class win_shared {
 //        }
 //        return -1;
         final long ram = ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
-        final int megaRam = (int) (ram / 1000000);
+        int megaRam = (int) (ram / 1000000);
 
         return megaRam;
     }
@@ -356,7 +356,7 @@ public class win_shared {
 //	index = 0;
 //	for ( i = callStackSize-1; i >= 0; i-- ) {
 //		Sym_GetFuncInfo( callStack[i], module, funcName );
-//		index += sprintf( string+index, " -> %s", funcName.getData() );
+//		index += sprintf( string+index, " -> %s", funcName.c_str() );
 //	}
 //	return string;
             }

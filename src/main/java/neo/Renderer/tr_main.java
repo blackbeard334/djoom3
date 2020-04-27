@@ -31,13 +31,11 @@ import static neo.idlib.math.Vector.VectorSubtract;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
-import neo.TempDump;
 import neo.TempDump.TODO_Exception;
+import neo.Renderer.RenderWorld_local.idRenderWorldLocal;
 import neo.Renderer.tr_local.drawSurf_s;
 import neo.Renderer.tr_local.frameData_t;
 import neo.Renderer.tr_local.frameMemoryBlock_s;
@@ -54,8 +52,6 @@ import neo.idlib.math.Vector.idVec;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
-import neo.open.MatrixUtil;
-import neo.open.Nio;
 
 /**
  *
@@ -70,7 +66,7 @@ public class tr_main {
      ======================
      */
     public static idScreenRect R_ScreenRectFromViewFrustumBounds(final idBounds bounds) {
-        final idScreenRect screenRect = new idScreenRect();
+        idScreenRect screenRect = new idScreenRect();
 
         screenRect.x1 = idMath.FtoiFast(0.5f * (1.0f - bounds.oGet(1).y) * (tr.viewDef.viewport.x2 - tr.viewDef.viewport.x1));
         screenRect.x2 = idMath.FtoiFast(0.5f * (1.0f - bounds.oGet(0).y) * (tr.viewDef.viewport.x2 - tr.viewDef.viewport.x1));
@@ -78,9 +74,9 @@ public class tr_main {
         screenRect.y2 = idMath.FtoiFast(0.5f * (1.0f + bounds.oGet(1).z) * (tr.viewDef.viewport.y2 - tr.viewDef.viewport.y1));
 
         if (r_useDepthBoundsTest.GetInteger() != 0) {
-            final float[] zmin = {screenRect.zmin}, zmax = {screenRect.zmax};
-            R_TransformEyeZToWin(-bounds.oGet(0).x, tr.viewDef.getProjectionMatrix(), zmin);
-            R_TransformEyeZToWin(-bounds.oGet(1).x, tr.viewDef.getProjectionMatrix(), zmax);
+            float[] zmin = {screenRect.zmin}, zmax = {screenRect.zmax};
+            R_TransformEyeZToWin(-bounds.oGet(0).x, tr.viewDef.projectionMatrix, zmin);
+            R_TransformEyeZToWin(-bounds.oGet(1).x, tr.viewDef.projectionMatrix, zmax);
             screenRect.zmin = zmin[0];
             screenRect.zmax = zmax[0];
         }
@@ -175,12 +171,10 @@ public class tr_main {
         frameData = new frameData_t();// Mem_ClearedAlloc(sizeof(frameData));
         frame = frameData;
         size = MEMORY_BLOCK_SIZE;
-        try {
-            block = new frameMemoryBlock_s();// Mem_Alloc(size /*+ sizeof( *block )*/);
-		} catch (Exception e) {
+        block = new frameMemoryBlock_s();// Mem_Alloc(size /*+ sizeof( *block )*/);
+        if (null == block) {
             common.FatalError("R_InitFrameData: Mem_Alloc() failed");
-            return; // FatalError exists, so code after is never reached
-		}
+        }
         block.size = size;
         block.used = 0;
         block.next = null;
@@ -248,11 +242,11 @@ public class tr_main {
      */
     @Deprecated
     private static <T> T[] R_ClearedStaticAlloc(int length, Class<T> clazz) {
-        final T[] array = (T[]) Array.newInstance(clazz, length);
+        T[] array = (T[]) Array.newInstance(clazz, length);
 
         for (int a = 0; a < length; a++) {
             try {
-                array[a] = clazz.getConstructor().newInstance();
+                array[a] = (T) clazz.getConstructor().newInstance();
             } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 throw new TODO_Exception();
 //                Logger.getLogger(tr_main.class.getName()).log(Level.SEVERE, null, ex);
@@ -434,23 +428,23 @@ public class tr_main {
 // }else
         {
             out = new idVec3(
-                    ((in.oGet(0) * modelMatrix[0]) + (in.oGet(1) * modelMatrix[4]) + (in.oGet(2) * modelMatrix[ 8]) + modelMatrix[12]),
-                    ((in.oGet(0) * modelMatrix[1]) + (in.oGet(1) * modelMatrix[5]) + (in.oGet(2) * modelMatrix[ 9]) + modelMatrix[13]),
-                    ((in.oGet(0) * modelMatrix[2]) + (in.oGet(1) * modelMatrix[6]) + (in.oGet(2) * modelMatrix[10]) + modelMatrix[14])
+                    (in.oGet(0) * modelMatrix[0] + in.oGet(1) * modelMatrix[4] + in.oGet(2) * modelMatrix[ 8] + modelMatrix[12]),
+                    (in.oGet(0) * modelMatrix[1] + in.oGet(1) * modelMatrix[5] + in.oGet(2) * modelMatrix[ 9] + modelMatrix[13]),
+                    (in.oGet(0) * modelMatrix[2] + in.oGet(1) * modelMatrix[6] + in.oGet(2) * modelMatrix[10] + modelMatrix[14])
             );
         }
         return out;
     }
 
     public static void R_PointTimesMatrix(final float[] modelMatrix/*[16]*/, final idVec4 in, idVec4 out) {
-        out.oSet(0, (in.oGet(0) * modelMatrix[0]) + (in.oGet(1) * modelMatrix[4]) + (in.oGet(2) * modelMatrix[ 8]) + modelMatrix[12]);
-        out.oSet(1, (in.oGet(0) * modelMatrix[1]) + (in.oGet(1) * modelMatrix[5]) + (in.oGet(2) * modelMatrix[ 9]) + modelMatrix[13]);
-        out.oSet(2, (in.oGet(0) * modelMatrix[2]) + (in.oGet(1) * modelMatrix[6]) + (in.oGet(2) * modelMatrix[10]) + modelMatrix[14]);
-        out.oSet(3, (in.oGet(0) * modelMatrix[3]) + (in.oGet(1) * modelMatrix[7]) + (in.oGet(2) * modelMatrix[11]) + modelMatrix[15]);
+        out.oSet(0, in.oGet(0) * modelMatrix[0] + in.oGet(1) * modelMatrix[4] + in.oGet(2) * modelMatrix[ 8] + modelMatrix[12]);
+        out.oSet(1, in.oGet(0) * modelMatrix[1] + in.oGet(1) * modelMatrix[5] + in.oGet(2) * modelMatrix[ 9] + modelMatrix[13]);
+        out.oSet(2, in.oGet(0) * modelMatrix[2] + in.oGet(1) * modelMatrix[6] + in.oGet(2) * modelMatrix[10] + modelMatrix[14]);
+        out.oSet(3, in.oGet(0) * modelMatrix[3] + in.oGet(1) * modelMatrix[7] + in.oGet(2) * modelMatrix[11] + modelMatrix[15]);
     }
 
-    public static void R_GlobalPointToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, idVec<?> out) {
-        final float[] temp = new float[4];
+    public static void R_GlobalPointToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, idVec out) {
+        float[] temp = new float[4];
 
         VectorSubtract(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 12, 16), temp);
 
@@ -460,7 +454,7 @@ public class tr_main {
     }
 
     public static void R_GlobalPointToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, float[] out) {
-        final float[] temp = new float[4];
+        float[] temp = new float[4];
 
         VectorSubtract(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 12, 16), temp);
 
@@ -470,7 +464,7 @@ public class tr_main {
     }
 
     public static void R_GlobalPointToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, FloatBuffer out) {
-        final float[] temp = new float[4];
+        float[] temp = new float[4];
 
         VectorSubtract(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 12, 16), temp);
 
@@ -480,9 +474,9 @@ public class tr_main {
     }
 
     public static void R_LocalVectorToGlobal(final float[] modelMatrix/*[16]*/, final idVec3 in, idVec3 out) {
-        out.oSet(0, (in.oGet(0) * modelMatrix[0]) + (in.oGet(1) * modelMatrix[4]) + (in.oGet(2) * modelMatrix[ 8]));
-        out.oSet(1, (in.oGet(0) * modelMatrix[1]) + (in.oGet(1) * modelMatrix[5]) + (in.oGet(2) * modelMatrix[ 9]));
-        out.oSet(2, (in.oGet(0) * modelMatrix[2]) + (in.oGet(1) * modelMatrix[6]) + (in.oGet(2) * modelMatrix[10]));
+        out.oSet(0, in.oGet(0) * modelMatrix[0] + in.oGet(1) * modelMatrix[4] + in.oGet(2) * modelMatrix[ 8]);
+        out.oSet(1, in.oGet(0) * modelMatrix[1] + in.oGet(1) * modelMatrix[5] + in.oGet(2) * modelMatrix[ 9]);
+        out.oSet(2, in.oGet(0) * modelMatrix[2] + in.oGet(1) * modelMatrix[6] + in.oGet(2) * modelMatrix[10]);
     }
 
     public static void R_GlobalVectorToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, idVec3 out) {
@@ -495,7 +489,7 @@ public class tr_main {
         out.oSet(0, DotProduct(in.ToFloatPtr(), modelMatrix));
         out.oSet(1, DotProduct(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 4, 8)));
         out.oSet(2, DotProduct(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 8, 12)));
-        out.oSet(3, in.oGet(3) + (modelMatrix[12] * in.oGet(0)) + (modelMatrix[13] * in.oGet(1)) + (modelMatrix[14] * in.oGet(2)));
+        out.oSet(3, in.oGet(3) + modelMatrix[12] * in.oGet(0) + modelMatrix[13] * in.oGet(1) + modelMatrix[14] * in.oGet(2));
     }
 
     public static void R_LocalPlaneToGlobal(final float[] modelMatrix/*[16]*/, final idPlane in, idPlane out) {
@@ -503,36 +497,24 @@ public class tr_main {
 
         R_LocalVectorToGlobal(modelMatrix, in.Normal(), out.Normal());
 
-        offset = (modelMatrix[12] * out.oGet(0)) + (modelMatrix[13] * out.oGet(1)) + (modelMatrix[14] * out.oGet(2));
+        offset = modelMatrix[12] * out.oGet(0) + modelMatrix[13] * out.oGet(1) + modelMatrix[14] * out.oGet(2);
         out.oSet(3, in.oGet(3) - offset);
     }
 
     // transform Z in eye coordinates to window coordinates
-    public static void R_TransformEyeZToWin(float src_z, final FloatBuffer projectionMatrix, float[] dst_z) {
+    public static void R_TransformEyeZToWin(float src_z, final float[] projectionMatrix, float[] dst_z) {
         final float clip_z, clip_w;
 
         // projection
-        clip_z = (src_z * projectionMatrix.get(2 + (2 * 4))) + projectionMatrix.get(2 + (3 * 4));
-        clip_w = (src_z * projectionMatrix.get(3 + (2 * 4))) + projectionMatrix.get(3 + (3 * 4));
+        clip_z = src_z * projectionMatrix[2 + 2 * 4] + projectionMatrix[2 + 3 * 4];
+        clip_w = src_z * projectionMatrix[3 + 2 * 4] + projectionMatrix[3 + 3 * 4];
 
         if (clip_w <= 0.0f) {
             dst_z[0] = 0.0f;					// clamp to near plane
         } else {
             dst_z[0] = clip_z / clip_w;
-            dst_z[0] = (dst_z[0] * 0.5f) + 0.5f;	// convert to window coords
+            dst_z[0] = dst_z[0] * 0.5f + 0.5f;	// convert to window coords
         }
-    }
-
-    /**
-     * 
-     * @param src_z
-     * @param projectionMatrix
-     * @param dst_z
-     * 
-     * @deprecated use R_TransformEyeZToWin(float src_z, final FloatBuffer projectionMatrix, float[] dst_z) instead
-     */
-    public static void R_TransformEyeZToWin(float src_z, final float[] projectionMatrix, float[] dst_z) {
-    	R_TransformEyeZToWin(src_z, Nio.wrap(projectionMatrix), dst_z);
     }
 
     /*
@@ -555,7 +537,7 @@ public class tr_main {
         }
 
         // transform the surface bounds into world space
-        final idVec3 localOrigin = (bounds.oGet(0).oPlus(bounds.oGet(1))).oMultiply(0.5f);
+        idVec3 localOrigin = (bounds.oGet(0).oPlus(bounds.oGet(1))).oMultiply(0.5f);
 
         worldOrigin = R_LocalPointToGlobal(modelMatrix, localOrigin);
 
@@ -583,9 +565,9 @@ public class tr_main {
      */    private static int DBG_R_CornerCullLocalBox = 0;
     public static boolean R_CornerCullLocalBox(final idBounds bounds, final float[] modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
         int i, j;
-        final idVec3[] transformed = idVec3.generateArray(8);
-        final float[] dists = new float[8];
-        final idVec3 v = new idVec3();
+        idVec3[] transformed = idVec3.generateArray(8);
+        float[] dists = new float[8];
+        idVec3 v = new idVec3();
         idPlane frust;
         
         DBG_R_CornerCullLocalBox++;
@@ -653,8 +635,24 @@ public class tr_main {
      R_TransformModelToClip
      ==========================
      */
-    public static void R_TransformModelToClip(final idVec3 src, final FloatBuffer modelMatrix, final FloatBuffer projectionMatrix, idPlane eye, idPlane dst) {
-        MatrixUtil.matrixToClipGet3Set4(src, dst, eye, modelMatrix, projectionMatrix);
+    public static void R_TransformModelToClip(final idVec3 src, final float[] modelMatrix, final float[] projectionMatrix, idPlane eye, idPlane dst) {
+        int i;
+
+        for (i = 0; i < 4; i++) {
+            eye.oSet(i,
+                    src.oGet(0) * modelMatrix[i + 0 * 4]
+                    + src.oGet(1) * modelMatrix[i + 1 * 4]
+                    + src.oGet(2) * modelMatrix[i + 2 * 4]
+                    + 1 * modelMatrix[i + 3 * 4]);
+        }
+
+        for (i = 0; i < 4; i++) {
+            dst.oSet(i,
+                    eye.oGet(0) * projectionMatrix[i + 0 * 4]
+                    + eye.oGet(1) * projectionMatrix[i + 1 * 4]
+                    + eye.oGet(2) * projectionMatrix[i + 2 * 4]
+                    + eye.oGet(3) * projectionMatrix[i + 3 * 4]);
+        }
     }
 
     /*
@@ -665,24 +663,48 @@ public class tr_main {
      ==========================
      */
     public static void R_GlobalToNormalizedDeviceCoordinates(final idVec3 global, idVec3 ndc) {
-        final idPlane clip = new idPlane();
-        FloatBuffer modelViewMatrix;
-        FloatBuffer projectionMatrix;
+        int i;
+        idPlane view = new idPlane();
+        idPlane clip = new idPlane();
 
         // _D3XP added work on primaryView when no viewDef
         if (null == tr.viewDef) {
 
-        	modelViewMatrix = tr.primaryView.worldSpace.getModelViewMatrix();
-        	projectionMatrix = tr.primaryView.getProjectionMatrix();
+            for (i = 0; i < 4; i++) {
+                view.oSet(i,
+                        global.oGet(0) * tr.primaryView.worldSpace.modelViewMatrix[i + 0 * 4]
+                        + global.oGet(1) * tr.primaryView.worldSpace.modelViewMatrix[i + 1 * 4]
+                        + global.oGet(2) * tr.primaryView.worldSpace.modelViewMatrix[i + 2 * 4]
+                        + tr.primaryView.worldSpace.modelViewMatrix[i + 3 * 4]);
+            }
+
+            for (i = 0; i < 4; i++) {
+                clip.oSet(i,
+                        view.oGet(0) * tr.primaryView.projectionMatrix[i + 0 * 4]
+                        + view.oGet(1) * tr.primaryView.projectionMatrix[i + 1 * 4]
+                        + view.oGet(2) * tr.primaryView.projectionMatrix[i + 2 * 4]
+                        + view.oGet(3) * tr.primaryView.projectionMatrix[i + 3 * 4]);
+            }
 
         } else {
 
-        	modelViewMatrix = tr.viewDef.worldSpace.getModelViewMatrix();
-        	projectionMatrix = tr.viewDef.getProjectionMatrix();
+            for (i = 0; i < 4; i++) {
+                view.oSet(i,
+                        global.oGet(0) * tr.viewDef.worldSpace.modelViewMatrix[i + 0 * 4]
+                        + global.oGet(1) * tr.viewDef.worldSpace.modelViewMatrix[i + 1 * 4]
+                        + global.oGet(2) * tr.viewDef.worldSpace.modelViewMatrix[i + 2 * 4]
+                        + tr.viewDef.worldSpace.modelViewMatrix[i + 3 * 4]);
+            }
+
+            for (i = 0; i < 4; i++) {
+                clip.oSet(i,
+                        view.oGet(0) * tr.viewDef.projectionMatrix[i + 0 * 4]
+                        + view.oGet(1) * tr.viewDef.projectionMatrix[i + 1 * 4]
+                        + view.oGet(2) * tr.viewDef.projectionMatrix[i + 2 * 4]
+                        + view.oGet(3) * tr.viewDef.projectionMatrix[i + 3 * 4]);
+            }
 
         }
-
-        MatrixUtil.matrixToClipGet3Set4(global, clip, new idPlane(), modelViewMatrix, projectionMatrix);
 
         ndc.oSet(0, clip.oGet(0) / clip.oGet(3));
         ndc.oSet(1, clip.oGet(1) / clip.oGet(3));
@@ -707,8 +729,8 @@ public class tr_main {
      myGlMultMatrix
      ==========================
      */
-    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final FloatBuffer b/*[16]*/, FloatBuffer out/*[16]*/) {
-        if (TempDump.isDeadCodeTrue()) {
+    public static void myGlMultMatrix(final float[] a/*[16]*/, final float[] b/*[16]*/, float[] out/*[16]*/) {
+        if (false) {
 //            int i, j;
 //
 //            for (i = 0; i < 4; i++) {
@@ -721,120 +743,23 @@ public class tr_main {
 //                }
 //            }
         } else {
-            out.put((0 * 4) + 0, (a.get((0 * 4) + 0) * b.get((0 * 4) + 0)) + (a.get((0 * 4) + 1) * b.get((1 * 4) + 0)) + (a.get((0 * 4) + 2) * b.get((2 * 4) + 0)) + (a.get((0 * 4) + 3) * b.get((3 * 4) + 0)));
-            out.put((0 * 4) + 1, (a.get((0 * 4) + 0) * b.get((0 * 4) + 1)) + (a.get((0 * 4) + 1) * b.get((1 * 4) + 1)) + (a.get((0 * 4) + 2) * b.get((2 * 4) + 1)) + (a.get((0 * 4) + 3) * b.get((3 * 4) + 1)));
-            out.put((0 * 4) + 2, (a.get((0 * 4) + 0) * b.get((0 * 4) + 2)) + (a.get((0 * 4) + 1) * b.get((1 * 4) + 2)) + (a.get((0 * 4) + 2) * b.get((2 * 4) + 2)) + (a.get((0 * 4) + 3) * b.get((3 * 4) + 2)));
-            out.put((0 * 4) + 3, (a.get((0 * 4) + 0) * b.get((0 * 4) + 3)) + (a.get((0 * 4) + 1) * b.get((1 * 4) + 3)) + (a.get((0 * 4) + 2) * b.get((2 * 4) + 3)) + (a.get((0 * 4) + 3) * b.get((3 * 4) + 3)));
-            out.put((1 * 4) + 0, (a.get((1 * 4) + 0) * b.get((0 * 4) + 0)) + (a.get((1 * 4) + 1) * b.get((1 * 4) + 0)) + (a.get((1 * 4) + 2) * b.get((2 * 4) + 0)) + (a.get((1 * 4) + 3) * b.get((3 * 4) + 0)));
-            out.put((1 * 4) + 1, (a.get((1 * 4) + 0) * b.get((0 * 4) + 1)) + (a.get((1 * 4) + 1) * b.get((1 * 4) + 1)) + (a.get((1 * 4) + 2) * b.get((2 * 4) + 1)) + (a.get((1 * 4) + 3) * b.get((3 * 4) + 1)));
-            out.put((1 * 4) + 2, (a.get((1 * 4) + 0) * b.get((0 * 4) + 2)) + (a.get((1 * 4) + 1) * b.get((1 * 4) + 2)) + (a.get((1 * 4) + 2) * b.get((2 * 4) + 2)) + (a.get((1 * 4) + 3) * b.get((3 * 4) + 2)));
-            out.put((1 * 4) + 3, (a.get((1 * 4) + 0) * b.get((0 * 4) + 3)) + (a.get((1 * 4) + 1) * b.get((1 * 4) + 3)) + (a.get((1 * 4) + 2) * b.get((2 * 4) + 3)) + (a.get((1 * 4) + 3) * b.get((3 * 4) + 3)));
-            out.put((2 * 4) + 0, (a.get((2 * 4) + 0) * b.get((0 * 4) + 0)) + (a.get((2 * 4) + 1) * b.get((1 * 4) + 0)) + (a.get((2 * 4) + 2) * b.get((2 * 4) + 0)) + (a.get((2 * 4) + 3) * b.get((3 * 4) + 0)));
-            out.put((2 * 4) + 1, (a.get((2 * 4) + 0) * b.get((0 * 4) + 1)) + (a.get((2 * 4) + 1) * b.get((1 * 4) + 1)) + (a.get((2 * 4) + 2) * b.get((2 * 4) + 1)) + (a.get((2 * 4) + 3) * b.get((3 * 4) + 1)));
-            out.put((2 * 4) + 2, (a.get((2 * 4) + 0) * b.get((0 * 4) + 2)) + (a.get((2 * 4) + 1) * b.get((1 * 4) + 2)) + (a.get((2 * 4) + 2) * b.get((2 * 4) + 2)) + (a.get((2 * 4) + 3) * b.get((3 * 4) + 2)));
-            out.put((2 * 4) + 3, (a.get((2 * 4) + 0) * b.get((0 * 4) + 3)) + (a.get((2 * 4) + 1) * b.get((1 * 4) + 3)) + (a.get((2 * 4) + 2) * b.get((2 * 4) + 3)) + (a.get((2 * 4) + 3) * b.get((3 * 4) + 3)));
-            out.put((3 * 4) + 0, (a.get((3 * 4) + 0) * b.get((0 * 4) + 0)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 0)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 0)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 0)));
-            out.put((3 * 4) + 1, (a.get((3 * 4) + 0) * b.get((0 * 4) + 1)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 1)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 1)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 1)));
-            out.put((3 * 4) + 2, (a.get((3 * 4) + 0) * b.get((0 * 4) + 2)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 2)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 2)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 2)));
-            out.put((3 * 4) + 3, (a.get((3 * 4) + 0) * b.get((0 * 4) + 3)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 3)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 3)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 3)));
+            out[0 * 4 + 0] = a[0 * 4 + 0] * b[0 * 4 + 0] + a[0 * 4 + 1] * b[1 * 4 + 0] + a[0 * 4 + 2] * b[2 * 4 + 0] + a[0 * 4 + 3] * b[3 * 4 + 0];
+            out[0 * 4 + 1] = a[0 * 4 + 0] * b[0 * 4 + 1] + a[0 * 4 + 1] * b[1 * 4 + 1] + a[0 * 4 + 2] * b[2 * 4 + 1] + a[0 * 4 + 3] * b[3 * 4 + 1];
+            out[0 * 4 + 2] = a[0 * 4 + 0] * b[0 * 4 + 2] + a[0 * 4 + 1] * b[1 * 4 + 2] + a[0 * 4 + 2] * b[2 * 4 + 2] + a[0 * 4 + 3] * b[3 * 4 + 2];
+            out[0 * 4 + 3] = a[0 * 4 + 0] * b[0 * 4 + 3] + a[0 * 4 + 1] * b[1 * 4 + 3] + a[0 * 4 + 2] * b[2 * 4 + 3] + a[0 * 4 + 3] * b[3 * 4 + 3];
+            out[1 * 4 + 0] = a[1 * 4 + 0] * b[0 * 4 + 0] + a[1 * 4 + 1] * b[1 * 4 + 0] + a[1 * 4 + 2] * b[2 * 4 + 0] + a[1 * 4 + 3] * b[3 * 4 + 0];
+            out[1 * 4 + 1] = a[1 * 4 + 0] * b[0 * 4 + 1] + a[1 * 4 + 1] * b[1 * 4 + 1] + a[1 * 4 + 2] * b[2 * 4 + 1] + a[1 * 4 + 3] * b[3 * 4 + 1];
+            out[1 * 4 + 2] = a[1 * 4 + 0] * b[0 * 4 + 2] + a[1 * 4 + 1] * b[1 * 4 + 2] + a[1 * 4 + 2] * b[2 * 4 + 2] + a[1 * 4 + 3] * b[3 * 4 + 2];
+            out[1 * 4 + 3] = a[1 * 4 + 0] * b[0 * 4 + 3] + a[1 * 4 + 1] * b[1 * 4 + 3] + a[1 * 4 + 2] * b[2 * 4 + 3] + a[1 * 4 + 3] * b[3 * 4 + 3];
+            out[2 * 4 + 0] = a[2 * 4 + 0] * b[0 * 4 + 0] + a[2 * 4 + 1] * b[1 * 4 + 0] + a[2 * 4 + 2] * b[2 * 4 + 0] + a[2 * 4 + 3] * b[3 * 4 + 0];
+            out[2 * 4 + 1] = a[2 * 4 + 0] * b[0 * 4 + 1] + a[2 * 4 + 1] * b[1 * 4 + 1] + a[2 * 4 + 2] * b[2 * 4 + 1] + a[2 * 4 + 3] * b[3 * 4 + 1];
+            out[2 * 4 + 2] = a[2 * 4 + 0] * b[0 * 4 + 2] + a[2 * 4 + 1] * b[1 * 4 + 2] + a[2 * 4 + 2] * b[2 * 4 + 2] + a[2 * 4 + 3] * b[3 * 4 + 2];
+            out[2 * 4 + 3] = a[2 * 4 + 0] * b[0 * 4 + 3] + a[2 * 4 + 1] * b[1 * 4 + 3] + a[2 * 4 + 2] * b[2 * 4 + 3] + a[2 * 4 + 3] * b[3 * 4 + 3];
+            out[3 * 4 + 0] = a[3 * 4 + 0] * b[0 * 4 + 0] + a[3 * 4 + 1] * b[1 * 4 + 0] + a[3 * 4 + 2] * b[2 * 4 + 0] + a[3 * 4 + 3] * b[3 * 4 + 0];
+            out[3 * 4 + 1] = a[3 * 4 + 0] * b[0 * 4 + 1] + a[3 * 4 + 1] * b[1 * 4 + 1] + a[3 * 4 + 2] * b[2 * 4 + 1] + a[3 * 4 + 3] * b[3 * 4 + 1];
+            out[3 * 4 + 2] = a[3 * 4 + 0] * b[0 * 4 + 2] + a[3 * 4 + 1] * b[1 * 4 + 2] + a[3 * 4 + 2] * b[2 * 4 + 2] + a[3 * 4 + 3] * b[3 * 4 + 2];
+            out[3 * 4 + 3] = a[3 * 4 + 0] * b[0 * 4 + 3] + a[3 * 4 + 1] * b[1 * 4 + 3] + a[3 * 4 + 2] * b[2 * 4 + 3] + a[3 * 4 + 3] * b[3 * 4 + 3];
         }
-    }
-
-    /**
-     * TBD - delete method after converting float[] to FloatBuffer
-     *  
-     * @param a
-     * @param b
-     * @param out
-     * 
-     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
-     */
-    public static void myGlMultMatrix(final float[] a/*[16]*/, final float[] b/*[16]*/, FloatBuffer out/*[16]*/) {
-    	myGlMultMatrix(Nio.wrap(a), Nio.wrap(b), out);
-    }
-
-    /**
-     * TBD - delete method after converting float[] to FloatBuffer
-     * 
-     * @param a
-     * @param b
-     * @param out
-     * 
-     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
-     */
-    public static void myGlMultMatrix(final float[] a/*[16]*/, final FloatBuffer b/*[16]*/, FloatBuffer out/*[16]*/) {
-    	myGlMultMatrix(Nio.wrap(a), b, out);
-    }
-
-//    /**
-//     * TBD - delete method after converting float[] to FloatBuffer
-//     * 
-//     * @param a
-//     * @param b
-//     * @param out
-//     * 
-//     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
-//     */
-//    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final float[] b/*[16]*/, FloatBuffer out/*[16]*/) {
-//    	myGlMultMatrix(a, Nio.wrap(b), out);
-//    }
-
-    /**
-     * TBD - delete method after converting float[] to FloatBuffer
-     * 
-     * @param a
-     * @param b
-     * @param out
-     * 
-     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
-     */
-    public static void myGlMultMatrix(final float[] a/*[16]*/, final float[] b/*[16]*/, float[] out/*[16]*/) {
-    	myGlMultMatrix(Nio.wrap(a), Nio.wrap(b), out);
-    }
-
-    /**
-     * TBD - delete method after converting float[] to FloatBuffer
-     * 
-     * @param a
-     * @param b
-     * @param out
-     * 
-     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
-     */
-    public static void myGlMultMatrix(final float[] a/*[16]*/, final FloatBuffer b/*[16]*/, float[] out/*[16]*/) {
-    	myGlMultMatrix(Nio.wrap(a), b, out);
-    }
-
-    /**
-     * TBD - delete method after converting float[] to FloatBuffer
-     * 
-     * @param a
-     * @param b
-     * @param out
-     * 
-     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
-     */
-    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final float[] b/*[16]*/, float[] out/*[16]*/) {
-    	myGlMultMatrix(a, Nio.wrap(b), out);
-    }
-
-    /**
-     * TBD - delete method after converting float[] to FloatBuffer
-     * 
-     * @param a
-     * @param b
-     * @param out
-     * 
-     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
-     */
-    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final FloatBuffer b/*[16]*/, float[] out/*[16]*/) {
-		ByteBuffer bb = ByteBuffer.allocate(16 * Nio.SIZEOF_FLOAT);
-		bb.order(ByteOrder.nativeOrder());
-		FloatBuffer fb = bb.asFloatBuffer();
-		myGlMultMatrix(a, b, fb);
-		for (int i = 0; i < out.length; i++) {
-			out[i] = fb.get(i);
-		}
     }
 
     /*
@@ -842,19 +767,14 @@ public class tr_main {
      R_TransposeGLMatrix
      ================
      */
-    public static FloatBuffer R_TransposeGLMatrix(final FloatBuffer in/*[16]*/) { //, float[] out/*[16]*/) {
+    public static void R_TransposeGLMatrix(final float[] in/*[16]*/, float[] out/*[16]*/) {
         int i, j;
 
-        FloatBuffer out = Nio.newFloatBuffer(16);
-        
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
-                //out[(i * 4) + j] = in[(j * 4) + i];
-                out.put(in.get((j * 4) + i));
+                out[i * 4 + j] = in[j * 4 + i];
             }
         }
-        
-        return (FloatBuffer) out.flip();
     }
 
     /*
@@ -876,14 +796,14 @@ public class tr_main {
     public static void R_SetViewMatrix(viewDef_s viewDef) {
         idVec3 origin;
         viewEntity_s world;
-        final float[] viewerMatrix = new float[16];
+        float[] viewerMatrix = new float[16];
 
         world = viewDef.worldSpace = new viewEntity_s();//memset(world, 0, sizeof(world));
 
         // the model matrix is an identity
-        world.modelMatrix[(0 * 4) + 0] = 1;
-        world.modelMatrix[(1 * 4) + 1] = 1;
-        world.modelMatrix[(2 * 4) + 2] = 1;
+        world.modelMatrix[0 * 4 + 0] = 1;
+        world.modelMatrix[1 * 4 + 1] = 1;
+        world.modelMatrix[2 * 4 + 2] = 1;
 
         // transform by the camera placement
         origin = viewDef.renderView.vieworg;
@@ -891,17 +811,17 @@ public class tr_main {
         viewerMatrix[ 0] = viewDef.renderView.viewaxis.oGet(0, 0);
         viewerMatrix[ 4] = viewDef.renderView.viewaxis.oGet(0, 1);
         viewerMatrix[ 8] = viewDef.renderView.viewaxis.oGet(0, 2);
-        viewerMatrix[12] = (-origin.oGet(0) * viewerMatrix[0]) + (-origin.oGet(1) * viewerMatrix[4]) + (-origin.oGet(2) * viewerMatrix[8]);
+        viewerMatrix[12] = -origin.oGet(0) * viewerMatrix[0] + -origin.oGet(1) * viewerMatrix[4] + -origin.oGet(2) * viewerMatrix[8];
 
         viewerMatrix[ 1] = viewDef.renderView.viewaxis.oGet(1, 0);
         viewerMatrix[ 5] = viewDef.renderView.viewaxis.oGet(1, 1);
         viewerMatrix[ 9] = viewDef.renderView.viewaxis.oGet(1, 2);
-        viewerMatrix[13] = (-origin.oGet(0) * viewerMatrix[1]) + (-origin.oGet(1) * viewerMatrix[5]) + (-origin.oGet(2) * viewerMatrix[9]);
+        viewerMatrix[13] = -origin.oGet(0) * viewerMatrix[1] + -origin.oGet(1) * viewerMatrix[5] + -origin.oGet(2) * viewerMatrix[9];
 
         viewerMatrix[ 2] = viewDef.renderView.viewaxis.oGet(2, 0);
         viewerMatrix[ 6] = viewDef.renderView.viewaxis.oGet(2, 1);
         viewerMatrix[10] = viewDef.renderView.viewaxis.oGet(2, 2);
-        viewerMatrix[14] = (-origin.oGet(0) * viewerMatrix[2]) + (-origin.oGet(1) * viewerMatrix[6]) + (-origin.oGet(2) * viewerMatrix[10]);
+        viewerMatrix[14] = -origin.oGet(0) * viewerMatrix[2] + -origin.oGet(1) * viewerMatrix[6] + -origin.oGet(2) * viewerMatrix[10];
 
         viewerMatrix[ 3] = 0;
         viewerMatrix[ 7] = 0;
@@ -910,7 +830,7 @@ public class tr_main {
 
         // convert from our coordinate system (looking down X)
         // to OpenGL's coordinate system (looking down -Z)
-        myGlMultMatrix(viewerMatrix, s_flipMatrix, world.getModelViewMatrix());
+        myGlMultMatrix(viewerMatrix, s_flipMatrix, world.modelViewMatrix);
     }
     /*
      ===============
@@ -945,23 +865,44 @@ public class tr_main {
             zNear *= 0.25;
         }
 
-        ymax = (float) (zNear * Math.tan((tr.viewDef.renderView.fov_y * idMath.PI) / 360.0f));
+        ymax = (float) (zNear * Math.tan(tr.viewDef.renderView.fov_y * idMath.PI / 360.0f));
         ymin = -ymax;
 
-        xmax = (float) (zNear * Math.tan((tr.viewDef.renderView.fov_x * idMath.PI) / 360.0f));
+        xmax = (float) (zNear * Math.tan(tr.viewDef.renderView.fov_x * idMath.PI / 360.0f));
         xmin = -xmax;
 
         width = xmax - xmin;
         height = ymax - ymin;
 
-        jitterx = (jitterx * width) / ((tr.viewDef.viewport.x2 - tr.viewDef.viewport.x1) + 1);
+        jitterx = jitterx * width / (tr.viewDef.viewport.x2 - tr.viewDef.viewport.x1 + 1);
         xmin += jitterx;
         xmax += jitterx;
-        jittery = (jittery * height) / ((tr.viewDef.viewport.y2 - tr.viewDef.viewport.y1) + 1);
+        jittery = jittery * height / (tr.viewDef.viewport.y2 - tr.viewDef.viewport.y1 + 1);
         ymin += jittery;
         ymax += jittery;
 
-        MatrixUtil.setupProjection(tr.viewDef.getProjectionMatrix(), zNear, width, xmax, xmin, height, ymax, ymin);
+        tr.viewDef.projectionMatrix[ 0] = 2 * zNear / width;
+        tr.viewDef.projectionMatrix[ 4] = 0;
+        tr.viewDef.projectionMatrix[ 8] = (xmax + xmin) / width;	// normally 0
+        tr.viewDef.projectionMatrix[12] = 0;
+
+        tr.viewDef.projectionMatrix[ 1] = 0;
+        tr.viewDef.projectionMatrix[ 5] = 2 * zNear / height;
+        tr.viewDef.projectionMatrix[ 9] = (ymax + ymin) / height;	// normally 0
+        tr.viewDef.projectionMatrix[13] = 0;
+
+        // this is the far-plane-at-infinity formulation, and
+        // crunches the Z range slightly so w=0 vertexes do not
+        // rasterize right at the wraparound point
+        tr.viewDef.projectionMatrix[ 2] = 0;
+        tr.viewDef.projectionMatrix[ 6] = 0;
+        tr.viewDef.projectionMatrix[10] = -0.999f;
+        tr.viewDef.projectionMatrix[14] = -2.0f * zNear;
+
+        tr.viewDef.projectionMatrix[ 3] = 0;
+        tr.viewDef.projectionMatrix[ 7] = 0;
+        tr.viewDef.projectionMatrix[11] = -1;
+        tr.viewDef.projectionMatrix[15] = 0;
     }
 
     /*
@@ -974,16 +915,16 @@ public class tr_main {
      */
     public static void R_SetupViewFrustum() {
         int i;
-        final float[] xs = {0.0f}, xc = {0.00f};
+        float[] xs = {0.0f}, xc = {0.00f};
         float ang;
 
-        ang = DEG2RAD(tr.viewDef.renderView.fov_x) * 0.5f;
+        ang = (float) (DEG2RAD(tr.viewDef.renderView.fov_x) * 0.5f);
         idMath.SinCos(ang, xs, xc);
 
         tr.viewDef.frustum[0].oSet(tr.viewDef.renderView.viewaxis.oGet(0).oMultiply(xs[0]).oPlus(tr.viewDef.renderView.viewaxis.oGet(1).oMultiply(xc[0])));
         tr.viewDef.frustum[1].oSet(tr.viewDef.renderView.viewaxis.oGet(0).oMultiply(xs[0]).oMinus(tr.viewDef.renderView.viewaxis.oGet(1).oMultiply(xc[0])));
 
-        ang = DEG2RAD(tr.viewDef.renderView.fov_y) * 0.5f;
+        ang = (float) (DEG2RAD(tr.viewDef.renderView.fov_y) * 0.5f);
         idMath.SinCos(ang, xs, xc);
 
         tr.viewDef.frustum[2].oSet(tr.viewDef.renderView.viewaxis.oGet(0).oMultiply(xs[0]).oPlus(tr.viewDef.renderView.viewaxis.oGet(2).oMultiply(xc[0])));
@@ -1021,7 +962,7 @@ public class tr_main {
      ===================
      */
     public static void R_ConstrainViewFrustum() {
-        final idBounds bounds = new idBounds();
+        idBounds bounds = new idBounds();
 
         // constrain the view frustum to the total bounds of all visible lights and visible entities
         bounds.Clear();
@@ -1057,19 +998,19 @@ public class tr_main {
         public int compare(drawSurf_s a, drawSurf_s b) {
 
             //this check assumes that the array contains nothing but nulls from this point.
-            if ((null == a) && (null == b)) {
+            if (null == a && null == b) {
                 return 0;
             }
 
-            if ((null == b) || ((null != a) && (a.sort < b.sort))) {
+            if (null == b || (null != a && a.sort < b.sort)) {
                 return -1;
             }
-            if ((null == a) || ((null != b) && (a.sort > b.sort))) {
+            if (null == a || (null != b && a.sort > b.sort)) {
                 return 1;
             }
             return 0;
         }
-    }
+    };
 
     /*
      =================
@@ -1120,7 +1061,7 @@ public class tr_main {
         viewDef_s oldView;
         DEBUG_R_RenderView++;
 
-        if ((parms.renderView.width <= 0) || (parms.renderView.height <= 0)) {
+        if (parms.renderView.width <= 0 || parms.renderView.height <= 0) {
             return;
         }
 
@@ -1148,7 +1089,7 @@ public class tr_main {
         // identify all the visible portalAreas, and the entityDefs and
         // lightDefs that are in them and pass culling.
 //	static_cast<idRenderWorldLocal *>(parms.renderWorld).FindViewLightsAndEntities();
-        parms.renderWorld.FindViewLightsAndEntities();
+        ((idRenderWorldLocal) parms.renderWorld).FindViewLightsAndEntities();
 
         // constrain the view frustum to the view lights and entities
         R_ConstrainViewFrustum();
@@ -1180,7 +1121,7 @@ public class tr_main {
         // write everything needed to the demo file
         if (session.writeDemo != null) {
 //		static_cast<idRenderWorldLocal *>(parms.renderWorld)->WriteVisibleDefs( tr.viewDef );
-            parms.renderWorld.WriteVisibleDefs(tr.viewDef);
+            ((idRenderWorldLocal) parms.renderWorld).WriteVisibleDefs(tr.viewDef);
         }
 
         // add the rendering commands for this viewDef

@@ -88,8 +88,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import neo.TempDump;
-import neo.TempDump.NeoFixStrings;
 import neo.TempDump.TODO_Exception;
 import neo.framework.CVarSystem.idCVar;
 import neo.framework.CmdSystem.cmdFunction_t;
@@ -155,7 +153,7 @@ public class win_main {//TODO: rename to plain "main" or something.
      */
     public static void Sys_CreateThread(xthread_t function, Object parms, xthreadPriority priority, xthreadInfo info, final String name, xthreadInfo[] threads/*[MAX_THREADS]*/, int[] thread_count) {
 
-        final Thread temp = new Thread(function);
+        Thread temp = new Thread(function);
         info.threadId = temp.getId();
         info.threadHandle = temp;//TODO: do we need this?
         if (priority == THREAD_HIGHEST) {
@@ -190,7 +188,7 @@ public class win_main {//TODO: rename to plain "main" or something.
      ==================
      */
     public static void Sys_Sentry() {
-        final int j = 0;
+        int j = 0;
     }
 
     /*
@@ -222,7 +220,7 @@ public class win_main {//TODO: rename to plain "main" or something.
      ==================
      */
     public static void Sys_EnterCriticalSection(int index) {
-        assert ((index >= 0) && (index < MAX_CRITICAL_SECTIONS));
+        assert (index >= 0 && index < MAX_CRITICAL_SECTIONS);
 //		Sys_DebugPrintf( "busy lock '%s' in thread '%s'\n", lock->name, Sys_GetThreadName() );
         win32.criticalSections[index].lock();
     }
@@ -237,7 +235,7 @@ public class win_main {//TODO: rename to plain "main" or something.
      ==================
      */
     public static void Sys_LeaveCriticalSection(int index) {
-        assert ((index >= 0) && (index < MAX_CRITICAL_SECTIONS));
+        assert (index >= 0 && index < MAX_CRITICAL_SECTIONS);
         if (((ReentrantLock) win32.criticalSections[index]).isLocked()) {
             win32.criticalSections[index].unlock();
         }
@@ -325,7 +323,7 @@ public class win_main {//TODO: rename to plain "main" or something.
      =============
      */
     public static void Sys_Error(final String fmt, Object... arg) {
-        final StringBuilder text = new StringBuilder(4096);
+        StringBuilder text = new StringBuilder(4096);
 
 //	va_start( argptr, error );
 //	vsprintf( text, error, argptr );
@@ -378,7 +376,7 @@ public class win_main {//TODO: rename to plain "main" or something.
      ==============
      */
     public static void Sys_Printf(final String fmt, Object... arg) {
-        final StringBuilder msg = new StringBuilder(MAXPRINTMSG);
+        StringBuilder msg = new StringBuilder(MAXPRINTMSG);
         msg.append(String.format(fmt, arg));
 
         if (Win32Vars_t.win_outputDebugString.GetBool()) {
@@ -453,7 +451,7 @@ public class win_main {//TODO: rename to plain "main" or something.
     }
 
     public static void Sys_Mkdir(final idStr path) {
-        Sys_Mkdir(path.getData());
+        Sys_Mkdir(path.toString());
     }
 
     /*
@@ -473,7 +471,7 @@ public class win_main {//TODO: rename to plain "main" or something.
     }
 
     public static String Sys_Cwd() {
-        final String cwd = System.getProperty("user.dir");
+        String cwd = System.getProperty("user.dir");
 
         return cwd;
     }
@@ -549,7 +547,7 @@ public class win_main {//TODO: rename to plain "main" or something.
             return -1;
         }
 
-        for (final File findhandle : findinfo.listFiles(search)) {
+        for (File findhandle : findinfo.listFiles(search)) {
 //            if (_A_SUBDIR ^ (findinfo.isDirectory())) {
             list.Append(findhandle.getName());
 //            }
@@ -723,7 +721,7 @@ public class win_main {//TODO: rename to plain "main" or something.
 
         ev = eventQue[eventHead & MASK_QUED_EVENTS] = new sysEvent_s();
 
-        if ((eventHead - eventTail) >= MAX_QUED_EVENTS) {
+        if (eventHead - eventTail >= MAX_QUED_EVENTS) {
             common.Printf("Sys_QueEvent: overflow\n");
             // we are discarding an event, but don't leak memory
             if (ev.evPtr != null) {
@@ -883,7 +881,7 @@ public class win_main {//TODO: rename to plain "main" or something.
         @Override
         public void run() {
 
-        	System.out.println(NeoFixStrings.BLAAAAAAAAAAAAAAAAAA);
+            System.out.println("Blaaaaaaaaaaaaaaaaaa!");
 //            startTime = Sys_Milliseconds();
 //            wakeNumber = 0;
 //
@@ -913,6 +911,8 @@ public class win_main {//TODO: rename to plain "main" or something.
         }
     }
 
+    ;
+
     /*
      ==============
      Sys_StartAsyncThread
@@ -923,9 +923,9 @@ public class win_main {//TODO: rename to plain "main" or something.
     public static void Sys_StartAsyncThread() {
 
         // create an auto-reset event that happens 60 times a second
-//        hTimer = Executors.newSingleThreadScheduledExecutor(r -> new Thread(NeoFixStrings.BLA + (thread++)));
+//        hTimer = Executors.newSingleThreadScheduledExecutor(r -> new Thread("bla" + (thread++)));
         hTimer = Executors.newSingleThreadScheduledExecutor(r -> {
-            final Thread thread = new Thread(r, NeoFixStrings.BLA + "-" + (count++));
+            final Thread thread = new Thread(r, "bla-" + (count++));
             thread.setPriority(Thread.MAX_PRIORITY);
             return thread;
         });
@@ -960,7 +960,7 @@ public class win_main {//TODO: rename to plain "main" or something.
      ================
      */
     public static boolean Sys_AlreadyRunning() {
-        if (!TempDump.isDeadCodeTrue()) {
+        if (true) {
             return false;
         }
         throw new TODO_Exception();
@@ -1101,11 +1101,11 @@ public class win_main {//TODO: rename to plain "main" or something.
             }
             string.StripTrailing(" & ");
             string.StripTrailing(" with ");
-            Win32Vars_t.sys_cpustring.SetString(string.getData());
+            Win32Vars_t.sys_cpustring.SetString(string.toString());
         } else {
             common.Printf("forcing CPU type to ");
-            final idLexer src = new idLexer(Win32Vars_t.sys_cpustring.GetString(), Win32Vars_t.sys_cpustring.GetString().length(), "sys_cpustring");
-            final idToken token = new idToken();
+            idLexer src = new idLexer(Win32Vars_t.sys_cpustring.GetString(), Win32Vars_t.sys_cpustring.GetString().length(), "sys_cpustring");
+            idToken token = new idToken();
 
             int id = CPUID_NONE;
             while (src.ReadToken(token)) {
@@ -1181,7 +1181,7 @@ public class win_main {//TODO: rename to plain "main" or something.
 
         // if "viewlog" has been modified, show or hide the log console
         if (win_viewlog.IsModified()) {
-            if (!com_skipRenderer.GetBool() && (idAsyncNetwork.serverDedicated.GetInteger() != 1)) {
+            if (!com_skipRenderer.GetBool() && idAsyncNetwork.serverDedicated.GetInteger() != 1) {
                 Sys_ShowConsole(win_viewlog.GetInteger(), false);
             }
             win_viewlog.ClearModified();
@@ -1579,12 +1579,12 @@ public class win_main {//TODO: rename to plain "main" or something.
     }
 
     public static boolean remove(final idStr path) {
-        return remove(path.getData());
+        return remove(path.toString());
     }
 
     public static FileChannel tmpfile() throws IOException {
 
-        final File tmp = File.createTempFile(NeoFixStrings.BLA, NeoFixStrings.BLA);
+        File tmp = File.createTempFile("bla", "bla");
         tmp.deleteOnExit();
 
         return FileChannel.open(tmp.toPath(), fopenOptions("wb+"));
@@ -1677,9 +1677,9 @@ public class win_main {//TODO: rename to plain "main" or something.
         Sys_StartAsyncThread();
 
         // hide or show the early console as necessary
-        if ((Win32Vars_t.win_viewlog.GetInteger() != 0)
+        if (Win32Vars_t.win_viewlog.GetInteger() != 0
                 || com_skipRenderer.GetBool()
-                || (idAsyncNetwork.serverDedicated.GetInteger() != 0)) {
+                || idAsyncNetwork.serverDedicated.GetInteger() != 0) {
             Sys_ShowConsole(1, true);
         } else {
             Sys_ShowConsole(0, false);

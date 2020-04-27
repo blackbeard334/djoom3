@@ -76,6 +76,8 @@ public class Sound {
         int   soundClass;              // for global fading of sounds
     }
 
+    ;
+
     static final int SOUND_MAX_LIST_WAVS = 32;
 
     // sound classes are used to fade most sounds down inside cinematics, leaving dialog
@@ -90,11 +92,7 @@ public class Sound {
      ===============================================================================
      */
     public static class idSound extends idEntity {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idSound>) idSound::Event_Trigger);
@@ -109,46 +107,46 @@ public class Sound {
         private float    random;
         private float    wait;
         private boolean  timerOn;
-        private final idVec3   shakeTranslate;
-        private final idAngles shakeRotate;
+        private idVec3   shakeTranslate;
+        private idAngles shakeRotate;
         private int      playingUntilTime;
         //
         //
 
 //	CLASS_PROTOTYPE( idSound );
         public idSound() {
-            this.lastSoundVol = 0.0f;
-            this.soundVol = 0.0f;
-            this.shakeTranslate = new idVec3();
-            this.shakeRotate = new idAngles();
-            this.random = 0.0f;
-            this.wait = 0.0f;
-            this.timerOn = false;
-            this.playingUntilTime = 0;
+            lastSoundVol = 0.0f;
+            soundVol = 0.0f;
+            shakeTranslate = new idVec3();
+            shakeRotate = new idAngles();
+            random = 0.0f;
+            wait = 0.0f;
+            timerOn = false;
+            playingUntilTime = 0;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteFloat(this.lastSoundVol);
-            savefile.WriteFloat(this.soundVol);
-            savefile.WriteFloat(this.random);
-            savefile.WriteFloat(this.wait);
-            savefile.WriteBool(this.timerOn);
-            savefile.WriteVec3(this.shakeTranslate);
-            savefile.WriteAngles(this.shakeRotate);
-            savefile.WriteInt(this.playingUntilTime);
+            savefile.WriteFloat(lastSoundVol);
+            savefile.WriteFloat(soundVol);
+            savefile.WriteFloat(random);
+            savefile.WriteFloat(wait);
+            savefile.WriteBool(timerOn);
+            savefile.WriteVec3(shakeTranslate);
+            savefile.WriteAngles(shakeRotate);
+            savefile.WriteInt(playingUntilTime);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            this.lastSoundVol = savefile.ReadFloat();
-            this.soundVol = savefile.ReadFloat();
-            this.random = savefile.ReadFloat();
-            this.wait = savefile.ReadFloat();
-            this.timerOn = savefile.ReadBool();
-            savefile.ReadVec3(this.shakeTranslate);
-            savefile.ReadAngles(this.shakeRotate);
-            this.playingUntilTime = savefile.ReadInt();
+            lastSoundVol = savefile.ReadFloat();
+            soundVol = savefile.ReadFloat();
+            random = savefile.ReadFloat();
+            wait = savefile.ReadFloat();
+            timerOn = savefile.ReadBool();
+            savefile.ReadVec3(shakeTranslate);
+            savefile.ReadAngles(shakeRotate);
+            playingUntilTime = savefile.ReadInt();
         }
 
         @Override
@@ -158,37 +156,37 @@ public class Sound {
 
             if (source != null) {
                 FreeSoundEmitter(true);
-                this.spawnArgs.Copy(source);
-                final idSoundEmitter saveRef = this.refSound.referenceSound;
-                GameEdit.gameEdit.ParseSpawnArgsToRefSound(this.spawnArgs, this.refSound);
-                this.refSound.referenceSound = saveRef;
+                spawnArgs.Copy(source);
+                idSoundEmitter saveRef = refSound.referenceSound;
+                GameEdit.gameEdit.ParseSpawnArgsToRefSound(spawnArgs, refSound);
+                refSound.referenceSound = saveRef;
 
-                final idVec3 origin = new idVec3();
-                final idMat3 axis = new idMat3();
+                idVec3 origin = new idVec3();
+                idMat3 axis = new idMat3();
 
                 if (GetPhysicsToSoundTransform(origin, axis)) {
-                    this.refSound.origin = GetPhysics().GetOrigin().oPlus(origin.oMultiply(axis));
+                    refSound.origin = GetPhysics().GetOrigin().oPlus(origin.oMultiply(axis));
                 } else {
-                    this.refSound.origin = GetPhysics().GetOrigin();
+                    refSound.origin = GetPhysics().GetOrigin();
                 }
 
-                this.random = this.spawnArgs.GetFloat("random", "0");
-                this.wait = this.spawnArgs.GetFloat("wait", "0");
+                random = spawnArgs.GetFloat("random", "0");
+                wait = spawnArgs.GetFloat("wait", "0");
 
-                if ((this.wait > 0.0f) && (this.random >= this.wait)) {
-                    this.random = this.wait - 0.001f;
-                    gameLocal.Warning("speaker '%s' at (%s) has random >= wait", this.name, GetPhysics().GetOrigin().ToString(0));
+                if ((wait > 0.0f) && (random >= wait)) {
+                    random = wait - 0.001f;
+                    gameLocal.Warning("speaker '%s' at (%s) has random >= wait", name, GetPhysics().GetOrigin().ToString(0));
                 }
 
-                if (!this.refSound.waitfortrigger && (this.wait > 0.0f)) {
-                    this.timerOn = true;
+                if (!refSound.waitfortrigger && (wait > 0.0f)) {
+                    timerOn = true;
                     DoSound(false);
                     CancelEvents(EV_Speaker_Timer);
-                    PostEventSec(EV_Speaker_Timer, this.wait + (gameLocal.random.CRandomFloat() * this.random));
-                } else if (!this.refSound.waitfortrigger && !((this.refSound.referenceSound != null) && this.refSound.referenceSound.CurrentlyPlaying())) {
+                    PostEventSec(EV_Speaker_Timer, wait + gameLocal.random.CRandomFloat() * random);
+                } else if (!refSound.waitfortrigger && !(refSound.referenceSound != null && refSound.referenceSound.CurrentlyPlaying())) {
                     // start it if it isn't already playing, and we aren't waitForTrigger
                     DoSound(true);
-                    this.timerOn = false;
+                    timerOn = false;
                 }
             }
         }
@@ -197,28 +195,28 @@ public class Sound {
         public void Spawn() {
             super.Spawn();
             
-            this.spawnArgs.GetVector("move", "0 0 0", this.shakeTranslate);
-            this.spawnArgs.GetAngles("rotate", "0 0 0", this.shakeRotate);
-            this.random = this.spawnArgs.GetFloat("random", "0");
-            this.wait = this.spawnArgs.GetFloat("wait", "0");
+            spawnArgs.GetVector("move", "0 0 0", shakeTranslate);
+            spawnArgs.GetAngles("rotate", "0 0 0", shakeRotate);
+            random = spawnArgs.GetFloat("random", "0");
+            wait = spawnArgs.GetFloat("wait", "0");
 
-            if ((this.wait > 0.0f) && (this.random >= this.wait)) {
-                this.random = this.wait - 0.001f;
-                gameLocal.Warning("speaker '%s' at (%s) has random >= wait", this.name, GetPhysics().GetOrigin().ToString(0));
+            if ((wait > 0.0f) && (random >= wait)) {
+                random = wait - 0.001f;
+                gameLocal.Warning("speaker '%s' at (%s) has random >= wait", name, GetPhysics().GetOrigin().ToString(0));
             }
 
-            this.soundVol = 0.0f;
-            this.lastSoundVol = 0.0f;
+            soundVol = 0.0f;
+            lastSoundVol = 0.0f;
 
-            if (!this.shakeRotate.equals(getAng_zero()) || !this.shakeTranslate.equals(getVec3_zero())) {
+            if (!shakeRotate.equals(getAng_zero()) || !shakeTranslate.equals(getVec3_zero())) {
                 BecomeActive(TH_THINK);
             }
 
-            if (!this.refSound.waitfortrigger && (this.wait > 0.0f)) {
-                this.timerOn = true;
-                PostEventSec(EV_Speaker_Timer, this.wait + (gameLocal.random.CRandomFloat() * this.random));
+            if (!refSound.waitfortrigger && (wait > 0.0f)) {
+                timerOn = true;
+                PostEventSec(EV_Speaker_Timer, wait + gameLocal.random.CRandomFloat() * random);
             } else {
-                this.timerOn = false;
+                timerOn = false;
             }
         }
 
@@ -236,13 +234,13 @@ public class Sound {
 
         public void SetSound(final String sound, int channel /*= SND_CHANNEL_ANY*/) {
             final idSoundShader shader = declManager.FindSound(sound);
-            if (!shader.equals(this.refSound.shader)) {
+            if (!shader.equals(refSound.shader)) {
                 FreeSoundEmitter(true);
             }
-            GameEdit.gameEdit.ParseSpawnArgsToRefSound(this.spawnArgs, this.refSound);
-            this.refSound.shader = shader;
+            GameEdit.gameEdit.ParseSpawnArgsToRefSound(spawnArgs, refSound);
+            refSound.shader = shader;
             // start it if it isn't already playing, and we aren't waitForTrigger
-            if (!this.refSound.waitfortrigger && !((this.refSound.referenceSound != null) && this.refSound.referenceSound.CurrentlyPlaying())) {
+            if (!refSound.waitfortrigger && !(refSound.referenceSound != null && refSound.referenceSound.CurrentlyPlaying())) {
                 DoSound(true);
             }
         }
@@ -253,7 +251,7 @@ public class Sound {
 
         @Override
         public void ShowEditingDialog() {
-            common.InitTool(EDITOR_SOUND, this.spawnArgs);
+            common.InitTool(EDITOR_SOUND, spawnArgs);
         }
 
 
@@ -265,24 +263,24 @@ public class Sound {
          ================
          */
         private void Event_Trigger(idEventArg<idEntity> activator) {
-            if (this.wait > 0.0f) {
-                if (this.timerOn) {
-                    this.timerOn = false;
+            if (wait > 0.0f) {
+                if (timerOn) {
+                    timerOn = false;
                     CancelEvents(EV_Speaker_Timer);
                 } else {
-                    this.timerOn = true;
+                    timerOn = true;
                     DoSound(true);
-                    PostEventSec(EV_Speaker_Timer, this.wait + (gameLocal.random.CRandomFloat() * this.random));
+                    PostEventSec(EV_Speaker_Timer, wait + gameLocal.random.CRandomFloat() * random);
                 }
             } else {
                 if (gameLocal.isMultiplayer) {
-                    if ((this.refSound.referenceSound != null) && (gameLocal.time < this.playingUntilTime)) {
+                    if (refSound.referenceSound != null && (gameLocal.time < playingUntilTime)) {
                         DoSound(false);
                     } else {
                         DoSound(true);
                     }
                 } else {
-                    if ((this.refSound.referenceSound != null) && this.refSound.referenceSound.CurrentlyPlaying()) {
+                    if (refSound.referenceSound != null && refSound.referenceSound.CurrentlyPlaying()) {
                         DoSound(false);
                     } else {
                         DoSound(true);
@@ -293,20 +291,20 @@ public class Sound {
 
         private void Event_Timer() {
             DoSound(true);
-            PostEventSec(EV_Speaker_Timer, this.wait + (gameLocal.random.CRandomFloat() * this.random));
+            PostEventSec(EV_Speaker_Timer, wait + gameLocal.random.CRandomFloat() * random);
         }
 
         private void Event_On() {
-            if (this.wait > 0.0f) {
-                this.timerOn = true;
-                PostEventSec(EV_Speaker_Timer, this.wait + (gameLocal.random.CRandomFloat() * this.random));
+            if (wait > 0.0f) {
+                timerOn = true;
+                PostEventSec(EV_Speaker_Timer, wait + gameLocal.random.CRandomFloat() * random);
             }
             DoSound(true);
         }
 
         private void Event_Off() {
-            if (this.timerOn) {
-                this.timerOn = false;
+            if (timerOn) {
+                timerOn = false;
                 CancelEvents(EV_Speaker_Timer);
             }
             DoSound(false);
@@ -314,12 +312,12 @@ public class Sound {
 
         private void DoSound(boolean play) {
             if (play) {
-                final int[] playingUntilTime = {0};
-                StartSoundShader(this.refSound.shader, etoi(SND_CHANNEL_ANY), this.refSound.parms.soundShaderFlags, true, playingUntilTime);
+                int[] playingUntilTime = {0};
+                StartSoundShader(refSound.shader, etoi(SND_CHANNEL_ANY), refSound.parms.soundShaderFlags, true, playingUntilTime);
                 this.playingUntilTime = playingUntilTime[0] + gameLocal.time;
             } else {
                 StopSound(etoi(SND_CHANNEL_ANY), true);
-                this.playingUntilTime = 0;
+                playingUntilTime = 0;
             }
         }
 
@@ -329,12 +327,12 @@ public class Sound {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -342,5 +340,5 @@ public class Sound {
             return eventCallbacks;
         }
 
-    }
+    };
 }

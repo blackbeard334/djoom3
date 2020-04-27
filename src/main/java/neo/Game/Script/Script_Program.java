@@ -119,11 +119,7 @@ public class Script_Program {
      ***********************************************************************/
     public static class function_t implements SERiAL {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		static final int SIZE
+        static final int SIZE
                                = idStr.SIZE
                 + CPP_class.Pointer.SIZE//eventdef
                 + CPP_class.Pointer.SIZE//def
@@ -136,7 +132,7 @@ public class Script_Program {
                 + idList.SIZE;
         static final int BYTES = SIZE / Byte.SIZE;
 
-        private final idStr name = new idStr();
+        private idStr name = new idStr();
         //
         public idEventDef eventdef;
         public idVarDef   def;
@@ -155,7 +151,7 @@ public class Script_Program {
         }
 
         public int/*size_t*/ Allocated() {
-            return this.name.Allocated() + this.parmSize.Allocated();
+            return name.Allocated() + parmSize.Allocated();
         }
 
         public void SetName(final String name) {
@@ -163,20 +159,20 @@ public class Script_Program {
         }
 
         public String Name() {
-            return this.name.getData();
+            return name.toString();
         }
 
         public void Clear() {
-            this.eventdef = null;
-            this.def = null;
-            this.type = null;
-            this.firstStatement = 0;
-            this.numStatements = 0;
-            this.parmTotal = 0;
-            this.locals = 0;
-            this.filenum = 0;
-            this.name.Clear();
-            this.parmSize.Clear();
+            eventdef = null;
+            def = null;
+            type = null;
+            firstStatement = 0;
+            numStatements = 0;
+            parmTotal = 0;
+            locals = 0;
+            filenum = 0;
+            name.Clear();
+            parmSize.Clear();
         }
 
         @Override
@@ -187,16 +183,16 @@ public class Script_Program {
         @Override
         public void Read(ByteBuffer buffer) {
             try {
-                this.name.Read(buffer);
+                name.Read(buffer);
                 buffer.getInt();//skip
                 buffer.getInt();//skip
                 buffer.getInt();//skip
-                this.firstStatement = buffer.getInt();
-                this.numStatements = buffer.getInt();
-                this.parmTotal = buffer.getInt();
-                this.locals = buffer.getInt();
-                this.filenum = buffer.getInt();
-            } catch (final BufferUnderflowException ignore) {
+                firstStatement = buffer.getInt();
+                numStatements = buffer.getInt();
+                parmTotal = buffer.getInt();
+                locals = buffer.getInt();
+                filenum = buffer.getInt();
+            } catch (BufferUnderflowException ignore) {
             }
         }
 
@@ -217,37 +213,37 @@ public class Script_Program {
         
         eval_s(final String string) {
             this.stringPtr = new String[]{string};
-            this._float = Float.NaN;
-            this.vector = null;
-            this.function = null;
-            this._int = this.entity = Integer.MIN_VALUE;
+            _float = Float.NaN;
+            vector = null;
+            function = null;
+            _int = entity = Integer.MIN_VALUE;
         }
         eval_s(final float _float) {
-            this.stringPtr = null;
+            stringPtr = null;
             this._float = _float;
-            this.vector = null;
-            this.function = null;
-            this._int = this.entity = Integer.MIN_VALUE;
+            vector = null;
+            function = null;
+            _int = entity = Integer.MIN_VALUE;
         }
         eval_s(final float[] vector) {
-            this.stringPtr = null;
-            this._float = Float.NaN;
+            stringPtr = null;
+            _float = Float.NaN;
             this.vector = vector;
-            this.function = null;
-            this._int = this.entity = Integer.MIN_VALUE;
+            function = null;
+            _int = entity = Integer.MIN_VALUE;
         }
         eval_s(final function_t func) {
-            this.stringPtr = null;
-            this._float = Float.NaN;
-            this.vector = null;
+            stringPtr = null;
+            _float = Float.NaN;
+            vector = null;
             this.function = new function_t[]{func};
-            this._int = this.entity = Integer.MIN_VALUE;
+            _int = entity = Integer.MIN_VALUE;
         }
         eval_s(final int val) {
-            this.stringPtr = null;
-            this._float = Float.NaN;
-            this.vector = null;
-            this.function = null;
+            stringPtr = null;
+            _float = Float.NaN;
+            vector = null;
+            function = null;
             this._int = this.entity = val;
         }
     }
@@ -281,47 +277,47 @@ public class Script_Program {
         }
 
         public idTypeDef(int/*etype_t*/ etype, idVarDef edef, final String ename, int esize, idTypeDef aux) {
-            this.name = new idStr(ename);
-            this.type = etype;
-            this.def = edef;
-            this.size = esize;
-            this.auxType = aux;
+            name = new idStr(ename);
+            type = etype;
+            def = edef;
+            size = esize;
+            auxType = aux;
 
-            this.parmTypes.SetGranularity(1);
-            this.parmNames.SetGranularity(1);
-            this.functions.SetGranularity(1);
+            parmTypes.SetGranularity(1);
+            parmNames.SetGranularity(1);
+            functions.SetGranularity(1);
         }
 
         public idTypeDef(int/*etype_t*/ etype, final String ename, int esize, idTypeDef aux) {
-            this.name = new idStr(ename);
-            this.type = etype;
-            this.def = new idVarDef(this);
-            this.size = esize;
-            this.auxType = aux;
+            name = new idStr(ename);
+            type = etype;
+            def = new idVarDef(this);
+            size = esize;
+            auxType = aux;
 
-            this.parmTypes.SetGranularity(1);
-            this.parmNames.SetGranularity(1);
-            this.functions.SetGranularity(1);
+            parmTypes.SetGranularity(1);
+            parmNames.SetGranularity(1);
+            functions.SetGranularity(1);
         }
 
         public void oSet(final idTypeDef other) {
-            this.type = other.type;
-            this.def = other.def;
-            this.name = other.name;
-            this.size = other.size;
-            this.auxType = other.auxType;
-            this.parmTypes = other.parmTypes;
-            this.parmNames = other.parmNames;
-            this.functions = other.functions;
+            type = other.type;
+            def = other.def;
+            name = other.name;
+            size = other.size;
+            auxType = other.auxType;
+            parmTypes = other.parmTypes;
+            parmNames = other.parmNames;
+            functions = other.functions;
         }
 
         public int/*size_t*/ Allocated() {
             int/*size_t*/ memsize;
             int i;
 
-            memsize = this.name.Allocated() + this.parmTypes.Allocated() + this.parmNames.Allocated() + this.functions.Allocated();
-            for (i = 0; i < this.parmTypes.Num(); i++) {
-                memsize += this.parmNames.oGet(i).Allocated();
+            memsize = name.Allocated() + parmTypes.Allocated() + parmNames.Allocated() + functions.Allocated();
+            for (i = 0; i < parmTypes.Num(); i++) {
+                memsize += parmNames.oGet(i).Allocated();
             }
 
             return memsize;
@@ -337,14 +333,14 @@ public class Script_Program {
         public boolean Inherits(final idTypeDef basetype) {
             idTypeDef superType;
 
-            if (this.type != ev_object) {
+            if (type != ev_object) {
                 return false;
             }
 
             if (this == basetype) {
                 return true;
             }
-            for (superType = this.auxType; superType != null; superType = superType.auxType) {
+            for (superType = auxType; superType != null; superType = superType.auxType) {
                 if (superType == basetype) {
                     return true;
                 }
@@ -367,16 +363,16 @@ public class Script_Program {
                 return true;
             }
 
-            if ((this.type != matchtype.type) || (this.auxType != matchtype.auxType)) {
+            if ((type != matchtype.type) || (auxType != matchtype.auxType)) {
                 return false;
             }
 
-            if (this.parmTypes.Num() != matchtype.parmTypes.Num()) {
+            if (parmTypes.Num() != matchtype.parmTypes.Num()) {
                 return false;
             }
 
             for (i = 0; i < matchtype.parmTypes.Num(); i++) {
-                if (!this.parmTypes.oGet(i).equals(matchtype.parmTypes.oGet(i))) {
+                if (!parmTypes.oGet(i).equals(matchtype.parmTypes.oGet(i))) {
                     return false;
                 }
             }
@@ -398,22 +394,22 @@ public class Script_Program {
                 return true;
             }
 
-            if ((this.type != matchfunc.type) || (this.auxType != matchfunc.auxType)) {
+            if ((type != matchfunc.type) || (auxType != matchfunc.auxType)) {
                 return false;
             }
 
-            if (this.parmTypes.Num() != matchfunc.parmTypes.Num()) {
+            if (parmTypes.Num() != matchfunc.parmTypes.Num()) {
                 return false;
             }
 
-            if (this.parmTypes.Num() > 0) {
-                if (!this.parmTypes.oGet(0).Inherits(matchfunc.parmTypes.oGet(0))) {
+            if (parmTypes.Num() > 0) {
+                if (!parmTypes.oGet(0).Inherits(matchfunc.parmTypes.oGet(0))) {
                     return false;
                 }
             }
 
             for (i = 1; i < matchfunc.parmTypes.Num(); i++) {
-                if (!this.parmTypes.oGet(i).equals(matchfunc.parmTypes.oGet(i))) {
+                if (!parmTypes.oGet(i).equals(matchfunc.parmTypes.oGet(i))) {
                     return false;
                 }
             }
@@ -429,12 +425,12 @@ public class Script_Program {
          ================
          */
         public void AddFunctionParm(idTypeDef parmtype, final String name) {
-            if (this.type != ev_function) {
+            if (type != ev_function) {
                 throw new idCompileError("idTypeDef::AddFunctionParm : tried to add parameter on non-function type");
             }
 
-            this.parmTypes.Append(parmtype);
-            final idStr parmName = this.parmNames.Alloc();
+            parmTypes.Append(parmtype);
+            idStr parmName = parmNames.Alloc();
             parmName.oSet(name);
         }
 
@@ -446,35 +442,35 @@ public class Script_Program {
          ================
          */
         public void AddField(idTypeDef fieldtype, final String name) {
-            if (this.type != ev_object) {
+            if (type != ev_object) {
                 throw new idCompileError("idTypeDef::AddField : tried to add field to non-object type");
             }
 
-            this.parmTypes.Append(fieldtype);
-            final idStr parmName = this.parmNames.Alloc();
+            parmTypes.Append(fieldtype);
+            idStr parmName = parmNames.Alloc();
             parmName.oSet(name);
 
             if (fieldtype.FieldType().Inherits(type_object)) {
-                this.size += type_object.Size();
+                size += type_object.Size();
             } else {
-                this.size += fieldtype.FieldType().Size();
+                size += fieldtype.FieldType().Size();
             }
         }
 
         public void SetName(final String newname) {
-            this.name.oSet(newname);
+            name.oSet(newname);
         }
 
         public String Name() {
-            return this.name.getData();
+            return name.toString();
         }
 
         public int/*etype_t*/ Type() {
-            return this.type;
+            return type;
         }
 
         public int Size() {
-            return this.size;
+            return size;
         }
 
         /*
@@ -485,11 +481,11 @@ public class Script_Program {
          ================
          */
         public idTypeDef SuperClass() {
-            if (this.type != ev_object) {
+            if (type != ev_object) {
                 throw new idCompileError("idTypeDef::SuperClass : tried to get superclass of a non-object type");
             }
 
-            return this.auxType;
+            return auxType;
         }
 
         /*
@@ -500,11 +496,11 @@ public class Script_Program {
          ================
          */
         public idTypeDef ReturnType() {
-            if (this.type != ev_function) {
+            if (type != ev_function) {
                 throw new idCompileError("idTypeDef::ReturnType: tried to get return type on non-function type");
             }
 
-            return this.auxType;
+            return auxType;
         }
 
         /*
@@ -515,11 +511,11 @@ public class Script_Program {
          ================
          */
         public void SetReturnType(idTypeDef returntype) {
-            if (this.type != ev_function) {
+            if (type != ev_function) {
                 throw new idCompileError("idTypeDef::SetReturnType: tried to set return type on non-function type");
             }
 
-            this.auxType = returntype;
+            auxType = returntype;
         }
 
         /*
@@ -530,11 +526,11 @@ public class Script_Program {
          ================
          */
         public idTypeDef FieldType() {
-            if (this.type != ev_field) {
+            if (type != ev_field) {
                 throw new idCompileError("idTypeDef::FieldType: tried to get field type on non-field type");
             }
 
-            return this.auxType;
+            return auxType;
         }
 
         /*
@@ -545,11 +541,11 @@ public class Script_Program {
          ================
          */
         public void SetFieldType(idTypeDef fieldtype) {
-            if (this.type != ev_field) {
+            if (type != ev_field) {
                 throw new idCompileError("idTypeDef::SetFieldType: tried to set return type on non-function type");
             }
 
-            this.auxType = fieldtype;
+            auxType = fieldtype;
         }
 
         /*
@@ -560,11 +556,11 @@ public class Script_Program {
          ================
          */
         public idTypeDef PointerType() {
-            if (this.type != ev_pointer) {
+            if (type != ev_pointer) {
                 throw new idCompileError("idTypeDef::PointerType: tried to get pointer type on non-pointer");
             }
 
-            return this.auxType;
+            return auxType;
         }
 
         /*
@@ -575,38 +571,38 @@ public class Script_Program {
          ================
          */
         public void SetPointerType(idTypeDef pointertype) {
-            if (this.type != ev_pointer) {
+            if (type != ev_pointer) {
                 throw new idCompileError("idTypeDef::SetPointerType: tried to set type on non-pointer");
             }
 
-            this.auxType = pointertype;
+            auxType = pointertype;
         }
 
         public int NumParameters() {
-            return this.parmTypes.Num();
+            return parmTypes.Num();
         }
 
         public idTypeDef GetParmType(int parmNumber) {
             assert (parmNumber >= 0);
-            assert (parmNumber < this.parmTypes.Num());
-            return this.parmTypes.oGet(parmNumber);
+            assert (parmNumber < parmTypes.Num());
+            return parmTypes.oGet(parmNumber);
         }
 
         public String GetParmName(int parmNumber) {
             assert (parmNumber >= 0);
-            assert (parmNumber < this.parmTypes.Num());
-            return this.parmNames.oGet(parmNumber).getData();
+            assert (parmNumber < parmTypes.Num());
+            return parmNames.oGet(parmNumber).toString();
         }
 
         public int NumFunctions() {
-            return this.functions.Num();
+            return functions.Num();
         }
 
         public int GetFunctionNumber(final function_t func) {
             int i;
 
-            for (i = 0; i < this.functions.Num(); i++) {
-                if (this.functions.oGet(i).equals(func)) {
+            for (i = 0; i < functions.Num(); i++) {
+                if (functions.oGet(i).equals(func)) {
                     return i;
                 }
             }
@@ -615,22 +611,22 @@ public class Script_Program {
 
         public function_t GetFunction(int funcNumber) {
             assert (funcNumber >= 0);
-            assert (funcNumber < this.functions.Num());
-            return this.functions.oGet(funcNumber);
+            assert (funcNumber < functions.Num());
+            return functions.oGet(funcNumber);
         }
 
         public void AddFunction(final function_t func) {
             int i;
 
-            for (i = 0; i < this.functions.Num(); i++) {
-                if (this.functions.oGet(i).def.Name().equals(func.def.Name())) {
-                    if (func.def.TypeDef().MatchesVirtualFunction(this.functions.oGet(i).def.TypeDef())) {
-                        this.functions.oSet(i, func);
+            for (i = 0; i < functions.Num(); i++) {
+                if (functions.oGet(i).def.Name().equals(func.def.Name())) {
+                    if (func.def.TypeDef().MatchesVirtualFunction(functions.oGet(i).def.TypeDef())) {
+                        functions.oSet(i, func);
                         return;
                     }
                 }
             }
-            this.functions.Append(func);
+            functions.Append(func);
         }
     }
 
@@ -644,11 +640,7 @@ public class Script_Program {
      ***********************************************************************/
     public static class idScriptObject implements SERiAL {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private idTypeDef  type;
+        private idTypeDef  type;
         //
         public  ByteBuffer data;
         public  int        offset;
@@ -656,28 +648,28 @@ public class Script_Program {
 //
 
         public idScriptObject() {
-            this.data = null;
-            this.type = type_object;
+            data = null;
+            type = type_object;
         }
         // ~idScriptObject();
 
         public void Save(idSaveGame savefile) {            // archives object for save game file
             int/*size_t*/ size;
 
-            if (this.type.equals(type_object) && (this.data == null)) {
+            if (type.equals(type_object) && data == null) {
                 // Write empty string for uninitialized object
                 savefile.WriteString("");
             } else {
-                savefile.WriteString(this.type.Name());
-                size = this.type.Size();
+                savefile.WriteString(type.Name());
+                size = type.Size();
                 savefile.WriteInt(size);
-                savefile.Write(this.data, size);
+                savefile.Write(data, size);
             }
         }
 
         public void Restore(idRestoreGame savefile) {            // unarchives object from save game file
-            final idStr typeName = new idStr();
-            final int/*size_t*/[] size = {0};
+            idStr typeName = new idStr();
+            int/*size_t*/[] size = {0};
 
             savefile.ReadString(typeName);
 
@@ -686,16 +678,16 @@ public class Script_Program {
                 return;
             }
 
-            if (!SetType(typeName.getData())) {
-                savefile.Error("idScriptObject::Restore: failed to restore object of type '%s'.", typeName.getData());
+            if (!SetType(typeName.toString())) {
+                savefile.Error("idScriptObject::Restore: failed to restore object of type '%s'.", typeName.toString());
             }
 
             savefile.ReadInt(size);
-            if (size[0] != this.type.Size()) {
+            if (size[0] != type.Size()) {
                 savefile.Error("idScriptObject::Restore: size of object '%s' doesn't match size in save game.", typeName);
             }
 
-            savefile.Read(this.data, size[0]);
+            savefile.Read(data, size[0]);
         }
 
         public void Free() {
@@ -703,8 +695,8 @@ public class Script_Program {
 //                Mem_Free(data);
 //            }
 
-            this.data = null;
-            this.type = type_object;
+            data = null;
+            type = type_object;
         }
 
         /*
@@ -722,7 +714,7 @@ public class Script_Program {
             newType = gameLocal.program.FindType(typeName);
 
             // only allocate memory if the object type changes
-            if (newType != this.type) {
+            if (newType != type) {
                 Free();
                 if (null == newType) {
                     gameLocal.Warning("idScriptObject::SetType: Unknown type '%s'", typeName);
@@ -735,11 +727,11 @@ public class Script_Program {
                 }
 
                 // set the type
-                this.type = newType;
+                type = newType;
 
                 // allocate the memory
-                size = this.type.Size();
-                this.data = ByteBuffer.allocate(size);// Mem_Alloc(size);
+                size = type.Size();
+                data = ByteBuffer.allocate(size);// Mem_Alloc(size);
             }
 
             // init object memory
@@ -758,24 +750,24 @@ public class Script_Program {
         public void ClearObject() {
             int/*size_t*/ size;
 
-            if (!this.type.equals(type_object)) {
+            if (!type.equals(type_object)) {
                 // init object memory
-                size = this.type.Size();
+                size = type.Size();
 //		memset( data, 0, size );
-                this.data.clear();
+                data.clear();
             }
         }
 
         public boolean HasObject() {
-            return (!this.type.equals(type_object));
+            return (!type.equals(type_object));
         }
 
         public idTypeDef GetTypeDef() {
-            return this.type;
+            return type;
         }
 
         public String GetTypeName() {
-            return this.type.Name();
+            return type.Name();
         }
 
         public function_t GetConstructor() {
@@ -795,11 +787,11 @@ public class Script_Program {
         public function_t GetFunction(final String name) {
             function_t func;
 
-            if (this.type.equals(type_object)) {
+            if (type.equals(type_object)) {
                 return null;
             }
 
-            func = gameLocal.program.FindFunction(name, this.type);
+            func = gameLocal.program.FindFunction(name, type);
             return func;
         }
 
@@ -809,11 +801,11 @@ public class Script_Program {
             idTypeDef t;
             idTypeDef parm;
 
-            if (this.type.equals(type_object)) {
+            if (type.equals(type_object)) {
                 return null;
             }
 
-            t = this.type;
+            t = type;
             do {
                 if (!t.SuperClass().equals(type_object)) {
                     pos = t.SuperClass().Size();
@@ -826,7 +818,7 @@ public class Script_Program {
                         if (etype != parm.FieldType().Type()) {
                             return null;
                         }
-                        return ((ByteBuffer) this.data.position(pos)).slice();
+                        return ((ByteBuffer) data.position(pos)).slice();
                     }
 
                     if (parm.FieldType().Inherits(type_object)) {
@@ -836,7 +828,7 @@ public class Script_Program {
                     }
                 }
                 t = t.SuperClass();
-            } while ((t != null) && (!t.equals(type_object)));
+            } while (t != null && (!t.equals(type_object)));
 
             return null;
         }
@@ -880,56 +872,57 @@ public class Script_Program {
 //        
         public idScriptVariable(int/*etype_t*/ etype) {
             this.etype = etype;
-            this.data = null;
+            data = null;
         }
 
         public boolean IsLinked() {
-            return (this.data != null);
+            return (data != null);
         }
 
         public void Unlink() {
-            this.data = null;
+            data = null;
         }
 
         public void LinkTo(idScriptObject obj, final String name) {
-            this.data = obj.GetVariable(name, this.etype);//TODO:convert bytes to type
-            if (null == this.data) {
+            data = obj.GetVariable(name, etype);//TODO:convert bytes to type
+            if (null == data) {
                 gameError("Missing '%s' field in script object '%s'", name, obj.GetTypeName());
             }
         }
 
-        public idScriptVariable<type, returnType> oSet(final returnType value) {
+        public idScriptVariable oSet(final returnType value) {
             // check if we attempt to access the object before it's been linked
-            assert (this.data != null);
+            assert (data != null);
 
             // make sure we don't crash if we don't have a pointer
-            if (this.data != null) {
-                final int pos = this.data.position();
-                switch (this.etype) {
+            if (data != null) {
+                final int pos = data.position();
+                switch (etype) {
                     case ev_boolean:
-                        this.data.put((byte) btoi((Boolean) value));
+                        data.put((byte) btoi((Boolean) value));
                         break;
                     case ev_float:
-                        this.data.putFloat((Float) value);
+                        data.putFloat((Float) value);
                         break;
                 }
-                this.data.position(pos);
+                data.position(pos);
             }
             return this;
         }
 
+        // renamed from _, because _ is a reserved Keyword since Java 1.8
         public returnType operator() {
             // check if we attempt to access the object before it's been linked
-            assert (this.data != null);
+            assert (data != null);
 
             // make sure we don't crash if we don't have a pointer
-            if (this.data != null) {
-                final int pos = this.data.position();
-                switch (this.etype) {
+            if (data != null) {
+                final int pos = data.position();
+                switch (etype) {
                     case ev_boolean:
-                        return (returnType) (Boolean) itob(this.data.get(pos));
+                        return (returnType) (Boolean) itob(data.get(pos));
                     case ev_float:
-                        return (returnType) (Float) this.data.getFloat(pos);
+                        return (returnType) (Float) data.getFloat(pos);
                     default:
                         return null;
                 }
@@ -939,10 +932,11 @@ public class Script_Program {
             }
         }
 
+        // renamed from _, because _ is a reserved Keyword since Java 1.8
         public void operator(returnType bla) {
             this.oSet(bla);
         }
-    }
+    };
 
     /* **********************************************************************
 
@@ -958,31 +952,31 @@ public class Script_Program {
         public idScriptBool() {
             super(ev_boolean);
         }
-    }
+    };
 
     public static class idScriptFloat extends idScriptVariable<Float, Float> {
         public idScriptFloat() {
             super(ev_float);
         }
-    }
+    };
 
     private static class idScriptInt extends idScriptVariable<Float, Integer> {
         public idScriptInt() {
             super(ev_float);
         }
-    }
+    };
 
     private static class idScriptVector extends idScriptVariable<idVec3, idVec3> {
         public idScriptVector() {
             super(ev_vector);
         }
-    }
+    };
 
     private static class idScriptString extends idScriptVariable<idStr, String> {
         public idScriptString() {
             super(ev_string);
         }
-    }
+    };
 
     /* **********************************************************************
 
@@ -994,15 +988,12 @@ public class Script_Program {
      ***********************************************************************/
     public static class idCompileError extends idException {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public idCompileError(final String text) {
+        public idCompileError(final String text) {
             super(text);
         }
     }
+
+    ;
 
     /* **********************************************************************
 
@@ -1053,7 +1044,7 @@ public class Script_Program {
         }
 
         private int getPrimitive() {
-            return this.primitive.getInt(0);
+            return primitive.getInt(0);
         }
 
         public void setIntPtr(final int val) {
@@ -1069,7 +1060,7 @@ public class Script_Program {
         }
 
         public void setFloatPtr(final float val) {
-            this.primitive.putFloat(0, val);
+            primitive.putFloat(0, val);
         }
 
         public void setVirtualFunction(final int val) {
@@ -1093,7 +1084,7 @@ public class Script_Program {
         }
 
         private void setPrimitive(final int val) {
-            this.primitive.putInt(0, val);
+            primitive.putInt(0, val);
         }
 
 //        void bytePtr(ByteBuffer data, int ptrOffset) {
@@ -1105,25 +1096,25 @@ public class Script_Program {
         }
 
         void setVectorPtr(float[] vector) {
-            this.vectorPtr = new idVec3(vector);
-            this.primitive.putFloat(0, vector[0]);
-            this.primitive.putFloat(4, vector[1]);
-            this.primitive.putFloat(8, vector[2]);
+            vectorPtr = new idVec3(vector);
+            primitive.putFloat(0, vector[0]);
+            primitive.putFloat(4, vector[1]);
+            primitive.putFloat(8, vector[2]);
         }
 
         idVec3 getVectorPtr() {
-            this.vectorPtr.oSet(0, this.primitive.getFloat(0));
-            this.vectorPtr.oSet(1, this.primitive.getFloat(4));
-            this.vectorPtr.oSet(2, this.primitive.getFloat(8));
-            return this.vectorPtr;
+            vectorPtr.oSet(0, primitive.getFloat(0));
+            vectorPtr.oSet(1, primitive.getFloat(4));
+            vectorPtr.oSet(2, primitive.getFloat(8));
+            return vectorPtr;
         }
 
         int getIntPtr() {
-            return this.primitive.getInt(0);
+            return primitive.getInt(0);
         }
 
         float getFloatPtr() {
-            return this.primitive.getFloat(0);
+            return primitive.getFloat(0);
         }
 
         int getEntityNumberPtr() {
@@ -1132,7 +1123,7 @@ public class Script_Program {
 
         void setBytePtr(ByteBuffer bytes, int offset) {
             this.offset = offset;
-            this.primitive = (((ByteBuffer) bytes.duplicate().order(ByteOrder.LITTLE_ENDIAN).position(offset)).slice()).order(ByteOrder.LITTLE_ENDIAN);
+            primitive = (((ByteBuffer) bytes.duplicate().order(ByteOrder.LITTLE_ENDIAN).position(offset)).slice()).order(ByteOrder.LITTLE_ENDIAN);
         }
 
         void setBytePtr(byte[] bytes, int offset) {
@@ -1140,11 +1131,11 @@ public class Script_Program {
         }
 
         public void setStringPtr(ByteBuffer data, int offset) {
-            this.stringPtr = btos(data.array(), offset);
+            stringPtr = btos(data.array(), offset);
         }
 
         public void setString(final String string) {//TODO:clean up all these weird string pointers
-            this.primitive.put(string.getBytes()).rewind();
+            primitive.put(string.getBytes()).rewind();
         }
 
         public void setEvalPtr(final int entityNumberIndex) {
@@ -1183,45 +1174,45 @@ public class Script_Program {
         }
 
         public idVarDef(idTypeDef typeptr /*= NULL*/) {
-            this.typeDef = typeptr;
-            this.num = 0;
-            this.scope = null;
-            this.numUsers = 0;
-            this.initialized = uninitialized;
+            typeDef = typeptr;
+            num = 0;
+            scope = null;
+            numUsers = 0;
+            initialized = uninitialized;
 //	memset( &value, 0, sizeof( value ) );
-            this.name = null;
-            this.next = null;
+            name = null;
+            next = null;
         }
 
         // ~idVarDef();
         public void close() {
-            if (this.name != null) {
-                this.name.RemoveDef(this);
+            if (name != null) {
+                name.RemoveDef(this);
             }
         }
 
         public String Name() {
-            return this.name.Name();
+            return name.Name();
         }
 
         public String GlobalName() {
-            if (!this.scope.equals(def_namespace)) {
-                return va("%s::%s", this.scope.GlobalName(), this.name.Name());
+            if (!scope.equals(def_namespace)) {
+                return va("%s::%s", scope.GlobalName(), name.Name());
             } else {
-                return this.name.Name();
+                return name.Name();
             }
         }
 
         public void SetTypeDef(idTypeDef _type) {
-            this.typeDef = _type;
+            typeDef = _type;
         }
 
         public idTypeDef TypeDef() {
-            return this.typeDef;
+            return typeDef;
         }
 
         public int/*etype_t*/ Type() {
-            return (this.typeDef != null) ? this.typeDef.Type() : ev_void;
+            return (typeDef != null) ? typeDef.Type() : ev_void;
         }
 
         public int DepthOfScope(final idVarDef otherScope) {
@@ -1230,7 +1221,7 @@ public class Script_Program {
 
             depth = 1;
             for (def = otherScope; def != null; def = def.scope) {
-                if (def.equals(this.scope)) {
+                if (def.equals(scope)) {
                     return depth;
                 }
                 depth++;
@@ -1240,66 +1231,67 @@ public class Script_Program {
         }
 
         public void SetFunction(function_t func) {
-            assert (this.typeDef != null);
-            this.initialized = initializedConstant;
-            assert (this.typeDef.Type() == ev_function);
-            this.value = new varEval_s();
-            this.value.functionPtr = func;
+            assert (typeDef != null);
+            initialized = initializedConstant;
+            assert (typeDef.Type() == ev_function);
+            value = new varEval_s();
+            value.functionPtr = func;
         }
 
         public void SetObject(idScriptObject object) {
-            assert (this.typeDef != null);
-            assert (this.typeDef.Inherits(type_object));
-            this.value = new varEval_s();
-            this.value.objectPtrPtr = object;
+            assert (typeDef != null);
+            initialized = initialized;
+            assert (typeDef.Inherits(type_object));
+            value = new varEval_s();
+            value.objectPtrPtr = object;
         }
 
         public void SetValue(final eval_s _value, boolean constant) {
-            assert (this.typeDef != null);
+            assert (typeDef != null);
             if (constant) {
-                this.initialized = initializedConstant;
+                initialized = initializedConstant;
             } else {
-                this.initialized = initializedVariable;
+                initialized = initializedVariable;
             }
 
-            switch (this.typeDef.Type()) {
+            switch (typeDef.Type()) {
                 case ev_pointer:
                 case ev_boolean:
                 case ev_field:
-                    this.value.setIntPtr(_value._int);
+                    value.setIntPtr(_value._int);
                     break;
                 case ev_jumpoffset:
-                    this.value.setJumpOffset(_value._int);
+                    value.setJumpOffset(_value._int);
                     break;
                 case ev_argsize:
-                    this.value.setArgSize(_value._int);
+                    value.setArgSize(_value._int);
                     break;
                 case ev_entity:
-                    this.value.setEntityNumberPtr(_value.entity);
+                    value.setEntityNumberPtr(_value.entity);
                     break;
 
                 case ev_string:
-                    this.value.stringPtr = _value.stringPtr[0];//idStr.Copynz(value.stringPtr, _value.stringPtr, MAX_STRING_LEN);
+                    value.stringPtr = _value.stringPtr[0];//idStr.Copynz(value.stringPtr, _value.stringPtr, MAX_STRING_LEN);
                     break;
 
                 case ev_float:
-                    this.value.setFloatPtr(_value._float);
+                    value.setFloatPtr(_value._float);
                     break;
 
                 case ev_vector:
-                    this.value.setVectorPtr(_value.vector);
+                    value.setVectorPtr(_value.vector);
                     break;
 
                 case ev_function:
-                    this.value.functionPtr = _value.function[0];
+                    value.functionPtr = _value.function[0];
                     break;
 
                 case ev_virtualfunction:
-                    this.value.setVirtualFunction(_value._int);
+                    value.setVirtualFunction(_value._int);
                     break;
 
                 case ev_object:
-                    this.value.setEntityNumberPtr(_value.entity);
+                    value.setEntityNumberPtr(_value.entity);
                     break;
 
                 default:
@@ -1309,17 +1301,17 @@ public class Script_Program {
 
         public void SetString(final String string, boolean constant) {
             if (constant) {
-                this.initialized = initializedConstant;
+                initialized = initializedConstant;
             } else {
-                this.initialized = initializedVariable;
+                initialized = initializedVariable;
             }
 
-            assert ((this.typeDef != null) && (this.typeDef.Type() == ev_string));
-            this.value.stringPtr = string;
+            assert (typeDef != null && (typeDef.Type() == ev_string));
+            value.stringPtr = string;
         }
 
         public idVarDef Next() {
-            return this.next;
+            return next;
         }        // next var def with same name
 
         public void PrintInfo(idFile file, int instructionPointer) {
@@ -1327,20 +1319,20 @@ public class Script_Program {
             int jumpto;
             int/*etype_t*/ etype;
 
-            if (this.initialized == initializedConstant) {
+            if (initialized == initializedConstant) {
                 file.Printf("const ");
             }
 
-            etype = this.typeDef.Type();
+            etype = typeDef.Type();
             switch (etype) {
                 case ev_jumpoffset:
-                    jumpto = instructionPointer + this.value.getJumpOffset();
+                    jumpto = instructionPointer + value.getJumpOffset();
                     jumpst = gameLocal.program.GetStatement(jumpto);
                     file.Printf("address %d [%s(%d)]", jumpto, gameLocal.program.GetFilename(jumpst.file), jumpst.linenumber);
                     break;
 
                 case ev_function:
-                    if (this.value.functionPtr.eventdef != null) {
+                    if (value.functionPtr.eventdef != null) {
                         file.Printf("event %s", GlobalName());
                     } else {
                         file.Printf("function %s", GlobalName());
@@ -1348,20 +1340,20 @@ public class Script_Program {
                     break;
 
                 case ev_field:
-                    file.Printf("field %d", this.value.getPtrOffset());
+                    file.Printf("field %d", value.getPtrOffset());
                     break;
 
                 case ev_argsize:
-                    file.Printf("args %d", this.value.getArgSize());
+                    file.Printf("args %d", value.getArgSize());
                     break;
 
                 default:
-                    file.Printf("%s ", this.typeDef.Name());
-                    if (this.initialized == initializedConstant) {
+                    file.Printf("%s ", typeDef.Name());
+                    if (initialized == initializedConstant) {
                         switch (etype) {
                             case ev_string:
                                 file.Printf("\"");
-                                for (final char ch : this.value.stringPtr.toCharArray()) {
+                                for (char ch : value.stringPtr.toCharArray()) {
                                     if (idStr.CharIsPrintable(ch)) {
                                         file.Printf("%c", ch);
                                     } else if (ch == '\n') {
@@ -1374,25 +1366,25 @@ public class Script_Program {
                                 break;
 
                             case ev_vector:
-                                file.Printf("'%s'", this.value.getVectorPtr().ToString());
+                                file.Printf("'%s'", value.getVectorPtr().ToString());
                                 break;
 
                             case ev_float:
-                                file.Printf("%f", this.value.getFloatPtr());
+                                file.Printf("%f", value.getFloatPtr());
                                 break;
 
                             case ev_virtualfunction:
-                                file.Printf("vtable[ %d ]", this.value.getVirtualFunction());
+                                file.Printf("vtable[ %d ]", value.getVirtualFunction());
                                 break;
 
                             default:
-                                file.Printf("%d", this.value.getIntPtr());
+                                file.Printf("%d", value.getIntPtr());
                                 break;
                         }
-                    } else if (this.initialized == stackVariable) {
-                        file.Printf("stack[%d]", this.value.getStackOffset());
+                    } else if (initialized == stackVariable) {
+                        file.Printf("stack[%d]", value.getStackOffset());
                     } else {
-                        file.Printf("global[%d]", this.num);
+                        file.Printf("global[%d]", num);
                     }
                     break;
             }
@@ -1406,40 +1398,40 @@ public class Script_Program {
      ***********************************************************************/
     static class idVarDefName {
 
-        private final idStr name = new idStr();
+        private idStr name = new idStr();
         private idVarDef defs;
         //
         //
 
         public idVarDefName() {
-            this.defs = null;
+            defs = null;
         }
 
         public idVarDefName(final String n) {
-            this.name.oSet(n);
-            this.defs = null;
+            name.oSet(n);
+            defs = null;
         }
 
         public String Name() {
-            return this.name.getData();
+            return name.toString();
         }
 
         public idVarDef GetDefs() {
-            return this.defs;
+            return defs;
         }
 
         public void AddDef(idVarDef def) {
             assert (def.next == null);
             def.name = this;
-            def.next = this.defs;
-            this.defs = def;
+            def.next = defs;
+            defs = def;
         }
 
         public void RemoveDef(idVarDef def) {
-            if (this.defs.equals(def)) {
-                this.defs = def.next;
+            if (defs.equals(def)) {
+                defs = def.next;
             } else {
-                for (idVarDef d = this.defs; d.next != null; d = d.next) {
+                for (idVarDef d = defs; d.next != null; d = d.next) {
                     if (d.next.equals(def)) {
                         d.next = def.next;
                         break;

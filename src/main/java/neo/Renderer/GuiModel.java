@@ -11,9 +11,6 @@ import static neo.Renderer.tr_main.myGlMultMatrix;
 import static neo.TempDump.NOT;
 import static neo.framework.DeclManager.declManager;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.RenderWorld.renderEntity_s;
@@ -27,8 +24,6 @@ import neo.idlib.geometry.Winding.idFixedWinding;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec5;
-import neo.open.MatrixUtil;
-import neo.open.Nio;
 
 /**
  *
@@ -43,7 +38,7 @@ public class GuiModel {
         int numVerts;
         int firstIndex;
         int numIndexes;
-    }
+    };
 
     public static class idGuiModel {
 
@@ -56,9 +51,9 @@ public class GuiModel {
         //
 
         public idGuiModel() {
-            this.surfaces = new idList<>();
-            this.indexes = new idList<Integer>(1000);//.SetGranularity(1000);
-            this.verts = new idList<idDrawVert>(1000);//.SetGranularity(1000);
+            surfaces = new idList<>();
+            indexes = new idList<>(1000);//.SetGranularity(1000);
+            verts = new idList<>(1000);//.SetGranularity(1000);
         }
 
 
@@ -70,9 +65,9 @@ public class GuiModel {
          ================
          */
         public void Clear() {
-            this.surfaces.SetNum(0, false);
-            this.indexes.SetNum(0, false);
-            this.verts.SetNum(0, false);
+            surfaces.SetNum(0, false);
+            indexes.SetNum(0, false);
+            verts.SetNum(0, false);
             AdvanceSurf();
 //            if (bla) {
             clear++;
@@ -82,32 +77,30 @@ public class GuiModel {
         public void WriteToDemo(idDemoFile demo) {
             int i, j;
 
-            i = this.verts.Num();
+            i = verts.Num();
             demo.WriteInt(i);
-            ByteBuffer color;
             for (j = 0; j < i; j++) {
-                demo.WriteVec3(this.verts.oGet(j).xyz);
-                demo.WriteVec2(this.verts.oGet(j).st);
-                demo.WriteVec3(this.verts.oGet(j).normal);
-                demo.WriteVec3(this.verts.oGet(j).tangents[0]);
-                demo.WriteVec3(this.verts.oGet(j).tangents[1]);
-                
-                color = this.verts.oGet(j).getColor();
-                for (int l = 0; l < 4; l++) {
-                    demo.WriteUnsignedChar((char) color.get(0));
-				}
+                demo.WriteVec3(verts.oGet(j).xyz);
+                demo.WriteVec2(verts.oGet(j).st);
+                demo.WriteVec3(verts.oGet(j).normal);
+                demo.WriteVec3(verts.oGet(j).tangents[0]);
+                demo.WriteVec3(verts.oGet(j).tangents[1]);
+                demo.WriteUnsignedChar((char) verts.oGet(j).color[0]);
+                demo.WriteUnsignedChar((char) verts.oGet(j).color[1]);
+                demo.WriteUnsignedChar((char) verts.oGet(j).color[2]);
+                demo.WriteUnsignedChar((char) verts.oGet(j).color[3]);
             }
 
-            i = this.indexes.Num();
+            i = indexes.Num();
             demo.WriteInt(i);
             for (j = 0; j < i; j++) {
-                demo.WriteInt(this.indexes.oGet(j));
+                demo.WriteInt(indexes.oGet(j));
             }
 
-            i = this.surfaces.Num();
+            i = surfaces.Num();
             demo.WriteInt(i);
             for (j = 0; j < i; j++) {
-                final guiModelSurface_t surf = this.surfaces.oGet(j);
+                guiModelSurface_t surf = surfaces.oGet(j);
 
 //                demo.WriteInt((int) surf.material);
                 demo.Write(surf.material);
@@ -124,42 +117,43 @@ public class GuiModel {
         }
 
         public void ReadFromDemo(idDemoFile demo) {
-            final int[] i = new int[1];
+            int[] i = new int[1];
             int j;
-            final int[] k = new int[1];
-            final char[] color = {0};
+            int[] k = new int[1];
+            char[] color = {0};
 
-            i[0] = this.verts.Num();
+            i[0] = verts.Num();
             demo.ReadInt(i);
-            this.verts.SetNum(i[0], false);
-            ByteBuffer bcolor;
+            verts.SetNum(i[0], false);
             for (j = 0; j < i[0]; j++) {
-                demo.ReadVec3(this.verts.oGet(j).xyz);
-                demo.ReadVec2(this.verts.oGet(j).st);
-                demo.ReadVec3(this.verts.oGet(j).normal);
-                demo.ReadVec3(this.verts.oGet(j).tangents[0]);
-                demo.ReadVec3(this.verts.oGet(j).tangents[1]);
-                
-                bcolor = this.verts.oGet(j).getColor();
-                for (int l = 0; l < 4; l++) {
-                    demo.ReadUnsignedChar(color);
-                    bcolor.put(l, (byte) color[0]);
-				}
+                demo.ReadVec3(verts.oGet(j).xyz);
+                demo.ReadVec2(verts.oGet(j).st);
+                demo.ReadVec3(verts.oGet(j).normal);
+                demo.ReadVec3(verts.oGet(j).tangents[0]);
+                demo.ReadVec3(verts.oGet(j).tangents[1]);
+                demo.ReadUnsignedChar(color);
+                verts.oGet(j).color[0] = (byte) color[0];
+                demo.ReadUnsignedChar(color);
+                verts.oGet(j).color[1] = (byte) color[0];
+                demo.ReadUnsignedChar(color);
+                verts.oGet(j).color[2] = (byte) color[0];
+                demo.ReadUnsignedChar(color);
+                verts.oGet(j).color[3] = (byte) color[0];
             }
 
-            i[0] = this.indexes.Num();
+            i[0] = indexes.Num();
             demo.ReadInt(i);
-            this.indexes.SetNum(i[0], false);
+            indexes.SetNum(i[0], false);
             for (j = 0; j < i[0]; j++) {
                 demo.ReadInt(k);
-                this.indexes.oSet(j, k[0]);
+                indexes.oSet(j, k[0]);
             }
 
-            i[0] = this.surfaces.Num();
+            i[0] = surfaces.Num();
             demo.ReadInt(i);
-            this.surfaces.SetNum(i[0], false);
+            surfaces.SetNum(i[0], false);
             for (j = 0; j < i[0]; j++) {
-                final guiModelSurface_t surf = this.surfaces.oGet(j);
+                guiModelSurface_t surf = surfaces.oGet(j);
 
 //                demo.ReadInt((int) surf.material);
                 demo.Read(surf.material);//TODO:serialize?
@@ -176,13 +170,13 @@ public class GuiModel {
         }
 
         public void EmitToCurrentView(float[] modelMatrix/*[16]*/, boolean depthHack) {
-            final FloatBuffer modelViewMatrix = Nio.newFloatBuffer(16);
+            final float[] modelViewMatrix = new float[16];
 
-            myGlMultMatrix(modelMatrix, tr.viewDef.worldSpace.getModelViewMatrix(),
+            myGlMultMatrix(modelMatrix, tr.viewDef.worldSpace.modelViewMatrix,
                     modelViewMatrix);
 
-            for (int i = 0; i < this.surfaces.Num(); i++) {
-                EmitSurface(this.surfaces.oGet(i), modelMatrix, modelViewMatrix, depthHack);
+            for (int i = 0; i < surfaces.Num(); i++) {
+                EmitSurface(surfaces.oGet(i), modelMatrix, modelViewMatrix, depthHack);
             }
         }
 
@@ -196,14 +190,14 @@ public class GuiModel {
         public void EmitFullScreen() {
             viewDef_s viewDef;
 
-            if (this.surfaces.oGet(0).numVerts == 0) {
+            if (surfaces.oGet(0).numVerts == 0) {
                 return;
             }
 
             viewDef = new viewDef_s();//R_ClearedFrameAlloc(sizeof(viewDef));
 
             // for gui editor
-            if ((null == tr.viewDef) || !tr.viewDef.isEditor) {
+            if (null == tr.viewDef || !tr.viewDef.isEditor) {
                 viewDef.renderView.x = 0;
                 viewDef.renderView.y = 0;
                 viewDef.renderView.width = SCREEN_WIDTH;
@@ -234,24 +228,33 @@ public class GuiModel {
 
             viewDef.floatTime = tr.frameShaderTime;
 
-            // TODO: qglOrtho( 0, 640, 480, 0, 0, 1 );		// always assume 640x480 virtual coordinates
-            MatrixUtil.emitFullScreenProjection(viewDef.getProjectionMatrix());
+            // qglOrtho( 0, 640, 480, 0, 0, 1 );		// always assume 640x480 virtual coordinates
+            viewDef.projectionMatrix[ 0] = +2.0f / 640.0f;
+            viewDef.projectionMatrix[ 5] = -2.0f / 480.0f;
+            viewDef.projectionMatrix[10] = -2.0f / 1.0f;
+            viewDef.projectionMatrix[12] = -1.0f;
+            viewDef.projectionMatrix[13] = +1.0f;
+            viewDef.projectionMatrix[14] = -1.0f;
+            viewDef.projectionMatrix[15] = +1.0f;
 
-            MatrixUtil.emitFullScreenModelView(viewDef.worldSpace.getModelViewMatrix());
+            viewDef.worldSpace.modelViewMatrix[ 0] = 1.0f;
+            viewDef.worldSpace.modelViewMatrix[ 5] = 1.0f;
+            viewDef.worldSpace.modelViewMatrix[10] = 1.0f;
+            viewDef.worldSpace.modelViewMatrix[15] = 1.0f;
 
-            viewDef.maxDrawSurfs = this.surfaces.Num();
+            viewDef.maxDrawSurfs = surfaces.Num();
             viewDef.drawSurfs = new drawSurf_s[viewDef.maxDrawSurfs];///*(drawSurf_t **)*/ R_FrameAlloc(viewDef.maxDrawSurfs * sizeof(viewDef.drawSurfs[0]));
             viewDef.numDrawSurfs = 0;
 
-            final viewDef_s oldViewDef = tr.viewDef;
+            viewDef_s oldViewDef = tr.viewDef;
             tr.viewDef = viewDef;
 
             // add the surfaces to this view
-            for (int i = 0; i < this.surfaces.Num(); i++) {
+            for (int i = 0; i < surfaces.Num(); i++) {
                 if (i == 33) {
-                    this.surfaces.oGet(i).material.DBG_BALLS = i;
+                    surfaces.oGet(i).material.DBG_BALLS = i;
                 }
-                EmitSurface(this.surfaces.oGet(i), viewDef.worldSpace.modelMatrix, viewDef.worldSpace.getModelViewMatrix(), false);
+                EmitSurface(surfaces.oGet(i), viewDef.worldSpace.modelMatrix, viewDef.worldSpace.modelViewMatrix, false);
             }
 
             tr.viewDef = oldViewDef;
@@ -266,12 +269,12 @@ public class GuiModel {
             if (!glConfig.isInitialized) {
                 return;
             }
-            if ((r == this.surf.color[0]) && (g == this.surf.color[1])
-                    && (b == this.surf.color[2]) && (a == this.surf.color[3])) {
+            if (r == surf.color[0] && g == surf.color[1]
+                    && b == surf.color[2] && a == surf.color[3]) {
                 return;	// no change
             }
 
-            if (this.surf.numVerts != 0) {
+            if (surf.numVerts != 0) {
 //                if (bla) {
 //                }
 //                TempDump.printCallStack(setColorTotal + "");
@@ -281,10 +284,10 @@ public class GuiModel {
             }
 
             // change the parms
-            this.surf.color[0] = r;
-            this.surf.color[1] = g;
-            this.surf.color[2] = b;
-            this.surf.color[3] = a;
+            surf.color[0] = r;
+            surf.color[1] = g;
+            surf.color[2] = b;
+            surf.color[3] = a;
         }
         public static boolean bla;
         private static int clear = 0, setColor = 0, setColorTotal = 0, drawStretchPic = 0, bla4 = 0;
@@ -296,7 +299,7 @@ public class GuiModel {
             if (!glConfig.isInitialized) {
                 return;
             }
-            if (!((dVerts != null) && (dIndexes != null) && (vertCount != 0) && (indexCount != 0) && (hShader != null))) {
+            if (!(dVerts != null && dIndexes != null && vertCount != 0 && indexCount != 0 && hShader != null)) {
                 return;
             }
 
@@ -304,15 +307,15 @@ public class GuiModel {
 //                    if (bla) {
 //                    }
 //            System.out.printf("%s\n%s\n\n", hShader, surf.material);
-            if (hShader != this.surf.material) {
-                if (this.surf.numVerts != 0) {
+            if (hShader != surf.material) {
+                if (surf.numVerts != 0) {
                     AdvanceSurf();
 //                    if (bla) {
 //                    System.out.printf("~~ %d %d\n", Window.idWindow.bla1, Window.idWindow.bla2);
 //                    }
                 }
                 hShader.EnsureNotPurged();	// in case it was a gui item started before a level change
-                this.surf.material = hShader;
+                surf.material = hShader;
 //                TempDump.printCallStack(bla4 + "");
             }
 
@@ -322,7 +325,7 @@ public class GuiModel {
 
                 // FIXME:	this is grim stuff, and should be rewritten if we have any significant
                 //			number of guis asking for clipping
-                final idFixedWinding w = new idFixedWinding();
+                idFixedWinding w = new idFixedWinding();
                 for (i = 0; i < indexCount; i += 3) {
                     w.Clear();
                     w.AddPoint(new idVec5(dVerts[dIndexes[i + 0]].xyz.x, dVerts[dIndexes[i + 0]].xyz.y, dVerts[dIndexes[i + 0]].xyz.z, dVerts[dIndexes[i + 0]].st.x, dVerts[dIndexes[i + 0]].st.y));
@@ -330,13 +333,13 @@ public class GuiModel {
                     w.AddPoint(new idVec5(dVerts[dIndexes[i + 2]].xyz.x, dVerts[dIndexes[i + 2]].xyz.y, dVerts[dIndexes[i + 2]].xyz.z, dVerts[dIndexes[i + 2]].st.x, dVerts[dIndexes[i + 2]].st.y));
 
                     for (j = 0; j < 3; j++) {
-                        if ((w.oGet(j).x < min_x) || (w.oGet(j).x > max_x)
-                                || (w.oGet(j).y < min_y) || (w.oGet(j).y > max_y)) {
+                        if (w.oGet(j).x < min_x || w.oGet(j).x > max_x
+                                || w.oGet(j).y < min_y || w.oGet(j).y > max_y) {
                             break;
                         }
                     }
                     if (j < 3) {
-                        final idPlane p = new idPlane();
+                        idPlane p = new idPlane();
                         p.NormalY(p.NormalZ(0.0f));
                         p.NormalX(1.0f);
                         p.SetDist(min_x);
@@ -355,10 +358,10 @@ public class GuiModel {
                         w.ClipInPlace(p);
                     }
 
-                    final int numVerts = this.verts.Num();
-                    this.verts.SetNum(numVerts + w.GetNumPoints(), false);
+                    int numVerts = verts.Num();
+                    verts.SetNum(numVerts + w.GetNumPoints(), false);
                     for (j = 0; j < w.GetNumPoints(); j++) {
-                        final idDrawVert dv = this.verts.oGet(numVerts + j);
+                        idDrawVert dv = verts.oGet(numVerts + j);
 
                         dv.xyz.x = w.oGet(j).x;
                         dv.xyz.y = w.oGet(j).y;
@@ -369,34 +372,34 @@ public class GuiModel {
                         dv.tangents[0].Set(1, 0, 0);
                         dv.tangents[1].Set(0, 1, 0);
                     }
-                    this.surf.numVerts += w.GetNumPoints();
+                    surf.numVerts += w.GetNumPoints();
 
                     for (j = 2; j < w.GetNumPoints(); j++) {
-                        this.indexes.Append(numVerts - this.surf.firstVert);
-                        this.indexes.Append((numVerts + j) - 1 - this.surf.firstVert);
-                        this.indexes.Append((numVerts + j) - this.surf.firstVert);
-                        this.surf.numIndexes += 3;
+                        indexes.Append(numVerts - surf.firstVert);
+                        indexes.Append(numVerts + j - 1 - surf.firstVert);
+                        indexes.Append(numVerts + j - surf.firstVert);
+                        surf.numIndexes += 3;
                     }
                 }
 
             } else {
                 drawStretchPic++;
 //                if (dVerts[0].xyz.x == 212) {
-                    final int numVerts = this.verts.Num();
-                    final int numIndexes = this.indexes.Num();
+                    int numVerts = verts.Num();
+                    int numIndexes = indexes.Num();
 
-                    this.verts.AssureSize(numVerts + vertCount);
-                    this.indexes.AssureSize(numIndexes + indexCount);
+                    verts.AssureSize(numVerts + vertCount);
+                    indexes.AssureSize(numIndexes + indexCount);
 
-                    this.surf.numVerts += vertCount;
-                    this.surf.numIndexes += indexCount;
+                    surf.numVerts += vertCount;
+                    surf.numIndexes += indexCount;
 
                     for (int i = 0; i < indexCount; i++) {
-                        this.indexes.oSet(numIndexes + i, (numVerts + dIndexes[i]) - this.surf.firstVert);
+                        indexes.oSet(numIndexes + i, numVerts + dIndexes[i] - surf.firstVert);
                     }
 
     //                memcpy( & verts[numVerts], dverts, vertCount * sizeof(verts[0]));
-                    System.arraycopy(dVerts, 0, this.verts.Ptr(), numVerts, vertCount);//no need to memcpy here. dVerts has no back references. 
+                    System.arraycopy(dVerts, 0, verts.Ptr(), numVerts, vertCount);//no need to memcpy here. dVerts has no back references. 
 //                }
             }
         }
@@ -409,12 +412,12 @@ public class GuiModel {
          =============
          */
         public void DrawStretchPic(float x, float y, float w, float h, float s1, float t1, float s2, float t2, final idMaterial hShader) {
-            final idDrawVert[] verts = {
+            idDrawVert[] verts = {
                 new idDrawVert(),
                 new idDrawVert(),
                 new idDrawVert(),
                 new idDrawVert()};
-            /*glIndex_t*/ final int[] indexes = new int[6];
+            /*glIndex_t*/ int[] indexes = new int[6];
 
             if (!glConfig.isInitialized) {
                 return;
@@ -426,25 +429,25 @@ public class GuiModel {
             // clip to edges, because the pic may be going into a guiShader
             // instead of full screen
             if (x < 0) {
-                s1 += ((s2 - s1) * -x) / w;
+                s1 += (s2 - s1) * -x / w;
                 w += x;
                 x = 0;
             }
             if (y < 0) {
-                t1 += ((t2 - t1) * -y) / h;
+                t1 += (t2 - t1) * -y / h;
                 h += y;
                 y = 0;
             }
-            if ((x + w) > 640) {
-                s2 -= ((s2 - s1) * ((x + w) - 640)) / w;
+            if (x + w > 640) {
+                s2 -= (s2 - s1) * (x + w - 640) / w;
                 w = 640 - x;
             }
-            if ((y + h) > 480) {
-                t2 -= ((t2 - t1) * ((y + h) - 480)) / h;
+            if (y + h > 480) {
+                t2 -= (t2 - t1) * (y + h - 480) / h;
                 h = 480 - y;
             }
 
-            if ((w <= 0) || (h <= 0)) {
+            if (w <= 0 || h <= 0) {
                 return;		// completely clipped away
             }
 
@@ -524,10 +527,10 @@ public class GuiModel {
          =============
          */
         public void DrawStretchTri(idVec2 p1, idVec2 p2, idVec2 p3, idVec2 t1, idVec2 t2, idVec2 t3, final idMaterial material) {
-            final idDrawVert[] tempVerts = new idDrawVert[3];
-            /*glIndex_t*/ final int[] tempIndexes = new int[3];
-            final int vertCount = 3;
-            final int indexCount = 3;
+            idDrawVert[] tempVerts = new idDrawVert[3];
+            /*glIndex_t*/ int[] tempIndexes = new int[3];
+            int vertCount = 3;
+            int indexCount = 3;
 
             if (!glConfig.isInitialized) {
                 return;
@@ -584,8 +587,8 @@ public class GuiModel {
             tempVerts[2].tangents[1].oSet(2, 0);
 
             // break the current surface if we are changing to a new material
-            if (material != this.surf.material) {
-                if (this.surf.numVerts != 0) {
+            if (material != surf.material) {
+                if (surf.numVerts != 0) {
                     AdvanceSurf();
                     if (bla) {
                         bla4++;
@@ -593,36 +596,36 @@ public class GuiModel {
                 }
                 /*const_cast<idMaterial *>*/
                 (material).EnsureNotPurged();	// in case it was a gui item started before a level change
-                this.surf.material = material;
+                surf.material = material;
             }
 
-            final int numVerts = this.verts.Num();
-            final int numIndexes = this.indexes.Num();
+            int numVerts = verts.Num();
+            int numIndexes = indexes.Num();
 
-            this.verts.AssureSize(numVerts + vertCount);
-            this.indexes.AssureSize(numIndexes + indexCount);
+            verts.AssureSize(numVerts + vertCount);
+            indexes.AssureSize(numIndexes + indexCount);
 
-            this.surf.numVerts += vertCount;
-            this.surf.numIndexes += indexCount;
+            surf.numVerts += vertCount;
+            surf.numIndexes += indexCount;
 
             for (int i = 0; i < indexCount; i++) {
-                this.indexes.oSet(numIndexes + i, (numVerts + tempIndexes[i]) - this.surf.firstVert);
+                indexes.oSet(numIndexes + i, numVerts + tempIndexes[i] - surf.firstVert);
             }
 
 //            memcpy(verts[numVerts], tempVerts, vertCount * sizeof(verts[0]));
-            System.arraycopy(tempVerts, 0, this.verts.Ptr(), numVerts, vertCount);
+            System.arraycopy(tempVerts, 0, verts.Ptr(), numVerts, vertCount);
         }
 
         //---------------------------
         private void AdvanceSurf() {
-            final guiModelSurface_t s = new guiModelSurface_t();
+            guiModelSurface_t s = new guiModelSurface_t();
 
-            if (this.surfaces.Num() != 0) {
-                s.color[0] = this.surf.color[0];
-                s.color[1] = this.surf.color[1];
-                s.color[2] = this.surf.color[2];
-                s.color[3] = this.surf.color[3];
-                s.material = this.surf.material;
+            if (surfaces.Num() != 0) {
+                s.color[0] = surf.color[0];
+                s.color[1] = surf.color[1];
+                s.color[2] = surf.color[2];
+                s.color[3] = surf.color[3];
+                s.material = surf.material;
             } else {
                 s.color[0] = 1;
                 s.color[1] = 1;
@@ -631,36 +634,22 @@ public class GuiModel {
                 s.material = tr.defaultMaterial;
             }
             s.numIndexes = 0;
-            s.firstIndex = this.indexes.Num();
+            s.firstIndex = indexes.Num();
             s.numVerts = 0;
-            s.firstVert = this.verts.Num();
+            s.firstVert = verts.Num();
 
-            this.surfaces.Append(s);
-            this.surf = this.surfaces.oGet(this.surfaces.Num() - 1);
+            surfaces.Append(s);
+            surf = surfaces.oGet(surfaces.Num() - 1);
 //            TempDump.printCallStack(bla555 + "");
-            final int bla0 = setColorTotal;
-            final int bla1 = setColor;
-            final int bla2 = clear;
-            final int bla3 = drawStretchPic;
+            int bla0 = setColorTotal;
+            int bla1 = setColor;
+            int bla2 = clear;
+            int bla3 = drawStretchPic;
             bla555++;
         }
         static int bla555 = 0;
 
-        /**
-         * TBD delete method after float[] to FloatBuffer
-         * 
-         * @param surf
-         * @param modelMatrix
-         * @param modelViewMatrix
-         * @param depthHack
-         * 
-         * @deprecated use private void EmitSurface(guiModelSurface_t surf, FloatBuffer modelMatrix, FloatBuffer modelViewMatrix, boolean depthHack) instead
-         */
-        private void EmitSurface(guiModelSurface_t surf, float[] modelMatrix/*[16]*/, FloatBuffer modelViewMatrix/*[16]*/, boolean depthHack) {
-        	EmitSurface(surf, Nio.wrap(modelMatrix), modelViewMatrix, depthHack);
-        }
-
-        private void EmitSurface(guiModelSurface_t surf, FloatBuffer modelMatrix/*[16]*/, FloatBuffer modelViewMatrix/*[16]*/, boolean depthHack) {
+        private void EmitSurface(guiModelSurface_t surf, float[] modelMatrix/*[16]*/, float[] modelViewMatrix/*[16]*/, boolean depthHack) {
             srfTriangles_s tri;
 
             if (surf.numVerts == 0) {
@@ -669,13 +658,12 @@ public class GuiModel {
 
             // copy verts and indexes
             tri = new srfTriangles_s();///*(srfTriangles_s *)*/ R_ClearedFrameAlloc(sizeof(tri));
-            tri.getIndexes().setNumValues(surf.numIndexes);
+            tri.numIndexes = surf.numIndexes;
             tri.numVerts = surf.numVerts;//TODO:see if we can get rid of these single element arrays. EDIT:done.
-            //tri.getIndexes().setValues(new int[tri.getIndexes().getNumValues()]);///*(glIndex_t *)*/ R_FrameAlloc(tri.numIndexes * sizeof(tri.indexes[0]));
-            tri.getIndexes().createValues(tri.getIndexes().getNumValues());///*(glIndex_t *)*/ R_FrameAlloc(tri.numIndexes * sizeof(tri.indexes[0]));
+            tri.indexes = new int[tri.numIndexes];///*(glIndex_t *)*/ R_FrameAlloc(tri.numIndexes * sizeof(tri.indexes[0]));
 //            memcpy(tri.indexes, indexes[surf.firstIndex], tri.numIndexes * sizeof(tri.indexes[0]));
-            for (int s = surf.firstIndex, d = 0; d < tri.getIndexes().getNumValues(); s++, d++) {
-                tri.getIndexes().getValues().put(d, this.indexes.oGet(s));
+            for (int s = surf.firstIndex, d = 0; d < tri.numIndexes; s++, d++) {
+                tri.indexes[d] = indexes.oGet(s);
             }
 
             // we might be able to avoid copying these and just let them reference the list vars
@@ -684,7 +672,7 @@ public class GuiModel {
             tri.verts = new idDrawVert[tri.numVerts];///*(idDrawVert *)*/ R_FrameAlloc(tri.numVerts * sizeof(tri.verts[0]));
 //            memcpy(tri.verts,  & verts[surf.firstVert], tri.numVerts * sizeof(tri.verts[0]));
             for (int s = surf.firstVert, d = 0; d < tri.numVerts; s++, d++) {
-                tri.verts[d] = new idDrawVert(this.verts.oGet(s));
+                tri.verts[d] = new idDrawVert(verts.oGet(s));
             }
 
             // move the verts to the vertex cache
@@ -703,19 +691,15 @@ public class GuiModel {
             renderEntity.shaderParms[2] = surf.color[2];
             renderEntity.shaderParms[3] = surf.color[3];
 
-            final viewEntity_s guiSpace = new viewEntity_s();///*(viewEntity_t *)*/ R_ClearedFrameAlloc(sizeof( * guiSpace));
+            viewEntity_s guiSpace = new viewEntity_s();///*(viewEntity_t *)*/ R_ClearedFrameAlloc(sizeof( * guiSpace));
 //            memcpy(guiSpace.modelMatrix, modelMatrix, sizeof(guiSpace.modelMatrix));
-            //System.arraycopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.length);
-            Nio.arraycopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.length);
-            // preview Nio.buffercopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.limit());
+            System.arraycopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.length);
 //            memcpy(guiSpace.modelViewMatrix, modelViewMatrix, sizeof(guiSpace.modelViewMatrix));
-            //System.arraycopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().length);
-            //Nio.arraycopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().limit);
-            Nio.buffercopy(modelViewMatrix, 0, guiSpace.getModelViewMatrix(), 0, guiSpace.getModelViewMatrix().limit());
+            System.arraycopy(modelViewMatrix, 0, guiSpace.modelViewMatrix, 0, guiSpace.modelViewMatrix.length);
             guiSpace.weaponDepthHack = depthHack;
 
             // add the surface, which might recursively create another gui
             R_AddDrawSurf(tri, guiSpace, renderEntity, surf.material, tr.viewDef.scissor);
         }
-    }
+    };
 }

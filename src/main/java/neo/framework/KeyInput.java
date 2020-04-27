@@ -223,7 +223,7 @@ public class KeyInput {
                 int kn;
                 int i;
 
-                for (i = 0; i < (unnamedkeys.length() - 1); i++) {
+                for (i = 0; i < unnamedkeys.length() - 1; i++) {
                     callback.run(va("%s %c", args.Argv(0), unnamedkeys.charAt(i)));
                 }
 
@@ -250,9 +250,9 @@ public class KeyInput {
                     lastKeys[16 + (lastKeyIndex & 15)] = (char) keyNum;
                     lastKeyIndex = (lastKeyIndex + 1) & 15;
                     for (int i = 0; cheatCodes[i] != null; i++) {
-                        final int l = cheatCodes[i].length();
+                        int l = cheatCodes[i].length();
                         assert (l <= 16);
-                        if (idStr.Icmpn(ctos(lastKeys).substring((16 + (lastKeyIndex & 15)) - l), cheatCodes[i], l) == 0) {
+                        if (idStr.Icmpn(ctos(lastKeys).substring(16 + (lastKeyIndex & 15) - l), cheatCodes[i], l) == 0) {
                             common.Printf("your memory serves you well!\n");
                             break;
                         }
@@ -310,7 +310,7 @@ public class KeyInput {
         public static int StringToKeyNum(final String str) {
             int kn;
 
-            if ((null == str) || str.isEmpty()) {
+            if (null == str || str.isEmpty()) {
                 return -1;
             }
             if (1 == str.length()) {
@@ -318,28 +318,28 @@ public class KeyInput {
             }
 
             // check for hex code
-            if ((str.charAt(0) == '0') && (str.charAt(0) == 'x') && (str.length() == 4)) {
+            if (str.charAt(0) == '0' && str.charAt(0) == 'x' && str.length() == 4) {
                 int n1, n2;
 
                 n1 = str.charAt(2);
-                if ((n1 >= '0') && (n1 <= '9')) {
+                if (n1 >= '0' && n1 <= '9') {
                     n1 -= '0';
-                } else if ((n1 >= 'a') && (n1 <= 'f')) {
-                    n1 = (n1 - 'a') + 10;
+                } else if (n1 >= 'a' && n1 <= 'f') {
+                    n1 = n1 - 'a' + 10;
                 } else {
                     n1 = 0;
                 }
 
                 n2 = str.charAt(3);
-                if ((n2 >= '0') && (n2 <= '9')) {
+                if (n2 >= '0' && n2 <= '9') {
                     n2 -= '0';
-                } else if ((n2 >= 'a') && (n2 <= 'f')) {
-                    n2 = (n2 - 'a') + 10;
+                } else if (n2 >= 'a' && n2 <= 'f') {
+                    n2 = n2 - 'a' + 10;
                 } else {
                     n2 = 0;
                 }
 
-                return (n1 * 16) + n2;
+                return n1 * 16 + n2;
             }
 
             // scan for a text match
@@ -369,21 +369,21 @@ public class KeyInput {
                 return "<KEY NOT FOUND>";
             }
 
-            if ((keyNum < 0) || (keyNum > 255)) {
+            if (keyNum < 0 || keyNum > 255) {
                 return "<OUT OF RANGE>";
             }
 
             // check for printable ascii (don't use quote)
-            if ((keyNum > 32) && (keyNum < 127) && (keyNum != '"') && (keyNum != ';') && (keyNum != '\'')) {
+            if (keyNum > 32 && keyNum < 127 && keyNum != '"' && keyNum != ';' && keyNum != '\'') {
                 tinystr[0] = Sys_MapCharForKey(keyNum);
                 tinystr[1] = 0;
                 return ctos(tinystr);
             }
 
             // check for a key string
-            for (final keyname_t kn : keynames) {
+            for (keyname_t kn : keynames) {
                 if (keyNum == kn.keynum) {
-                    if (!localized || (kn.strId.charAt(0) != '#')) {
+                    if (!localized || kn.strId.charAt(0) != '#') {
                         return kn.name;
                     } else {
                         if (MACOS_X) {
@@ -408,7 +408,7 @@ public class KeyInput {
             }
 
             // check for European high-ASCII characters
-            if (localized && (keyNum >= 161) && (keyNum <= 255)) {
+            if (localized && keyNum >= 161 && keyNum <= 255) {
                 tinystr[0] = (char) keyNum;
                 tinystr[1] = 0;
                 return ctos(tinystr);
@@ -420,8 +420,8 @@ public class KeyInput {
 
             tinystr[0] = '0';
             tinystr[1] = 'x';
-            tinystr[2] = (char) (i > 9 ? (i - 10) + 'a' : i + '0');
-            tinystr[3] = (char) (j > 9 ? (j - 10) + 'a' : j + '0');
+            tinystr[2] = (char) (i > 9 ? i - 10 + 'a' : i + '0');
+            tinystr[3] = (char) (j > 9 ? j - 10 + 'a' : j + '0');
             tinystr[4] = 0;
 
             return ctos(tinystr);
@@ -451,7 +451,7 @@ public class KeyInput {
                 return "";
             }
 
-            return keys[keyNum].binding.getData();
+            return keys[keyNum].binding.toString();
         }
 
         public static boolean UnbindBinding(final String binding) {
@@ -491,7 +491,7 @@ public class KeyInput {
 
             // send the bound action
             if (keys[keyNum].binding.Length() != 0) {
-                cmdSystem.BufferCommandText(CMD_EXEC_APPEND, keys[keyNum].binding.getData());
+                cmdSystem.BufferCommandText(CMD_EXEC_APPEND, keys[keyNum].binding.toString());
                 cmdSystem.BufferCommandText(CMD_EXEC_APPEND, "\n");
             }
             return true;
@@ -533,14 +533,14 @@ public class KeyInput {
          */
         public static String BindingFromKey(final String key) {
             final int keyNum = idKeyInput.StringToKeyNum(key);
-            if ((keyNum < 0) || (keyNum >= MAX_KEYS)) {
+            if (keyNum < 0 || keyNum >= MAX_KEYS) {
                 return null;
             }
-            return keys[keyNum].binding.getData();
+            return keys[keyNum].binding.toString();
         }
 
         public static boolean KeyIsBoundTo(int keyNum, final String binding) {
-            if ((keyNum >= 0) && (keyNum < MAX_KEYS)) {
+            if (keyNum >= 0 && keyNum < MAX_KEYS) {
                 return (keys[keyNum].binding.Icmp(binding) == 0);
             }
             return false;
@@ -571,7 +571,7 @@ public class KeyInput {
                 }
             }
         }
-    }
+    };
 
     static class keyname_t {
 
@@ -583,7 +583,7 @@ public class KeyInput {
         String name;
         int keynum;
         String strId;	// localized string id
-    }
+    };
 //    
 // keys that can be set without a special name
     static final String unnamedkeys = "*,-=./[\\]1234567890abcdefghijklmnopqrstuvwxyz";
@@ -738,17 +738,17 @@ public class KeyInput {
     private static class idKey {
 
         public boolean down;
-        //public int repeats;		// if > 1, it is autorepeating
+        public int repeats;		// if > 1, it is autorepeating
         public idStr binding;
         public int usercmdAction;	// for testing by the asyncronous usercmd generation
 
         public idKey() {
-            this.down = false;
-            //repeats = 0;
-            this.binding = new idStr();
-            this.usercmdAction = 0;
+            down = false;
+            repeats = 0;
+            binding = new idStr();
+            usercmdAction = 0;
         }
-    }
+    };
 //    
 //    
     static boolean key_overstrikeMode = false;
@@ -817,7 +817,7 @@ public class KeyInput {
                 idKeyInput.SetBinding(b, "");
             }
         }
-    }
+    };
 
     /*
      ===================
@@ -840,7 +840,7 @@ public class KeyInput {
                 idKeyInput.SetBinding(i, "");
             }
         }
-    }
+    };
 
     /*
      ===================
@@ -874,7 +874,7 @@ public class KeyInput {
 
             if (c == 2) {
                 if (keys[b].binding.Length() != 0) {
-                    common.Printf("\"%s\" = \"%s\"\n", args.Argv(1), keys[b].binding.getData());
+                    common.Printf("\"%s\" = \"%s\"\n", args.Argv(1), keys[b].binding.toString());
                 } else {
                     common.Printf("\"%s\" is not bound\n", args.Argv(1));
                 }
@@ -893,7 +893,7 @@ public class KeyInput {
 
             idKeyInput.SetBinding(b, cmd);
         }
-    }
+    };
 
     /*
      ============
@@ -912,19 +912,19 @@ public class KeyInput {
 
         @Override
         public void run(idCmdArgs args) throws idException {
-            final int c = args.Argc();
+            int c = args.Argc();
             if (c < 3) {
                 common.Printf("bindunbindtwo <keynum> [command]\n");
                 return;
             }
-            final int key = Integer.parseInt(args.Argv(1));
+            int key = Integer.parseInt(args.Argv(1));
             final String bind = args.Argv(2);
-            if ((idKeyInput.NumBinds(bind) >= 2) && !idKeyInput.KeyIsBoundTo(key, bind)) {
+            if (idKeyInput.NumBinds(bind) >= 2 && !idKeyInput.KeyIsBoundTo(key, bind)) {
                 idKeyInput.UnbindBinding(bind);
             }
             idKeyInput.SetBinding(key, bind);
         }
-    }
+    };
 
 
     /*
@@ -946,9 +946,9 @@ public class KeyInput {
 
             for (i = 0; i < MAX_KEYS; i++) {
                 if (keys[i].binding.Length() != 0) {
-                    common.Printf("%s \"%s\"\n", idKeyInput.KeyNumToString(i, false), keys[i].binding.getData());
+                    common.Printf("%s \"%s\"\n", idKeyInput.KeyNumToString(i, false), keys[i].binding.toString());
                 }
             }
         }
-    }
+    };
 }

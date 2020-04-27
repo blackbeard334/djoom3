@@ -22,7 +22,6 @@ import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import neo.TempDump;
 import neo.TempDump.TODO_Exception;
 
 /**
@@ -115,7 +114,7 @@ public class win_cpu {
                     final int procSpeed = atoi(wmic("cpu get MaxClockSpeed"));
 
                     ticks = procSpeed * 1000000L;
-                } catch (final IOException ex) {
+                } catch (IOException ex) {
                     Logger.getLogger(win_cpu.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -245,7 +244,7 @@ public class win_cpu {
      ================
      */
     public static boolean HasCMOV() {
-        if (!TempDump.isDeadCodeTrue()) {
+        if (true) {
             return true;
         }
         throw new TODO_Exception();
@@ -267,7 +266,7 @@ public class win_cpu {
      ================
      */
     public static boolean Has3DNow() {
-        if (!TempDump.isDeadCodeTrue()) {
+        if (true) {
             return IsAMD();
         }
         throw new TODO_Exception();
@@ -294,7 +293,7 @@ public class win_cpu {
      ================
      */
     public static boolean HasMMX() {
-        if (!TempDump.isDeadCodeTrue()) {
+        if (true) {
             return true;
         }
         throw new TODO_Exception();
@@ -316,7 +315,7 @@ public class win_cpu {
      ================
      */
     public static boolean HasSSE() {
-        if (!TempDump.isDeadCodeTrue()) {
+        if (true) {
             return true;
         }
         throw new TODO_Exception();
@@ -338,7 +337,7 @@ public class win_cpu {
      ================
      */
     public static boolean HasSSE2() {
-        if (!TempDump.isDeadCodeTrue()) {
+        if (true) {
             return true;
         }
         throw new TODO_Exception();
@@ -360,7 +359,7 @@ public class win_cpu {
      ================
      */
     public static boolean HasSSE3() {
-        if (!TempDump.isDeadCodeTrue()) {
+        if (true) {
             return true;
         }
         throw new TODO_Exception();
@@ -510,7 +509,7 @@ public class win_cpu {
      ================
      */
     public static boolean HasHTT() {
-        if (!TempDump.isDeadCodeTrue()) {
+        if (true) {
             return true;
         }
         throw new TODO_Exception();
@@ -538,7 +537,7 @@ public class win_cpu {
      ================
      */
     public static boolean HasDAZ() {
-        if (!TempDump.isDeadCodeTrue()) {
+        if (true) {
             return true;
         }
         throw new TODO_Exception();
@@ -579,7 +578,7 @@ public class win_cpu {
             if (!HasCPUID()) {
                 return CPUID_UNSUPPORTED;
             }
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             Logger.getLogger(win_cpu.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -651,7 +650,7 @@ public class win_cpu {
             this.bit = bit;
         }
 
-    }
+    };
 
     static byte[] fpuState = new byte[128], statePtr = fpuState;
     static char[] fpuString = new char[2048];
@@ -994,7 +993,7 @@ public class win_cpu {
     static String wmic(final String query) throws IOException {
         final String result;
 
-        final Process wmic = Runtime.getRuntime().exec("wmic " + query);
+        Process wmic = Runtime.getRuntime().exec("wmic " + query);
 //                wmic.waitFor();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(wmic.getInputStream()))) {
             if (reader.readLine().startsWith("Node")) {
@@ -1012,7 +1011,7 @@ public class win_cpu {
     static String cmd(final String query) throws IOException {
         final String result;
 
-        final Process wmic = Runtime.getRuntime().exec(query);
+        Process wmic = Runtime.getRuntime().exec(query);
 //                wmic.waitFor();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(wmic.getInputStream()))) {
 

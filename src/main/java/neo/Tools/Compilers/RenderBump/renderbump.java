@@ -8,6 +8,24 @@ import static neo.Renderer.Image_process.R_MipMap;
 import static neo.Renderer.Image_process.R_VerticalFlip;
 import static neo.Renderer.Material.SURF_NULLNORMAL;
 import static neo.Renderer.ModelManager.renderModelManager;
+import static neo.Renderer.qgl.qglBegin;
+import static neo.Renderer.qgl.qglClear;
+import static neo.Renderer.qgl.qglClearColor;
+import static neo.Renderer.qgl.qglColor3f;
+import static neo.Renderer.qgl.qglColor3ubv;
+import static neo.Renderer.qgl.qglCullFace;
+import static neo.Renderer.qgl.qglDepthFunc;
+import static neo.Renderer.qgl.qglDepthMask;
+import static neo.Renderer.qgl.qglDisable;
+import static neo.Renderer.qgl.qglEnable;
+import static neo.Renderer.qgl.qglEnd;
+import static neo.Renderer.qgl.qglFlush;
+import static neo.Renderer.qgl.qglLoadIdentity;
+import static neo.Renderer.qgl.qglMatrixMode;
+import static neo.Renderer.qgl.qglOrtho;
+import static neo.Renderer.qgl.qglReadPixels;
+import static neo.Renderer.qgl.qglVertex3f;
+import static neo.Renderer.qgl.qglViewport;
 import static neo.Renderer.tr_local.glConfig;
 import static neo.Renderer.tr_local.tr;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurf;
@@ -21,46 +39,29 @@ import static neo.framework.Common.common;
 import static neo.idlib.math.Vector.DotProduct;
 import static neo.idlib.math.Vector.VectorSubtract;
 import static neo.idlib.math.Vector.getVec3_origin;
-import static neo.open.gl.QGL.qglBegin;
-import static neo.open.gl.QGL.qglClear;
-import static neo.open.gl.QGL.qglClearColor;
-import static neo.open.gl.QGL.qglColor3f;
-import static neo.open.gl.QGL.qglColor3ubv;
-import static neo.open.gl.QGL.qglCullFace;
-import static neo.open.gl.QGL.qglDepthFunc;
-import static neo.open.gl.QGL.qglDepthMask;
-import static neo.open.gl.QGL.qglDisable;
-import static neo.open.gl.QGL.qglEnable;
-import static neo.open.gl.QGL.qglEnd;
-import static neo.open.gl.QGL.qglFlush;
-import static neo.open.gl.QGL.qglLoadIdentity;
-import static neo.open.gl.QGL.qglMatrixMode;
-import static neo.open.gl.QGL.qglOrtho;
-import static neo.open.gl.QGL.qglReadPixels;
-import static neo.open.gl.QGL.qglVertex3f;
-import static neo.open.gl.QGL.qglViewport;
-import static neo.open.gl.QGLConstantsIfc.GL_ALPHA_TEST;
-import static neo.open.gl.QGLConstantsIfc.GL_BLEND;
-import static neo.open.gl.QGLConstantsIfc.GL_COLOR_BUFFER_BIT;
-import static neo.open.gl.QGLConstantsIfc.GL_CULL_FACE;
-import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_BUFFER_BIT;
-import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_TEST;
-import static neo.open.gl.QGLConstantsIfc.GL_FRONT;
-import static neo.open.gl.QGLConstantsIfc.GL_LEQUAL;
-import static neo.open.gl.QGLConstantsIfc.GL_MODELVIEW;
-import static neo.open.gl.QGLConstantsIfc.GL_PROJECTION;
-import static neo.open.gl.QGLConstantsIfc.GL_RGBA;
-import static neo.open.gl.QGLConstantsIfc.GL_SCISSOR_TEST;
-import static neo.open.gl.QGLConstantsIfc.GL_STENCIL_TEST;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_2D;
-import static neo.open.gl.QGLConstantsIfc.GL_TRIANGLES;
-import static neo.open.gl.QGLConstantsIfc.GL_TRUE;
-import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
 import static neo.sys.win_glimp.GLimp_SwapBuffers;
 import static neo.sys.win_shared.Sys_Milliseconds;
+import static org.lwjgl.opengl.GL11.GL_ALPHA_TEST;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_FRONT;
+import static org.lwjgl.opengl.GL11.GL_LEQUAL;
+import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
+import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import static org.lwjgl.opengl.GL11.GL_RGBA;
+import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
+import static org.lwjgl.opengl.GL11.GL_STENCIL_TEST;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_TRUE;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
+
+import org.lwjgl.BufferUtils;
 
 import neo.TempDump.TODO_Exception;
 import neo.Renderer.Model.idRenderModel;
@@ -77,7 +78,6 @@ import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Matrix.idMat3;
-import neo.open.Nio;
 
 /**
  *
@@ -112,13 +112,13 @@ public class renderbump {
 
         int faceNum;
         int nextLink;
-    }
+    };
 
     static class binLink_t {
 
         int triLink;
         int rayNumber;        // don't need to test again if still on same ray
-    }
+    };
     static final int MAX_LINKS_PER_BLOCK = 0x100000;
     static final int MAX_LINK_BLOCKS     = 0x100;
 
@@ -133,7 +133,7 @@ public class renderbump {
         private void clear() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     static class renderBump_t {
 
@@ -153,7 +153,7 @@ public class renderbump {
         srfTriangles_s mesh;            // high poly mesh
         idRenderModel  highModel;
         triHash_t      hash;
-    }
+    };
     static float traceFraction;
     static int   rayNumber;        // for avoiding retests of bins and faces
     //
@@ -247,15 +247,15 @@ public class renderbump {
 
         orig = new byte[width * height * 4];// Mem_Alloc(width * height * 4);
 //	memcpy( orig, data, width * height * 4 );
-        Nio.arraycopy(orig, 0, data.array(), 0, width * height * 4);
+        System.arraycopy(orig, 0, data.array(), 0, width * height * 4);
 
         for (i = 0; i < width; i++) {
             for (j = 0; j < height; j++) {
 //			out = data + ( j * width + i ) * 4;
-                out = ((j * width) + i) * 4;
-                if ((data.get(out + 0) != emptyR)
-                        || (data.get(out + 1) != emptyG)
-                        || (data.get(out + 2) != emptyB)) {
+                out = (j * width + i) * 4;
+                if (data.get(out + 0) != emptyR
+                        || data.get(out + 1) != emptyG
+                        || data.get(out + 2) != emptyB) {
                     continue;
                 }
 
@@ -264,10 +264,10 @@ public class renderbump {
                     for (l = -1; l < 2; l++) {
                         int in;
 
-//                        in = orig + ( ((j+l)&(height-1))*width + ((i+k)&(width-1)) ) * 4;
-                        in = ((((j + l) & (height - 1)) * width) + ((i + k) & (width - 1))) * 4;
+//					in = orig + ( ((j+l)&(height-1))*width + ((i+k)&(width-1)) ) * 4;
+                        in = (((j + l) & (height - 1)) * width + ((i + k) & (width - 1))) * 4;
 
-                        if ((orig[in + 0] == emptyR) && (orig[in + 1] == emptyG) && (orig[in + 2] == emptyB)) {
+                        if (orig[in + 0] == emptyR && orig[in + 1] == emptyG && orig[in + 2] == emptyB) {
                             continue;
                         }
 
@@ -281,9 +281,9 @@ public class renderbump {
                     continue;	// no valid samples
                 }
 
-                data.put(out + 0, (byte) (128 + (127 * normal.oGet(0))));
-                data.put(out + 1, (byte) (128 + (127 * normal.oGet(1))));
-                data.put(out + 2, (byte) (128 + (127 * normal.oGet(2))));
+                data.put(out + 0, (byte) (128 + 127 * normal.oGet(0)));
+                data.put(out + 1, (byte) (128 + 127 * normal.oGet(1)));
+                data.put(out + 2, (byte) (128 + 127 * normal.oGet(2)));
             }
         }
 
@@ -307,14 +307,14 @@ public class renderbump {
 
         orig = new byte[width * height * 4];// Mem_Alloc(width * height * 4);
 //	memcpy( orig, data, width * height * 4 );
-        Nio.arraycopy(orig, 0, data, 0, width * height * 4);
+        System.arraycopy(orig, 0, data, 0, width * height * 4);
 
         for (i = 0; i < width; i++) {
             for (j = 0; j < height; j++) {
-                out = ((j * width) + i) * 4;
-                if ((data.get(out + 0) != emptyR)
-                        || (data.get(out + 1) != emptyG)
-                        || (data.get(out + 2) != emptyB)) {
+                out = (j * width + i) * 4;
+                if (data.get(out + 0) != emptyR
+                        || data.get(out + 1) != emptyG
+                        || data.get(out + 2) != emptyB) {
                     continue;
                 }
 
@@ -324,9 +324,9 @@ public class renderbump {
                     for (l = -1; l < 2; l++) {
                         int in;
 
-                        in = ((((j + l) & (height - 1)) * width) + ((i + k) & (width - 1))) * 4;
+                        in = (((j + l) & (height - 1)) * width + ((i + k) & (width - 1))) * 4;
 
-                        if ((orig[in + 0] == emptyR) && (orig[in + 1] == emptyG) && (orig[in + 2] == emptyB)) {
+                        if (orig[in + 0] == emptyR && orig[in + 1] == emptyG && orig[in + 2] == emptyB) {
                             continue;
                         }
 
@@ -371,8 +371,8 @@ public class renderbump {
     static triHash_t CreateTriHash(final srfTriangles_s highMesh) {
         triHash_t hash;
         int i, j, k, l;
-        final idBounds bounds = new idBounds(), triBounds = new idBounds();
-        final int[][] iBounds = new int[2][3];
+        idBounds bounds = new idBounds(), triBounds = new idBounds();
+        int[][] iBounds = new int[2][3];
         int maxLinks, numLinks;
 
         hash = new triHash_t();//Mem_Alloc(sizeof(hash));
@@ -398,9 +398,9 @@ public class renderbump {
 
         // a -1 link number terminated the link chain
 //        memset(hash.binLinks, -1, sizeof(hash.binLinks));
-        for (final binLink_t[][] A : hash.binLinks) {
-            for (final binLink_t[] B : A) {
-                for (final binLink_t C : B) {
+        for (binLink_t[][] A : hash.binLinks) {
+            for (binLink_t[] B : A) {
+                for (binLink_t C : B) {
                     C.rayNumber = -1;
                     C.triLink = -1;
                 }
@@ -414,11 +414,11 @@ public class renderbump {
         maxLinks = hash.numLinkBlocks * MAX_LINKS_PER_BLOCK;
 
         // for each triangle, place a triLink in each bin that might reference it
-        for (i = 0; i < highMesh.getIndexes().getNumValues(); i += 3) {
+        for (i = 0; i < highMesh.numIndexes; i += 3) {
             // determine which hash bins the triangle will need to be in
             triBounds.Clear();
             for (j = 0; j < 3; j++) {
-                triBounds.AddPoint(highMesh.verts[ highMesh.getIndexes().getValues().get(i + j)].xyz);
+                triBounds.AddPoint(highMesh.verts[ highMesh.indexes[i + j]].xyz);
             }
             for (j = 0; j < 3; j++) {
                 iBounds[0][j] = (int) ((triBounds.oGet(0, j) - hash.bounds.oGet(0, j)) / hash.binSize[j]);
@@ -448,7 +448,7 @@ public class renderbump {
                             maxLinks = hash.numLinkBlocks * MAX_LINKS_PER_BLOCK;
                         }
 
-                        final triLink_t link = hash.linkBlocks[ numLinks / MAX_LINKS_PER_BLOCK][ numLinks % MAX_LINKS_PER_BLOCK];//TODO:pointer??
+                        triLink_t link = hash.linkBlocks[ numLinks / MAX_LINKS_PER_BLOCK][ numLinks % MAX_LINKS_PER_BLOCK];//TODO:pointer??
                         link.faceNum = i / 3;
                         link.nextLink = hash.binLinks[j][k][l].triLink;
                         hash.binLinks[j][k][l].triLink = numLinks;
@@ -458,7 +458,7 @@ public class renderbump {
             }
         }
 
-        common.Printf("%d triangles made %d links\n", highMesh.getIndexes().getNumValues() / 3, numLinks);
+        common.Printf("%d triangles made %d links\n", highMesh.numIndexes / 3, numLinks);
 
         return hash;
     }
@@ -479,14 +479,14 @@ public class renderbump {
         idPlane plane;
         idVec3 edge;
         float d;
-        final idVec3[] dir = new idVec3[3];
+        idVec3[] dir = new idVec3[3];
         float baseArea;
-        final float[] bary = new float[3];
+        float[] bary = new float[3];
         idVec3 testVert;
 
-        v[0] = highMesh.verts[ highMesh.getIndexes().getValues().get( (faceNum * 3) + 0)].xyz;
-        v[1] = highMesh.verts[ highMesh.getIndexes().getValues().get( (faceNum * 3) + 1)].xyz;
-        v[2] = highMesh.verts[ highMesh.getIndexes().getValues().get( (faceNum * 3) + 2)].xyz;
+        v[0] = highMesh.verts[ highMesh.indexes[ faceNum * 3 + 0]].xyz;
+        v[1] = highMesh.verts[ highMesh.indexes[ faceNum * 3 + 1]].xyz;
+        v[2] = highMesh.verts[ highMesh.indexes[ faceNum * 3 + 2]].xyz;
 
         plane = highMesh.facePlanes[faceNum];
 
@@ -543,7 +543,7 @@ public class renderbump {
         bary[1] /= baseArea;
         bary[2] /= baseArea;
 
-        if ((bary[0] + bary[1] + bary[2]) > 1.1) {
+        if (bary[0] + bary[1] + bary[2] > 1.1) {
             bary[0] = bary[0];
             return DIST_NO_INTERSECTION;
         }
@@ -551,7 +551,7 @@ public class renderbump {
         // triangularly interpolate the normals to the sample point
         sampledNormal.oSet(getVec3_origin());
         for (j = 0; j < 3; j++) {
-            sampledNormal.oPluSet(highMesh.verts[ highMesh.getIndexes().getValues().get( (faceNum * 3) + j)].normal.oMultiply(bary[j]));
+            sampledNormal.oPluSet(highMesh.verts[ highMesh.indexes[ faceNum * 3 + j]].normal.oMultiply(bary[j]));
         }
         sampledNormal.Normalize();
 
@@ -559,7 +559,7 @@ public class renderbump {
         for (int i = 0; i < 4; i++) {
             float color = 0.0f;
             for (j = 0; j < 3; j++) {
-                color += bary[j] * highMesh.verts[ highMesh.getIndexes().getValues().get( (faceNum * 3) + j)].getColor().get(i);
+                color += bary[j] * highMesh.verts[ highMesh.indexes[ faceNum * 3 + j]].color[i];
             }
             sampledColor[i] = (byte) color;
         }
@@ -583,7 +583,7 @@ public class renderbump {
         int linkNum;
         int faceNum;
         float dist, bestDist;
-        final int[] block = new int[3];
+        int[] block = new int[3];
         float maxDist;
         int c_hits;
         int i;
@@ -607,19 +607,19 @@ public class renderbump {
         // this is a pretty damn lazy way to walk through a 3D grid, and has a (very slight)
         // chance of missing a triangle in a corner crossing case
         for (i = 0; i < RAY_STEPS; i++) {
-            p = point.oMinus(rb.hash.bounds.oGet(0).oPlus(normal.oMultiply(-1.0f + ((2.0f * i) / RAY_STEPS)).oMultiply(rb.traceDist)));//TODO:check if downcasting from doubles to floats has any effect
+            p = point.oMinus(rb.hash.bounds.oGet(0).oPlus(normal.oMultiply(-1.0f + 2.0f * i / RAY_STEPS).oMultiply(rb.traceDist)));//TODO:check if downcasting from doubles to floats has any effect
 
             block[0] = (int) floor(p.oGet(0) / rb.hash.binSize[0]);
             block[1] = (int) floor(p.oGet(1) / rb.hash.binSize[1]);
             block[2] = (int) floor(p.oGet(2) / rb.hash.binSize[2]);
 
-            if ((block[0] < 0) || (block[0] >= HASH_AXIS_BINS)) {
+            if (block[0] < 0 || block[0] >= HASH_AXIS_BINS) {
                 continue;
             }
-            if ((block[1] < 0) || (block[1] >= HASH_AXIS_BINS)) {
+            if (block[1] < 0 || block[1] >= HASH_AXIS_BINS) {
                 continue;
             }
-            if ((block[2] < 0) || (block[2] >= HASH_AXIS_BINS)) {
+            if (block[2] < 0 || block[2] >= HASH_AXIS_BINS) {
                 continue;
             }
 
@@ -647,7 +647,7 @@ public class renderbump {
             }
         }
 
-        return bestDist > -rb.traceDist;
+        return (boolean) (bestDist > -rb.traceDist);
     }
 
     /*
@@ -658,7 +658,7 @@ public class renderbump {
      =============
      */
     static float TriTextureArea(final float[] a/*[2]*/, final float[] b/*[2]*/, final float[] c/*[2]*/) {
-        final idVec3 d1 = new idVec3(), d2 = new idVec3();
+        idVec3 d1 = new idVec3(), d2 = new idVec3();
         idVec3 cross;
         float area;
 
@@ -691,17 +691,17 @@ public class renderbump {
      */
     static void RasterizeTriangle(final srfTriangles_s lowMesh, final idVec3[] lowMeshNormals, int lowFaceNum, renderBump_t[] rbs) {
         int i, j, k, q;
-        final float[][] bounds = new float[2][2];
-        final float[][] ibounds = new float[2][2];
-        final float[][] verts = new float[3][2];
-        final float[] testVert = new float[2];
-        final float[] bary = new float[3];
+        float[][] bounds = new float[2][2];
+        float[][] ibounds = new float[2][2];
+        float[][] verts = new float[3][2];
+        float[] testVert = new float[2];
+        float[] bary = new float[3];
         ByteBuffer localDest, globalDest, colorDest;
-        final float[][] edge = new float[3][3];
-        final idVec3 sampledNormal = new idVec3();
-        final byte[] sampledColor = new byte[4];
+        float[][] edge = new float[3][3];
+        idVec3 sampledNormal = new idVec3();
+        byte[] sampledColor = new byte[4];
         idVec3 point, normal, traceNormal;
-        final idVec3[] tangents = new idVec3[2];
+        idVec3[] tangents = new idVec3[2];
         float baseArea, totalArea;
         int r, g, b;
         idVec3 localNormal;
@@ -709,12 +709,12 @@ public class renderbump {
         // this is a brain-dead rasterizer, but compared to the ray trace,
         // nothing we do here is going to matter performance-wise
         // adjust for resolution and texel centers
-        verts[0][0] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 0)].st.oGet(0) * rbs[0].width) - 0.5f;
-        verts[1][0] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 1)].st.oGet(0) * rbs[0].width) - 0.5f;
-        verts[2][0] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 2)].st.oGet(0) * rbs[0].width) - 0.5f;
-        verts[0][1] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 0)].st.oGet(1) * rbs[0].width) - 0.5f;
-        verts[1][1] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 1)].st.oGet(1) * rbs[0].width) - 0.5f;
-        verts[2][1] = (lowMesh.verts[ lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + 2)].st.oGet(1) * rbs[0].width) - 0.5f;
+        verts[0][0] = lowMesh.verts[ lowMesh.indexes[lowFaceNum * 3 + 0]].st.oGet(0) * rbs[0].width - 0.5f;
+        verts[1][0] = lowMesh.verts[ lowMesh.indexes[lowFaceNum * 3 + 1]].st.oGet(0) * rbs[0].width - 0.5f;
+        verts[2][0] = lowMesh.verts[ lowMesh.indexes[lowFaceNum * 3 + 2]].st.oGet(0) * rbs[0].width - 0.5f;
+        verts[0][1] = lowMesh.verts[ lowMesh.indexes[lowFaceNum * 3 + 0]].st.oGet(1) * rbs[0].width - 0.5f;
+        verts[1][1] = lowMesh.verts[ lowMesh.indexes[lowFaceNum * 3 + 1]].st.oGet(1) * rbs[0].width - 0.5f;
+        verts[2][1] = lowMesh.verts[ lowMesh.indexes[lowFaceNum * 3 + 2]].st.oGet(1) * rbs[0].width - 0.5f;
 
         // find the texcoord bounding box
         bounds[0][0] = 99999;
@@ -751,19 +751,19 @@ public class renderbump {
 
             edge[i][0] = v2[1] - v1[1];
             edge[i][1] = v1[0] - v2[0];
-            final float len = (float) sqrt((edge[i][0] * edge[i][0]) + (edge[i][1] * edge[i][1]));
+            float len = (float) sqrt(edge[i][0] * edge[i][0] + edge[i][1] * edge[i][1]);
             edge[i][0] /= len;
             edge[i][1] /= len;
-            edge[i][2] = -((v1[0] * edge[i][0]) + (v1[1] * edge[i][1]));
+            edge[i][2] = -(v1[0] * edge[i][0] + v1[1] * edge[i][1]);
         }
 
         // itterate over the bounding box, testing against edge vectors
         for (i = (int) ibounds[0][1], q = 0; i < ibounds[1][1]; i++) {
             for (j = (int) ibounds[0][0]; j < ibounds[1][0]; j++, q++) {
-                final float[] dists = new float[3];
-                final renderBump_t rb = rbs[q];//TODO: triple check the 'q' value against 'k', and make sure we don't go out of bounds.
+                float[] dists = new float[3];
+                renderBump_t rb = rbs[q];//TODO: triple check the 'q' value against 'k', and make sure we don't go out of bounds.
 
-                k = (((i & (rb.height - 1)) * rb.width) + (j & (rb.width - 1))) * 4;
+                k = ((i & (rb.height - 1)) * rb.width + (j & (rb.width - 1))) * 4;
                 colorDest = rb.colorPic;//[k];
                 localDest = rb.localPic;//[k];
                 globalDest = rb.globalPic;//[k];
@@ -780,20 +780,20 @@ public class renderbump {
                 for (k = 0; k < 3; k++) {
                     float v;
 
-                    v = (i * edge[k][1]) + (j * edge[k][0]) + edge[k][2];
+                    v = i * edge[k][1] + j * edge[k][0] + edge[k][2];
                     dists[k] = v;
                 }
 
                 // the edge polarities might be either way
-                if (!(((dists[0] >= -edgeOverlap) && (dists[1] >= -edgeOverlap) && (dists[2] >= -edgeOverlap))
-                        || ((dists[0] <= edgeOverlap) && (dists[1] <= edgeOverlap) && (dists[2] <= edgeOverlap)))) {
+                if (!((dists[0] >= -edgeOverlap && dists[1] >= -edgeOverlap && dists[2] >= -edgeOverlap)
+                        || (dists[0] <= edgeOverlap && dists[1] <= edgeOverlap && dists[2] <= edgeOverlap))) {
                     continue;
                 }
 
                 boolean edgeTexel;
 
-                if (((dists[0] >= 0) && (dists[1] >= 0) && (dists[2] >= 0))
-                        || ((dists[0] <= 0) && (dists[1] <= 0) && (dists[2] <= 0))) {
+                if ((dists[0] >= 0 && dists[1] >= 0 && dists[2] >= 0)
+                        || (dists[0] <= 0 && dists[1] <= 0 && dists[2] <= 0)) {
                     edgeTexel = false;
                 } else {
                     edgeTexel = true;
@@ -815,7 +815,7 @@ public class renderbump {
                 bary[2] = TriTextureArea(verts[0], verts[1], testVert) / baseArea;
 
                 totalArea = bary[0] + bary[1] + bary[2];
-                if ((totalArea < 0.99) || (totalArea > 1.01)) {
+                if (totalArea < 0.99 || totalArea > 1.01) {
                     continue;	// should never happen
                 }
 
@@ -828,7 +828,7 @@ public class renderbump {
                 for (k = 0; k < 3; k++) {
                     int index;
 
-                    index = lowMesh.getIndexes().getValues().get((lowFaceNum * 3) + k);
+                    index = lowMesh.indexes[lowFaceNum * 3 + k];
                     point.oPluSet(lowMesh.verts[index].xyz.oMultiply(bary[k]));
 
                     // traceNormal will differ from normal if the surface uses unsmoothedTangents
@@ -871,9 +871,9 @@ public class renderbump {
                 rb.edgeDistances[0 + (k / 4)] = (edgeTexel ? 1.0f : 0);
 
                 // fill the object space normal map spot
-                r = (int) (128 + (127 * sampledNormal.oGet(0)));
-                g = (int) (128 + (127 * sampledNormal.oGet(1)));
-                b = (int) (128 + (127 * sampledNormal.oGet(2)));
+                r = (int) (128 + 127 * sampledNormal.oGet(0));
+                g = (int) (128 + 127 * sampledNormal.oGet(1));
+                b = (int) (128 + 127 * sampledNormal.oGet(2));
 
                 globalDest.put(0, (byte) r);
                 globalDest.put(1, (byte) g);
@@ -881,15 +881,15 @@ public class renderbump {
                 globalDest.put(3, (byte) 255);
 
                 // transform to local tangent space
-                final idMat3 mat = new idMat3(tangents[0], tangents[1], normal);
+                idMat3 mat = new idMat3(tangents[0], tangents[1], normal);
                 mat.InverseSelf();
                 localNormal = mat.oMultiply(sampledNormal);
 
                 localNormal.Normalize();
 
-                r = (int) (128 + (127 * localNormal.oGet(0)));
-                g = (int) (128 + (127 * localNormal.oGet(1)));
-                b = (int) (128 + (127 * localNormal.oGet(2)));
+                r = (int) (128 + 127 * localNormal.oGet(0));
+                g = (int) (128 + 127 * localNormal.oGet(1));
+                b = (int) (128 + 127 * localNormal.oGet(2));
 
                 localDest.put(0, (byte) r);
                 localDest.put(1, (byte) g);
@@ -926,20 +926,20 @@ public class renderbump {
             final modelSurface_s surf = model.Surface(i);
 
             totalVerts += surf.geometry.numVerts;
-            totalIndexes += surf.geometry.getIndexes().getNumValues();
+            totalIndexes += surf.geometry.numIndexes;
         }
 
-        final srfTriangles_s newTri = R_AllocStaticTriSurf();
+        srfTriangles_s newTri = R_AllocStaticTriSurf();
         R_AllocStaticTriSurfVerts(newTri, totalVerts);
         R_AllocStaticTriSurfIndexes(newTri, totalIndexes);
 
         newTri.numVerts = totalVerts;
-        newTri.getIndexes().setNumValues(totalIndexes);
+        newTri.numIndexes = totalIndexes;
 
         newTri.bounds.Clear();
 
-        final idDrawVert[] verts = newTri.verts;
-        final IntBuffer/*glIndex_t*/ indexes = newTri.getIndexes().getValues();
+        idDrawVert[] verts = newTri.verts;
+        int[]/*glIndex_t*/ indexes = newTri.indexes;
         numIndexes = 0;
         numVerts = 0;
         for (i = 0; i < model.NumSurfaces(); i++) {
@@ -948,21 +948,21 @@ public class renderbump {
 
 //            memcpy(verts + numVerts, tri.verts, tri.numVerts * sizeof(tri.verts[0]));
             System.arraycopy(tri.verts, 0, verts, numVerts, tri.numVerts);
-            for (j = 0; j < tri.getIndexes().getNumValues(); j++) {
-            	indexes.put(numIndexes + j, numVerts + tri.getIndexes().getValues().get(j));
+            for (j = 0; j < tri.numIndexes; j++) {
+                indexes[numIndexes + j] = numVerts + tri.indexes[j];
             }
             newTri.bounds.AddBounds(tri.bounds);
-            numIndexes += tri.getIndexes().getNumValues();
+            numIndexes += tri.numIndexes;
             numVerts += tri.numVerts;
         }
 
-        final modelSurface_s surf = new modelSurface_s();
+        modelSurface_s surf = new modelSurface_s();
 
         surf.id = 0;
         surf.geometry = newTri;
         surf.shader = tr.defaultMaterial;
 
-        final idRenderModel newModel = renderModelManager.AllocModel();
+        idRenderModel newModel = renderModelManager.AllocModel();
         newModel.AddSurface(surf);
 
         renderModelManager.FreeModel(model);
@@ -1070,7 +1070,7 @@ public class renderbump {
 //	filename = source;
 //	filename.setFileExtension();
 //	filename.append( "_nooutline.tga" );
-//	common.Printf( "writing %s\n", filename.getData() );
+//	common.Printf( "writing %s\n", filename.c_str() );
 //	WriteTGA( filename, globalPic, width, height );
 //}
         // outline the image several times to help bilinear filtering across disconnected
@@ -1285,7 +1285,7 @@ public class renderbump {
                     continue;
                 }
 
-                final idCmdArgs localArgs = new idCmdArgs();
+                idCmdArgs localArgs = new idCmdArgs();
                 localArgs.TokenizeString(cmdLine, false);
 
                 if (localArgs.Argc() < 2) {
@@ -1295,7 +1295,7 @@ public class renderbump {
 
                 common.Printf("(rendering)\n");
 
-                for (j = 0; j < (localArgs.Argc() - 2); j++) {
+                for (j = 0; j < localArgs.Argc() - 2; j++) {
                     String s;
 
                     s = localArgs.Argv(j);
@@ -1308,7 +1308,7 @@ public class renderbump {
                     }
 
                     if (0 == idStr.Icmp(s, "size")) {
-                        if ((j + 2) >= localArgs.Argc()) {
+                        if (j + 2 >= localArgs.Argc()) {
                             j = localArgs.Argc();
                             break;
                         }
@@ -1352,9 +1352,9 @@ public class renderbump {
                         continue;
                     }
                     // all the other parameters must match, or it is an error
-                    if ((idStr.Icmp(rb.highName, opt.highName) != 0) || (rb.width != opt.width)
-                            || (rb.height != opt.height) || (rb.antiAlias != opt.antiAlias)
-                            || (rb.traceFrac != opt.traceFrac)) {
+                    if (idStr.Icmp(rb.highName, opt.highName) != 0 || rb.width != opt.width
+                            || rb.height != opt.height || rb.antiAlias != opt.antiAlias
+                            || rb.traceFrac != opt.traceFrac) {
                         common.Error("mismatched renderbump parameters on image %s", rb.outputName);
                         continue;
                     }
@@ -1433,7 +1433,7 @@ public class renderbump {
             boundsScale = 0;
 
             // check options
-            for (i = 1; i < (args.Argc() - 1); i++) {
+            for (i = 1; i < args.Argc() - 1; i++) {
                 String s;
 
                 s = args.Argv(i);
@@ -1443,7 +1443,7 @@ public class renderbump {
                 }
 
                 if (0 == idStr.Icmp(s, "size")) {
-                    if ((i + 2) >= args.Argc()) {
+                    if (i + 2 >= args.Argc()) {
                         i = args.Argc();
                         break;
                     }
@@ -1524,7 +1524,7 @@ public class renderbump {
 
             sumBuffer = new int[width * height * 4 * 4];// Mem_Alloc(width * height * 4 * 4);
 //	memset( sumBuffer, 0, width * height * 4 * 4 );
-            buffer = Nio.newByteBuffer(width * height * 4);// Mem_Alloc(width * height * 4);
+            buffer = BufferUtils.createByteBuffer(width * height * 4);// Mem_Alloc(width * height * 4);
 
             colorSumBuffer = new int[width * height * 4 * 4];// Mem_Alloc(width * height * 4 * 4);
 //	memset( sumBuffer, 0, width * height * 4 * 4 );
@@ -1535,8 +1535,8 @@ public class renderbump {
             for (sample = 0; sample < 16; sample++) {
                 float xOff, yOff;
 
-                xOff = (((sample & 3) / 4.0f) * (bounds.oGet(1, 0) - bounds.oGet(0, 0))) / width;//TODO:loss of precision, float instead of double.
-                yOff = (((sample / 4) / 4.0f) * (bounds.oGet(1, 2) - bounds.oGet(0, 2))) / height;
+                xOff = ((sample & 3) / 4.0f) * (bounds.oGet(1, 0) - bounds.oGet(0, 0)) / width;//TODO:loss of precision, float instead of double.
+                yOff = ((sample / 4) / 4.0f) * (bounds.oGet(1, 2) - bounds.oGet(0, 2)) / height;
 
                 for (int colorPass = 0; colorPass < 2; colorPass++) {
                     qglClearColor(0.5f, 0.5f, 0.5f, 0);
@@ -1550,13 +1550,13 @@ public class renderbump {
 
                         if (colorPass != 0) {
                             // just render the surface color for artist visualization
-                            for (j = 0; j < mesh.getIndexes().getNumValues(); j += 3) {
+                            for (j = 0; j < mesh.numIndexes; j += 3) {
                                 for (k = 0; k < 3; k++) {
                                     int v;
                                     float[] a;
 
-                                    v = mesh.getIndexes().getValues().get(j + k);
-                                    qglColor3ubv(mesh.verts[v].getColor());
+                                    v = mesh.indexes[j + k];
+                                    qglColor3ubv(mesh.verts[v].color);
                                     a = mesh.verts[v].xyz.ToFloatPtr();
                                     qglVertex3f(a[0] + xOff, a[2] + yOff, a[1]);
                                 }
@@ -1565,15 +1565,15 @@ public class renderbump {
                             // render as normal map
                             // we can either flat shade from the plane,
                             // or smooth shade from the vertex normals
-                            for (j = 0; j < mesh.getIndexes().getNumValues(); j += 3) {
+                            for (j = 0; j < mesh.numIndexes; j += 3) {
                                 if (flat) {
-                                    final idPlane plane = new idPlane();
+                                    idPlane plane = new idPlane();
                                     idVec3 a2, b2, c2;
                                     int v1, v2, v3;
 
-                                    v1 = mesh.getIndexes().getValues().get(j + 0);
-                                    v2 = mesh.getIndexes().getValues().get(j + 1);
-                                    v3 = mesh.getIndexes().getValues().get(j + 2);
+                                    v1 = mesh.indexes[j + 0];
+                                    v2 = mesh.indexes[j + 1];
+                                    v3 = mesh.indexes[j + 2];
 
                                     a2 = mesh.verts[ v1].xyz;
                                     b2 = mesh.verts[ v2].xyz;
@@ -1586,7 +1586,7 @@ public class renderbump {
                                     if ((surf2.shader.GetSurfaceFlags() & SURF_NULLNORMAL) != 0) {
                                         qglColor3f(0.5f, 0.5f, 0.5f);
                                     } else {
-                                        qglColor3f(0.5f + (0.5f * plane.oGet(0)), 0.5f - (0.5f * plane.oGet(2)), 0.5f - (0.5f * plane.oGet(1)));
+                                        qglColor3f(0.5f + 0.5f * plane.oGet(0), 0.5f - 0.5f * plane.oGet(2), 0.5f - 0.5f * plane.oGet(1));
                                     }
 
 //							qglVertex3f( (*a2)[0] + xOff, (*a2)[2] + yOff, (*a2)[1] );//TODO:check this pointer cast thing
@@ -1601,7 +1601,7 @@ public class renderbump {
                                         float[] n;
                                         float[] a;
 
-                                        v = mesh.getIndexes().getValues().get(j + k);
+                                        v = mesh.indexes[j + k];
                                         n = mesh.verts[v].normal.ToFloatPtr();
 
                                         // NULLNORMAL is used by the artists to force an area to reflect no
@@ -1610,7 +1610,7 @@ public class renderbump {
                                             qglColor3f(0.5f, 0.5f, 0.5f);
                                         } else {
                                             // we are going to flip the normal Z direction
-                                            qglColor3f(0.5f + (0.5f * n[0]), 0.5f - (0.5f * n[2]), 0.5f - (0.5f * n[1]));
+                                            qglColor3f(0.5f + 0.5f * n[0], 0.5f - 0.5f * n[2], 0.5f - 0.5f * n[1]);
                                         }
 
                                         a = mesh.verts[v].xyz.ToFloatPtr();
@@ -1629,26 +1629,26 @@ public class renderbump {
                     if (colorPass != 0) {
                         // add to the sum buffer
                         for (i = 0; i < c; i++) {
-                            colorSumBuffer[(i * 4) + 0] += buffer.get((i * 4) + 0);
-                            colorSumBuffer[(i * 4) + 1] += buffer.get((i * 4) + 1);
-                            colorSumBuffer[(i * 4) + 2] += buffer.get((i * 4) + 2);
-                            colorSumBuffer[(i * 4) + 3] += buffer.get((i * 4) + 3);
+                            colorSumBuffer[i * 4 + 0] += buffer.get(i * 4 + 0);
+                            colorSumBuffer[i * 4 + 1] += buffer.get(i * 4 + 1);
+                            colorSumBuffer[i * 4 + 2] += buffer.get(i * 4 + 2);
+                            colorSumBuffer[i * 4 + 3] += buffer.get(i * 4 + 3);
                         }
                     } else {
                         // normalize
                         c = width * height;
                         for (i = 0; i < c; i++) {
-                            final idVec3 v = new idVec3();
+                            idVec3 v = new idVec3();
 
-                            v.oSet(0, (buffer.get((i * 4) + 0) - 128) / 127.0f);
-                            v.oSet(1, (buffer.get((i * 4) + 1) - 128) / 127.0f);
-                            v.oSet(2, (buffer.get((i * 4) + 2) - 128) / 127.0f);
+                            v.oSet(0, (buffer.get(i * 4 + 0) - 128) / 127.0f);
+                            v.oSet(1, (buffer.get(i * 4 + 1) - 128) / 127.0f);
+                            v.oSet(2, (buffer.get(i * 4 + 2) - 128) / 127.0f);
 
                             v.Normalize();
 
-                            buffer.put((i * 4) + 0, (byte) (128 + (127 * v.oGet(0))));
-                            buffer.put((i * 4) + 1, (byte) (128 + (127 * v.oGet(1))));
-                            buffer.put((i * 4) + 2, (byte) (128 + (127 * v.oGet(2))));
+                            buffer.put(i * 4 + 0, (byte) (128 + 127 * v.oGet(0)));
+                            buffer.put(i * 4 + 1, (byte) (128 + 127 * v.oGet(1)));
+                            buffer.put(i * 4 + 2, (byte) (128 + 127 * v.oGet(2)));
                         }
 
                         // outline into non-drawn areas
@@ -1658,10 +1658,10 @@ public class renderbump {
 
                         // add to the sum buffer
                         for (i = 0; i < c; i++) {
-                            sumBuffer[(i * 4) + 0] += buffer.get((i * 4) + 0);
-                            sumBuffer[(i * 4) + 1] += buffer.get((i * 4) + 1);
-                            sumBuffer[(i * 4) + 2] += buffer.get((i * 4) + 2);
-                            sumBuffer[(i * 4) + 3] += buffer.get((i * 4) + 3);
+                            sumBuffer[i * 4 + 0] += buffer.get(i * 4 + 0);
+                            sumBuffer[i * 4 + 1] += buffer.get(i * 4 + 1);
+                            sumBuffer[i * 4 + 2] += buffer.get(i * 4 + 2);
+                            sumBuffer[i * 4 + 3] += buffer.get(i * 4 + 3);
                         }
                     }
                 }
@@ -1671,10 +1671,10 @@ public class renderbump {
 
             // save out the color map
             for (i = 0; i < c; i++) {
-                buffer.put((i * 4) + 0, (byte) (colorSumBuffer[(i * 4) + 0] / 16));
-                buffer.put((i * 4) + 1, (byte) (colorSumBuffer[(i * 4) + 1] / 16));
-                buffer.put((i * 4) + 2, (byte) (colorSumBuffer[(i * 4) + 2] / 16));
-                buffer.put((i * 4) + 3, (byte) (colorSumBuffer[(i * 4) + 3] / 16));
+                buffer.put(i * 4 + 0, (byte) (colorSumBuffer[i * 4 + 0] / 16));
+                buffer.put(i * 4 + 1, (byte) (colorSumBuffer[i * 4 + 1] / 16));
+                buffer.put(i * 4 + 2, (byte) (colorSumBuffer[i * 4 + 2] / 16));
+                buffer.put(i * 4 + 3, (byte) (colorSumBuffer[i * 4 + 3] / 16));
             }
             filename = new idStr(source);
             filename.StripFileExtension();
@@ -1686,10 +1686,10 @@ public class renderbump {
             // scale the sum buffer back down to the sample buffer
             // we allow this to denormalize
             for (i = 0; i < c; i++) {
-                buffer.put((i * 4) + 0, (byte) (sumBuffer[(i * 4) + 0] / 16));
-                buffer.put((i * 4) + 1, (byte) (sumBuffer[(i * 4) + 1] / 16));
-                buffer.put((i * 4) + 2, (byte) (sumBuffer[(i * 4) + 2] / 16));
-                buffer.put((i * 4) + 3, (byte) (sumBuffer[(i * 4) + 3] / 16));
+                buffer.put(i * 4 + 0, (byte) (sumBuffer[i * 4 + 0] / 16));
+                buffer.put(i * 4 + 1, (byte) (sumBuffer[i * 4 + 1] / 16));
+                buffer.put(i * 4 + 2, (byte) (sumBuffer[i * 4 + 2] / 16));
+                buffer.put(i * 4 + 3, (byte) (sumBuffer[i * 4 + 3] / 16));
             }
 
             filename.oSet(source);

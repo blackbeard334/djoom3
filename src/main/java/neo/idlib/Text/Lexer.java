@@ -355,7 +355,7 @@ public class Lexer {
         }
 
         public boolean LoadFile(final idStr filename) throws idException {
-            return this.LoadFile(filename.getData());
+            return this.LoadFile(filename.toString());
         }
 
         // load a script from the given file at the given offset with the given length
@@ -371,7 +371,7 @@ public class Lexer {
                 return false;
             }
 
-            if (!OSPath && ((baseFolder.length() > 0) && (baseFolder.charAt(0) != '\0'))) {//TODO: use length isntead?
+            if (!OSPath && (baseFolder.length() > 0 && baseFolder.charAt(0) != '\0')) {//TODO: use length isntead?
                 pathname = va("%s/%s", baseFolder, filename);
             } else {
                 pathname = filename;
@@ -415,7 +415,7 @@ public class Lexer {
         // so source strings extracted from a file can still refer to proper line numbers in the file
         // NOTE: the ptr is expected to point at a valid C string: ptr[length] == '\0'
         public boolean LoadMemory(final idStr ptr, int length, final idStr name/*= 1*/) throws idException {
-            return LoadMemory(CharBuffer.wrap(ptr.getData()), length, name.getData());
+            return LoadMemory(CharBuffer.wrap(ptr.c_str()), length, name.toString());
         }
 
         public boolean LoadMemory(final String ptr, int length, final String name/*= 1*/) throws idException {
@@ -456,17 +456,17 @@ public class Lexer {
         }
 
         public boolean LoadMemory(final idStr ptr, int length, final String name) throws idException {
-            return LoadMemory(ptr.getData(), length, name);
+            return LoadMemory(ptr.toString(), length, name);
         }
 
         // free the script
         public void FreeSource() {
 //#ifdef PUNCTABLE
-            if ((this.punctuationTable != null) && (this.punctuationTable != default_punctuationtable)) {
+            if (this.punctuationTable != null && this.punctuationTable != default_punctuationtable) {
 //                Mem_Free((void *) this.punctuationtable);
                 this.punctuationTable = null;
             }
-            if ((this.nextPunctuation != null) && (this.nextPunctuation != default_nextpunctuation)) {
+            if (this.nextPunctuation != null && this.nextPunctuation != default_nextpunctuation) {
 //                Mem_Free((void *) this.nextpunctuation);
                 this.nextPunctuation = null;
             }
@@ -490,36 +490,36 @@ public class Lexer {
         public boolean ReadToken(idToken token) throws idException {
             char c, c2;
 
-            if (!this.loaded) {
+            if (!loaded) {
                 idLib.common.Error("idLexer::ReadToken: no file loaded");
                 return false;
             }
 
             // if there is a token available (from unreadToken)
-            if (this.tokenAvailable) {
-                this.tokenAvailable = false;
+            if (tokenAvailable) {
+                tokenAvailable = false;
                 token.oSet(this.token);
                 return true;
             }
             // save script pointer
-            this.lastScript_p = this.script_p;
+            lastScript_p = script_p;
             // save line counter
-            this.lastline = this.line;
+            lastline = line;
             // clear the token stuff
-            token.setData("");
-            // token.setLen(0);
+            token.data = "";
+            token.len = 0;
             // start of the white space
-            this.whiteSpaceStart_p = token.whiteSpaceStart_p = this.script_p;
+            whiteSpaceStart_p = token.whiteSpaceStart_p = script_p;
             // read white space before token
             if (!ReadWhiteSpace()) {
                 return false;
             }
             // end of the white space
-            this.whiteSpaceEnd_p = token.whiteSpaceEnd_p = this.script_p;
+            this.whiteSpaceEnd_p = token.whiteSpaceEnd_p = script_p;
             // line the token is on
-            token.line = this.line;
+            token.line = line;
             // number of lines crossed before token
-            token.linesCrossed = this.line - this.lastline;
+            token.linesCrossed = line - lastline;
             // clear token flags
             token.flags = 0;
 
@@ -529,7 +529,7 @@ public class Lexer {
             // if we're keeping everything as whitespace deliminated strings
             if ((this.flags & LEXFL_ONLYSTRINGS) != 0) {
                 // if there is a leading quote
-                if ((c == '\"') || (c == '\'')) {
+                if (c == '\"' || c == '\'') {
                     if (!this.ReadString(token, c)) {
                         return false;
                     }
@@ -538,31 +538,31 @@ public class Lexer {
                 }
             } // if there is a number
             else if ((Character.isDigit(c))
-                    || ((c == '.') && Character.isDigit(c2))) {
+                    || (c == '.' && Character.isDigit(c2))) {
                 if (!this.ReadNumber(token)) {
                     return false;
                 }
                 // if names are allowed to start with a number
                 if ((this.flags & LEXFL_ALLOWNUMBERNAMES) != 0) {
                     c = this.buffer.get(this.script_p);
-                    if (Character.isLetter(c) || (c == '_')) {
+                    if (Character.isLetter(c) || c == '_') {
                         if (!this.ReadName(token)) {
                             return false;
                         }
                     }
                 }
             } // if there is a leading quote
-            else if ((c == '\"') || (c == '\'')) {
+            else if (c == '\"' || c == '\'') {
                 if (!this.ReadString(token, c)) {
                     return false;
                 }
             } // if there is a name
-            else if (Character.isLetter(c) || (c == '_')) {
+            else if (Character.isLetter(c) || c == '_') {
                 if (!this.ReadName(token)) {
                     return false;
                 }
             } // names may also start with a slash when pathnames are allowed
-            else if (((this.flags & LEXFL_ALLOWPATHNAMES) != 0) && (((c == '/') || (c == '\\')) || (c == '.'))) {
+            else if ((this.flags & LEXFL_ALLOWPATHNAMES) != 0 && ((c == '/' || c == '\\') || c == '.')) {
                 if (!this.ReadName(token)) {
                     return false;
                 }
@@ -577,7 +577,7 @@ public class Lexer {
 
         // expect a certain token, reads the token when available
         public boolean ExpectTokenString(final String string) throws idException {
-            final idToken token = new idToken();
+            idToken token = new idToken();
 
             if (!this.ReadToken(token)) {
                 this.Error("couldn't find expected '%s'", string);
@@ -592,7 +592,7 @@ public class Lexer {
 
         // expect a certain token type
         public int ExpectTokenType(int type, int subtype, idToken token) throws idException {
-            final idStr str = new idStr();
+            idStr str = new idStr();
 
             if (!this.ReadToken(token)) {
                 this.Error("couldn't read expected token");
@@ -620,7 +620,7 @@ public class Lexer {
                         str.oSet("unknown type");
                         break;
                 }
-                this.Error("expected a %s but found '%s'", str.getData(), token.getData());
+                this.Error("expected a %s but found '%s'", str.toString(), token.toString());
                 return 0;
             }
             if (token.type == TT_NUMBER) {
@@ -651,7 +651,7 @@ public class Lexer {
                         str.Append("integer ");
                     }
                     str.StripTrailing(' ');
-                    this.Error("expected %s but found '%s'", str.getData(), token.getData());
+                    this.Error("expected %s but found '%s'", str.toString(), token.toString());
                     return 0;
                 }
             } else if (token.type == TT_PUNCTUATION) {
@@ -660,7 +660,7 @@ public class Lexer {
                     return 0;
                 }
                 if (token.subtype != subtype) {
-                    this.Error("expected '%s' but found '%s'", GetPunctuationFromId(subtype), token.getData());
+                    this.Error("expected '%s' but found '%s'", GetPunctuationFromId(subtype), token.toString());
                     return 0;
                 }
             }
@@ -679,7 +679,7 @@ public class Lexer {
 
         // returns true when the token is available
         public boolean CheckTokenString(final String string) throws idException {
-            final idToken tok = new idToken();
+            idToken tok = new idToken();
 
             if (!ReadToken(tok)) {
                 return false;
@@ -689,58 +689,58 @@ public class Lexer {
                 return true;
             }
             // unread token
-            this.script_p = this.lastScript_p;
-            this.line = this.lastline;
+            script_p = lastScript_p;
+            line = lastline;
             return false;
         }
 
         // returns true an reads the token when a token with the given type is available
         public int CheckTokenType(int type, int subtype, idToken token) throws idException {
-            final idToken tok = new idToken();
+            idToken tok = new idToken();
 
             if (!ReadToken(tok)) {
                 return 0;
             }
             // if the type matches
-            if ((tok.type == type) && ((tok.subtype & subtype) == subtype)) {
+            if (tok.type == type && (tok.subtype & subtype) == subtype) {
                 token.oSet(tok);
                 return 1;
             }
             // unread token
-            this.script_p = this.lastScript_p;
-            this.line = this.lastline;
+            script_p = lastScript_p;
+            line = lastline;
             return 0;
         }
 
         // returns true if the next token equals the given string but does not remove the token from the source
         public boolean PeekTokenString(final String string) throws idException {
-            final idToken token = new idToken();
-
-            if (!ReadToken(token)) {
-                return false;
-            }
-
-            // unread token
-            this.script_p = this.lastScript_p;
-            this.line = this.lastline;
-
-            return (token.getData().equals(string));
-        }
-
-        // returns true if the next token equals the given type but does not remove the token from the source
-        public boolean PeekTokenType(int type, int subtype, idToken[] token) throws idException {
-            final idToken tok = new idToken();
+            idToken tok = new idToken();
 
             if (!ReadToken(tok)) {
                 return false;
             }
 
             // unread token
-            this.script_p = this.lastScript_p;
-            this.line = this.lastline;
+            script_p = lastScript_p;
+            line = lastline;
+
+            return (tok.toString().equals(string));
+        }
+
+        // returns true if the next token equals the given type but does not remove the token from the source
+        public boolean PeekTokenType(int type, int subtype, idToken[] token) throws idException {
+            idToken tok = new idToken();
+
+            if (!ReadToken(tok)) {
+                return false;
+            }
+
+            // unread token
+            script_p = lastScript_p;
+            line = lastline;
 
             // if the type matches
-            if ((tok.type == type) && ((tok.subtype & subtype) == subtype)) {
+            if (tok.type == type && (tok.subtype & subtype) == subtype) {
                 token[0] = tok;
                 return true;
             }
@@ -749,10 +749,10 @@ public class Lexer {
 
         // skip tokens until the given token string is read
         public boolean SkipUntilString(final String string) throws idException {
-            final idToken token = new idToken();
+            idToken token = new idToken();
 
             while (this.ReadToken(token)) {
-                if (token.getData().equals(string)) {
+                if (token.toString().equals(string)) {
                     return true;
                 }
             }
@@ -761,12 +761,12 @@ public class Lexer {
 
         // skip the rest of the current line
         public int SkipRestOfLine() throws idException {
-            final idToken token = new idToken();
+            idToken token = new idToken();
 
             while (this.ReadToken(token)) {
                 if (token.linesCrossed != 0) {
-                    this.script_p = this.lastScript_p;
-                    this.line = this.lastline;
+                    this.script_p = lastScript_p;
+                    this.line = lastline;
                     return 1;
                 }
             }
@@ -787,7 +787,7 @@ public class Lexer {
          =================
          */
         public boolean SkipBracedSection(boolean parseFirstBrace) throws idException {
-            final idToken token = new idToken();
+            idToken token = new idToken();
             int depth;
 
             depth = parseFirstBrace ? 0 : 1;
@@ -817,11 +817,11 @@ public class Lexer {
 
         // read a token only if on the same line
         public boolean ReadTokenOnLine(idToken token) throws idException {
-            final idToken tok = new idToken();
+            idToken tok = new idToken();
 
             if (!this.ReadToken(tok)) {
-                this.script_p = this.lastScript_p;
-                this.line = this.lastline;
+                this.script_p = lastScript_p;
+                this.line = lastline;
                 return false;
             }
             // if no lines were crossed before this token
@@ -830,8 +830,8 @@ public class Lexer {
                 return true;
             }
             // restore our position
-            this.script_p = this.lastScript_p;
-            this.line = this.lastline;
+            this.script_p = lastScript_p;
+            this.line = lastline;
             token.Clear();
             return false;
         }
@@ -860,22 +860,22 @@ public class Lexer {
             }
 
             out.Strip(' ');
-            return out.getData();
+            return out.toString();
         }
 //
 
         // read a signed integer
         public int ParseInt() throws idException {
-            final idToken token = new idToken();
+            idToken token = new idToken();
 
             if (!this.ReadToken(token)) {
                 this.Error("couldn't read expected integer");
                 return 0;
             }
-            if ((token.type == TT_PUNCTUATION) && token.equals("-")) {
+            if (token.type == TT_PUNCTUATION && token.equals("-")) {
                 this.ExpectTokenType(TT_NUMBER, TT_INTEGER, token);
                 return -token.GetIntValue();
-            } else if ((token.type != TT_NUMBER) || (token.subtype == TT_FLOAT)) {
+            } else if (token.type != TT_NUMBER || token.subtype == TT_FLOAT) {
                 this.Error("expected integer value, found '%s'", token);
             }
             return token.GetIntValue();
@@ -883,7 +883,7 @@ public class Lexer {
 
         // read a Boolean
         public boolean ParseBool() throws idException {
-            final idToken token = new idToken();
+            idToken token = new idToken();
 
             if (0 == this.ExpectTokenType(TT_NUMBER, 0, token)) {
                 this.Error("couldn't read expected boolean");
@@ -899,7 +899,7 @@ public class Lexer {
         // read a floating point number.  If errorFlag is NULL, a non-numeric token will
         // issue an Error().  If it isn't NULL, it will issue a Warning() and set *errorFlag = true
         public float ParseFloat(boolean[] errorFlag/*= NULL*/) throws idException {
-            final idToken token = new idToken();
+            idToken token = new idToken();
 
             if (errorFlag != null) {
                 errorFlag[0] = false;
@@ -914,7 +914,7 @@ public class Lexer {
                 }
                 return 0;
             }
-            if ((token.type == TT_PUNCTUATION) && token.equals("-")) {
+            if (token.type == TT_PUNCTUATION && token.equals("-")) {
                 this.ExpectTokenType(TT_NUMBER, 0, token);
                 return -token.GetFloatValue();
             } else if (token.type != TT_NUMBER) {
@@ -928,9 +928,9 @@ public class Lexer {
             return token.GetFloatValue();
         }
 
-        public boolean Parse1DMatrix(int x, idVec<?> v) throws idException {
-            final float[] m = new float[x];
-            final boolean result = Parse1DMatrix(x, m);
+        public boolean Parse1DMatrix(int x, idVec v) throws idException {
+            float[] m = new float[x];
+            boolean result = Parse1DMatrix(x, m);
             for (int i = 0; i < x; i++) {
                 v.oSet(i, m[i]);
             }
@@ -939,8 +939,8 @@ public class Lexer {
         }
         
         public boolean Parse1DMatrix(int x, idPlane p) throws idException {
-            final float[] m = new float[x];
-            final boolean result = Parse1DMatrix(x, m);
+            float[] m = new float[x];
+            boolean result = Parse1DMatrix(x, m);
             for (int i = 0; i < x; i++) {
                 p.oSet(i, m[i]);
             }
@@ -949,11 +949,11 @@ public class Lexer {
         }
         
         public boolean Parse1DMatrix(int x, idMat3 m) throws idException {
-            final float[] n = new float[x];
-            final boolean result = Parse1DMatrix(x, n);
+            float[] n = new float[x];
+            boolean result = Parse1DMatrix(x, n);
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
-                    m.oSet(i, j, n[(i * 3) + j]);
+                    m.oSet(i, j, n[i * 3 + j]);
                 }
             }
 
@@ -961,8 +961,8 @@ public class Lexer {
         }
         
         public boolean Parse1DMatrix(int x, idQuat q) throws idException {
-            final float[] m = new float[x];
-            final boolean result = Parse1DMatrix(x, m);
+            float[] m = new float[x];
+            boolean result = Parse1DMatrix(x, m);
             for (int i = 0; i < x; i++) {
                 q.oSet(i, m[i]);
             }
@@ -971,8 +971,8 @@ public class Lexer {
         }
         
         public boolean Parse1DMatrix(int x, idCQuat q) throws idException {
-            final float[] m = new float[x];
-            final boolean result = Parse1DMatrix(x, m);
+            float[] m = new float[x];
+            boolean result = Parse1DMatrix(x, m);
             for (int i = 0; i < x; i++) {
                 q.oSet(i, m[i]);
             }
@@ -1054,19 +1054,19 @@ public class Lexer {
          */
         // parse a braced section into a string
         public String ParseBracedSection(idStr out) throws idException {
-            final idToken token = new idToken();
+            idToken token = new idToken();
             int i, depth;
 
             out.Empty();
             if (!this.ExpectTokenString("{")) {
-                return out.getData();
+                return out.toString();
             }
             out.oSet("{");
             depth = 1;
             do {
                 if (!this.ReadToken(token)) {
                     Error("missing closing brace");
-                    return out.getData();
+                    return out.toString();
                 }
 
                 // if the token is on a new line
@@ -1090,7 +1090,7 @@ public class Lexer {
                 out.oPluSet(" ");
             } while (depth != 0);
 
-            return out.getData();
+            return out.toString();
         }
 
         /*
@@ -1112,7 +1112,7 @@ public class Lexer {
             out.Empty();
 
             if (!this.ExpectTokenString("{")) {
-                return out.getData();
+                return out.toString();
             }
 
             out.oSet("{");
@@ -1120,8 +1120,8 @@ public class Lexer {
             skipWhite = false;
             doTabs = tabs >= 0;
 
-            while ((depth != 0) && (this.buffer.get(this.script_p) != 0)) {
-                final char c = this.buffer.get(this.script_p++);
+            while (depth != 0 && this.buffer.get(this.script_p) != 0) {
+                char c = this.buffer.get(this.script_p++);
 
                 switch (c) {
                     case '\t':
@@ -1163,7 +1163,7 @@ public class Lexer {
                 }
                 out.oPluSet(c);
             }
-            return out.getData();
+            return out.toString();
         }
 
         /*
@@ -1187,7 +1187,7 @@ public class Lexer {
             out.Empty();
 
             if (!this.ExpectTokenString("{")) {
-                return out.getData();
+                return out.toString();
             }
 
             out.oSet("{");
@@ -1195,8 +1195,8 @@ public class Lexer {
             skipWhite = false;
             doTabs = tabs >= 0;
 
-            while ((depth != 0) && (this.buffer.get(this.script_p) != 0)) {
-                final char c = this.buffer.get(this.script_p++);
+            while (depth != 0 && this.buffer.get(this.script_p) != 0) {
+                char c = this.buffer.get(this.script_p++);
 
                 switch (c) {
                     case '\t':
@@ -1238,18 +1238,18 @@ public class Lexer {
                 }
                 out.oPluSet(c);
             }
-            return out.getData();
+            return out.toString();
         }
 
         // parse the rest of the line
         public String ParseRestOfLine(idStr out) throws idException {
-            final idToken token = new idToken();
+            idToken token = new idToken();
 
             out.Empty();
             while (this.ReadToken(token)) {
                 if (token.linesCrossed != 0) {
-                    this.script_p = this.lastScript_p;
-                    this.line = this.lastline;
+                    this.script_p = lastScript_p;
+                    this.line = lastline;
                     break;
                 }
                 if (out.Length() != 0) {
@@ -1257,26 +1257,26 @@ public class Lexer {
                 }
                 out.oPluSet(token);
             }
-            return out.getData();
+            return out.toString();
         }
 
         // retrieves the white space characters before the last read token
         public int GetLastWhiteSpace(idStr whiteSpace) {
             whiteSpace.Clear();
-            for (int p = this.whiteSpaceStart_p; p < this.whiteSpaceEnd_p; p++) {
-                whiteSpace.Append(this.buffer.get(p));
+            for (int p = whiteSpaceStart_p; p < whiteSpaceEnd_p; p++) {
+                whiteSpace.Append(buffer.get(p));
             }
             return whiteSpace.Length();
         }
 
         // returns start index into text buffer of last white space
         public int GetLastWhiteSpaceStart() {
-            return this.whiteSpaceStart_p;// - buffer;
+            return whiteSpaceStart_p;// - buffer;
         }
 
         // returns end index into text buffer of last white space
         public int GetLastWhiteSpaceEnd() {
-            return this.whiteSpaceEnd_p;// - buffer;
+            return whiteSpaceEnd_p;// - buffer;
         }
 
         // set an array with punctuations, NULL restores default C/C++ set, see default_punctuations for an example
@@ -1380,7 +1380,7 @@ public class Lexer {
             String text;//[MAX_STRING_CHARS];
 //            va_list ap;
 
-            this.hadError = true;
+            hadError = true;
 
             if ((this.flags & LEXFL_NOERRORS) != 0) {
                 return;
@@ -1392,9 +1392,9 @@ public class Lexer {
 //            va_end(ap);
 
             if ((this.flags & LEXFL_NOFATALERRORS) != 0) {
-                idLib.common.Warning("file %s, line %d: %s", this.filename.getData(), this.line, text);
+                idLib.common.Warning("file %s, line %d: %s", this.filename.toString(), this.line, text);
             } else {
-                idLib.common.Error("file %s, line %d: %s", this.filename.getData(), this.line, text);
+                idLib.common.Error("file %s, line %d: %s", this.filename.toString(), this.line, text);
             }
         }
 
@@ -1411,12 +1411,12 @@ public class Lexer {
 //	va_start( ap, str );
 //	vsprintf( text, str, ap );
 //	va_end( ap );
-            idLib.common.Warning("file %s, line %d: %s", this.filename.getData(), this.line, text);
+            idLib.common.Warning("file %s, line %d: %s", this.filename.toString(), this.line, text);
         }
 
         // returns true if Error() was called with LEXFL_NOFATALERRORS or LEXFL_NOERRORS set
         public boolean HadError() {
-            return this.hadError;
+            return hadError;
         }
 
         // set the base folder to load files from
@@ -1441,7 +1441,7 @@ public class Lexer {
                 if (NOT(this.punctuationTable) || Arrays.equals(this.punctuationTable, default_punctuationtable)) {
                     this.punctuationTable = new int[256];// (int *) Mem_Alloc(256 * sizeof(int));
                 }
-                if ((this.nextPunctuation != null) && !Arrays.equals(this.nextPunctuation, default_nextpunctuation)) {
+                if (this.nextPunctuation != null && !Arrays.equals(this.nextPunctuation, default_nextpunctuation)) {
 //			Mem_Free( this.nextPunctuation );
                     this.nextPunctuation = null;
                 }
@@ -1552,7 +1552,7 @@ public class Lexer {
                     break;
                 }
                 return true;
-            } catch (final IndexOutOfBoundsException e) {//TODO:think of a more elegant solution you lout!
+            } catch (IndexOutOfBoundsException e) {//TODO:think of a more elegant solution you lout!
                 return false;
             }
         }
@@ -1604,9 +1604,9 @@ public class Lexer {
                         if (Character.isDigit(c)) {
                             c = c - '0';
                         } else if (Character.isUpperCase(c)) {
-                            c = (c - 'A') + 10;
+                            c = c - 'A' + 10;
                         } else if (Character.isLowerCase(c)) {
-                            c = (c - 'a') + 10;
+                            c = c - 'a' + 10;
                         } else {
                             break;
                         }
@@ -1622,7 +1622,7 @@ public class Lexer {
                 }
                 default: //NOTE: decimal ASCII code, NOT octal
                 {
-                    if ((this.buffer.get(this.script_p) < '0') || (this.buffer.get(this.script_p) > '9')) {
+                    if (this.buffer.get(this.script_p) < '0' || this.buffer.get(this.script_p) > '9') {
                         this.Error("unknown escape char");
                     }
                     for (i = 0, val = 0;; i++, this.script_p++) {
@@ -1632,7 +1632,7 @@ public class Lexer {
                         } else {
                             break;
                         }
-                        val = (val * 10) + c;
+                        val = val * 10 + c;
                     }
                     this.script_p--;
                     if (val > 0xFF) {
@@ -1662,7 +1662,7 @@ public class Lexer {
         private boolean ReadString(idToken token, int quote) throws idException {
             int tmpline;
             int tmpscript_p;
-            final char[] ch = new char[1];
+            char[] ch = new char[1];
 
             if (quote == '\"') {
                 token.type = TT_STRING;
@@ -1675,7 +1675,7 @@ public class Lexer {
 
             while (true) {
                 // if there is an escape character and escape characters are allowed
-                if ((this.buffer.get(this.script_p) == '\\') && (0 == (this.flags & LEXFL_NOSTRINGESCAPECHARS))) {
+                if (this.buffer.get(this.script_p) == '\\' && 0 == (this.flags & LEXFL_NOSTRINGESCAPECHARS)) {
                     if (!this.ReadEscapeCharacter(ch)) {
                         return false;
                     }
@@ -1686,7 +1686,7 @@ public class Lexer {
                     this.script_p++;
                     // if consecutive strings should not be concatenated
                     if (((this.flags & LEXFL_NOSTRINGCONCAT) != 0)
-                            && ((0 == (this.flags & LEXFL_ALLOWBACKSLASHSTRINGCONCAT)) || (quote != '\"'))) {
+                            && (0 == (this.flags & LEXFL_ALLOWBACKSLASHSTRINGCONCAT) || (quote != '\"'))) {
                         break;
                     }
 
@@ -1755,15 +1755,15 @@ public class Lexer {
             token.type = TT_NAME;
             do {
                 token.AppendDirty(this.buffer.get(this.script_p));
-            } while (((this.script_p++ + 1) < this.buffer.capacity())
+            } while (this.script_p++ + 1 < this.buffer.capacity()
                     && (Character.isLowerCase(c = this.buffer.get(this.script_p))
                     || (Character.isUpperCase(c))
                     || (Character.isDigit(c))
-                    || (c == '_')
+                    || c == '_'
                     || // if treating all tokens as strings, don't parse '-' as a seperate token
                     (((this.flags & LEXFL_ONLYSTRINGS) != 0) && (c == '-'))
                     || // if special path name characters are allowed
-                    (((this.flags & LEXFL_ALLOWPATHNAMES) != 0) && ((c == '/') || (c == '\\') || (c == ':') || (c == '.')))));
+                    (((this.flags & LEXFL_ALLOWPATHNAMES) != 0) && (c == '/' || c == '\\' || c == ':' || c == '.'))));
 //            token.oSet(token.len, '\0');
             //the sub type is the length of the name
             token.subtype = token.Length();
@@ -1783,25 +1783,25 @@ public class Lexer {
             c = this.buffer.get(this.script_p);
             c2 = this.buffer.get(this.script_p + 1);
 
-            if ((c == '0') && (c2 != '.')) {
+            if (c == '0' && c2 != '.') {
                 // check for a hexadecimal number
-                if ((c2 == 'x') || (c2 == 'X')) {
+                if (c2 == 'x' || c2 == 'X') {
                     token.AppendDirty(this.buffer.get(this.script_p++));
                     token.AppendDirty(this.buffer.get(this.script_p++));
                     c = this.buffer.get(this.script_p);
                     while ((Character.isDigit(c))
-                            || ((c >= 'a') && (c <= 'f'))
-                            || ((c >= 'A') && (c <= 'F'))) {
+                            || (c >= 'a' && c <= 'f')
+                            || (c >= 'A' && c <= 'F')) {
                         token.AppendDirty(c);
                         c = this.buffer.get(++this.script_p);
                     }
                     token.subtype = TT_HEX | TT_INTEGER;
                 } // check for a binary number
-                else if ((c2 == 'b') || (c2 == 'B')) {
+                else if (c2 == 'b' || c2 == 'B') {
                     token.AppendDirty(this.buffer.get(this.script_p++));
                     token.AppendDirty(this.buffer.get(this.script_p++));
                     c = this.buffer.get(this.script_p);
-                    while ((c == '0') || (c == '1')) {
+                    while (c == '0' || c == '1') {
                         token.AppendDirty(c);
                         c = this.buffer.get(++this.script_p);
                     }
@@ -1810,7 +1810,7 @@ public class Lexer {
                 else {
                     token.AppendDirty(this.buffer.get(this.script_p++));
                     c = this.buffer.get(this.script_p);
-                    while ((c >= '0') && (c <= '7')) {
+                    while (c >= '0' && c <= '7') {
                         token.AppendDirty(c);
                         c = this.buffer.get(++this.script_p);
                     }
@@ -1830,7 +1830,7 @@ public class Lexer {
                     token.AppendDirty(c);
                     c = this.buffer.get(++this.script_p);
                 }
-                if ((c == 'e') && (dot == 0)) {
+                if (c == 'e' && dot == 0) {
                     //We have scientific notation without a decimal point
                     dot++;
                 }
@@ -1879,7 +1879,7 @@ public class Lexer {
                         }
                         if (0 == (this.flags & LEXFL_ALLOWFLOATEXCEPTIONS)) {
 //                            token.AppendDirty('\0');	// zero terminate for c_str
-                            this.Error("parsed %s", token.getData());
+                            this.Error("parsed %s", token.toString());
                         }
                     }
                 } else if (dot > 1) {
@@ -1900,11 +1900,11 @@ public class Lexer {
             if ((token.subtype & TT_FLOAT) != 0) {
                 if (c > ' ') {
                     // single-precision: float
-                    if ((c == 'f') || (c == 'F')) {
+                    if (c == 'f' || c == 'F') {
                         token.subtype |= TT_SINGLE_PRECISION;
                         this.script_p++;
                     } // extended-precision: long double
-                    else if ((c == 'l') || (c == 'L')) {
+                    else if (c == 'l' || c == 'L') {
                         token.subtype |= TT_EXTENDED_PRECISION;
                         this.script_p++;
                     } // default is double-precision: double
@@ -1919,10 +1919,10 @@ public class Lexer {
                     // default: signed long
                     for (i = 0; i < 2; i++) {
                         // long integer
-                        if ((c == 'l') || (c == 'L')) {
+                        if (c == 'l' || c == 'L') {
                             token.subtype |= TT_LONG;
                         } // unsigned integer
-                        else if ((c == 'u') || (c == 'U')) {
+                        else if (c == 'u' || c == 'U') {
                             token.subtype |= TT_UNSIGNED;
                         } else {
                             break;
@@ -1951,7 +1951,7 @@ public class Lexer {
             punctuation_t punc;
 
 // #ifdef PUNCTABLE
-            for (n = this.punctuationTable[this.buffer.get(this.script_p)]; n >= 0; n = this.nextPunctuation[n]) {
+            for (n = this.punctuationTable[(int) this.buffer.get(this.script_p)]; n >= 0; n = this.nextPunctuation[n]) {
                 punc = (this.punctuations[n]);
 // #else
 //	int i;
@@ -1961,7 +1961,7 @@ public class Lexer {
 //#endif
                 p = punc.p.toCharArray();
                 // check for this punctuation in the script
-                for (l = 0; (l < p.length) && (this.buffer.get(this.script_p + l) != 0); l++) {
+                for (l = 0; l < p.length && this.buffer.get(this.script_p + l) != 0; l++) {
                     if (this.buffer.get(this.script_p + l) != p[l]) {
                         break;
                     }
@@ -1973,7 +1973,7 @@ public class Lexer {
 //                        token.data[i] = p[i];
                         token.oSet(i, p[i]);
                     }
-                    // token.setLen(l);
+                    token.len = l;
                     //
                     this.script_p += l;
                     token.type = TT_PUNCTUATION;
@@ -1990,7 +1990,7 @@ public class Lexer {
             int i;
 
             for (i = 0; str.charAt(i) != 0; i++) {
-                if (this.buffer.get(i + this.script_p) != str.charAt(i)) {
+                if (this.buffer.get(i + script_p) != str.charAt(i)) {
                     return false;
                 }
             }
@@ -2000,5 +2000,5 @@ public class Lexer {
         private int NumLinesCrossed() {
             return this.line - this.lastline;
         }
-    }
+    };
 }

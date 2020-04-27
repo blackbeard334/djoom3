@@ -41,14 +41,14 @@ public class Model_ma {
         String name;
 //	char					parent[128];
         String parent;
-    }
+    };
 
     static class maAttribHeader_t {
 
 //	char					name[128];
         String name;
         int size;
-    }
+    };
 
     static class maTransform_s {
 
@@ -56,7 +56,7 @@ public class Model_ma {
         idVec3 rotate;
         idVec3 scale;
         maTransform_s parent;
-    }
+    };
 
     static class maFace_t {
 
@@ -65,7 +65,7 @@ public class Model_ma {
         int[] tVertexNum = new int[3];
         int[] vertexColors = new int[3];
         idVec3[] vertexNormals = new idVec3[3];
-    }
+    };
 
     static class maMesh_t {
 
@@ -100,7 +100,7 @@ public class Model_ma {
         idVec3[] normals;
         boolean normalsParsed;
         int nextNormal;
-    }
+    };
 
     static class maMaterial_t {
 
@@ -109,7 +109,7 @@ public class Model_ma {
         float uOffset, vOffset;		// max lets you offset by material without changing texCoords
         float uTiling, vTiling;		// multiply tex coords by this
         float angle;					// in clockwise radians
-    }
+    };
 
     static class maObject_t {
 
@@ -120,7 +120,7 @@ public class Model_ma {
         String materialName;
 //
         maMesh_t mesh;
-    }
+    };
 
     static class maFileNode_t {
 
@@ -128,7 +128,7 @@ public class Model_ma {
         String name;
 //	char					path[1024];
         String path;
-    }
+    };
 
     static class maMaterialNode_s {
 
@@ -137,7 +137,7 @@ public class Model_ma {
 //
         maMaterialNode_s child;
         maFileNode_t file;
-    }
+    };
 
     static class maModel_s {
 
@@ -149,7 +149,7 @@ public class Model_ma {
         //Material Resolution
         idHashTable<maFileNode_t> fileNodes;
         idHashTable<maMaterialNode_s> materialNodes;
-    }
+    };
 
     /*
      ======================================================================
@@ -170,21 +170,21 @@ public class Model_ma {
         boolean verbose;
         maModel_s model;
         maObject_t currentObject;
-    }
+    };
 
     public static void MA_ParseNodeHeader(idParser parser, maNodeHeader_t header) throws idException {
 
 //	memset(header, 0, sizeof(maNodeHeader_t));//TODO:
-        final idToken token = new idToken();
+        idToken token = new idToken();
         while (parser.ReadToken(token)) {
             if (0 == token.Icmp("-")) {
                 parser.ReadToken(token);
                 if (0 == token.Icmp("n")) {
                     parser.ReadToken(token);
-                    header.name = token.getData();
+                    header.name = token.toString();
                 } else if (0 == token.Icmp("p")) {
                     parser.ReadToken(token);
-                    header.parent = token.getData();
+                    header.parent = token.toString();
                 }
             } else if (0 == token.Icmp(";")) {
                 break;
@@ -194,8 +194,8 @@ public class Model_ma {
 
     public static boolean MA_ParseHeaderIndex(maAttribHeader_t header, int[] minIndex, int[] maxIndex, final String headerType, final String skipString) throws idException {
 
-        final idParser miniParse = new idParser();
-        final idToken token = new idToken();
+        idParser miniParse = new idParser();
+        idToken token = new idToken();
 
         miniParse.LoadMemory(header.name, header.name.length(), headerType);
         if (skipString != null) {
@@ -218,7 +218,7 @@ public class Model_ma {
 
     public static boolean MA_ParseAttribHeader(idParser parser, maAttribHeader_t header) throws idException {
 
-        final idToken token = new idToken();
+        idToken token = new idToken();
 
         // memset(header, 0, sizeof(maAttribHeader_t));
         parser.ReadToken(token);
@@ -229,7 +229,7 @@ public class Model_ma {
                 parser.ReadToken(token);
             }
         }
-        header.name = token.getData();
+        header.name = token.toString();
         return true;
     }
 
@@ -249,14 +249,14 @@ public class Model_ma {
     }
 
     public static boolean IsNodeComplete(idToken token) {
-        return (0 == token.Icmp("createNode"))
-                || (0 == token.Icmp("connectAttr"))
-                || (0 == token.Icmp("select"));
+        return 0 == token.Icmp("createNode")
+                || 0 == token.Icmp("connectAttr")
+                || 0 == token.Icmp("select");
     }
 
     public static boolean MA_ParseTransform(idParser parser) throws idException {
 
-        final maNodeHeader_t header = new maNodeHeader_t();
+        maNodeHeader_t header = new maNodeHeader_t();
         maTransform_s transform;
         // memset(&header, 0, sizeof(header));
 
@@ -269,7 +269,7 @@ public class Model_ma {
         MA_ParseNodeHeader(parser, header);
 
         //Read the transform attributes
-        final idToken token = new idToken();
+        idToken token = new idToken();
         while (parser.ReadToken(token)) {
             if (IsNodeComplete(token)) {
                 parser.UnreadToken(token);
@@ -298,7 +298,7 @@ public class Model_ma {
 
         if (!header.parent.isEmpty()) {
             //Find the parent
-            final maTransform_s[] parent = new maTransform_s[1];
+            maTransform_s[] parent = new maTransform_s[1];
             maGlobal.model.transforms.Get(header.parent, parent);
             if (parent != null) {
                 transform.parent = parent[0];
@@ -312,7 +312,7 @@ public class Model_ma {
 
     public static boolean MA_ParseVertex(idParser parser, maAttribHeader_t header) throws idException {
 
-        final maMesh_t pMesh = maGlobal.currentObject.mesh;
+        maMesh_t pMesh = maGlobal.currentObject.mesh;
         // idToken token;
 
         //Allocate enough space for all the verts if this is the first attribute for verticies
@@ -322,7 +322,7 @@ public class Model_ma {
         }
 
         //Get the start and end index for this attribute
-        final int[] minIndex = new int[1], maxIndex = new int[1];
+        int[] minIndex = new int[1], maxIndex = new int[1];
         if (!MA_ParseHeaderIndex(header, minIndex, maxIndex, "VertexHeader", null)) {
             //This was just a header
             return true;
@@ -340,8 +340,8 @@ public class Model_ma {
 
     public static boolean MA_ParseVertexTransforms(idParser parser, maAttribHeader_t header) throws idException {
 
-        final maMesh_t pMesh = maGlobal.currentObject.mesh;
-        final idToken token = new idToken();
+        maMesh_t pMesh = maGlobal.currentObject.mesh;
+        idToken token = new idToken();
 
         //Allocate enough space for all the verts if this is the first attribute for verticies
         if (null == pMesh.vertTransforms) {
@@ -355,7 +355,7 @@ public class Model_ma {
         }
 
         //Get the start and end index for this attribute
-        final int[] minIndex = new int[1], maxIndex = new int[1];
+        int[] minIndex = new int[1], maxIndex = new int[1];
         if (!MA_ParseHeaderIndex(header, minIndex, maxIndex, "VertexTransformHeader", null)) {
             //This was just a header
             return true;
@@ -363,7 +363,7 @@ public class Model_ma {
 
         parser.ReadToken(token);
         if (0 == token.Icmp("-")) {
-            final idToken tk2 = new idToken();
+            idToken tk2 = new idToken();
             parser.ReadToken(tk2);
             if (0 == tk2.Icmp("type")) {
                 parser.SkipUntilString("float3");
@@ -392,7 +392,7 @@ public class Model_ma {
 
     public static boolean MA_ParseEdge(idParser parser, maAttribHeader_t header) throws idException {
 
-        final maMesh_t pMesh = maGlobal.currentObject.mesh;
+        maMesh_t pMesh = maGlobal.currentObject.mesh;
         // idToken token;
 
         //Allocate enough space for all the verts if this is the first attribute for verticies
@@ -402,7 +402,7 @@ public class Model_ma {
         }
 
         //Get the start and end index for this attribute
-        final int[] minIndex = new int[1], maxIndex = new int[1];
+        int[] minIndex = new int[1], maxIndex = new int[1];
         if (!MA_ParseHeaderIndex(header, minIndex, maxIndex, "EdgeHeader", null)) {
             //This was just a header
             return true;
@@ -420,8 +420,8 @@ public class Model_ma {
 
     public static boolean MA_ParseNormal(idParser parser, maAttribHeader_t header) throws idException {
 
-        final maMesh_t pMesh = maGlobal.currentObject.mesh;
-        final idToken token = new idToken();
+        maMesh_t pMesh = maGlobal.currentObject.mesh;
+        idToken token = new idToken();
 
         //Allocate enough space for all the verts if this is the first attribute for verticies
         if (null == pMesh.normals) {
@@ -430,7 +430,7 @@ public class Model_ma {
         }
 
         //Get the start and end index for this attribute
-        final int[] minIndex = new int[1], maxIndex = new int[1];
+        int[] minIndex = new int[1], maxIndex = new int[1];
         if (!MA_ParseHeaderIndex(header, minIndex, maxIndex, "NormalHeader", null)) {
             //This was just a header
             return true;
@@ -438,7 +438,7 @@ public class Model_ma {
 
         parser.ReadToken(token);
         if (0 == token.Icmp("-")) {
-            final idToken tk2 = new idToken();
+            idToken tk2 = new idToken();
             parser.ReadToken(tk2);
             if (0 == tk2.Icmp("type")) {
                 parser.SkipUntilString("float3");
@@ -470,8 +470,8 @@ public class Model_ma {
 
     public static boolean MA_ParseFace(idParser parser, maAttribHeader_t header) throws idException {
 
-        final maMesh_t pMesh = maGlobal.currentObject.mesh;
-        final idToken token = new idToken();
+        maMesh_t pMesh = maGlobal.currentObject.mesh;
+        idToken token = new idToken();
 
         //Allocate enough space for all the verts if this is the first attribute for verticies
         if (null == pMesh.faces) {
@@ -480,7 +480,7 @@ public class Model_ma {
         }
 
         //Get the start and end index for this attribute
-        final int[] minIndex = new int[1], maxIndex = new int[1];
+        int[] minIndex = new int[1], maxIndex = new int[1];
         if (!MA_ParseHeaderIndex(header, minIndex, maxIndex, "FaceHeader", null)) {
             //This was just a header
             return true;
@@ -495,7 +495,7 @@ public class Model_ma {
             }
 
             if (0 == token.Icmp("f")) {
-                final int count = parser.ParseInt();
+                int count = parser.ParseInt();
                 if (count != 3) {
                     throw new idException(va("Maya Loader '%s': Face is not a triangle.", parser.GetFileName()));
 //                    return false;
@@ -513,8 +513,8 @@ public class Model_ma {
                 pMesh.faces[currentFace].vertexColors[0] = pMesh.faces[currentFace].vertexColors[1] = pMesh.faces[currentFace].vertexColors[2] = -1;
 
             } else if (0 == token.Icmp("mu")) {
-                final int uvstIndex = parser.ParseInt();
-                final int count = parser.ParseInt();
+                int uvstIndex = parser.ParseInt();
+                int count = parser.ParseInt();
                 if (count != 3) {
                     throw new idException(va("Maya Loader '%s': Invalid texture coordinates.", parser.GetFileName()));
 //                    return false;
@@ -524,7 +524,7 @@ public class Model_ma {
                 pMesh.faces[currentFace].tVertexNum[2] = parser.ParseInt();
 
             } else if (0 == token.Icmp("mf")) {
-                final int count = parser.ParseInt();
+                int count = parser.ParseInt();
                 if (count != 3) {
                     throw new idException(va("Maya Loader '%s': Invalid texture coordinates.", parser.GetFileName()));
 //                    return false;
@@ -535,7 +535,7 @@ public class Model_ma {
 
             } else if (0 == token.Icmp("fc")) {
 
-                final int count = parser.ParseInt();
+                int count = parser.ParseInt();
                 if (count != 3) {
                     throw new idException(va("Maya Loader '%s': Invalid vertex color.", parser.GetFileName()));
 //                    return false;
@@ -552,7 +552,7 @@ public class Model_ma {
 
     public static boolean MA_ParseColor(idParser parser, maAttribHeader_t header) throws idException {
 
-        final maMesh_t pMesh = maGlobal.currentObject.mesh;
+        maMesh_t pMesh = maGlobal.currentObject.mesh;
         // idToken token;
 
         //Allocate enough space for all the verts if this is the first attribute for verticies
@@ -562,7 +562,7 @@ public class Model_ma {
         }
 
         //Get the start and end index for this attribute
-        final int[] minIndex = new int[1], maxIndex = new int[1];
+        int[] minIndex = new int[1], maxIndex = new int[1];
         if (!MA_ParseHeaderIndex(header, minIndex, maxIndex, "ColorHeader", null)) {
             //This was just a header
             return true;
@@ -570,10 +570,10 @@ public class Model_ma {
 
         //Read each vert
         for (int i = minIndex[0]; i <= maxIndex[0]; i++) {
-            pMesh.colors[(i * 4) + 0] = (byte) (parser.ParseFloat() * 255);
-            pMesh.colors[(i * 4) + 1] = (byte) (parser.ParseFloat() * 255);
-            pMesh.colors[(i * 4) + 2] = (byte) (parser.ParseFloat() * 255);
-            pMesh.colors[(i * 4) + 3] = (byte) (parser.ParseFloat() * 255);
+            pMesh.colors[i * 4 + 0] = (byte) (parser.ParseFloat() * 255);
+            pMesh.colors[i * 4 + 1] = (byte) (parser.ParseFloat() * 255);
+            pMesh.colors[i * 4 + 2] = (byte) (parser.ParseFloat() * 255);
+            pMesh.colors[i * 4 + 3] = (byte) (parser.ParseFloat() * 255);
         }
 
         return true;
@@ -581,8 +581,8 @@ public class Model_ma {
 
     public static boolean MA_ParseTVert(idParser parser, maAttribHeader_t header) throws idException {
 
-        final maMesh_t pMesh = maGlobal.currentObject.mesh;
-        final idToken token = new idToken();
+        maMesh_t pMesh = maGlobal.currentObject.mesh;
+        idToken token = new idToken();
 
         //This is not the texture coordinates. It is just the name so ignore it
         if (header.name.contains("uvsn")) {
@@ -596,7 +596,7 @@ public class Model_ma {
         }
 
         //Get the start and end index for this attribute
-        final int[] minIndex = new int[1], maxIndex = new int[1];
+        int[] minIndex = new int[1], maxIndex = new int[1];
         if (!MA_ParseHeaderIndex(header, minIndex, maxIndex, "TextureCoordHeader", "uvsp")) {
             //This was just a header
             return true;
@@ -604,7 +604,7 @@ public class Model_ma {
 
         parser.ReadToken(token);
         if (0 == token.Icmp("-")) {
-            final idToken tk2 = new idToken();
+            idToken tk2 = new idToken();
             parser.ReadToken(tk2);
             if (0 == tk2.Icmp("type")) {
                 parser.SkipUntilString("float2");
@@ -630,15 +630,15 @@ public class Model_ma {
      */
     public static boolean MA_QuickIsVertShared(int faceIndex, int vertIndex) {
 
-        final maMesh_t pMesh = maGlobal.currentObject.mesh;
-        final int vertNum = pMesh.faces[faceIndex].vertexNum[vertIndex];
+        maMesh_t pMesh = maGlobal.currentObject.mesh;
+        int vertNum = pMesh.faces[faceIndex].vertexNum[vertIndex];
 
         for (int i = 0; i < 3; i++) {
             int edge = pMesh.faces[faceIndex].edge[i];
             if (edge < 0) {
                 edge = (int) (idMath.Fabs(edge) - 1);
             }
-            if ((pMesh.edges[edge].z == 1) && ((pMesh.edges[edge].x == vertNum) || (pMesh.edges[edge].y == vertNum))) {
+            if (pMesh.edges[edge].z == 1 && (pMesh.edges[edge].x == vertNum || pMesh.edges[edge].y == vertNum)) {
                 return true;
             }
         }
@@ -647,8 +647,8 @@ public class Model_ma {
 
     public static void MA_GetSharedFace(int faceIndex, int vertIndex, int[] sharedFace, int[] sharedVert) {
 
-        final maMesh_t pMesh = maGlobal.currentObject.mesh;
-        final int vertNum = pMesh.faces[faceIndex].vertexNum[vertIndex];
+        maMesh_t pMesh = maGlobal.currentObject.mesh;
+        int vertNum = pMesh.faces[faceIndex].vertexNum[vertIndex];
 
         sharedFace[0] = -1;
         sharedVert[0] = -1;
@@ -661,7 +661,7 @@ public class Model_ma {
                 edge = (int) (idMath.Fabs(edge) - 1);
             }
 
-            if ((pMesh.edges[edge].z == 1) && ((pMesh.edges[edge].x == vertNum) || (pMesh.edges[edge].y == vertNum))) {
+            if (pMesh.edges[edge].z == 1 && (pMesh.edges[edge].x == vertNum || pMesh.edges[edge].y == vertNum)) {
 
                 for (int i = 0; i < faceIndex; i++) {
 
@@ -691,13 +691,13 @@ public class Model_ma {
         object.materialRef = -1;
 
         //Get the header info from the mesh
-        final maNodeHeader_t nodeHeader = new maNodeHeader_t();
+        maNodeHeader_t nodeHeader = new maNodeHeader_t();
         MA_ParseNodeHeader(parser, nodeHeader);
 
         //Find my parent
         if (!nodeHeader.parent.isEmpty()) {
             //Find the parent
-            final maTransform_s[] parent = new maTransform_s[1];
+            maTransform_s[] parent = new maTransform_s[1];
             maGlobal.model.transforms.Get(nodeHeader.parent, parent);
             if (parent[0] != null) {
                 maGlobal.currentObject.mesh.transform = parent[0];
@@ -707,14 +707,14 @@ public class Model_ma {
         object.name = nodeHeader.name;
 
         //Read the transform attributes
-        final idToken token = new idToken();
+        idToken token = new idToken();
         while (parser.ReadToken(token)) {
             if (IsNodeComplete(token)) {
                 parser.UnreadToken(token);
                 break;
             }
             if (0 == token.Icmp("setAttr")) {
-                final maAttribHeader_t attribHeader = new maAttribHeader_t();
+                maAttribHeader_t attribHeader = new maAttribHeader_t();
                 MA_ParseAttribHeader(parser, attribHeader);
 
                 if (attribHeader.name.contains(".vt")) {
@@ -737,7 +737,7 @@ public class Model_ma {
             }
         }
 
-        final maMesh_t pMesh = maGlobal.currentObject.mesh;
+        maMesh_t pMesh = maGlobal.currentObject.mesh;
 
         //Get the verts from the edge
         for (int i = 0; i < pMesh.numFaces; i++) {
@@ -758,8 +758,8 @@ public class Model_ma {
                 for (int j = 0; j < 3; j++) {
 
                     //Is this vertex shared
-                    final int[] sharedFace = {-1};
-                    final int[] sharedVert = {-1};
+                    int[] sharedFace = {-1};
+                    int[] sharedVert = {-1};
 
                     if (MA_QuickIsVertShared(i, j)) {
                         MA_GetSharedFace(i, j, sharedFace, sharedVert);
@@ -788,7 +788,7 @@ public class Model_ma {
             pMesh.faces[i].vertexNum[1] = pMesh.faces[i].vertexNum[2];
             pMesh.faces[i].vertexNum[2] = tmp;
 
-            final idVec3 tmpVec = pMesh.faces[i].vertexNormals[1];
+            idVec3 tmpVec = pMesh.faces[i].vertexNormals[1];
             pMesh.faces[i].vertexNormals[1] = pMesh.faces[i].vertexNormals[2];
             pMesh.faces[i].vertexNormals[2] = tmpVec;
 
@@ -814,18 +814,18 @@ public class Model_ma {
     public static void MA_ParseFileNode(idParser parser) throws idException {
 
         //Get the header info from the node
-        final maNodeHeader_t header = new maNodeHeader_t();
+        maNodeHeader_t header = new maNodeHeader_t();
         MA_ParseNodeHeader(parser, header);
 
         //Read the transform attributes
-        final idToken token = new idToken();
+        idToken token = new idToken();
         while (parser.ReadToken(token)) {
             if (IsNodeComplete(token)) {
                 parser.UnreadToken(token);
                 break;
             }
             if (0 == token.Icmp("setAttr")) {
-                final maAttribHeader_t attribHeader = new maAttribHeader_t();
+                maAttribHeader_t attribHeader = new maAttribHeader_t();
                 MA_ParseAttribHeader(parser, attribHeader);
 
                 if (attribHeader.name.contains(".ftn")) {
@@ -838,7 +838,7 @@ public class Model_ma {
                     maFileNode_t fileNode;
                     fileNode = new maFileNode_t();// Mem_Alloc(sizeof(maFileNode_t));
                     fileNode.name = header.name;
-                    fileNode.path = token.getData();
+                    fileNode.path = token.toString();
 
                     maGlobal.model.fileNodes.Set(fileNode.name, fileNode);
                 } else {
@@ -851,10 +851,10 @@ public class Model_ma {
     public static void MA_ParseMaterialNode(idParser parser) {
 
         //Get the header info from the node
-        final maNodeHeader_t header = new maNodeHeader_t();
+        maNodeHeader_t header = new maNodeHeader_t();
         MA_ParseNodeHeader(parser, header);
 
-        final maMaterialNode_s matNode = new maMaterialNode_s();
+        maMaterialNode_s matNode = new maMaterialNode_s();
 //        matNode = (maMaterialNode_s) Mem_Alloc(sizeof(maMaterialNode_t));
 //	memset(matNode, 0, sizeof(maMaterialNode_t));
 
@@ -865,7 +865,7 @@ public class Model_ma {
 
     public static void MA_ParseCreateNode(idParser parser) throws idException {
 
-        final idToken token = new idToken();
+        idToken token = new idToken();
         parser.ReadToken(token);
 
         if (0 == token.Icmp("transform")) {
@@ -874,23 +874,23 @@ public class Model_ma {
             MA_ParseMesh(parser);
         } else if (0 == token.Icmp("file")) {
             MA_ParseFileNode(parser);
-        } else if ((0 == token.Icmp("shadingEngine")) || (0 == token.Icmp("lambert")) || (0 == token.Icmp("phong")) || (0 == token.Icmp("blinn"))) {
+        } else if (0 == token.Icmp("shadingEngine") || 0 == token.Icmp("lambert") || 0 == token.Icmp("phong") || 0 == token.Icmp("blinn")) {
             MA_ParseMaterialNode(parser);
         }
     }
 
     public static int MA_AddMaterial(final String materialName) {
 
-        final maMaterialNode_s[] destNode = new maMaterialNode_s[1];
+        maMaterialNode_s[] destNode = new maMaterialNode_s[1];
         maGlobal.model.materialNodes.Get(materialName, destNode);
         if (destNode[0] != null) {
             maMaterialNode_s matNode = destNode[0];
 
             //Iterate down the tree until we get a file
-            while ((matNode != null) && (null == matNode.file)) {
+            while (matNode != null && null == matNode.file) {
                 matNode = matNode.child;
             }
-            if ((matNode != null) && (matNode.file != null)) {
+            if (matNode != null && matNode.file != null) {
 
                 //Got the file
                 maMaterial_t material;
@@ -918,7 +918,7 @@ public class Model_ma {
         idStr destName;
         idStr destType;
 
-        final idToken token = new idToken();
+        idToken token = new idToken();
         parser.ReadToken(token);
         temp = token;
         int dot = temp.Find(".");
@@ -942,22 +942,22 @@ public class Model_ma {
         if (srcType.Find("oc") != -1) {
 
             //Is this attribute a material node attribute
-            final maMaterialNode_s[] matNode = new maMaterialNode_s[1];
-            maGlobal.model.materialNodes.Get(srcName.getData(), matNode);
+            maMaterialNode_s[] matNode = new maMaterialNode_s[1];
+            maGlobal.model.materialNodes.Get(srcName.toString(), matNode);
             if (matNode[0] != null) {
-                final maMaterialNode_s[] destNode = new maMaterialNode_s[1];
-                maGlobal.model.materialNodes.Get(destName.getData(), destNode);
+                maMaterialNode_s[] destNode = new maMaterialNode_s[1];
+                maGlobal.model.materialNodes.Get(destName.toString(), destNode);
                 if (destNode[0] != null) {
                     destNode[0].child = matNode[0];
                 }
             }
 
             //Is this attribute a file node
-            final maFileNode_t[] fileNode = new maFileNode_t[1];
-            maGlobal.model.fileNodes.Get(srcName.getData(), fileNode);
+            maFileNode_t[] fileNode = new maFileNode_t[1];
+            maGlobal.model.fileNodes.Get(srcName.toString(), fileNode);
             if (fileNode[0] != null) {
-                final maMaterialNode_s[] destNode = new maMaterialNode_s[1];
-                maGlobal.model.materialNodes.Get(destName.getData(), destNode);
+                maMaterialNode_s[] destNode = new maMaterialNode_s[1];
+                maGlobal.model.materialNodes.Get(destName.toString(), destNode);
                 if (destNode[0] != null) {
                     destNode[0].file = fileNode[0];
                 }
@@ -969,7 +969,7 @@ public class Model_ma {
             for (int i = 0; i < maGlobal.model.objects.Num(); i++) {
                 if (maGlobal.model.objects.oGet(i).name.equals(srcName)) {
                     //maGlobal.model.objects.oGet(i).materialRef = MA_AddMaterial(destName);
-                    maGlobal.model.objects.oGet(i).materialName = destName.getData();
+                    maGlobal.model.objects.oGet(i).materialName = destName.toString();
                     break;
                 }
             }
@@ -1016,26 +1016,26 @@ public class Model_ma {
     public static void MA_ApplyTransformation(maModel_s model) {
 
         for (int i = 0; i < model.objects.Num(); i++) {
-            final maMesh_t mesh = model.objects.oGet(i).mesh;
+            maMesh_t mesh = model.objects.oGet(i).mesh;
             maTransform_s transform = mesh.transform;
 
             while (transform != null) {
 
-                final idMat4 rotx = new idMat4(), roty = new idMat4(), rotz = new idMat4();
-                final idMat4 scale = new idMat4();
+                idMat4 rotx = new idMat4(), roty = new idMat4(), rotz = new idMat4();
+                idMat4 scale = new idMat4();
 
                 rotx.Identity();
                 roty.Identity();
                 rotz.Identity();
 
                 if (Math.abs(transform.rotate.x) > 0.0f) {
-                    MA_BuildAxisRotation(rotx, DEG2RAD(-transform.rotate.x), 0);
+                    MA_BuildAxisRotation(rotx, (float) DEG2RAD(-transform.rotate.x), 0);
                 }
                 if (Math.abs(transform.rotate.y) > 0.0f) {
-                    MA_BuildAxisRotation(roty, DEG2RAD(transform.rotate.y), 1);
+                    MA_BuildAxisRotation(roty, (float) DEG2RAD(transform.rotate.y), 1);
                 }
                 if (Math.abs(transform.rotate.z) > 0.0f) {
-                    MA_BuildAxisRotation(rotz, DEG2RAD(-transform.rotate.z), 2);
+                    MA_BuildAxisRotation(rotz, (float) DEG2RAD(-transform.rotate.z), 2);
                 }
 
                 MA_BuildScale(scale, transform.scale.x, transform.scale.y, transform.scale.z);
@@ -1073,11 +1073,11 @@ public class Model_ma {
         maGlobal.model.objects.Resize(32, 32);
         maGlobal.model.materials.Resize(32, 32);
 
-        final idParser parser = new idParser();
+        idParser parser = new idParser();
         parser.SetFlags(LEXFL_NOSTRINGCONCAT);
         parser.LoadMemory(buffer, buffer.length(), filename);//TODO:use capacity instead of length?
 
-        final idToken token = new idToken();
+        idToken token = new idToken();
         while (parser.ReadToken(token)) {
 
             if (0 == token.Icmp("createNode")) {
@@ -1104,8 +1104,8 @@ public class Model_ma {
      =================
      */
     public static maModel_s MA_Load(final String fileName) {
-        final ByteBuffer[] buf = {null};
-        final long[] timeStamp = new long[1];
+        ByteBuffer[] buf = {null};
+        long[] timeStamp = new long[1];
         maModel_s ma;
 
         fileSystem.ReadFile(fileName, buf, timeStamp);
@@ -1116,7 +1116,7 @@ public class Model_ma {
         try {
             ma = MA_Parse(bbtocb(buf[0]), fileName, false);
             ma.timeStamp = timeStamp;
-        } catch (final idException e) {
+        } catch (idException e) {
             common.Warning("%s", e.error);
             if (maGlobal.model != null) {
                 MA_Free(maGlobal.model);
@@ -1134,10 +1134,10 @@ public class Model_ma {
      =================
      */
     public static void MA_Free(maModel_s ma) {
-        final int i;
-        final maObject_t obj;
-        final maMesh_t mesh;
-        final maMaterial_t material;
+        int i;
+        maObject_t obj;
+        maMesh_t mesh;
+        maMaterial_t material;
 
         if (NOT(ma)) {
             return;

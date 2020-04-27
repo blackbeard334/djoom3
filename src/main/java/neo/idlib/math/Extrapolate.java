@@ -42,12 +42,12 @@ public class Extrapolate {
         private final  int DBG_count = DBG_counter++;
 
         public idExtrapolate() {
-            this.extrapolationType = EXTRAPOLATION_NONE;
-            this.startTime = this.duration = 0.0f;
+            extrapolationType = EXTRAPOLATION_NONE;
+            startTime = duration = 0.0f;
 //	memset( &startValue, 0, sizeof( startValue ) );
 //	memset( &baseSpeed, 0, sizeof( baseSpeed ) );
 //	memset( &speed, 0, sizeof( speed ) );
-            this.currentTime = -1;
+            currentTime = -1;
 //            currentValue = startValue;
         }
 
@@ -58,154 +58,154 @@ public class Extrapolate {
             this.startValue = TempDump.clone(startValue);
             this.baseSpeed = TempDump.clone(baseSpeed);
             this.speed = TempDump.clone(speed);
-            this.currentTime = -1;
-            this.currentValue = TempDump.clone(startValue);
+            currentTime = -1;
+            currentValue = TempDump.clone(startValue);
         }
 
         public type GetCurrentValue(float time) {
             float deltaTime, s;
 
-            if (time == this.currentTime) {
-                return this.currentValue;
+            if (time == currentTime) {
+                return currentValue;
             }
 
-            this.currentTime = time;
+            currentTime = time;
 
-            if (time < this.startTime) {
-                return this.startValue;
+            if (time < startTime) {
+                return startValue;
             }
 
-            if ((0 == (this.extrapolationType & EXTRAPOLATION_NOSTOP)) && (time > (this.startTime + this.duration))) {
-                time = this.startTime + this.duration;
+            if (0 == (extrapolationType & EXTRAPOLATION_NOSTOP) && (time > startTime + duration)) {
+                time = startTime + duration;
             }
 
-            switch (this.extrapolationType & ~EXTRAPOLATION_NOSTOP) {
+            switch (extrapolationType & ~EXTRAPOLATION_NOSTOP) {
                 case EXTRAPOLATION_NONE: {
-                    deltaTime = (time - this.startTime) * 0.001f;
-                    this.currentValue = _Plus(this.startValue, _Multiply(deltaTime, this.baseSpeed));
+                    deltaTime = (time - startTime) * 0.001f;
+                    currentValue = _Plus(startValue, _Multiply(deltaTime, baseSpeed));
                     break;
                 }
                 case EXTRAPOLATION_LINEAR: {
-                    deltaTime = (time - this.startTime) * 0.001f;
-                    this.currentValue = _Plus(this.startValue, _Multiply(deltaTime, _Plus(this.baseSpeed, this.speed)));
+                    deltaTime = (time - startTime) * 0.001f;
+                    currentValue = _Plus(startValue, _Multiply(deltaTime, _Plus(baseSpeed, speed)));
                     break;
                 }
                 case EXTRAPOLATION_ACCELLINEAR: {
-                    if (0 == this.duration) {
-                        this.currentValue =TempDump.clone(this.startValue);
+                    if (0 == duration) {
+                        currentValue =TempDump.clone(startValue);
                     } else {
-                        deltaTime = (time - this.startTime) / this.duration;
-                        s = (0.5f * deltaTime * deltaTime) * (this.duration * 0.001f);
-                        this.currentValue = _Plus(this.startValue, _Plus(_Multiply(deltaTime, this.baseSpeed), _Multiply(s, this.speed)));
+                        deltaTime = (time - startTime) / duration;
+                        s = (0.5f * deltaTime * deltaTime) * (duration * 0.001f);
+                        currentValue = _Plus(startValue, _Plus(_Multiply(deltaTime, baseSpeed), _Multiply(s, speed)));
                     }
                     break;
                 }
                 case EXTRAPOLATION_DECELLINEAR: {
-                    if (0 == this.duration) {
-                        this.currentValue = TempDump.clone(this.startValue);
+                    if (0 == duration) {
+                        currentValue = TempDump.clone(startValue);
                     } else {
-                        deltaTime = (time - this.startTime) / this.duration;
-                        s = (deltaTime - (0.5f * deltaTime * deltaTime)) * (this.duration * 0.001f);
-                        this.currentValue = _Plus(this.startValue, _Plus(_Multiply(deltaTime, this.baseSpeed), _Multiply(s, this.speed)));
+                        deltaTime = (time - startTime) / duration;
+                        s = (deltaTime - (0.5f * deltaTime * deltaTime)) * (duration * 0.001f);
+                        currentValue = _Plus(startValue, _Plus(_Multiply(deltaTime, baseSpeed), _Multiply(s, speed)));
                     }
                     break;
                 }
                 case EXTRAPOLATION_ACCELSINE: {
-                    if (0 == this.duration) {
-                        this.currentValue = TempDump.clone(this.startValue);
+                    if (0 == duration) {
+                        currentValue = TempDump.clone(startValue);
                     } else {
-                        deltaTime = (time - this.startTime) / this.duration;
-                        s = (1.0f - idMath.Cos(deltaTime * idMath.HALF_PI)) * this.duration * 0.001f * idMath.SQRT_1OVER2;
-                        this.currentValue = _Plus(this.startValue, _Plus(_Multiply(deltaTime, this.baseSpeed), _Multiply(s, this.speed)));
+                        deltaTime = (time - startTime) / duration;
+                        s = (1.0f - idMath.Cos(deltaTime * idMath.HALF_PI)) * duration * 0.001f * idMath.SQRT_1OVER2;
+                        currentValue = _Plus(startValue, _Plus(_Multiply(deltaTime, baseSpeed), _Multiply(s, speed)));
                     }
                     break;
                 }
                 case EXTRAPOLATION_DECELSINE: {
-                    if (0 == this.duration) {
-                        this.currentValue = TempDump.clone(this.startValue);
+                    if (0 == duration) {
+                        currentValue = TempDump.clone(startValue);
                     } else {
-                        deltaTime = (time - this.startTime) / this.duration;
-                        s = idMath.Sin(deltaTime * idMath.HALF_PI) * this.duration * 0.001f * idMath.SQRT_1OVER2;
-                        this.currentValue = _Plus(this.startValue, _Plus(_Multiply(deltaTime, this.baseSpeed), _Multiply(s, this.speed)));
+                        deltaTime = (time - startTime) / duration;
+                        s = idMath.Sin(deltaTime * idMath.HALF_PI) * duration * 0.001f * idMath.SQRT_1OVER2;
+                        currentValue = _Plus(startValue, _Plus(_Multiply(deltaTime, baseSpeed), _Multiply(s, speed)));
                     }
                     break;
                 }
             }
-            return this.currentValue;
+            return currentValue;
         }
 
         public type GetCurrentSpeed(float time) {
             float deltaTime, s;
 
-            if ((time < this.startTime) || (0 == this.duration)) {
-                return _Minus(this.startValue, this.startValue);
+            if (time < startTime || 0 == duration) {
+                return _Minus(startValue, startValue);
             }
 
-            if ((0 == (this.extrapolationType & EXTRAPOLATION_NOSTOP)) && (time > (this.startTime + this.duration))) {
-                return _Minus(this.startValue, this.startValue);
+            if (0 == (extrapolationType & EXTRAPOLATION_NOSTOP) && (time > startTime + duration)) {
+                return _Minus(startValue, startValue);
             }
 
-            switch (this.extrapolationType & ~EXTRAPOLATION_NOSTOP) {
+            switch (extrapolationType & ~EXTRAPOLATION_NOSTOP) {
                 case EXTRAPOLATION_NONE: {
-                    return this.baseSpeed;
+                    return baseSpeed;
                 }
                 case EXTRAPOLATION_LINEAR: {
-                    return _Plus(this.baseSpeed, this.speed);
+                    return _Plus(baseSpeed, speed);
                 }
                 case EXTRAPOLATION_ACCELLINEAR: {
-                    deltaTime = (time - this.startTime) / this.duration;
+                    deltaTime = (time - startTime) / duration;
                     s = deltaTime;
-                    return _Plus(this.baseSpeed, _Multiply(s, this.speed));
+                    return _Plus(baseSpeed, _Multiply(s, speed));
                 }
                 case EXTRAPOLATION_DECELLINEAR: {
-                    deltaTime = (time - this.startTime) / this.duration;
+                    deltaTime = (time - startTime) / duration;
                     s = 1.0f - deltaTime;
-                    return _Plus(this.baseSpeed, _Multiply(s, this.speed));
+                    return _Plus(baseSpeed, _Multiply(s, speed));
                 }
                 case EXTRAPOLATION_ACCELSINE: {
-                    deltaTime = (time - this.startTime) / this.duration;
+                    deltaTime = (time - startTime) / duration;
                     s = idMath.Sin(deltaTime * idMath.HALF_PI);
-                    return _Plus(this.baseSpeed, _Multiply(s, this.speed));
+                    return _Plus(baseSpeed, _Multiply(s, speed));
                 }
                 case EXTRAPOLATION_DECELSINE: {
-                    deltaTime = (time - this.startTime) / this.duration;
+                    deltaTime = (time - startTime) / duration;
                     s = idMath.Cos(deltaTime * idMath.HALF_PI);
-                    return _Plus(this.baseSpeed, _Multiply(s, this.speed));
+                    return _Plus(baseSpeed, _Multiply(s, speed));
                 }
                 default: {
-                    return this.baseSpeed;
+                    return baseSpeed;
                 }
             }
         }
 
         public boolean IsDone(float time) {
-            return ((0 == (this.extrapolationType & EXTRAPOLATION_NOSTOP)) && (time >= (this.startTime + this.duration)));
+            return (0 == (extrapolationType & EXTRAPOLATION_NOSTOP) && time >= startTime + duration);
         }
 
         public void SetStartTime(float time) {
-            this.startTime = time;
-            this.currentTime = -1;
+            startTime = time;
+            currentTime = -1;
         }
 
         public float GetStartTime() {
-            return this.startTime;
+            return startTime;
         }
 
         public float GetEndTime() {
-            return ((0 == (this.extrapolationType & EXTRAPOLATION_NOSTOP)) && (this.duration > 0)) ? this.startTime + this.duration : 0;
+            return (0 == (extrapolationType & EXTRAPOLATION_NOSTOP) && duration > 0) ? startTime + duration : 0;
         }
 
         public float GetDuration() {
-            return this.duration;
+            return duration;
         }
 
         public void SetStartValue(final type value) {
-            this.startValue = TempDump.clone(value);
-            this.currentTime = -1;
+            startValue = TempDump.clone(value);
+            currentTime = -1;
         }
 
         public final type GetStartValue() {
-            return this.startValue;
+            return startValue;
         }
 
         public final type GetBaseSpeed() {
@@ -235,25 +235,21 @@ public class Extrapolate {
         }
 
         public /*extrapolation_t*/ int GetExtrapolationType() {
-            return this.extrapolationType;
+            return extrapolationType;
         }
 
-		private type _Multiply(final float f, final type t) {
-            Object obj = null;
-        	if (t instanceof idVec3) {
-        		obj = ((idVec3) t).oMultiply(f);
+        private type _Multiply(final float f, final type t) {
+            if (t instanceof idVec3) {
+                return (type) ((idVec3) t).oMultiply(f);
             } else if (t instanceof idVec4) {
-            	obj = ((idVec4) t).oMultiply(f);
+                return (type) ((idVec4) t).oMultiply(f);
             } else if (t instanceof idAngles) {
-            	obj = ((idAngles) t).oMultiply(f);
+                return (type) ((idAngles) t).oMultiply(f);
             } else if (t instanceof Double) {
-            	obj = Double.valueOf(f * ((Double) t));
-            } else {
-            	obj = Float.valueOf(f * ((Float) t));
+                return (type) Double.valueOf(f * ((Double) t));
             }
-	        @SuppressWarnings("unchecked")
-	        type type = (type) obj;
-        	return type;
+
+            return (type) Float.valueOf(f * ((Float) t));
         }
 
         private type _Plus(final type t1, final type t2) {
@@ -281,5 +277,5 @@ public class Extrapolate {
 
             return (type) Float.valueOf((Float) t1 - (Float) t2);
         }
-    }
+    };
 }

@@ -66,16 +66,16 @@ public class DeclPDA {
 
         @Override
         public boolean Parse(String _text, int textLength) throws idException {
-            final idLexer src = new idLexer();
+            idLexer src = new idLexer();
 
             src.LoadMemory(_text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWPATHNAMES | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT | LEXFL_NOFATALERRORS);
             src.SkipUntilString("{");
 
-            this.text = new idStr("");
+            text = new idStr("");
             // scan through, identifying each individual parameter
             while (true) {
-                final idToken token = new idToken();
+                idToken token = new idToken();
 
                 if (!src.ReadToken(token)) {
                     break;
@@ -87,25 +87,25 @@ public class DeclPDA {
 
                 if (0 == token.Icmp("subject")) {
                     src.ReadToken(token);
-                    this.subject = token;
+                    subject = token;
                     continue;
                 }
 
                 if (0 == token.Icmp("to")) {
                     src.ReadToken(token);
-                    this.to = token;
+                    to = token;
                     continue;
                 }
 
                 if (0 == token.Icmp("from")) {
                     src.ReadToken(token);
-                    this.from = token;
+                    from = token;
                     continue;
                 }
 
                 if (0 == token.Icmp("date")) {
                     src.ReadToken(token);
-                    this.date = token;
+                    date = token;
                     continue;
                 }
 
@@ -116,14 +116,14 @@ public class DeclPDA {
                         return false;
                     }
                     while (src.ReadToken(token) && !token.equals("}")) {
-                        this.text.Append(token);
+                        text.Append(token);
                     }
                     continue;
                 }
 
                 if (0 == token.Icmp("image")) {
                     src.ReadToken(token);
-                    this.image = token;
+                    image = token;
                     continue;
                 }
             }
@@ -151,29 +151,29 @@ public class DeclPDA {
 //
 
         public String GetFrom() {
-            return this.from.getData();
+            return from.toString();
         }
 
         public String GetBody() {
-            return this.text.getData();
+            return text.toString();
         }
 
         public String GetSubject() {
-            return this.subject.getData();
+            return subject.toString();
         }
 
         public String GetDate() {
-            return this.date.getData();
+            return date.toString();
         }
 
         public String GetTo() {
-            return this.to.getData();
+            return to.toString();
         }
 
         public String GetImage() {
-            return this.image.getData();
+            return image.toString();
         }
-    }
+    };
 
     public static class idDeclVideo extends idDecl {
 
@@ -205,7 +205,7 @@ public class DeclPDA {
 
         @Override
         public boolean Parse(String _text, int textLength) throws idException {
-            final idLexer src = new idLexer();
+            idLexer src = new idLexer();
 
             src.LoadMemory(_text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWPATHNAMES | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT | LEXFL_NOFATALERRORS);
@@ -213,7 +213,7 @@ public class DeclPDA {
 
             // scan through, identifying each individual parameter
             while (true) {
-                final idToken token = new idToken();
+                idToken token = new idToken();
 
                 if (!src.ReadToken(token)) {
                     break;
@@ -225,33 +225,33 @@ public class DeclPDA {
 
                 if (0 == token.Icmp("name")) {
                     src.ReadToken(token);
-                    this.videoName = token;
+                    videoName = token;
                     continue;
                 }
 
                 if (0 == token.Icmp("preview")) {
                     src.ReadToken(token);
-                    this.preview = token;
+                    preview = token;
                     continue;
                 }
 
                 if (0 == token.Icmp("video")) {
                     src.ReadToken(token);
-                    this.video = token;
-                    declManager.FindMaterial(this.video);
+                    video = token;
+                    declManager.FindMaterial(video);
                     continue;
                 }
 
                 if (0 == token.Icmp("info")) {
                     src.ReadToken(token);
-                    this.info = token;
+                    info = token;
                     continue;
                 }
 
                 if (0 == token.Icmp("audio")) {
                     src.ReadToken(token);
-                    this.audio = token;
-                    declManager.FindSound(this.audio);
+                    audio = token;
+                    declManager.FindSound(audio);
                     continue;
                 }
 
@@ -279,25 +279,25 @@ public class DeclPDA {
         }
 
         public String GetRoq() {
-            return this.video.getData();
+            return video.toString();
         }
 
         public String GetWave() {
-            return this.audio.getData();
+            return audio.toString();
         }
 
         public String GetVideoName() {
-            return this.videoName.getData();
+            return videoName.toString();
         }
 
         public String GetInfo() {
-            return this.info.getData();
+            return info.toString();
         }
 
         public String GetPreview() {
-            return this.preview.getData();
+            return preview.toString();
         }
-    }
+    };
 
     public static class idDeclAudio extends idDecl {
 
@@ -328,7 +328,7 @@ public class DeclPDA {
 
         @Override
         public boolean Parse(String text, int textLength) throws idException {
-            final idLexer src = new idLexer();
+            idLexer src = new idLexer();
 
             src.LoadMemory(text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWPATHNAMES | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT | LEXFL_NOFATALERRORS);
@@ -336,7 +336,7 @@ public class DeclPDA {
 
             // scan through, identifying each individual parameter
             while (true) {
-                final idToken token = new idToken();
+                idToken token = new idToken();
 
                 if (!src.ReadToken(token)) {
                     break;
@@ -348,26 +348,26 @@ public class DeclPDA {
 
                 if (0 == token.Icmp("name")) {
                     src.ReadToken(token);
-                    this.audioName = token;
+                    audioName = token;
                     continue;
                 }
 
                 if (0 == token.Icmp("audio")) {
                     src.ReadToken(token);
-                    this.audio = token;
-                    declManager.FindSound(this.audio);
+                    audio = token;
+                    declManager.FindSound(audio);
                     continue;
                 }
 
                 if (0 == token.Icmp("info")) {
                     src.ReadToken(token);
-                    this.info = token;
+                    info = token;
                     continue;
                 }
 
                 if (0 == token.Icmp("preview")) {
                     src.ReadToken(token);
-                    this.preview = token;
+                    preview = token;
                     continue;
                 }
 
@@ -395,51 +395,51 @@ public class DeclPDA {
         }
 
         public String GetAudioName() {
-            return this.audioName.getData();
+            return audioName.toString();
         }
 
         public String GetWave() {
-            return this.audio.getData();
+            return audio.toString();
         }
 
         public String GetInfo() {
-            return this.info.getData();
+            return info.toString();
         }
 
         public String GetPreview() {
-            return this.preview.getData();
+            return preview.toString();
         }
-    }
+    };
 
     public static class idDeclPDA extends idDecl {
 
-        private final idStrList videos;
-        private final idStrList audios;
-        private final idStrList emails;
-        private final idStr     pdaName;
-        private final idStr     fullName;
-        private final idStr     icon;
-        private final idStr     id;
-        private final idStr     post;
-        private final idStr     title;
-        private final idStr     security;
+        private idStrList videos;
+        private idStrList audios;
+        private idStrList emails;
+        private idStr     pdaName;
+        private idStr     fullName;
+        private idStr     icon;
+        private idStr     id;
+        private idStr     post;
+        private idStr     title;
+        private idStr     security;
         private int       originalEmails;
         private int       originalVideos;
         //
         //
 
         public idDeclPDA() {
-            this.videos = new idStrList();
-            this.audios = new idStrList();
-            this.emails = new idStrList();
-            this.pdaName = new idStr();
-            this.fullName = new idStr();
-            this.icon = new idStr();
-            this.id = new idStr();
-            this.post = new idStr();
-            this.title = new idStr();
-            this.security = new idStr();
-            this.originalEmails = this.originalVideos = 0;
+            videos = new idStrList();
+            audios = new idStrList();
+            emails = new idStrList();
+            pdaName = new idStr();
+            fullName = new idStr();
+            icon = new idStr();
+            id = new idStr();
+            post = new idStr();
+            title = new idStr();
+            security = new idStr();
+            originalEmails = originalVideos = 0;
         }
 
         @Override
@@ -457,8 +457,8 @@ public class DeclPDA {
 
         @Override
         public boolean Parse(final String text, final int textLength) throws idException {
-            final idLexer src = new idLexer();
-            final idToken token = new idToken();
+            idLexer src = new idLexer();
+            idToken token = new idToken();
 
             src.LoadMemory(text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(DECL_LEXER_FLAGS);
@@ -477,63 +477,63 @@ public class DeclPDA {
 
                 if (0 == token.Icmp("name")) {
                     src.ReadToken(token);
-                    this.pdaName.oSet(token);
+                    pdaName.oSet(token);
                     continue;
                 }
 
                 if (0 == token.Icmp("fullname")) {
                     src.ReadToken(token);
-                    this.fullName.oSet(token);
+                    fullName.oSet(token);
                     continue;
                 }
 
                 if (0 == token.Icmp("icon")) {
                     src.ReadToken(token);
-                    this.icon.oSet(token);
+                    icon.oSet(token);
                     continue;
                 }
 
                 if (0 == token.Icmp("id")) {
                     src.ReadToken(token);
-                    this.id.oSet(token);
+                    id.oSet(token);
                     continue;
                 }
 
                 if (0 == token.Icmp("post")) {
                     src.ReadToken(token);
-                    this.post.oSet(token);
+                    post.oSet(token);
                     continue;
                 }
 
                 if (0 == token.Icmp("title")) {
                     src.ReadToken(token);
-                    this.title.oSet(token);
+                    title.oSet(token);
                     continue;
                 }
 
                 if (0 == token.Icmp("security")) {
                     src.ReadToken(token);
-                    this.security.oSet(token);
+                    security.oSet(token);
                     continue;
                 }
 
                 if (0 == token.Icmp("pda_email")) {
                     src.ReadToken(token);
-                    this.emails.Append(token.getData());
+                    emails.Append(token.toString());
                     declManager.FindType(DECL_EMAIL, token);
                     continue;
                 }
 
                 if (0 == token.Icmp("pda_audio")) {
                     src.ReadToken(token);
-                    this.audios.Append(token.getData());
+                    audios.Append(token.toString());
                     declManager.FindType(DECL_AUDIO, token);
                     continue;
                 }
 
                 if (0 == token.Icmp("pda_video")) {
                     src.ReadToken(token);
-                    this.videos.Append(token.getData());
+                    videos.Append(token.toString());
                     declManager.FindType(DECL_VIDEO, token);
                     continue;
                 }
@@ -545,18 +545,18 @@ public class DeclPDA {
                 return false;
             }
 
-            this.originalVideos = this.videos.Num();
-            this.originalEmails = this.emails.Num();
+            originalVideos = videos.Num();
+            originalEmails = emails.Num();
             return true;
         }
 
         @Override
         public void FreeData() {
-            this.videos.Clear();
-            this.audios.Clear();
-            this.emails.Clear();
-            this.originalEmails = 0;
-            this.originalVideos = 0;
+            videos.Clear();
+            audios.Clear();
+            emails.Clear();
+            originalEmails = 0;
+            originalVideos = 0;
         }
 
         @Override
@@ -572,40 +572,40 @@ public class DeclPDA {
         public void AddVideo(final String _name, boolean unique /*= true*/) throws idException {
             final idStr name = new idStr(_name);
 
-            if (unique && (this.videos.Find(name) != null)) {
+            if (unique && (videos.Find(name) != null)) {
                 return;
             }
             if (declManager.FindType(DECL_VIDEO, _name, false) == null) {
                 common.Printf("Video %s not found\n", name);
                 return;
             }
-            this.videos.Append(name);
+            videos.Append(name);
         }
 
         public void AddAudio(final String _name, boolean unique /*= true*/) throws idException {
             final idStr name = new idStr(_name);
 
-            if (unique && (this.audios.Find(name) != null)) {
+            if (unique && (audios.Find(name) != null)) {
                 return;
             }
             if (declManager.FindType(DECL_AUDIO, _name, false) == null) {
                 common.Printf("Audio log %s not found\n", name);
                 return;
             }
-            this.audios.Append(name);
+            audios.Append(name);
         }
 
         public void AddEmail(final String _name, boolean unique /*= true*/) throws idException {
             final idStr name = new idStr(_name);
 
-            if (unique && (this.emails.Find(name) != null)) {
+            if (unique && (emails.Find(name) != null)) {
                 return;
             }
             if (declManager.FindType(DECL_EMAIL, _name, false) == null) {
                 common.Printf("Email %s not found\n", name);
                 return;
             }
-            this.emails.Append(name);
+            emails.Append(name);
         }
 
         public void AddEmail(final String _name) throws idException {
@@ -613,83 +613,83 @@ public class DeclPDA {
         }
 
         public void RemoveAddedEmailsAndVideos() {
-            int num = this.emails.Num();
-            if (this.originalEmails < num) {
-                while ((num != 0) && (num > this.originalEmails)) {
-                    this.emails.RemoveIndex(--num);
+            int num = emails.Num();
+            if (originalEmails < num) {
+                while (num != 0 && num > originalEmails) {
+                    emails.RemoveIndex(--num);
                 }
             }
-            num = this.videos.Num();
-            if (this.originalVideos < num) {
-                while ((num != 0) && (num > this.originalVideos)) {
-                    this.videos.RemoveIndex(--num);
+            num = videos.Num();
+            if (originalVideos < num) {
+                while (num != 0 && num > originalVideos) {
+                    videos.RemoveIndex(--num);
                 }
             }
         }
 
         public int GetNumVideos() {
-            return this.videos.Num();
+            return videos.Num();
         }
 
         public int GetNumAudios() {
-            return this.audios.Num();
+            return audios.Num();
         }
 
         public int GetNumEmails() {
-            return this.emails.Num();
+            return emails.Num();
         }
 
         public idDeclVideo GetVideoByIndex(int index) throws idException {
-            if ((index >= 0) && (index < this.videos.Num())) {
-                return (idDeclVideo) (declManager.FindType(DECL_VIDEO, this.videos.oGet(index), false));
+            if (index >= 0 && index < videos.Num()) {
+                return (idDeclVideo) (declManager.FindType(DECL_VIDEO, videos.oGet(index), false));
             }
             return null;
         }
 
         public idDeclAudio GetAudioByIndex(int index) throws idException {
-            if ((index >= 0) && (index < this.audios.Num())) {
-                return (idDeclAudio) declManager.FindType(DECL_AUDIO, this.audios.oGet(index), false);
+            if (index >= 0 && index < audios.Num()) {
+                return (idDeclAudio) declManager.FindType(DECL_AUDIO, audios.oGet(index), false);
             }
             return null;
         }
 
         public idDeclEmail GetEmailByIndex(int index) throws idException {
-            if ((index >= 0) && (index < this.emails.Num())) {
-                return (idDeclEmail) declManager.FindType(DECL_EMAIL, this.emails.oGet(index), false);
+            if (index >= 0 && index < emails.Num()) {
+                return (idDeclEmail) declManager.FindType(DECL_EMAIL, emails.oGet(index), false);
             }
             return null;
         }
 
         public void SetSecurity(final String sec) {
-            this.security.oSet(sec);
+            security.oSet(sec);
         }
 
         public String GetPdaName() {
-            return this.pdaName.getData();
+            return pdaName.toString();
         }
 
         public String GetSecurity() {
-            return this.security.getData();
+            return security.toString();
         }
 
         public String GetFullName() {
-            return this.fullName.getData();
+            return fullName.toString();
         }
 
         public String GetIcon() {
-            return this.icon.getData();
+            return icon.toString();
         }
 
         public String GetPost() {
-            return this.post.getData();
+            return post.toString();
         }
 
         public String GetID() {
-            return this.id.getData();
+            return id.toString();
         }
 
         public String GetTitle() {
-            return this.title.getData();
+            return title.toString();
         }
-    }
+    };
 }

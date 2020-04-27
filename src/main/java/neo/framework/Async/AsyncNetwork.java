@@ -101,7 +101,7 @@ public class AsyncNetwork {
         SERVER_UNRELIABLE_MESSAGE_PING,
         SERVER_UNRELIABLE_MESSAGE_GAMEINIT,
         SERVER_UNRELIABLE_MESSAGE_SNAPSHOT
-    }
+    };
 
     // reliable server -> client messages
     public enum SERVER_RELIABLE {
@@ -115,7 +115,7 @@ public class AsyncNetwork {
         SERVER_RELIABLE_MESSAGE_APPLYSNAPSHOT,
         SERVER_RELIABLE_MESSAGE_GAME,
         SERVER_RELIABLE_MESSAGE_ENTERGAME
-    }
+    };
 
     // unreliable client -> server messages
     public enum CLIENT_UNRELIABLE {
@@ -123,7 +123,7 @@ public class AsyncNetwork {
         CLIENT_UNRELIABLE_MESSAGE_EMPTY,
         CLIENT_UNRELIABLE_MESSAGE_PINGRESPONSE,
         CLIENT_UNRELIABLE_MESSAGE_USERCMD
-    }
+    };
 
     // reliable client -> server messages
     public enum CLIENT_RELIABLE {
@@ -133,7 +133,7 @@ public class AsyncNetwork {
         CLIENT_RELIABLE_MESSAGE_PRINT,
         CLIENT_RELIABLE_MESSAGE_DISCONNECT,
         CLIENT_RELIABLE_MESSAGE_GAME
-    }
+    };
 
     // server print messages
     public enum SERVER_PRINT {
@@ -143,7 +143,7 @@ public class AsyncNetwork {
         SERVER_PRINT_RCON,
         SERVER_PRINT_GAMEDENY,
         SERVER_PRINT_BADCHALLENGE
-    }
+    };
 
     public enum SERVER_DL {
 
@@ -151,14 +151,14 @@ public class AsyncNetwork {
         SERVER_DL_REDIRECT,
         SERVER_DL_LIST,
         SERVER_DL_NONE
-    }
+    };
 
     public enum SERVER_PAK {
 
         SERVER_PAK_NO,
         SERVER_PAK_YES,
         SERVER_PAK_END
-    }
+    };
 
     static class master_s {
 
@@ -358,13 +358,13 @@ public class AsyncNetwork {
         }
 
         public static boolean UsercmdInputChanged(final usercmd_t previousUserCmd, final usercmd_t currentUserCmd) {
-            return (previousUserCmd.buttons != currentUserCmd.buttons)
-                    || (previousUserCmd.forwardmove != currentUserCmd.forwardmove)
-                    || (previousUserCmd.rightmove != currentUserCmd.rightmove)
-                    || (previousUserCmd.upmove != currentUserCmd.upmove)
-                    || (previousUserCmd.angles[0] != currentUserCmd.angles[0])
-                    || (previousUserCmd.angles[1] != currentUserCmd.angles[1])
-                    || (previousUserCmd.angles[2] != currentUserCmd.angles[2]);
+            return previousUserCmd.buttons != currentUserCmd.buttons
+                    || previousUserCmd.forwardmove != currentUserCmd.forwardmove
+                    || previousUserCmd.rightmove != currentUserCmd.rightmove
+                    || previousUserCmd.upmove != currentUserCmd.upmove
+                    || previousUserCmd.angles[0] != currentUserCmd.angles[0]
+                    || previousUserCmd.angles[1] != currentUserCmd.angles[1]
+                    || previousUserCmd.angles[2] != currentUserCmd.angles[2];
         }
 
 //
@@ -395,7 +395,7 @@ public class AsyncNetwork {
 
         // get the hardcoded idnet master, equivalent to GetMasterAddress( 0, .. )
         public static netadr_t GetMasterAddress() {
-            final netadr_t ret = new netadr_t();
+            netadr_t ret = new netadr_t();
             GetMasterAddress(0, ret);
             return masters[0].address;
         }
@@ -483,7 +483,7 @@ public class AsyncNetwork {
                     server.Spawn();
                 }
             }
-        }
+        };
 
         /*
          ==================
@@ -505,7 +505,7 @@ public class AsyncNetwork {
             public void run(idCmdArgs args) {
                 server.ExecuteMapChange();
             }
-        }
+        };
 
         /*
          ==================
@@ -536,7 +536,7 @@ public class AsyncNetwork {
                 com_asyncInput.SetBool(false);
                 client.ConnectToServer(args.Argv(1));
             }
-        }
+        };
 
         /*
          ==================
@@ -558,7 +558,7 @@ public class AsyncNetwork {
             public void run(idCmdArgs args) {
                 client.Reconnect();
             }
-        }
+        };
 
         /*
          ==================
@@ -580,7 +580,7 @@ public class AsyncNetwork {
             public void run(idCmdArgs args) {
                 client.GetServerInfo(args.Argv(1));
             }
-        }
+        };
 
         /*
          ==================
@@ -602,7 +602,7 @@ public class AsyncNetwork {
             public void run(idCmdArgs args) {
                 client.GetLANServers();
             }
-        }
+        };
 
         /*
          ==================
@@ -624,7 +624,7 @@ public class AsyncNetwork {
             public void run(idCmdArgs args) {
                 client.ListServers();
             }
-        }
+        };
 
         /*
          ==================
@@ -646,7 +646,7 @@ public class AsyncNetwork {
             public void run(idCmdArgs args) {
                 client.RemoteConsole(args.Args());
             }
-        }
+        };
 
         /*
          ==================
@@ -672,7 +672,7 @@ public class AsyncNetwork {
                 }
                 server.MasterHeartbeat(true);
             }
-        }
+        };
 
         /*
          ==================
@@ -705,7 +705,7 @@ public class AsyncNetwork {
                     common.Printf("usage: kick <client number>\n");
                     return;
                 }
-                iclient = Integer.parseInt(clientId.getData());
+                iclient = Integer.parseInt(clientId.toString());
 
                 if (server.GetLocalClientNum() == iclient) {
                     common.Printf("can't kick the host\n");
@@ -714,7 +714,7 @@ public class AsyncNetwork {
 
                 server.DropClient(iclient, "#str_07134");
             }
-        }
+        };
 
 
         /*
@@ -737,7 +737,7 @@ public class AsyncNetwork {
             public void run(idCmdArgs args) {
                 client.SendVersionCheck();
             }
-        }
+        };
 
         /*
          =================
@@ -765,9 +765,9 @@ public class AsyncNetwork {
                     common.Warning("idAsyncNetwork::UpdateUI_f: server is not active\n");
                     return;
                 }
-                final int clientNum = Integer.parseInt(args.Args(1));
+                int clientNum = Integer.parseInt(args.Args(1));
                 server.UpdateUI(clientNum);
             }
-        }
-    }
+        };
+    };
 }

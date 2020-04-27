@@ -32,26 +32,26 @@ public class Force_Constant {
         //
 
         public idForce_Constant() {
-            this.force = getVec3_zero();
-            this.physics = null;
-            this.id = 0;
-            this.point = getVec3_zero();
+            force = getVec3_zero();
+            physics = null;
+            id = 0;
+            point = getVec3_zero();
         }
         // virtual				~idForce_Constant( void );
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteVec3(this.force);
-            savefile.WriteInt(this.id);
-            savefile.WriteVec3(this.point);
+            savefile.WriteVec3(force);
+            savefile.WriteInt(id);
+            savefile.WriteVec3(point);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
             // Owner needs to call SetPhysics!!
-            savefile.ReadVec3(this.force);
-            this.id = savefile.ReadInt();
-            savefile.ReadVec3(this.point);
+            savefile.ReadVec3(force);
+            id = savefile.ReadInt();
+            savefile.ReadVec3(point);
         }
 
         // constant force
@@ -75,20 +75,20 @@ public class Force_Constant {
         public void Evaluate(int time) {
             idVec3 p;
 
-            if (null == this.physics) {
+            if (null == physics) {
                 return;
             }
 
-            p = this.physics.GetOrigin(this.id).oPlus(this.point.oMultiply(this.physics.GetAxis(this.id)));
+            p = physics.GetOrigin(id).oPlus(point.oMultiply(physics.GetAxis(id)));
 
-            this.physics.AddForce(this.id, p, this.force);
+            physics.AddForce(id, p, force);
         }
 
         @Override
         public void RemovePhysics(final idPhysics phys) {
-            if (this.physics == phys) {
-                this.physics = null;
+            if (physics == phys) {
+                physics = null;
             }
         }
-    }
+    };
 }

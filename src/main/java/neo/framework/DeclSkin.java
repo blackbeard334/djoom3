@@ -33,16 +33,12 @@ public class DeclSkin {
 
         idMaterial from;			// 0 == any unmatched shader
         idMaterial to;
-    }
+    };
 
     public static class idDeclSkin extends idDecl implements SERiAL {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private final idList<skinMapping_t> mappings = new idList<skinMapping_t>();
-        private final idStrList associatedModels = new idStrList();
+        private idList<skinMapping_t> mappings = new idList<>();
+        private idStrList associatedModels = new idStrList();
         //
         //
 
@@ -56,7 +52,7 @@ public class DeclSkin {
         public boolean SetDefaultText() throws idException {
             // if there exists a material with the same name
             if (declManager.FindType(DECL_MATERIAL, GetName(), false) != null) {
-                final StringBuilder generated = new StringBuilder(2048);
+                StringBuilder generated = new StringBuilder(2048);
 
                 idStr.snPrintf(generated, generated.capacity(),
                         "skin %s // IMPLICITLY GENERATED\n"
@@ -79,14 +75,14 @@ public class DeclSkin {
 
         @Override
         public boolean Parse(String text, int textLength) throws idException {
-            final idLexer src = new idLexer();
-            final idToken token = new idToken(), token2 = new idToken();
+            idLexer src = new idLexer();
+            idToken token = new idToken(), token2 = new idToken();
 
             src.LoadMemory(text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(DECL_LEXER_FLAGS);
             src.SkipUntilString("{");
 
-            this.associatedModels.Clear();
+            associatedModels.Clear();
 
             while (true) {
                 if (!src.ReadToken(token)) {
@@ -103,11 +99,11 @@ public class DeclSkin {
                 }
 
                 if (0 == token.Icmp("model")) {
-                    this.associatedModels.Append(token2.getData());
+                    associatedModels.Append(token2.toString());
                     continue;
                 }
 
-                final skinMapping_t map = new skinMapping_t();
+                skinMapping_t map = new skinMapping_t();
 
                 if (0 == token.Icmp("*")) {
                     // wildcard
@@ -118,7 +114,7 @@ public class DeclSkin {
 
                 map.to = declManager.FindMaterial(token2);
 
-                this.mappings.Append(map);
+                mappings.Append(map);
             }
 
             return false;
@@ -126,7 +122,7 @@ public class DeclSkin {
 
         @Override
         public void FreeData() {
-            this.mappings.Clear();
+            mappings.Clear();
         }
 
         public idMaterial RemapShaderBySkin(final idMaterial shader) {
@@ -141,8 +137,8 @@ public class DeclSkin {
                 return shader;
             }
 
-            for (i = 0; i < this.mappings.Num(); i++) {
-                final skinMapping_t map = this.mappings.oGet(i);
+            for (i = 0; i < mappings.Num(); i++) {
+                final skinMapping_t map = mappings.oGet(i);
 
                 // null = wildcard match
                 if (NOT(map.from) || map.from.equals(shader)) {
@@ -156,12 +152,12 @@ public class DeclSkin {
 
         // model associations are just for the preview dialog in the editor
         public int GetNumModelAssociations() {
-            return this.associatedModels.Num();
+            return associatedModels.Num();
         }
 
         public String GetAssociatedModel(int index) {
-            if ((index >= 0) && (index < this.associatedModels.Num())) {
-                return this.associatedModels.oGet(index).getData();
+            if (index >= 0 && index < associatedModels.Num()) {
+                return associatedModels.oGet(index).toString();
             }
             return "";
         }
@@ -185,5 +181,5 @@ public class DeclSkin {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 }

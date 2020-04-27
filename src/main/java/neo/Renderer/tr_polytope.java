@@ -30,7 +30,7 @@ public class tr_polytope {
     public static srfTriangles_s R_PolytopeSurface(int numPlanes, final idPlane[] planes, idWinding[] windings) throws idException {
         int i, j;
         srfTriangles_s tri;
-        final idFixedWinding[] planeWindings = new idFixedWinding[MAX_POLYTOPE_PLANES];
+        idFixedWinding[] planeWindings = new idFixedWinding[MAX_POLYTOPE_PLANES];
         int numVerts, numIndexes;
 
         if (numPlanes > MAX_POLYTOPE_PLANES) {
@@ -41,7 +41,7 @@ public class tr_polytope {
         numIndexes = 0;
         for (i = 0; i < numPlanes; i++) {
             final idPlane plane = planes[i];
-            final idFixedWinding w = planeWindings[i] = new idFixedWinding();
+            idFixedWinding w = planeWindings[i] = new idFixedWinding();
 
             w.BaseForPlane(plane);
             for (j = 0; j < numPlanes; j++) {
@@ -67,7 +67,7 @@ public class tr_polytope {
 
         // copy the data from the windings
         for (i = 0; i < numPlanes; i++) {
-            final idFixedWinding w = planeWindings[i];
+            idFixedWinding w = planeWindings[i];
             if (0 == w.GetNumPoints()) {
                 continue;
             }
@@ -76,11 +76,11 @@ public class tr_polytope {
                 tri.verts[tri.numVerts + j].xyz.oSet(w.oGet(j).ToVec3());
             }
 
-            for (j = 1; j < (w.GetNumPoints() - 1); j++) {
-                tri.getIndexes().getValues().put( tri.getIndexes().getNumValues() + 0, tri.numVerts);
-                tri.getIndexes().getValues().put( tri.getIndexes().getNumValues() + 1, tri.numVerts + j);
-                tri.getIndexes().getValues().put( tri.getIndexes().getNumValues() + 2, tri.numVerts + j + 1);
-                tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() + 3);
+            for (j = 1; j < w.GetNumPoints() - 1; j++) {
+                tri.indexes[ tri.numIndexes + 0] = tri.numVerts;
+                tri.indexes[ tri.numIndexes + 1] = tri.numVerts + j;
+                tri.indexes[ tri.numIndexes + 2] = tri.numVerts + j + 1;
+                tri.numIndexes += 3;
             }
             tri.numVerts += w.GetNumPoints();
 

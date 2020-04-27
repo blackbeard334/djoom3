@@ -29,7 +29,7 @@ public class Ode {
         protected Object           userData;    // client data
 
         public abstract float Evaluate(final float[] state, float[] newState, float t0, float t1);
-    }
+    };
 
     //===============================================================
     //
@@ -43,10 +43,10 @@ public class Ode {
         //
 
         public idODE_Euler(final int dim, final deriveFunction_t dr, final Object ud) {
-            this.dimension = dim;
-            this.derivatives = new float[dim];
-            this.derive = dr;
-            this.userData = ud;
+            dimension = dim;
+            derivatives = new float[dim];
+            derive = dr;
+            userData = ud;
         }
 //	virtual				~idODE_Euler( void );
 
@@ -55,14 +55,14 @@ public class Ode {
             float delta;
             int i;
 
-            this.derive.run(t0, this.userData, state, this.derivatives);
+            derive.run(t0, userData, state, derivatives);
             delta = t1 - t0;
-            for (i = 0; i < this.dimension; i++) {
-                newState[i] = state[i] + (delta * this.derivatives[i]);
+            for (i = 0; i < dimension; i++) {
+                newState[i] = state[i] + delta * derivatives[i];
             }
             return delta;
         }
-    }
+    };
 
 //===============================================================
 //
@@ -77,11 +77,11 @@ public class Ode {
         //
 
         public idODE_Midpoint(final int dim, final deriveFunction_t dr, final Object ud) {
-            this.dimension = dim;
-            this.tmpState = new float[dim];
-            this.derivatives = new float[dim];
-            this.derive = dr;
-            this.userData = ud;
+            dimension = dim;
+            tmpState = new float[dim];
+            derivatives = new float[dim];
+            derive = dr;
+            userData = ud;
         }
 //public	virtual				~idODE_Midpoint( void );
 
@@ -93,19 +93,19 @@ public class Ode {
             delta = t1 - t0;
             halfDelta = delta * 0.5f;
             // first step
-            this.derive.run(t0, this.userData, state, this.derivatives);
-            for (i = 0; i < this.dimension; i++) {
-                this.tmpState[i] = state[i] + (halfDelta * this.derivatives[i]);
+            derive.run(t0, userData, state, derivatives);
+            for (i = 0; i < dimension; i++) {
+                tmpState[i] = state[i] + halfDelta * derivatives[i];
             }
             // second step
-            this.derive.run(t0 + halfDelta, this.userData, this.tmpState, this.derivatives);
+            derive.run(t0 + halfDelta, userData, tmpState, derivatives);
 
-            for (i = 0; i < this.dimension; i++) {
-                newState[i] = state[i] + (delta * this.derivatives[i]);
+            for (i = 0; i < dimension; i++) {
+                newState[i] = state[i] + delta * derivatives[i];
             }
             return delta;
         }
-    }
+    };
 
 //===============================================================
 //
@@ -123,14 +123,14 @@ public class Ode {
         //
 
         public idODE_RK4(final int dim, final deriveFunction_t dr, final Object ud) {
-            this.dimension = dim;
-            this.derive = dr;
-            this.userData = ud;
-            this.tmpState = new float[dim];
-            this.d1 = new float[dim];
-            this.d2 = new float[dim];
-            this.d3 = new float[dim];
-            this.d4 = new float[dim];
+            dimension = dim;
+            derive = dr;
+            userData = ud;
+            tmpState = new float[dim];
+            d1 = new float[dim];
+            d2 = new float[dim];
+            d3 = new float[dim];
+            d4 = new float[dim];
         }
 
 //	virtual				~idODE_RK4( void );//TODO:experiment with overriding finalize
@@ -142,30 +142,30 @@ public class Ode {
             delta = t1 - t0;
             halfDelta = delta * 0.5f;
             // first step
-            this.derive.run(t0, this.userData, state, this.d1);
-            for (i = 0; i < this.dimension; i++) {
-                this.tmpState[i] = state[i] + (halfDelta * this.d1[i]);
+            derive.run(t0, userData, state, d1);
+            for (i = 0; i < dimension; i++) {
+                tmpState[i] = state[i] + halfDelta * d1[i];
             }
             // second step
-            this.derive.run(t0 + halfDelta, this.userData, this.tmpState, this.d2);
-            for (i = 0; i < this.dimension; i++) {
-                this.tmpState[i] = state[i] + (halfDelta * this.d2[i]);
+            derive.run(t0 + halfDelta, userData, tmpState, d2);
+            for (i = 0; i < dimension; i++) {
+                tmpState[i] = state[i] + halfDelta * d2[i];
             }
             // third step
-            this.derive.run(t0 + halfDelta, this.userData, this.tmpState, this.d3);
-            for (i = 0; i < this.dimension; i++) {
-                this.tmpState[i] = state[i] + (delta * this.d3[i]);
+            derive.run(t0 + halfDelta, userData, tmpState, d3);
+            for (i = 0; i < dimension; i++) {
+                tmpState[i] = state[i] + delta * d3[i];
             }
             // fourth step
-            this.derive.run(t0 + delta, this.userData, this.tmpState, this.d4);
+            derive.run(t0 + delta, userData, tmpState, d4);
 
             sixthDelta = delta * (1.0f / 6.0f);
-            for (i = 0; i < this.dimension; i++) {
-                newState[i] = state[i] + (sixthDelta * (this.d1[i] + (2.0f * (this.d2[i] + this.d3[i])) + this.d4[i]));
+            for (i = 0; i < dimension; i++) {
+                newState[i] = state[i] + sixthDelta * (d1[i] + 2.0f * (d2[i] + d3[i]) + d4[i]);
             }
             return delta;
         }
-    }
+    };
 
 //===============================================================
 //
@@ -185,16 +185,16 @@ public class Ode {
         //
 
         public idODE_RK4Adaptive(final int dim, final deriveFunction_t dr, final Object ud) {
-            this.dimension = dim;
-            this.derive = dr;
-            this.userData = ud;
-            this.maxError = 0.01f;
-            this.tmpState = new float[dim];
-            this.d1 = new float[dim];
-            this.d1half = new float[dim];
-            this.d2 = new float[dim];
-            this.d3 = new float[dim];
-            this.d4 = new float[dim];
+            dimension = dim;
+            derive = dr;
+            userData = ud;
+            maxError = 0.01f;
+            tmpState = new float[dim];
+            d1 = new float[dim];
+            d1half = new float[dim];
+            d2 = new float[dim];
+            d3 = new float[dim];
+            d4 = new float[dim];
         }
 //	virtual				~idODE_RK4Adaptive( void );
 
@@ -212,82 +212,82 @@ public class Ode {
                 fourthDelta = delta * 0.25f;
 
                 // first step of first half delta
-                this.derive.run(t0, this.userData, state, this.d1);
-                for (i = 0; i < this.dimension; i++) {
-                    this.tmpState[i] = state[i] + (fourthDelta * this.d1[i]);
+                derive.run(t0, userData, state, d1);
+                for (i = 0; i < dimension; i++) {
+                    tmpState[i] = state[i] + fourthDelta * d1[i];
                 }
                 // second step of first half delta
-                this.derive.run(t0 + fourthDelta, this.userData, this.tmpState, this.d2);
-                for (i = 0; i < this.dimension; i++) {
-                    this.tmpState[i] = state[i] + (fourthDelta * this.d2[i]);
+                derive.run(t0 + fourthDelta, userData, tmpState, d2);
+                for (i = 0; i < dimension; i++) {
+                    tmpState[i] = state[i] + fourthDelta * d2[i];
                 }
                 // third step of first half delta
-                this.derive.run(t0 + fourthDelta, this.userData, this.tmpState, this.d3);
-                for (i = 0; i < this.dimension; i++) {
-                    this.tmpState[i] = state[i] + (halfDelta * this.d3[i]);
+                derive.run(t0 + fourthDelta, userData, tmpState, d3);
+                for (i = 0; i < dimension; i++) {
+                    tmpState[i] = state[i] + halfDelta * d3[i];
                 }
                 // fourth step of first half delta
-                this.derive.run(t0 + halfDelta, this.userData, this.tmpState, this.d4);
+                derive.run(t0 + halfDelta, userData, tmpState, d4);
 
                 sixthDelta = halfDelta * (1.0f / 6.0f);
-                for (i = 0; i < this.dimension; i++) {
-                    this.tmpState[i] = state[i] + (sixthDelta * (this.d1[i] + (2.0f * (this.d2[i] + this.d3[i])) + this.d4[i]));
+                for (i = 0; i < dimension; i++) {
+                    tmpState[i] = state[i] + sixthDelta * (d1[i] + 2.0f * (d2[i] + d3[i]) + d4[i]);
                 }
 
                 // first step of second half delta
-                this.derive.run(t0 + halfDelta, this.userData, this.tmpState, this.d1half);
-                for (i = 0; i < this.dimension; i++) {
-                    this.tmpState[i] = state[i] + (fourthDelta * this.d1half[i]);
+                derive.run(t0 + halfDelta, userData, tmpState, d1half);
+                for (i = 0; i < dimension; i++) {
+                    tmpState[i] = state[i] + fourthDelta * d1half[i];
                 }
                 // second step of second half delta
-                this.derive.run(t0 + halfDelta + fourthDelta, this.userData, this.tmpState, this.d2);
-                for (i = 0; i < this.dimension; i++) {
-                    this.tmpState[i] = state[i] + (fourthDelta * this.d2[i]);
+                derive.run(t0 + halfDelta + fourthDelta, userData, tmpState, d2);
+                for (i = 0; i < dimension; i++) {
+                    tmpState[i] = state[i] + fourthDelta * d2[i];
                 }
                 // third step of second half delta
-                this.derive.run(t0 + halfDelta + fourthDelta, this.userData, this.tmpState, this.d3);
-                for (i = 0; i < this.dimension; i++) {
-                    this.tmpState[i] = state[i] + (halfDelta * this.d3[i]);
+                derive.run(t0 + halfDelta + fourthDelta, userData, tmpState, d3);
+                for (i = 0; i < dimension; i++) {
+                    tmpState[i] = state[i] + halfDelta * d3[i];
                 }
                 // fourth step of second half delta
-                this.derive.run(t0 + delta, this.userData, this.tmpState, this.d4);
+                derive.run(t0 + delta, userData, tmpState, d4);
 
                 sixthDelta = halfDelta * (1.0f / 6.0f);
-                for (i = 0; i < this.dimension; i++) {
-                    newState[i] = state[i] + (sixthDelta * (this.d1[i] + (2.0f * (this.d2[i] + this.d3[i])) + this.d4[i]));
+                for (i = 0; i < dimension; i++) {
+                    newState[i] = state[i] + sixthDelta * (d1[i] + 2.0f * (d2[i] + d3[i]) + d4[i]);
                 }
 
                 // first step of full delta
-                for (i = 0; i < this.dimension; i++) {
-                    this.tmpState[i] = state[i] + (halfDelta * this.d1[i]);
+                for (i = 0; i < dimension; i++) {
+                    tmpState[i] = state[i] + halfDelta * d1[i];
                 }
                 // second step of full delta
-                this.derive.run(t0 + halfDelta, this.userData, this.tmpState, this.d2);
-                for (i = 0; i < this.dimension; i++) {
-                    this.tmpState[i] = state[i] + (halfDelta * this.d2[i]);
+                derive.run(t0 + halfDelta, userData, tmpState, d2);
+                for (i = 0; i < dimension; i++) {
+                    tmpState[i] = state[i] + halfDelta * d2[i];
                 }
                 // third step of full delta
-                this.derive.run(t0 + halfDelta, this.userData, this.tmpState, this.d3);
-                for (i = 0; i < this.dimension; i++) {
-                    this.tmpState[i] = state[i] + (delta * this.d3[i]);
+                derive.run(t0 + halfDelta, userData, tmpState, d3);
+                for (i = 0; i < dimension; i++) {
+                    tmpState[i] = state[i] + delta * d3[i];
                 }
                 // fourth step of full delta
-                this.derive.run(t0 + delta, this.userData, this.tmpState, this.d4);
+                derive.run(t0 + delta, userData, tmpState, d4);
 
                 sixthDelta = delta * (1.0f / 6.0f);
-                for (i = 0; i < this.dimension; i++) {
-                    this.tmpState[i] = state[i] + (sixthDelta * (this.d1[i] + (2.0f * (this.d2[i] + this.d3[i])) + this.d4[i]));
+                for (i = 0; i < dimension; i++) {
+                    tmpState[i] = state[i] + sixthDelta * (d1[i] + 2.0f * (d2[i] + d3[i]) + d4[i]);
                 }
 
                 // get max estimated error
                 max = 0.0f;
-                for (i = 0; i < this.dimension; i++) {
-                    error = idMath.Fabs((newState[i] - this.tmpState[i]) / ((delta * this.d1[i]) + 1e-10f));
+                for (i = 0; i < dimension; i++) {
+                    error = idMath.Fabs((newState[i] - tmpState[i]) / (delta * d1[i] + 1e-10f));
                     if (error > max) {
                         max = error;
                     }
                 }
-                error = max / this.maxError;
+                error = max / maxError;
 
                 if (error <= 1.0f) {
                     return delta * 4.0f;
@@ -302,8 +302,8 @@ public class Ode {
 
         public void SetMaxError(final float err) {
             if (err > 0.0f) {
-                this.maxError = err;
+                maxError = err;
             }
         }
-    }
+    };
 }

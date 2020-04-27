@@ -12,7 +12,6 @@ import static neo.TempDump.sizeof;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_PARTICLE;
 
-import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import neo.Renderer.Model.dynamicModel_t;
@@ -45,24 +44,20 @@ public class Model_prt {
      */
     public static class idRenderModelPrt extends idRenderModelStatic {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		public idRenderModelPrt() {
-            this.particleSystem = null;
+        public idRenderModelPrt() {
+            particleSystem = null;
         }
 
         @Override
         public void InitFromFile(String fileName) {
-            this.name = new idStr(fileName);
-            this.particleSystem = (idDeclParticle) declManager.FindType(DECL_PARTICLE, fileName);
+            name = new idStr(fileName);
+            particleSystem = (idDeclParticle) declManager.FindType(DECL_PARTICLE, fileName);
         }
 
         @Override
         public void TouchData() {
             // Ensure our particle system is added to the list of referenced decls
-            this.particleSystem = (idDeclParticle) declManager.FindType(DECL_PARTICLE, this.name);
+            particleSystem = (idDeclParticle) declManager.FindType(DECL_PARTICLE, name);
         }
 
         @Override
@@ -74,13 +69,13 @@ public class Model_prt {
         public idRenderModel InstantiateDynamicModel(renderEntity_s renderEntity, viewDef_s viewDef, idRenderModel cachedModel) {
             idRenderModelStatic staticModel;
 
-            if ((cachedModel != null) && !RenderSystem_init.r_useCachedDynamicModels.GetBool()) {
+            if (cachedModel != null && !RenderSystem_init.r_useCachedDynamicModels.GetBool()) {
 //		delete cachedModel;
                 cachedModel = null;
             }
 
             // this may be triggered by a model trace or other non-view related source, to which we should look like an empty model
-            if ((renderEntity == null) || (viewDef == null)) {
+            if (renderEntity == null || viewDef == null) {
 //		delete cachedModel;
                 return null;
             }
@@ -110,15 +105,15 @@ public class Model_prt {
                 staticModel.InitEmpty(parametricParticle_SnapshotName);
             }
 
-            final particleGen_t g = new particleGen_t();
+            particleGen_t g = new particleGen_t();
 
             g.renderEnt = renderEntity;
             g.renderView = viewDef.renderView;
             g.origin.Zero();
             g.axis.Identity();
 
-            for (int stageNum = 0; stageNum < this.particleSystem.stages.Num(); stageNum++) {
-                final idParticleStage stage = this.particleSystem.stages.oGet(stageNum);
+            for (int stageNum = 0; stageNum < particleSystem.stages.Num(); stageNum++) {
+                idParticleStage stage = particleSystem.stages.oGet(stageNum);
 
                 if (null == stage.material) {
                     continue;
@@ -131,19 +126,19 @@ public class Model_prt {
                     continue;
                 }
 
-                final idRandom steppingRandom = new idRandom(), steppingRandom2 = new idRandom();
+                idRandom steppingRandom = new idRandom(), steppingRandom2 = new idRandom();
 
-                final int stageAge = (int) ((g.renderView.time + (renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] * 1000)) - (stage.timeOffset * 1000));
-                final int stageCycle = stageAge / stage.cycleMsec;
+                int stageAge = (int) (g.renderView.time + renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] * 1000 - stage.timeOffset * 1000);
+                int stageCycle = stageAge / stage.cycleMsec;
 //                int inCycleTime = stageAge - stageCycle * stage.cycleMsec;
 
                 // some particles will be in this cycle, some will be in the previous cycle
                 steppingRandom.SetSeed(((stageCycle << 10) & idRandom.MAX_RAND) ^ (int) (renderEntity.shaderParms[SHADERPARM_DIVERSITY] * idRandom.MAX_RAND));
                 steppingRandom2.SetSeed((((stageCycle - 1) << 10) & idRandom.MAX_RAND) ^ (int) (renderEntity.shaderParms[SHADERPARM_DIVERSITY] * idRandom.MAX_RAND));
 
-                final int count = stage.totalParticles * stage.NumQuadsPerParticle();
+                int count = stage.totalParticles * stage.NumQuadsPerParticle();
 
-                final int[] surfaceNum = new int[1];
+                int[] surfaceNum = new int[1];
                 modelSurface_s surf;
 
                 if (staticModel.FindSurfaceWithId(stageNum, surfaceNum)) {
@@ -160,7 +155,7 @@ public class Model_prt {
                 }
 
                 int numVerts = 0;
-                final idDrawVert[] verts = surf.geometry.verts;
+                idDrawVert[] verts = surf.geometry.verts;
 
                 for (int index = 0; index < stage.totalParticles; index++) {
                     g.index = index;
@@ -170,15 +165,15 @@ public class Model_prt {
                     steppingRandom2.RandomInt();
 
                     // calculate local age for this index 
-                    final int bunchOffset = (int) ((stage.particleLife * 1000 * stage.spawnBunching * index) / stage.totalParticles);
+                    int bunchOffset = (int) (stage.particleLife * 1000 * stage.spawnBunching * index / stage.totalParticles);
 
-                    final int particleAge = stageAge - bunchOffset;
-                    final int particleCycle = particleAge / stage.cycleMsec;
+                    int particleAge = stageAge - bunchOffset;
+                    int particleCycle = particleAge / stage.cycleMsec;
                     if (particleCycle < 0) {
                         // before the particleSystem spawned
                         continue;
                     }
-                    if ((stage.cycles != 0) && (particleCycle >= stage.cycles)) {
+                    if (stage.cycles != 0 && particleCycle >= stage.cycles) {
                         // cycled systems will only run cycle times
                         continue;
                     }
@@ -189,16 +184,16 @@ public class Model_prt {
                         g.random = new idRandom(steppingRandom2);
                     }
 
-                    final int inCycleTime = particleAge - (particleCycle * stage.cycleMsec);
+                    int inCycleTime = particleAge - particleCycle * stage.cycleMsec;
 
-                    if ((renderEntity.shaderParms[SHADERPARM_PARTICLE_STOPTIME] != 0)
-                            && ((g.renderView.time - inCycleTime) >= (renderEntity.shaderParms[SHADERPARM_PARTICLE_STOPTIME] * 1000))) {
+                    if (renderEntity.shaderParms[SHADERPARM_PARTICLE_STOPTIME] != 0
+                            && g.renderView.time - inCycleTime >= renderEntity.shaderParms[SHADERPARM_PARTICLE_STOPTIME] * 1000) {
                         // don't fire any more particles
                         continue;
                     }
 
                     // supress particles before or after the age clamp
-                    g.frac = inCycleTime / (stage.particleLife * 1000);
+                    g.frac = (float) inCycleTime / (stage.particleLife * 1000);
                     if (g.frac < 0.0f) {
                         // yet to be spawned
                         continue;
@@ -218,27 +213,27 @@ public class Model_prt {
                 }
 
                 // numVerts must be a multiple of 4
-                assert (((numVerts & 3) == 0) && (numVerts <= (4 * count)));
+                assert ((numVerts & 3) == 0 && numVerts <= 4 * count);
 
                 // build the indexes
                 int numIndexes = 0;
-                /*glIndex_t*/ final IntBuffer indexes = surf.geometry.getIndexes().getValues();
+                /*glIndex_t*/ int[] indexes = surf.geometry.indexes;
                 for (int i = 0; i < numVerts; i += 4) {
-                    indexes.put(numIndexes + 0, i);
-                    indexes.put(numIndexes + 1, i + 2);
-                    indexes.put(numIndexes + 2, i + 3);
-                    indexes.put(numIndexes + 3, i);
-                    indexes.put(numIndexes + 4, i + 3);
-                    indexes.put(numIndexes + 5, i + 1);
+                    indexes[numIndexes + 0] = i;
+                    indexes[numIndexes + 1] = i + 2;
+                    indexes[numIndexes + 2] = i + 3;
+                    indexes[numIndexes + 3] = i;
+                    indexes[numIndexes + 4] = i + 3;
+                    indexes[numIndexes + 5] = i + 1;
                     numIndexes += 6;
                 }
 
                 surf.geometry.tangentsCalculated = false;
                 surf.geometry.facePlanesCalculated = false;
                 surf.geometry.numVerts = numVerts;
-                surf.geometry.getIndexes().setNumValues(numIndexes);
+                surf.geometry.numIndexes = numIndexes;
                 surf.geometry.bounds.oSet(stage.bounds);// just always draw the particles
-                final int a = 0;
+                int a = 0;
             }
 
             return staticModel;
@@ -246,12 +241,12 @@ public class Model_prt {
 
         @Override
         public idBounds Bounds(renderEntity_s ent) {
-            return this.particleSystem.bounds;
+            return particleSystem.bounds;
         }
 
         @Override
         public float DepthHack() {
-            return this.particleSystem.depthHack;
+            return particleSystem.depthHack;
         }
 
         @Override
@@ -260,11 +255,11 @@ public class Model_prt {
 
             total += super.Memory();
 
-            if (this.particleSystem != null) {
-                total += sizeof(this.particleSystem);
+            if (particleSystem != null) {
+                total += sizeof(particleSystem);
 
-                for (int i = 0; i < this.particleSystem.stages.Num(); i++) {
-                    total += sizeof(this.particleSystem.stages.oGet(i));
+                for (int i = 0; i < particleSystem.stages.Num(); i++) {
+                    total += sizeof(particleSystem.stages.oGet(i));
                 }
             }
 
@@ -272,5 +267,5 @@ public class Model_prt {
         }
 //
         private idDeclParticle particleSystem;
-    }
+    };
 }

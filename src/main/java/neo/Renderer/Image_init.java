@@ -26,6 +26,7 @@ import static neo.Renderer.Material.textureRepeat_t.TR_CLAMP;
 import static neo.Renderer.Material.textureRepeat_t.TR_CLAMP_TO_BORDER;
 import static neo.Renderer.Material.textureRepeat_t.TR_CLAMP_TO_ZERO;
 import static neo.Renderer.Material.textureRepeat_t.TR_REPEAT;
+import static neo.Renderer.qgl.qglTexParameterfv;
 import static neo.Renderer.tr_local.FALLOFF_TEXTURE_SIZE;
 import static neo.Renderer.tr_local.FOG_ENTER_SIZE;
 import static neo.Renderer.tr_local.glConfig;
@@ -34,27 +35,25 @@ import static neo.TempDump.NOT;
 import static neo.TempDump.flatten;
 import static neo.TempDump.wrapToNativeBuffer;
 import static neo.idlib.Lib.idLib.common;
-import static neo.open.gl.QGL.qglTexParameterfv;
-import static neo.open.gl.QGLConstantsIfc.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-import static neo.open.gl.QGLConstantsIfc.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_2D;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_BORDER_COLOR;
+import static org.lwjgl.opengl.EXTTextureCompressionS3TC.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+import static org.lwjgl.opengl.EXTTextureCompressionS3TC.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_BORDER_COLOR;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
-import neo.TempDump;
+import org.lwjgl.BufferUtils;
+
 import neo.Renderer.Image.GeneratorFunction;
 import neo.Renderer.Image.idImage;
-import neo.Renderer.Image.idImageManager;
 import neo.framework.CmdSystem.cmdFunction_t;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.cmp_t;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
-import neo.open.Nio;
 
 /**
  *
@@ -83,7 +82,7 @@ public class Image_init {
         static final int IC_WORLDGEOMETRY = 7;
         static final int IC_OTHER = 8;
         static final int IC_COUNT = 9;
-    }
+    };
 
     static class imageClassificate_t {
 
@@ -101,10 +100,10 @@ public class Image_init {
             this.maxHeight = maxHeight;
         }
 
-    }
+    };
 
     static class intList extends idList< Integer> {
-    }
+    };
 
     static final imageClassificate_t[] IC_Info = {
         new imageClassificate_t("models/characters", "Characters", IC_NPC, 512, 512),
@@ -209,31 +208,31 @@ public class Image_init {
             totalSize = 0;
 
 //	sortedImage_t	[]sortedArray = (sortedImage_t *)alloca( sizeof( sortedImage_t ) * globalImages.images.Num() );
-            final sortedImage_t[] sortedArray = new sortedImage_t[globalImages.images.Num()];
+            sortedImage_t[] sortedArray = new sortedImage_t[globalImages.images.Num()];
 
             for (i = 0; i < globalImages.images.Num(); i++) {
                 image = globalImages.images.oGet(i);
 
                 if (uncompressedOnly) {
-                    if (((image.internalFormat >= GL_COMPRESSED_RGB_S3TC_DXT1_EXT) && (image.internalFormat <= GL_COMPRESSED_RGBA_S3TC_DXT5_EXT))
-                            || (image.internalFormat == 0x80E5)) {
+                    if ((image.internalFormat >= GL_COMPRESSED_RGB_S3TC_DXT1_EXT && image.internalFormat <= GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)
+                            || image.internalFormat == 0x80E5) {
                         continue;
                     }
                 }
 
-                if ((matchTag != 0) && (image.classification != matchTag)) {
+                if (matchTag != 0 && image.classification != matchTag) {
                     continue;
                 }
-                if (unloaded && (image.texNum != idImage.TEXTURE_NOT_LOADED)) {
+                if (unloaded && image.texNum != idImage.TEXTURE_NOT_LOADED) {
                     continue;
                 }
                 if (partial && !image.isPartialImage) {
                     continue;
                 }
-                if (cached && ((null == image.partialImage) || (image.texNum == idImage.TEXTURE_NOT_LOADED))) {
+                if (cached && (null == image.partialImage || image.texNum == idImage.TEXTURE_NOT_LOADED)) {
                     continue;
                 }
-                if (uncached && ((null == image.partialImage) || (image.texNum != idImage.TEXTURE_NOT_LOADED))) {
+                if (uncached && (null == image.partialImage || image.texNum != idImage.TEXTURE_NOT_LOADED)) {
                     continue;
                 }
 
@@ -289,26 +288,26 @@ public class Image_init {
 
             if (byClassification) {
 
-                final idList<Integer>[] classifications = new idList[IC_COUNT];
+                idList<Integer>[] classifications = new idList[IC_COUNT];
 
                 for (i = 0; i < count; i++) {
-                    final int cl = ClassifyImage(sortedArray[i].image.imgName.getData());
+                    int cl = ClassifyImage(sortedArray[i].image.imgName.toString());
                     classifications[cl].Append(i);
                 }
 
                 for (i = 0; i < IC_COUNT; i++) {
                     partialSize = 0;
-                    final idList< Integer> overSizedList = new idList<>();
+                    idList< Integer> overSizedList = new idList<>();
                     for (j = 0; j < classifications[i].Num(); j++) {
                         partialSize += sortedArray[ classifications[i].oGet(j)].image.StorageSize();
                         if (overSized) {
-                            if ((sortedArray[ classifications[ i].oGet(j)].image.uploadWidth > IC_Info[i].maxWidth) && (sortedArray[ classifications[ i].oGet(j)].image.uploadHeight > IC_Info[i].maxHeight)) {
+                            if (sortedArray[ classifications[ i].oGet(j)].image.uploadWidth > IC_Info[i].maxWidth && sortedArray[ classifications[ i].oGet(j)].image.uploadHeight > IC_Info[i].maxHeight) {
                                 overSizedList.Append(classifications[ i].oGet(j));
                             }
                         }
                     }
                     common.Printf(" Classification %s contains %d images using %5.1f megabytes\n", IC_Info[i].desc, classifications[i].Num(), partialSize / (1024 * 1024.0));
-                    if (overSized && (overSizedList.Num() != 0)) {
+                    if (overSized && overSizedList.Num() != 0) {
                         common.Printf("  The following images may be oversized\n");
                         for (j = 0; j < overSizedList.Num(); j++) {
                             common.Printf("    ");
@@ -320,7 +319,7 @@ public class Image_init {
             }
 
         }
-    }
+    };
 
     /*
      ===============
@@ -350,18 +349,18 @@ public class Image_init {
                 return;
             }
 
-            final idStr baseName = new idStr(args.Argv(1));
+            idStr baseName = new idStr(args.Argv(1));
             common.SetRefreshOnPrint(true);
 
             for (int frameNum = 1; frameNum < 10000; frameNum++) {
 //		final char	[]filename=new char[MAX_IMAGE_NAME];
                 String filename;
-                final ByteBuffer[] pics = new ByteBuffer[6];//Good God!
-                final int[] width = {0}, height = {0};
+                ByteBuffer[] pics = new ByteBuffer[6];//Good God!
+                int[] width = {0}, height = {0};
                 int side;
                 final int[] orderRemap = {1, 3, 4, 2, 5, 6};
                 for (side = 0; side < 6; side++) {
-                    filename = String.format("%s%d%04i.tga", baseName.getData(), orderRemap[side], frameNum);
+                    filename = String.format("%s%d%04i.tga", baseName.toString(), orderRemap[side], frameNum);
 
                     common.Printf("reading %s\n", filename);
                     pics[side] = R_LoadImage(filename, width, height, null, true);
@@ -397,7 +396,7 @@ public class Image_init {
                 }
 
                 if (side != 6) {
-                    for (final int i = 0; i < side; side++) {
+                    for (int i = 0; i < side; side++) {
                         pics[side] = null;//Mem_Free(pics[side]);
 
                     }
@@ -413,7 +412,7 @@ public class Image_init {
                     pics[side] = null;//Mem_Free(pics[side]);
 
                 }
-                filename = String.format("%sCM%04i.tga", baseName.getData(), frameNum);
+                filename = String.format("%sCM%04i.tga", baseName.toString(), frameNum);
 
                 common.Printf("writing %s\n", filename);
                 R_WriteTGA(filename, combined, width[0], height[0] * 6);
@@ -422,7 +421,7 @@ public class Image_init {
             }
             common.SetRefreshOnPrint(false);
         }
-    }
+    };
 
     /*
      ===============
@@ -478,13 +477,13 @@ public class Image_init {
 //                System.out.printf("%d:%d\n", i, qglGetError());
             }
         }
-    }
+    };
 
     static class sortedImage_t {
 
         idImage image;
         int size;
-    }
+    };
 
     /*
    
@@ -516,7 +515,7 @@ public class Image_init {
 
             image.GenerateImage(data, 256, 1, TF_NEAREST, false, TR_CLAMP, TD_HIGH_QUALITY);
         }
-    }
+    };
 
     /*
      ================
@@ -543,7 +542,7 @@ public class Image_init {
 
             for (x = 0; x < 256; x++) {
                 float f = x / 255.f;
-                if (TempDump.isDeadCodeTrue()) {
+                if (false) {
                     f = (float) Math.pow(f, 16);
                 } else {
                     // this is the behavior of the hacked up fragment programs that
@@ -554,14 +553,14 @@ public class Image_init {
                     }
                     f = f * f;
                 }
-                final int b = (int) (f * 255);
+                int b = (int) (f * 255);
 
                 data.putInt(x * 4, b);//TODO:check whether setting 4 bytes to an int is the same as what we're doing here!
             }
 
             image.GenerateImage(data, 256, 1, TF_LINEAR, false, TR_CLAMP, TD_HIGH_QUALITY);
         }
-    }
+    };
 
 
     /*
@@ -589,10 +588,10 @@ public class Image_init {
 
 //	memset( data, 0, sizeof( data ) );
             for (x = 0; x < 256; x++) {
-                final float f = x / 255.0f;
+                float f = x / 255.0f;
                 for (y = 0; y < 256; y++) {
 
-                    final int b = (int) (Math.pow(f, y) * 255.0f);
+                    int b = (int) (Math.pow(f, y) * 255.0f);
                     if (b == 0) {
                         // as soon as b equals zero all remaining values in this column are going to be zero
                         // we early out to avoid pow() underflows
@@ -605,7 +604,7 @@ public class Image_init {
 
             image.GenerateImage(data, 256, 256, TF_LINEAR, false, TR_CLAMP, TD_HIGH_QUALITY);
         }
-    }
+    };
 
     /*
      ================
@@ -636,7 +635,7 @@ public class Image_init {
 
             image.GenerateImage(data, 256, 1, TF_NEAREST, false, TR_CLAMP, TD_HIGH_QUALITY);
         }
-    }
+    };
 
     static class R_DefaultImage extends GeneratorFunction {
 
@@ -653,7 +652,7 @@ public class Image_init {
         public void run(idImage image) {
             image.MakeDefault();
         }
-    }
+    };
 
     static class R_WhiteImage extends GeneratorFunction {
 
@@ -675,7 +674,7 @@ public class Image_init {
             Arrays.fill(data.array(), (byte) 255);
             image.GenerateImage(data, DEFAULT_SIZE, DEFAULT_SIZE, TF_DEFAULT, false, TR_REPEAT, TD_DEFAULT);
         }
-    }
+    };
 
     static class R_BlackImage extends GeneratorFunction {
 
@@ -696,7 +695,7 @@ public class Image_init {
 //	memset( data, 0, sizeof( data ) );
             image.GenerateImage(data, DEFAULT_SIZE, DEFAULT_SIZE, TF_DEFAULT, false, TR_REPEAT, TD_DEFAULT);
         }
-    }
+    };
 // the size determines how far away from the edge the blocks start fading
     static final int BORDER_CLAMP_SIZE = 32;
 
@@ -749,12 +748,12 @@ public class Image_init {
                 return;
             }
             // explicit zero border
-            final FloatBuffer color = Nio.newFloatBuffer(4);
+            final FloatBuffer color = BufferUtils.createFloatBuffer(4);
 //            color[0] = color[1] = color[2] = color[3] = 0.0f;
             qglTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
 //            qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, 0.0f);
         }
-    }
+    };
 
     static class R_RGBA8Image extends GeneratorFunction {
 
@@ -779,7 +778,7 @@ public class Image_init {
 
             image.GenerateImage(data, DEFAULT_SIZE, DEFAULT_SIZE, TF_DEFAULT, false, TR_REPEAT, TD_HIGH_QUALITY);
         }
-    }
+    };
 
     static class R_RGB8Image extends GeneratorFunction {
 
@@ -804,7 +803,7 @@ public class Image_init {
 
             image.GenerateImage(data, DEFAULT_SIZE, DEFAULT_SIZE, TF_DEFAULT, false, TR_REPEAT, TD_HIGH_QUALITY);
         }
-    }
+    };
 
     static class R_AlphaNotchImage extends GeneratorFunction {
 
@@ -834,7 +833,7 @@ public class Image_init {
 
             image.GenerateImage(data, 2, 1, TF_NEAREST, false, TR_CLAMP, TD_HIGH_QUALITY);
         }
-    }
+    };
 
     static class R_FlatNormalImage extends GeneratorFunction {
 
@@ -852,8 +851,8 @@ public class Image_init {
             final byte[][][] data = new byte[DEFAULT_SIZE][DEFAULT_SIZE][4];
             int i;
 
-            final int red = (idImageManager.image_useNormalCompression.GetInteger() == 1) ? 0 : 3;
-            final int alpha = (red == 0) ? 3 : 0;
+            int red = (globalImages.image_useNormalCompression.GetInteger() == 1) ? 0 : 3;
+            int alpha = (red == 0) ? 3 : 0;
             // flat normal map for default bunp mapping
             for (i = 0; i < 4; i++) {
                 data[0][i][red] = (byte) 128;
@@ -863,7 +862,7 @@ public class Image_init {
             }
             image.GenerateImage(ByteBuffer.wrap(flatten(data)), 2, 2, TF_DEFAULT, true, TR_REPEAT, TD_HIGH_QUALITY);
         }
-    }
+    };
 
     static class R_AmbientNormalImage extends GeneratorFunction {
 
@@ -882,7 +881,7 @@ public class Image_init {
             final byte[] data = new byte[DEFAULT_SIZE];
             int i;
 
-            final int red = (idImageManager.image_useNormalCompression.GetInteger() == 1) ? 0 : 3;
+            final int red = (globalImages.image_useNormalCompression.GetInteger() == 1) ? 0 : 3;
             final int alpha = (red == 0) ? 3 : 0;
             // flat normal map for default bunp mapping
             for (i = 0; i < DEFAULT_SIZE; i += 4) {
@@ -898,7 +897,7 @@ public class Image_init {
             // this must be a cube map for fragment programs to simply substitute for the normalization cube map
             image.GenerateCubeImage(pics, 2, TF_DEFAULT, true, TD_HIGH_QUALITY);
         }
-    }
+    };
     static final int NORMAL_MAP_SIZE = 32;
 
     /**
@@ -911,10 +910,10 @@ public class Image_init {
     static void getCubeVector(int i, int cubesize, int x, int y, float[] vector) {
         float s, t, sc, tc, mag;
 
-        s = (x + 0.5f) / cubesize;
-        t = (y + 0.5f) / cubesize;
-        sc = (s * 2.0f) - 1.0f;
-        tc = (t * 2.0f) - 1.0f;
+        s = ((float) x + 0.5f) / (float) cubesize;
+        t = ((float) y + 0.5f) / (float) cubesize;
+        sc = s * 2.0f - 1.0f;
+        tc = t * 2.0f - 1.0f;
 
         switch (i) {
             case 0:
@@ -949,7 +948,7 @@ public class Image_init {
                 break;
         }
 
-        mag = idMath.InvSqrt((vector[0] * vector[0]) + (vector[1] * vector[1]) + (vector[2] * vector[2]));
+        mag = idMath.InvSqrt(vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2]);
         vector[0] *= mag;
         vector[1] *= mag;
         vector[2] *= mag;
@@ -974,23 +973,23 @@ public class Image_init {
 
         @Override
         public void run(idImage image) {
-            final float[] vector = new float[3];
+            float[] vector = new float[3];
             int i, x, y;
-            final ByteBuffer[] pixels = new ByteBuffer[6];//[size*size*4*6];
+            ByteBuffer[] pixels = new ByteBuffer[6];//[size*size*4*6];
             int size;
 
             size = NORMAL_MAP_SIZE;
 
 //	pixels[0] = (GLubyte[]) Mem_Alloc(size*size*4*6);
             for (i = 0; i < 6; i++) {
-                pixels[i] = Nio.newByteBuffer(size * size * 4);
+                pixels[i] = BufferUtils.createByteBuffer(size * size * 4);
                 for (y = 0; y < size; y++) {
                     for (x = 0; x < size; x++) {
                         getCubeVector(i, size, x, y, vector);
-                        pixels[i].put((4 * ((y * size) + x)) + 0, (byte) (128 + (127 * vector[0])));
-                        pixels[i].put((4 * ((y * size) + x)) + 1, (byte) (128 + (127 * vector[1])));
-                        pixels[i].put((4 * ((y * size) + x)) + 2, (byte) (128 + (127 * vector[2])));
-                        pixels[i].put((4 * ((y * size) + x)) + 3, (byte) 255);
+                        pixels[i].put(4 * (y * size + x) + 0, (byte) (128 + 127 * vector[0]));
+                        pixels[i].put(4 * (y * size + x) + 1, (byte) (128 + 127 * vector[1]));
+                        pixels[i].put(4 * (y * size + x) + 2, (byte) (128 + 127 * vector[2]));
+                        pixels[i].put(4 * (y * size + x) + 3, (byte) 255);
                     }
                 }
             }
@@ -999,7 +998,7 @@ public class Image_init {
 
 //            Mem_Free(pixels[0]);
         }
-    }
+    };
 
     /*
      ================
@@ -1022,10 +1021,10 @@ public class Image_init {
         @Override
         public void run(idImage image) {
             int x, y;
-            final byte[][][] data = new byte[16][FALLOFF_TEXTURE_SIZE][4];
+            byte[][][] data = new byte[16][FALLOFF_TEXTURE_SIZE][4];
 
 //	memset( data, 0, sizeof( data ) );
-            for (x = 1; x < (FALLOFF_TEXTURE_SIZE - 1); x++) {
+            for (x = 1; x < FALLOFF_TEXTURE_SIZE - 1; x++) {
                 for (y = 1; y < 15; y++) {
                     data[y][x][0] = (byte) 255;
                     data[y][x][1] = (byte) 255;
@@ -1036,7 +1035,7 @@ public class Image_init {
             image.GenerateImage(ByteBuffer.wrap(flatten(data)), FALLOFF_TEXTURE_SIZE, 16,
                     TF_DEFAULT, false, TR_CLAMP_TO_ZERO, TD_HIGH_QUALITY);
         }
-    }
+    };
     /*
      ================
      R_FogImage
@@ -1061,10 +1060,10 @@ public class Image_init {
         @Override
         public void run(idImage image) {
             int x, y;
-            final byte[][][] data = new byte[FOG_SIZE][FOG_SIZE][4];
+            byte[][][] data = new byte[FOG_SIZE][FOG_SIZE][4];
             int b;
 
-            final float[] step = new float[256];
+            float[] step = new float[256];
             int i;
             float remaining = 1.0f;
             for (i = 0; i < 256; i++) {
@@ -1076,9 +1075,9 @@ public class Image_init {
                 for (y = 0; y < FOG_SIZE; y++) {
                     float d;
 
-                    d = idMath.Sqrt(((x - (FOG_SIZE / 2)) * (x - (FOG_SIZE / 2)))
-                            + ((y - (FOG_SIZE / 2)) * (y - (FOG_SIZE / 2))));
-                    d /= (FOG_SIZE / 2) - 1;
+                    d = idMath.Sqrt((x - FOG_SIZE / 2) * (x - FOG_SIZE / 2)
+                            + (y - FOG_SIZE / 2) * (y - FOG_SIZE / 2));
+                    d /= FOG_SIZE / 2 - 1;
 
                     b = (byte) (d * 255);
                     if (b <= 0) {
@@ -1087,7 +1086,7 @@ public class Image_init {
                         b = 255;
                     }
                     b = (byte) (255 * (1.0 - step[b]));
-                    if ((x == 0) || (x == (FOG_SIZE - 1)) || (y == 0) || (y == (FOG_SIZE - 1))) {
+                    if (x == 0 || x == FOG_SIZE - 1 || y == 0 || y == FOG_SIZE - 1) {
                         b = 255;		// avoid clamping issues
                     }
                     data[y][x][0]
@@ -1100,7 +1099,7 @@ public class Image_init {
             image.GenerateImage(ByteBuffer.wrap(flatten(data)), FOG_SIZE, FOG_SIZE,
                     TF_LINEAR, false, TR_CLAMP, TD_HIGH_QUALITY);
         }
-    }
+    };
     /*
      ================
      FogFraction
@@ -1112,14 +1111,14 @@ public class Image_init {
     static final float DEEP_RANGE = -30;
 
     static float FogFraction(float viewHeight, float targetHeight) {
-        final float total = idMath.Fabs(targetHeight - viewHeight);
+        float total = idMath.Fabs(targetHeight - viewHeight);
 
 //	return targetHeight >= 0 ? 0 : 1.0;
         // only ranges that cross the ramp range are special
-        if ((targetHeight > 0) && (viewHeight > 0)) {
+        if (targetHeight > 0 && viewHeight > 0) {
             return 0.0f;
         }
-        if ((targetHeight < -RAMP_RANGE) && (viewHeight < -RAMP_RANGE)) {
+        if (targetHeight < -RAMP_RANGE && viewHeight < -RAMP_RANGE) {
             return 1.0f;
         }
 
@@ -1148,25 +1147,25 @@ public class Image_init {
             rampBottom = -RAMP_RANGE;
         }
 
-        final float rampSlope = 1.0f / RAMP_RANGE;
+        float rampSlope = 1.0f / RAMP_RANGE;
 
         if (0.0f == total) {
             return -viewHeight * rampSlope;
         }
 
-        final float ramp = (1.0f - (((rampTop * rampSlope) + (rampBottom * rampSlope)) * -0.5f)) * (rampTop - rampBottom);
+        float ramp = (1.0f - (rampTop * rampSlope + rampBottom * rampSlope) * -0.5f) * (rampTop - rampBottom);
 
         float frac = (total - above - ramp) / total;
 
         // after it gets moderately deep, always use full value
-        final float deepest = viewHeight < targetHeight ? viewHeight : targetHeight;
+        float deepest = viewHeight < targetHeight ? viewHeight : targetHeight;
 
-        final float deepFrac = deepest / DEEP_RANGE;
+        float deepFrac = deepest / DEEP_RANGE;
         if (deepFrac >= 1.0) {
             return 1.0f;
         }
 
-        frac = (frac * (1.0f - deepFrac)) + deepFrac;
+        frac = frac * (1.0f - deepFrac) + deepFrac;
 
         return frac;
     }
@@ -1193,7 +1192,7 @@ public class Image_init {
         @Override
         public void run(idImage image) {
             int x, y;
-            final byte[][][] data = new byte[FOG_ENTER_SIZE][FOG_ENTER_SIZE][4];
+            byte[][][] data = new byte[FOG_ENTER_SIZE][FOG_ENTER_SIZE][4];
             int b;
 
             for (x = 0; x < FOG_ENTER_SIZE; x++) {
@@ -1219,7 +1218,7 @@ public class Image_init {
             image.GenerateImage(ByteBuffer.wrap(flatten(data)), FOG_ENTER_SIZE, FOG_ENTER_SIZE,
                     TF_LINEAR, false, TR_CLAMP, TD_HIGH_QUALITY);
         }
-    }
+    };
     /*
      ================
      R_QuadraticImage
@@ -1243,14 +1242,14 @@ public class Image_init {
         @Override
         public void run(idImage image) {
             int x, y;
-            final byte[][][] data = new byte[QUADRATIC_HEIGHT][QUADRATIC_WIDTH][4];
+            byte[][][] data = new byte[QUADRATIC_HEIGHT][QUADRATIC_WIDTH][4];
             int b;
 
             for (x = 0; x < QUADRATIC_WIDTH; x++) {
                 for (y = 0; y < QUADRATIC_HEIGHT; y++) {
                     float d;
 
-                    d = x - ((QUADRATIC_WIDTH / 2) - 0.5f);
+                    d = x - (QUADRATIC_WIDTH / 2 - 0.5f);
                     d = idMath.Fabs(d);
                     d -= 0.5f;
                     d /= QUADRATIC_WIDTH / 2;
@@ -1274,7 +1273,7 @@ public class Image_init {
             image.GenerateImage(ByteBuffer.wrap(flatten(data)), QUADRATIC_WIDTH, QUADRATIC_HEIGHT,
                     TF_DEFAULT, false, TR_CLAMP, TD_HIGH_QUALITY);
         }
-    }
+    };
 
     /*
      =======================
@@ -1295,5 +1294,5 @@ public class Image_init {
             }
             return idStr.Icmp(ea.image.imgName, eb.image.imgName);
         }
-    }
+    };
 }

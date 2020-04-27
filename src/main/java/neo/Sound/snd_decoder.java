@@ -3,10 +3,31 @@ package neo.Sound;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_OGG;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_PCM;
 import static neo.Sound.snd_system.soundSystemLocal;
-import static neo.open.Vorbis.getErrorMessage;
+import static neo.idlib.math.Simd.SIMDProcessor;
 import static neo.sys.sys_public.CRITICAL_SECTION_ONE;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
+import static org.lwjgl.stb.STBVorbis.VORBIS__no_error;
+import static org.lwjgl.stb.STBVorbis.VORBIS_bad_packet_type;
+import static org.lwjgl.stb.STBVorbis.VORBIS_cant_find_last_page;
+import static org.lwjgl.stb.STBVorbis.VORBIS_continued_packet_flag_invalid;
+import static org.lwjgl.stb.STBVorbis.VORBIS_feature_not_supported;
+import static org.lwjgl.stb.STBVorbis.VORBIS_file_open_failure;
+import static org.lwjgl.stb.STBVorbis.VORBIS_incorrect_stream_serial_number;
+import static org.lwjgl.stb.STBVorbis.VORBIS_invalid_api_mixing;
+import static org.lwjgl.stb.STBVorbis.VORBIS_invalid_first_page;
+import static org.lwjgl.stb.STBVorbis.VORBIS_invalid_setup;
+import static org.lwjgl.stb.STBVorbis.VORBIS_invalid_stream;
+import static org.lwjgl.stb.STBVorbis.VORBIS_invalid_stream_structure_version;
+import static org.lwjgl.stb.STBVorbis.VORBIS_missing_capture_pattern;
+import static org.lwjgl.stb.STBVorbis.VORBIS_need_more_data;
+import static org.lwjgl.stb.STBVorbis.VORBIS_ogg_skeleton_not_supported;
+import static org.lwjgl.stb.STBVorbis.VORBIS_outofmem;
+import static org.lwjgl.stb.STBVorbis.VORBIS_seek_failed;
+import static org.lwjgl.stb.STBVorbis.VORBIS_seek_invalid;
+import static org.lwjgl.stb.STBVorbis.VORBIS_seek_without_length;
+import static org.lwjgl.stb.STBVorbis.VORBIS_too_many_channels;
+import static org.lwjgl.stb.STBVorbis.VORBIS_unexpected_eof;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -14,11 +35,14 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.lwjgl.BufferUtils;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.stb.STBVorbis;
+
 import neo.TempDump.TODO_Exception;
 import neo.Sound.snd_cache.idSoundSample;
 import neo.Sound.snd_local.idSampleDecoder;
 import neo.framework.File_h.idFile_Memory;
-import neo.open.Vorbis;
 
 /**
  *
@@ -129,7 +153,7 @@ public class snd_decoder {
      ====================
      */
     static long ov_openFile(final idFile_Memory f, int[] error) {
-        return Vorbis.openMemory(f.GetDataPtr(), error);
+        return STBVorbis.stb_vorbis_open_memory(f.GetDataPtr(), error, null);
     }
 
     /*
@@ -146,7 +170,7 @@ public class snd_decoder {
         private idSoundSample lastSample;         // last sample being decoded
         private int           lastSampleOffset;   // last offset into the decoded sample
         private int           lastDecodeTime;     // last time decoding sound
-        private final idFile_Memory file;               // encoded file in memory
+        private idFile_Memory file;               // encoded file in memory
         //
         private Long          ogg;                // OggVorbis file
         //
@@ -162,13 +186,13 @@ public class snd_decoder {
         public void Decode(idSoundSample sample, int sampleOffset44k, int sampleCount44k, FloatBuffer dest) {
             int readSamples44k;
 
-            if ((sample.objectInfo.wFormatTag != this.lastFormat) || (sample != this.lastSample)) {
+            if (sample.objectInfo.wFormatTag != lastFormat || sample != lastSample) {
                 ClearDecoder();
             }
 
-            this.lastDecodeTime = soundSystemLocal.CurrentSoundTime;
+            lastDecodeTime = soundSystemLocal.CurrentSoundTime;
 
-            if (this.failed) {
+            if (failed) {
 //                memset(dest, 0, sampleCount44k * sizeof(dest[0]));
                 dest.clear();
                 return;
@@ -208,14 +232,14 @@ public class snd_decoder {
             Sys_EnterCriticalSection(CRITICAL_SECTION_ONE);
 
             try {
-                switch (this.lastFormat) {
+                switch (lastFormat) {
                     case WAVE_FORMAT_TAG_PCM: {
                         break;
                     }
                     case WAVE_FORMAT_TAG_OGG: {
 //                    ov_clear(ogg);
 //                    memset(ogg, 0, sizeof(ogg));
-                        this.ogg = null;
+                        ogg = null;
                         break;
                     }
                 }
@@ -228,20 +252,20 @@ public class snd_decoder {
 
         @Override
         public idSoundSample GetSample() {
-            return this.lastSample;
+            return lastSample;
         }
 
         @Override
         public int GetLastDecodeTime() {
-            return this.lastDecodeTime;
+            return lastDecodeTime;
         }
 
         public void Clear() {
-            this.failed = false;
-            this.lastFormat = WAVE_FORMAT_TAG_PCM;
-            this.lastSample = null;
-            this.lastSampleOffset = 0;
-            this.lastDecodeTime = 0;
+            failed = false;
+            lastFormat = WAVE_FORMAT_TAG_PCM;
+            lastSample = null;
+            lastSampleOffset = 0;
+            lastDecodeTime = 0;
         }
 
         public int DecodePCM(idSoundSample sample, int sampleOffset44k, int sampleCount44k, float[] dest) {
@@ -284,64 +308,74 @@ public class snd_decoder {
         public int DecodeOGG(idSoundSample sample, int sampleOffset44k, int sampleCount44k, FloatBuffer dest) {
             int readSamples, totalSamples;
 
-            final int shift = 22050 / sample.objectInfo.nSamplesPerSec;
-            final int sampleOffset = sampleOffset44k >> shift;
-            final int sampleCount = sampleCount44k >> shift;
+            int shift = (int) (22050 / sample.objectInfo.nSamplesPerSec);
+            int sampleOffset = sampleOffset44k >> shift;
+            int sampleCount = sampleCount44k >> shift;
 
             // open OGG file if not yet opened
-            if (this.lastSample == null) {
+            if (lastSample == null) {
                 // make sure there is enough space for another decoder
 //                if (decoderMemoryAllocator.GetFreeBlockMemory() < MIN_OGGVORBIS_MEMORY) {
 //                    return 0;
 //                }
                 if (sample.nonCacheData == null) {
                     assert (false);    // this should never happen
-                    this.failed = true;
+                    failed = true;
                     return 0;
                 }
-                this.file.SetData(sample.nonCacheData, sample.objectMemSize);
-                final int[] error = {0};
-                this.ogg = ov_openFile(this.file, error);
+                file.SetData(sample.nonCacheData, sample.objectMemSize);
+                int[] error = {0};
+                ogg = ov_openFile(file, error);
                 if (error[0] != 0) {
                     Logger.getLogger(snd_decoder.class.getName()).log(Level.SEVERE, getErrorMessage(error[0]));
-                    this.failed = true;
+                    failed = true;
                     return 0;
                 }
-                this.lastFormat = WAVE_FORMAT_TAG_OGG;
-                this.lastSample = sample;
+                lastFormat = WAVE_FORMAT_TAG_OGG;
+                lastSample = sample;
             }
 
             // seek to the right offset if necessary
-            if (sampleOffset != this.lastSampleOffset) {
-                if (!Vorbis.seek(this.ogg, (sampleOffset / sample.objectInfo.nChannels))) {
-                    this.failed = true;
+            if (sampleOffset != lastSampleOffset) {
+                if (!STBVorbis.stb_vorbis_seek(ogg, (sampleOffset / sample.objectInfo.nChannels))) {
+                    failed = true;
                     return 0;
                 }
             }
 
-            this.lastSampleOffset = sampleOffset;
+            lastSampleOffset = sampleOffset;
 
             // decode OGG samples
             totalSamples = sampleCount;
             readSamples = 0;
             do {
-                int ret = Vorbis.getSample(sample.objectInfo.nChannels, totalSamples, this.ogg);
+                PointerBuffer samples = PointerBuffer.allocateDirect(sample.objectInfo.nChannels);
+                final int num_samples = totalSamples / sample.objectInfo.nChannels;
+                for (int i = 0; i < sample.objectInfo.nChannels; i++) {
+                    samples.put(i, BufferUtils.createFloatBuffer(num_samples));
+                }
+                int ret = STBVorbis.stb_vorbis_get_samples_float(ogg, samples, num_samples);
                 if (ret == 0) {
-                    this.failed = true;
+                    failed = true;
                     break;
                 }
                 if (ret < 0) {
-                    this.failed = true;
+                    failed = true;
                     return 0;
                 }
 
                 ret *= sample.objectInfo.nChannels;
 
+                float[][] samplesArray = new float[sample.objectInfo.nChannels][num_samples];
+                for (int i = 0; i < sample.objectInfo.nChannels; i++) {
+                    samples.getFloatBuffer(i, num_samples).get(samplesArray[i]);
+                }
+                SIMDProcessor.UpSampleOGGTo44kHz(dest, (readSamples << shift), samplesArray, ret, sample.objectInfo.nSamplesPerSec, sample.objectInfo.nChannels);
                 readSamples += ret;
                 totalSamples -= ret;
             } while (totalSamples > 0);
 
-            this.lastSampleOffset += readSamples;
+            lastSampleOffset += readSamples;
 
             return (readSamples << shift);
         }
@@ -349,4 +383,51 @@ public class snd_decoder {
 
 //    static final idBlockAlloc<idSampleDecoderLocal> sampleDecoderAllocator = new idBlockAlloc<>(64);
 
+    private static String getErrorMessage(final int errorCode) {
+        switch (errorCode) {
+            case VORBIS__no_error:
+                return "VORBIS__no_error";
+            case VORBIS_need_more_data:
+                return "VORBIS_need_more_data";
+            case VORBIS_invalid_api_mixing:
+                return "VORBIS_invalid_api_mixing";
+            case VORBIS_outofmem:
+                return "VORBIS_outofmem";
+            case VORBIS_feature_not_supported:
+                return "VORBIS_feature_not_supported";
+            case VORBIS_too_many_channels:
+                return "VORBIS_too_many_channels";
+            case VORBIS_file_open_failure:
+                return "VORBIS_file_open_failure";
+            case VORBIS_seek_without_length:
+                return "VORBIS_seek_without_length";
+            case VORBIS_unexpected_eof:
+                return "VORBIS_unexpected_eof";
+            case VORBIS_seek_invalid:
+                return "VORBIS_seek_invalid";
+            case VORBIS_invalid_setup:
+                return "VORBIS_invalid_setup";
+            case VORBIS_invalid_stream:
+                return "VORBIS_invalid_stream";
+            case VORBIS_missing_capture_pattern:
+                return "VORBIS_missing_capture_pattern";
+            case VORBIS_invalid_stream_structure_version:
+                return "VORBIS_invalid_stream_structure_version";
+            case VORBIS_continued_packet_flag_invalid:
+                return "VORBIS_continued_packet_flag_invalid";
+            case VORBIS_incorrect_stream_serial_number:
+                return "VORBIS_incorrect_stream_serial_number";
+            case VORBIS_invalid_first_page:
+                return "VORBIS_invalid_first_page";
+            case VORBIS_bad_packet_type:
+                return "VORBIS_bad_packet_type";
+            case VORBIS_cant_find_last_page:
+                return "VORBIS_cant_find_last_page";
+            case VORBIS_seek_failed:
+                return "VORBIS_seek_failed";
+            case VORBIS_ogg_skeleton_not_supported:
+                return "VORBIS_ogg_skeleton_not_supported";
+        }
+        return "Unknown error";
+    }
 }

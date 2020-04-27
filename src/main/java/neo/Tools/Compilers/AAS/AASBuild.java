@@ -137,13 +137,13 @@ public class AASBuild {
         //
 
         public idAASBuild() {
-            this.file = null;
-            this.procNodes = null;
-            this.numProcNodes = 0;
-            this.numGravitationalSubdivisions = 0;
-            this.numMergedLeafNodes = 0;
-            this.numLedgeSubdivisions = 0;
-            this.ledgeMap = null;
+            file = null;
+            procNodes = null;
+            numProcNodes = 0;
+            numGravitationalSubdivisions = 0;
+            numMergedLeafNodes = 0;
+            numLedgeSubdivisions = 0;
+            ledgeMap = null;
         }
         // ~idAASBuild();//TODO:deconstructors?
 
@@ -151,25 +151,25 @@ public class AASBuild {
             int i, bit, mask, startTime;
             idMapFile mapFile;
             idBrushList brushList = new idBrushList();
-            final idList<idBrushList> expandedBrushes = new idList<>();
+            idList<idBrushList> expandedBrushes = new idList<>();
             idBrush b;
-            final idBrushBSP bsp = new idBrushBSP();
+            idBrushBSP bsp = new idBrushBSP();
             idStr name;
-            final idAASReach reach = new idAASReach();
-            final idAASCluster cluster = new idAASCluster();
-            final idStrList entityClassNames = new idStrList();
+            idAASReach reach = new idAASReach();
+            idAASCluster cluster = new idAASCluster();
+            idStrList entityClassNames = new idStrList();
 
             startTime = Sys_Milliseconds();
 
             Shutdown();
 
-            this.aasSettings = settings;
+            aasSettings = settings;
 
             name = fileName;
             name.SetFileExtension("map");
 
             mapFile = new idMapFile();
-            if (!mapFile.Parse(name.getData())) {
+            if (!mapFile.Parse(name.toString())) {
 //		delete mapFile;
                 common.Error("Couldn't load map file: '%s'", name);
                 return false;
@@ -196,14 +196,14 @@ public class AASBuild {
             brushList.Merge(MergeAllowed.INSTANCE);//TODO:like cmp_t
 
             // if there is a .proc file newer than the .map file
-            if (LoadProcBSP(fileName.getData(), mapFile.GetFileTime())) {
+            if (LoadProcBSP(fileName.toString(), mapFile.GetFileTime())) {
                 ClipBrushSidesWithProcBSP(brushList);
                 DeleteProcBSP();
             }
 
             // make copies of the brush list
             expandedBrushes.Append(brushList);
-            for (i = 1; i < this.aasSettings.numBoundingBoxes; i++) {
+            for (i = 1; i < aasSettings.numBoundingBoxes; i++) {
                 expandedBrushes.Append(brushList.Copy());
             }
 
@@ -211,7 +211,7 @@ public class AASBuild {
             mask = AREACONTENTS_SOLID;
             for (i = 0; i < expandedBrushes.Num(); i++) {
                 for (b = expandedBrushes.oGet(i).Head(); b != null; b = b.Next()) {
-                    b.ExpandForAxialBox(this.aasSettings.boundingBoxes[i]);
+                    b.ExpandForAxialBox(aasSettings.boundingBoxes[i]);
                     bit = 1 << (i + AREACONTENTS_BBOX_BIT);
                     mask |= bit;
                     b.SetContents(b.GetContents() | bit);
@@ -219,13 +219,13 @@ public class AASBuild {
             }
 
             // move all brushes back into the original list
-            for (i = 1; i < this.aasSettings.numBoundingBoxes; i++) {
+            for (i = 1; i < aasSettings.numBoundingBoxes; i++) {
                 brushList.AddToTail(expandedBrushes.oGet(i));
 //		delete expandedBrushes[i];
             }
 
-            if (this.aasSettings.writeBrushMap[0]) {
-                bsp.WriteBrushMap(fileName, new idStr("_" + this.aasSettings.fileExtension), AREACONTENTS_SOLID);
+            if (aasSettings.writeBrushMap[0]) {
+                bsp.WriteBrushMap(fileName, new idStr("_" + aasSettings.fileExtension), AREACONTENTS_SOLID);
             }
 
             // build BSP tree from brushes
@@ -254,8 +254,8 @@ public class AASBuild {
             // melt portal windings
             bsp.MeltPortals(AREACONTENTS_SOLID);
 
-            if (this.aasSettings.writeBrushMap[0]) {
-                WriteLedgeMap(fileName, new idStr("_" + this.aasSettings.fileExtension + "_ledge"));
+            if (aasSettings.writeBrushMap[0]) {
+                WriteLedgeMap(fileName, new idStr("_" + aasSettings.fileExtension + "_ledge"));
             }
 
             // ledge subdivisions
@@ -272,22 +272,22 @@ public class AASBuild {
 
             // store the file from the bsp tree
             StoreFile(bsp);
-            this.file.settings = this.aasSettings;
+            file.settings = aasSettings;
 
             // calculate reachability
-            reach.Build(mapFile, this.file);
+            reach.Build(mapFile, file);
 
             // build clusters
-            cluster.Build(this.file);
+            cluster.Build(file);
 
             // optimize the file
-            if (!this.aasSettings.noOptimize) {
-                this.file.Optimize();
+            if (!aasSettings.noOptimize) {
+                file.Optimize();
             }
 
             // write the file
-            name.SetFileExtension(this.aasSettings.fileExtension);
-            this.file.Write(name, mapFile.GetGeometryCRC());
+            name.SetFileExtension(aasSettings.fileExtension);
+            file.Write(name, mapFile.GetGeometryCRC());
 
             // delete the map file
 //	delete mapFile;
@@ -300,42 +300,42 @@ public class AASBuild {
             int startTime;
             idMapFile mapFile;
             idStr name;
-            final idAASReach reach = new idAASReach();
-            final idAASCluster cluster = new idAASCluster();
+            idAASReach reach = new idAASReach();
+            idAASCluster cluster = new idAASCluster();
 
             startTime = Sys_Milliseconds();
 
-            this.aasSettings = settings;
+            aasSettings = settings;
 
             name = fileName;
             name.SetFileExtension("map");
 
             mapFile = new idMapFile();
-            if (!mapFile.Parse(name.getData())) {
+            if (!mapFile.Parse(name.toString())) {
 //		delete mapFile;
                 common.Error("Couldn't load map file: '%s'", name);
                 return false;
             }
 
-            this.file = new idAASFileLocal();
+            file = new idAASFileLocal();
 
-            name.SetFileExtension(this.aasSettings.fileExtension);
-            if (!this.file.Load(name, 0)) {
+            name.SetFileExtension(aasSettings.fileExtension);
+            if (!file.Load(name, 0)) {
 //		delete mapFile;
                 common.Error("Couldn't load AAS file: '%s'", name);
                 return false;
             }
 
-            this.file.settings = this.aasSettings;
+            file.settings = aasSettings;
 
             // calculate reachability
-            reach.Build(mapFile, this.file);
+            reach.Build(mapFile, file);
 
             // build clusters
-            cluster.Build(this.file);
+            cluster.Build(file);
 
             // write the file
-            this.file.Write(name, mapFile.GetGeometryCRC());
+            file.Write(name, mapFile.GetGeometryCRC());
 
 //	// delete the map file
 //	delete mapFile;
@@ -345,19 +345,19 @@ public class AASBuild {
         }
 
         public void Shutdown() {
-            this.aasSettings = null;
-            if (this.file != null) {
+            aasSettings = null;
+            if (file != null) {
 //		delete file;
-                this.file = null;
+                file = null;
             }
             DeleteProcBSP();
-            this.numGravitationalSubdivisions = 0;
-            this.numMergedLeafNodes = 0;
-            this.numLedgeSubdivisions = 0;
-            this.ledgeList.Clear();
-            if (this.ledgeMap != null) {
+            numGravitationalSubdivisions = 0;
+            numMergedLeafNodes = 0;
+            numLedgeSubdivisions = 0;
+            ledgeList.Clear();
+            if (ledgeMap != null) {
 //		delete ledgeMap;
-                this.ledgeMap = null;
+                ledgeMap = null;
             }
         }
 
@@ -388,13 +388,13 @@ public class AASBuild {
 
         private boolean LoadProcBSP(final String name, long minFileTime) {
             idStr fileName;
-            final idToken token = new idToken();
+            idToken token = new idToken();
             idLexer src;
 
             // load it
             fileName = new idStr(name);
             fileName.SetFileExtension(PROC_FILE_EXT);
-            src = new idLexer(fileName.getData(), LEXFL_NOSTRINGCONCAT | LEXFL_NODOLLARPRECOMPILE);
+            src = new idLexer(fileName.toString(), LEXFL_NOSTRINGCONCAT | LEXFL_NODOLLARPRECOMPILE);
             if (!src.IsLoaded()) {
                 common.Warning("idAASBuild::LoadProcBSP: couldn't load %s", fileName);
 //		delete src;
@@ -407,7 +407,7 @@ public class AASBuild {
                 return false;
             }
 
-            if (!src.ReadToken(token) || (token.Icmp(PROC_FILE_ID) != 0)) {
+            if (!src.ReadToken(token) || token.Icmp(PROC_FILE_ID) != 0) {
                 common.Warning("idAASBuild::LoadProcBSP: bad id '%s' instead of '%s'", token, PROC_FILE_ID);
 //		delete src;
                 return false;
@@ -447,16 +447,16 @@ public class AASBuild {
         }
 
         private void DeleteProcBSP() {
-            if (this.procNodes != null) {
+            if (procNodes != null) {
 //                Mem_Free(procNodes);
-                this.procNodes = null;
+                procNodes = null;
             }
-            this.numProcNodes = 0;
+            numProcNodes = 0;
         }
 
         private boolean ChoppedAwayByProcBSP(int nodeNum, idFixedWinding w, final idVec3 normal, final idVec3 origin, final float radius) {
             int res;
-            final idFixedWinding back = new idFixedWinding();
+            idFixedWinding back = new idFixedWinding();
             aasProcNode_s node;
             float dist;
 
@@ -483,7 +483,7 @@ public class AASBuild {
                     }
                 } else {
                     // if either node is not solid
-                    if ((node.children[0] < 0) || (node.children[1] < 0)) {
+                    if (node.children[0] < 0 || node.children[1] < 0) {
                         return false;
                     }
                     // only recurse if the node is not solid
@@ -505,7 +505,7 @@ public class AASBuild {
             int i, clippedSides;
             idBrush brush;
             idFixedWinding neww;
-            final idBounds bounds = new idBounds();
+            idBounds bounds = new idBounds();
             float radius;
             idVec3 origin;
 
@@ -562,7 +562,7 @@ public class AASBuild {
             int contents, i;
             idMapBrushSide mapSide;
             idMaterial mat;
-            final idList<idBrushSide> sideList = new idList<>();
+            idList<idBrushSide> sideList = new idList<>();
             idBrush brush;
             idPlane plane;
 
@@ -607,8 +607,8 @@ public class AASBuild {
             int i, j, contents, validBrushes;
             float dot;
             int v1, v2, v3, v4;
-            final idFixedWinding w = new idFixedWinding();
-            final idPlane plane = new idPlane();
+            idFixedWinding w = new idFixedWinding();
+            idPlane plane = new idPlane();
             idVec3 d1, d2;
             idBrush brush;
             idSurface_Patch mesh;
@@ -632,10 +632,10 @@ public class AASBuild {
 
             validBrushes = 0;
 
-            for (i = 0; i < (mesh.GetWidth() - 1); i++) {
-                for (j = 0; j < (mesh.GetHeight() - 1); j++) {
+            for (i = 0; i < mesh.GetWidth() - 1; i++) {
+                for (j = 0; j < mesh.GetHeight() - 1; j++) {
 
-                    v1 = (j * mesh.GetWidth()) + i;
+                    v1 = j * mesh.GetWidth() + i;
                     v2 = v1 + 1;
                     v3 = v1 + mesh.GetWidth() + 1;
                     v4 = v1 + mesh.GetWidth();
@@ -728,7 +728,7 @@ public class AASBuild {
 
         private idBrushList AddBrushesForMapEntity(final idMapEntity mapEnt, int entityNum, idBrushList brushList) {
             int i;
-            final idVec3 origin = new idVec3();
+            idVec3 origin = new idVec3();
             idMat3 axis = new idMat3();
 
             if (mapEnt.GetNumPrimitives() < 1) {
@@ -737,7 +737,7 @@ public class AASBuild {
 
             mapEnt.epairs.GetVector("origin", "0 0 0", origin);
             if (!mapEnt.epairs.GetMatrix("rotation", "1 0 0 0 1 0 0 0 1", axis)) {
-                final float angle = mapEnt.epairs.GetFloat("angle");
+                float angle = mapEnt.epairs.GetFloat("angle");
                 if (angle != 0.0f) {
                     axis = new idAngles(0.0f, angle, 0.0f).ToMat3();
                 } else {
@@ -754,7 +754,7 @@ public class AASBuild {
                     continue;
                 }
                 if (mapPrim.GetType() == idMapPrimitive.TYPE_PATCH) {
-                    if (this.aasSettings.usePatches[0]) {
+                    if (aasSettings.usePatches[0]) {
                         brushList = AddBrushesForMapPatch((idMapPatch) mapPrim, origin, axis, entityNum, i, brushList);
                     }
 //                    continue;
@@ -786,7 +786,7 @@ public class AASBuild {
 
         private boolean CheckForEntities(final idMapFile mapFile, idStrList entityClassNames) {
             int i;
-            final idStr classname = new idStr();
+            idStr classname = new idStr();
 
             com_editors |= EDITOR_AAS;
 
@@ -795,7 +795,7 @@ public class AASBuild {
                     continue;
                 }
 
-                if (this.aasSettings.ValidEntity(classname.getData())) {
+                if (aasSettings.ValidEntity(classname.toString())) {
                     entityClassNames.AddUnique(classname);
                 }
             }
@@ -840,7 +840,7 @@ public class AASBuild {
                         } else {
                             normal = p.GetPlane().Normal();
                         }
-                        if (normal.oMultiply(this.aasSettings.invGravityDir) > this.aasSettings.minFloorCos[0]) {
+                        if (normal.oMultiply(aasSettings.invGravityDir) > aasSettings.minFloorCos[0]) {
                             p.SetFlag(FACE_FLOOR);
                         } else {
                             p.SetFlag(FACE_SOLID);
@@ -867,7 +867,7 @@ public class AASBuild {
             } else {
                 normal = portal.GetPlane().Normal();
             }
-            if (normal.oMultiply(this.aasSettings.invGravityDir) > this.aasSettings.minFloorCos[0]) {
+            if (normal.oMultiply(aasSettings.invGravityDir) > aasSettings.minFloorCos[0]) {
                 return true;
             }
             return false;
@@ -881,8 +881,8 @@ public class AASBuild {
             idBrushBSPPortal p1, p2;
             idWinding w1, w2;
             idVec3 normal;
-            final idPlane plane = new idPlane();
-            final idPlaneSet planeList = new idPlaneSet();
+            idPlane plane = new idPlane();
+            idPlaneSet planeList = new idPlaneSet();
             float d, min, max;
             int[] splitterOrder;
             int[] bestNumSplits;
@@ -928,7 +928,7 @@ public class AASBuild {
 
                     // create a plane through the edge of the gap parallel to the direction of gravity
                     normal = w1.oGet((i + 1) % w1.GetNumPoints()).ToVec3().oMinus(w1.oGet(i).ToVec3());
-                    normal = normal.Cross(this.aasSettings.invGravityDir);
+                    normal = normal.Cross(aasSettings.invGravityDir);
                     if (normal.Normalize() < 0.2f) {
                         continue;
                     }
@@ -993,7 +993,7 @@ public class AASBuild {
                         }
 
                         // if the floor portal touches the plane
-                        if ((min < GRAVSUBDIV_EPSILON) && (max > GRAVSUBDIV_EPSILON)) {
+                        if (min < GRAVSUBDIV_EPSILON && max > GRAVSUBDIV_EPSILON) {
                             planeList.FindPlane(plane, 0.00001f, 0.1f);
                         }
 
@@ -1013,7 +1013,7 @@ public class AASBuild {
             }
 
             // if the leaf node does not have both floor and gap portals
-            if (!((gap != 0) && (floor != 0))) {
+            if (!(gap != 0 && floor != 0)) {
 //                if (0 == (gap & floor)) {//TODO:check i this works better.
                 if (floor != 0) {
                     node.SetFlag(AREA_FLOOR);
@@ -1076,7 +1076,7 @@ public class AASBuild {
                 return;
             }
 
-            DisplayRealTimeString("\r%6d", ++this.numGravitationalSubdivisions);
+            DisplayRealTimeString("\r%6d", ++numGravitationalSubdivisions);
 
             // test children for further splits
             GravSubdivLeafNode(node.GetChild(0));
@@ -1103,14 +1103,14 @@ public class AASBuild {
         }
 
         private void GravitationalSubdivision(idBrushBSP bsp) {
-            this.numGravitationalSubdivisions = 0;
+            numGravitationalSubdivisions = 0;
 
             common.Printf("[Gravitational Subdivision]\n");
 
             SetPortalFlags_r(bsp.GetRootNode());
             GravSubdiv_r(bsp.GetRootNode());
 
-            common.Printf("\r%6d subdivisions\n", this.numGravitationalSubdivisions);
+            common.Printf("\r%6d subdivisions\n", numGravitationalSubdivisions);
         }
 
         // ledge subdivision
@@ -1118,7 +1118,7 @@ public class AASBuild {
             int s1, i;
             idBrushBSPPortal p1;
             idWinding w;
-            final idList<idBrushBSPNode> nodeList = new idList<>();
+            idList<idBrushBSPNode> nodeList = new idList<>();
 
             if ((node.GetFlags() & NODE_VISITED) != 0) {
                 return;
@@ -1148,8 +1148,8 @@ public class AASBuild {
                         if (!node.Split(ledge.planes[i], -1)) {
                             continue;
                         }
-                        this.numLedgeSubdivisions++;
-                        DisplayRealTimeString("\r%6d", this.numLedgeSubdivisions);
+                        numLedgeSubdivisions++;
+                        DisplayRealTimeString("\r%6d", numLedgeSubdivisions);
                         node.GetChild(0).SetFlag(NODE_VISITED);
                         LedgeSubdivFlood_r(node.GetChild(1), ledge);
                         return;
@@ -1210,48 +1210,48 @@ public class AASBuild {
         private void LedgeSubdiv(idBrushBSPNode root) {
             int i, j;
             idBrush brush;
-            final idList<idBrushSide> sideList = new idList<>();
+            idList<idBrushSide> sideList = new idList<>();
 
             // create ledge bevels and expand ledges
-            for (i = 0; i < this.ledgeList.Num(); i++) {
+            for (i = 0; i < ledgeList.Num(); i++) {
 
-                this.ledgeList.oGet(i).CreateBevels(this.aasSettings.gravityDir);
-                this.ledgeList.oGet(i).Expand(this.aasSettings.boundingBoxes[0], this.aasSettings.maxStepHeight[0]);
+                ledgeList.oGet(i).CreateBevels(aasSettings.gravityDir);
+                ledgeList.oGet(i).Expand(aasSettings.boundingBoxes[0], aasSettings.maxStepHeight[0]);
 
                 // if we should write out a ledge map
-                if (this.ledgeMap != null) {
+                if (ledgeMap != null) {
                     sideList.SetNum(0);
-                    for (j = 0; j < this.ledgeList.oGet(i).numPlanes; j++) {
-                        sideList.Append(new idBrushSide(this.ledgeList.oGet(i).planes[j], -1));
+                    for (j = 0; j < ledgeList.oGet(i).numPlanes; j++) {
+                        sideList.Append(new idBrushSide(ledgeList.oGet(i).planes[j], -1));
                     }
 
                     brush = new idBrush();
                     brush.FromSides(sideList);
 
-                    this.ledgeMap.WriteBrush(brush);
+                    ledgeMap.WriteBrush(brush);
 
 //			delete brush;
 //                    brush = null;
                 }
 
                 // flood tree from the ledge node and subdivide areas with the ledge
-                LedgeSubdivLeafNodes_r(this.ledgeList.oGet(i).node, this.ledgeList.oGet(i));
+                LedgeSubdivLeafNodes_r(ledgeList.oGet(i).node, ledgeList.oGet(i));
 
                 // remove the node visited flags
-                this.ledgeList.oGet(i).node.RemoveFlagRecurseFlood(NODE_VISITED);
+                ledgeList.oGet(i).node.RemoveFlagRecurseFlood(NODE_VISITED);
             }
         }
 
         private boolean IsLedgeSide_r(idBrushBSPNode node, idFixedWinding w, final idPlane plane, final idVec3 normal, final idVec3 origin, final float radius) {
             int res, i;
-            final idFixedWinding back = new idFixedWinding();
+            idFixedWinding back = new idFixedWinding();
             float dist;
 
             if (NOT(node)) {
                 return false;
             }
 
-            while ((node.GetChild(0) != null) && (node.GetChild(1) != null)) {
+            while (node.GetChild(0) != null && node.GetChild(1) != null) {
                 dist = node.GetPlane().Distance(origin);
                 if (dist > radius) {
                     res = SIDE_FRONT;
@@ -1297,13 +1297,13 @@ public class AASBuild {
 
             // first try to merge the ledge with existing ledges
             merged = -1;
-            for (i = 0; i < this.ledgeList.Num(); i++) {
+            for (i = 0; i < ledgeList.Num(); i++) {
 
                 for (j = 0; j < 2; j++) {
-                    if (idMath.Fabs(this.ledgeList.oGet(i).planes[j].Distance(v1)) > LEDGE_EPSILON) {
+                    if (idMath.Fabs(ledgeList.oGet(i).planes[j].Distance(v1)) > LEDGE_EPSILON) {
                         break;
                     }
-                    if (idMath.Fabs(this.ledgeList.oGet(i).planes[j].Distance(v2)) > LEDGE_EPSILON) {
+                    if (idMath.Fabs(ledgeList.oGet(i).planes[j].Distance(v2)) > LEDGE_EPSILON) {
                         break;
                     }
                 }
@@ -1311,26 +1311,26 @@ public class AASBuild {
                     continue;
                 }
 
-                if (!this.ledgeList.oGet(i).PointBetweenBounds(v1)
-                        && !this.ledgeList.oGet(i).PointBetweenBounds(v2)) {
+                if (!ledgeList.oGet(i).PointBetweenBounds(v1)
+                        && !ledgeList.oGet(i).PointBetweenBounds(v2)) {
                     continue;
                 }
 
                 if (merged == -1) {
-                    this.ledgeList.oGet(i).AddPoint(v1);
-                    this.ledgeList.oGet(i).AddPoint(v2);
+                    ledgeList.oGet(i).AddPoint(v1);
+                    ledgeList.oGet(i).AddPoint(v2);
                     merged = i;
                 } else {
-                    this.ledgeList.oGet(merged).AddPoint(this.ledgeList.oGet(i).start);
-                    this.ledgeList.oGet(merged).AddPoint(this.ledgeList.oGet(i).end);
-                    this.ledgeList.RemoveIndex(i);
+                    ledgeList.oGet(merged).AddPoint(ledgeList.oGet(i).start);
+                    ledgeList.oGet(merged).AddPoint(ledgeList.oGet(i).end);
+                    ledgeList.RemoveIndex(i);
                     break;
                 }
             }
 
             // if the ledge could not be merged
             if (merged == -1) {
-                this.ledgeList.Append(new idLedge(v1, v2, this.aasSettings.gravityDir, node));
+                ledgeList.Append(new idLedge(v1, v2, aasSettings.gravityDir, node));
             }
         }
 
@@ -1339,8 +1339,8 @@ public class AASBuild {
             idBrushBSPPortal p1;
             idWinding w;
             idVec3 v1, v2, normal, origin;
-            final idFixedWinding winding = new idFixedWinding();
-            final idBounds bounds = new idBounds();
+            idFixedWinding winding = new idFixedWinding();
+            idBounds bounds = new idBounds();
             idPlane plane;
             float radius;
 
@@ -1363,7 +1363,7 @@ public class AASBuild {
 
                     v1 = w.oGet(i).ToVec3();
                     v2 = w.oGet((i + 1) % w.GetNumPoints()).ToVec3();
-                    normal = (v2.oMinus(v1)).Cross(this.aasSettings.gravityDir);
+                    normal = (v2.oMinus(v1)).Cross(aasSettings.gravityDir);
                     if (normal.Normalize() < 0.5f) {
                         continue;
                     }
@@ -1371,15 +1371,15 @@ public class AASBuild {
                     winding.Clear();
                     winding.oPluSet(v1.oPlus(normal.oMultiply(LEDGE_EPSILON * 0.5f)));
                     winding.oPluSet(v2.oPlus(normal.oMultiply(LEDGE_EPSILON * 0.5f)));
-                    winding.oPluSet(winding.oGet(1).ToVec3().oPlus(this.aasSettings.gravityDir.oMultiply(this.aasSettings.maxStepHeight[0] + 1.0f)));
-                    winding.oPluSet(winding.oGet(0).ToVec3().oPlus(this.aasSettings.gravityDir.oMultiply(this.aasSettings.maxStepHeight[0] + 1.0f)));
+                    winding.oPluSet(winding.oGet(1).ToVec3().oPlus(aasSettings.gravityDir.oMultiply(aasSettings.maxStepHeight[0] + 1.0f)));
+                    winding.oPluSet(winding.oGet(0).ToVec3().oPlus(aasSettings.gravityDir.oMultiply(aasSettings.maxStepHeight[0] + 1.0f)));
 
                     winding.GetBounds(bounds);
                     origin = (bounds.oGet(1).oMinus(bounds.oGet(0)).oMultiply(0.5f));
                     radius = origin.Length() + LEDGE_EPSILON;
                     origin = bounds.oGet(0).oPlus(origin);
 
-                    plane.FitThroughPoint(v1.oPlus(this.aasSettings.gravityDir.oMultiply(this.aasSettings.maxStepHeight[0])));
+                    plane.FitThroughPoint(v1.oPlus(aasSettings.gravityDir.oMultiply(aasSettings.maxStepHeight[0])));
 
                     if (!IsLedgeSide_r(root, winding, plane, normal, origin, radius)) {
                         continue;
@@ -1426,8 +1426,8 @@ public class AASBuild {
          ============
          */
         private void LedgeSubdivision(idBrushBSP bsp) {
-            this.numLedgeSubdivisions = 0;
-            this.ledgeList.Clear();
+            numLedgeSubdivisions = 0;
+            ledgeList.Clear();
 
             common.Printf("[Ledge Subdivision]\n");
 
@@ -1435,16 +1435,16 @@ public class AASBuild {
             FindLedges_r(bsp.GetRootNode(), bsp.GetRootNode());
             bsp.GetRootNode().RemoveFlagRecurse(NODE_VISITED);
 
-            common.Printf("\r%6d ledges\n", this.ledgeList.Num());
+            common.Printf("\r%6d ledges\n", ledgeList.Num());
 
             LedgeSubdiv(bsp.GetRootNode());
 
-            common.Printf("\r%6d subdivisions\n", this.numLedgeSubdivisions);
+            common.Printf("\r%6d subdivisions\n", numLedgeSubdivisions);
         }
 
         private void WriteLedgeMap(final idStr fileName, final idStr ext) {
-            this.ledgeMap = new idBrushMap(fileName, ext);
-            this.ledgeMap.SetTexture("textures/base_trim/bluetex4q_ed");
+            ledgeMap = new idBrushMap(fileName, ext);
+            ledgeMap.SetTexture("textures/base_trim/bluetex4q_ed");
         }
 
         // merging
@@ -1508,7 +1508,7 @@ public class AASBuild {
                             node.RemoveFlag(AREA_GAP);
                         }
                         numMerges++;
-                        DisplayRealTimeString("\r%6d", ++this.numMergedLeafNodes);
+                        DisplayRealTimeString("\r%6d", ++numMergedLeafNodes);
                         break;
                     }
                 }
@@ -1547,7 +1547,7 @@ public class AASBuild {
         }
 
         private void MergeLeafNodes(idBrushBSP bsp) {
-            this.numMergedLeafNodes = 0;
+            numMergedLeafNodes = 0;
 
             common.Printf("[Merge Leaf Nodes]\n");
 
@@ -1555,7 +1555,7 @@ public class AASBuild {
             bsp.GetRootNode().RemoveFlagRecurse(NODE_DONE);
             bsp.PruneMergedTree_r(bsp.GetRootNode());
 
-            common.Printf("\r%6d leaf nodes merged\n", this.numMergedLeafNodes);
+            common.Printf("\r%6d leaf nodes merged\n", numMergedLeafNodes);
         }
 
         // storing file
@@ -1584,7 +1584,7 @@ public class AASBuild {
             if (f > max) {
                 max = f;
             }
-            aas_vertexShift = (int) (max / VERTEX_HASH_BOXSIZE);
+            aas_vertexShift = (int) ((float) max / VERTEX_HASH_BOXSIZE);
             for (i = 0; (1 << i) < aas_vertexShift; i++) {
             }
             if (i == 0) {
@@ -1597,15 +1597,14 @@ public class AASBuild {
         private int HashVec(final idVec3 vec) {
             int x, y;
 
-            x = (((int) ((vec.oGet(0) - aas_vertexBounds.oGet(0).x) + 0.5)) + 2) >> 2;
-            y = (((int) ((vec.oGet(1) - aas_vertexBounds.oGet(0).y) + 0.5)) + 2) >> 2;
-            return (x + (y * VERTEX_HASH_BOXSIZE)) & (VERTEX_HASH_SIZE - 1);
+            x = (((int) (vec.oGet(0) - aas_vertexBounds.oGet(0).x + 0.5)) + 2) >> 2;
+            y = (((int) (vec.oGet(1) - aas_vertexBounds.oGet(0).y + 0.5)) + 2) >> 2;
+            return (x + y * VERTEX_HASH_BOXSIZE) & (VERTEX_HASH_SIZE - 1);
         }
 
         private boolean GetVertex(final idVec3 v, int[] vertexNum) {
             int i, hashKey, vn;
-            final idVec3 /*aasVertex_t*/ vert = new idVec3();
-			idVec3 /*aasVertex_t*/ p;
+            idVec3 /*aasVertex_t*/ vert = new idVec3(), p;
 
             for (i = 0; i < 3; i++) {
                 if (idMath.Fabs(v.oGet(i) - idMath.Rint(v.oGet(i))) < INTEGRAL_EPSILON) {
@@ -1618,19 +1617,19 @@ public class AASBuild {
             hashKey = this.HashVec(vert);
 
             for (vn = aas_vertexHash.First(hashKey); vn >= 0; vn = aas_vertexHash.Next(vn)) {
-                p = this.file.vertices.oGet(vn);
+                p = file.vertices.oGet(vn);
                 // first compare z-axis because hash is based on x-y plane
-                if ((idMath.Fabs(vert.z - p.z) < VERTEX_EPSILON)
-                        && (idMath.Fabs(vert.x - p.x) < VERTEX_EPSILON)
-                        && (idMath.Fabs(vert.y - p.y) < VERTEX_EPSILON)) {
+                if (idMath.Fabs(vert.z - p.z) < VERTEX_EPSILON
+                        && idMath.Fabs(vert.x - p.x) < VERTEX_EPSILON
+                        && idMath.Fabs(vert.y - p.y) < VERTEX_EPSILON) {
                     vertexNum[0] = vn;
                     return true;
                 }
             }
 
-            vertexNum[0] = this.file.vertices.Num();
-            aas_vertexHash.Add(hashKey, this.file.vertices.Num());
-            this.file.vertices.Append(vert);
+            vertexNum[0] = file.vertices.Num();
+            aas_vertexHash.Add(hashKey, file.vertices.Num());
+            file.vertices.Append(vert);
 
             return false;
         }
@@ -1641,9 +1640,9 @@ public class AASBuild {
 
         private boolean GetEdge(final idVec3 v1, final idVec3 v2, int[] edgeNum, final int edgeOffset, int[] v1num) {
             int hashKey, e;
-            final int[] v2num = new int[1];
+            int[] v2num = new int[1];
             int[] vertexNum;
-            final aasEdge_s edge = new aasEdge_s();
+            aasEdge_s edge = new aasEdge_s();
             boolean found;
 
             if (v1num[0] != -1) {
@@ -1662,7 +1661,7 @@ public class AASBuild {
             if (found) {
                 for (e = aas_edgeHash.First(hashKey); e >= 0; e = aas_edgeHash.Next(e)) {
 
-                    vertexNum = this.file.edges.oGet(e).vertexNum;
+                    vertexNum = file.edges.oGet(e).vertexNum;
                     if (vertexNum[0] == v2num[0]) {
                         if (vertexNum[1] == v1num[0]) {
                             // negative for a reversed edge
@@ -1682,24 +1681,24 @@ public class AASBuild {
                 }
             }
 
-            edgeNum[edgeOffset + 0] = this.file.edges.Num();
-            aas_edgeHash.Add(hashKey, this.file.edges.Num());
+            edgeNum[edgeOffset + 0] = file.edges.Num();
+            aas_edgeHash.Add(hashKey, file.edges.Num());
 
             edge.vertexNum[0] = v1num[0];
             edge.vertexNum[1] = v2num[0];
 
-            this.file.edges.Append(edge);
+            file.edges.Append(edge);
 
             return false;
         }
 
         private boolean GetFaceForPortal(idBrushBSPPortal portal, int side, int[] faceNum) {
             int i, j;
-            final int[] v1num = {0};
+            int[] v1num = {0};
             int numFaceEdges;
-            final int[] faceEdges = new int[MAX_POINTS_ON_WINDING];//TODO:make these kind of arrays final?
+            int[] faceEdges = new int[MAX_POINTS_ON_WINDING];//TODO:make these kind of arrays final?
             idWinding w;
-            final aasFace_s face = new aasFace_s();
+            aasFace_s face = new aasFace_s();
 
             if (portal.GetFaceNum() > 0) {
                 if (side != 0) {
@@ -1720,7 +1719,7 @@ public class AASBuild {
 
                 if (faceEdges[numFaceEdges] != 0) {
                     // last vertex of this edge is the first vertex of the next edge
-                    v1num[0] = this.file.edges.oGet(abs(faceEdges[numFaceEdges])).vertexNum[INTSIGNBITNOTSET(faceEdges[numFaceEdges])];
+                    v1num[0] = file.edges.oGet(abs(faceEdges[numFaceEdges])).vertexNum[INTSIGNBITNOTSET(faceEdges[numFaceEdges])];
 
                     // this edge is valid so keep it
                     numFaceEdges++;
@@ -1735,37 +1734,37 @@ public class AASBuild {
             // the polygon is invalid if some edge is found twice
             for (i = 0; i < numFaceEdges; i++) {
                 for (j = i + 1; j < numFaceEdges; j++) {
-                    if ((faceEdges[i] == faceEdges[j]) || (faceEdges[i] == -faceEdges[j])) {
+                    if (faceEdges[i] == faceEdges[j] || faceEdges[i] == -faceEdges[j]) {
                         return false;
                     }
                 }
             }
 
-            portal.SetFaceNum(this.file.faces.Num());
+            portal.SetFaceNum(file.faces.Num());
 
-            face.planeNum = this.file.planeList.FindPlane(portal.GetPlane(), AAS_PLANE_NORMAL_EPSILON, AAS_PLANE_DIST_EPSILON);
+            face.planeNum = file.planeList.FindPlane(portal.GetPlane(), AAS_PLANE_NORMAL_EPSILON, AAS_PLANE_DIST_EPSILON);
             face.flags = portal.GetFlags();
             face.areas[0] = face.areas[1] = 0;
-            face.firstEdge = this.file.edgeIndex.Num();
+            face.firstEdge = file.edgeIndex.Num();
             face.numEdges = numFaceEdges;
             for (i = 0; i < numFaceEdges; i++) {
-                this.file.edgeIndex.Append(faceEdges[i]);
+                file.edgeIndex.Append(faceEdges[i]);
             }
             if (side != 0) {
-                faceNum[0] = -this.file.faces.Num();
+                faceNum[0] = -file.faces.Num();
             } else {
-                faceNum[0] = this.file.faces.Num();
+                faceNum[0] = file.faces.Num();
             }
-            this.file.faces.Append(face);
+            file.faces.Append(face);
 
             return true;
         }
 
         private boolean GetAreaForLeafNode(idBrushBSPNode node, int[] areaNum) {
             int s;
-            final int[] faceNum = new int[1];
+            int[] faceNum = new int[1];
             idBrushBSPPortal p;
-            final aasArea_s area = new aasArea_s();
+            aasArea_s area = new aasArea_s();
 
             if (node.GetAreaNum() != 0) {
                 areaNum[0] = -node.GetAreaNum();
@@ -1775,7 +1774,7 @@ public class AASBuild {
             area.flags = node.GetFlags();
             area.cluster = area.clusterAreaNum = 0;
             area.contents = node.GetContents();
-            area.firstFace = this.file.faceIndex.Num();
+            area.firstFace = file.faceIndex.Num();
             area.numFaces = 0;
             area.reach = null;
             area.rev_reach = null;
@@ -1787,13 +1786,13 @@ public class AASBuild {
                     continue;
                 }
 
-                this.file.faceIndex.Append(faceNum[0]);
+                file.faceIndex.Append(faceNum[0]);
                 area.numFaces++;
 
                 if (faceNum[0] > 0) {
-                    this.file.faces.oGet(abs(faceNum[0])).areas[0] = (short) this.file.areas.Num();
+                    file.faces.oGet(abs(faceNum[0])).areas[0] = (short) file.areas.Num();
                 } else {
-                    this.file.faces.oGet(abs(faceNum[0])).areas[1] = (short) this.file.areas.Num();
+                    file.faces.oGet(abs(faceNum[0])).areas[1] = (short) file.areas.Num();
                 }
             }
 
@@ -1802,19 +1801,19 @@ public class AASBuild {
                 return false;
             }
 
-            areaNum[0] = -this.file.areas.Num();
-            node.SetAreaNum(this.file.areas.Num());
-            this.file.areas.Append(area);
+            areaNum[0] = -file.areas.Num();
+            node.SetAreaNum(file.areas.Num());
+            file.areas.Append(area);
 
-            DisplayRealTimeString("\r%6d", this.file.areas.Num());
+            DisplayRealTimeString("\r%6d", file.areas.Num());
 
             return true;
         }
 
         private int StoreTree_r(idBrushBSPNode node) {
             int nodeNum, child0, child1;
-            final int[] areaNum = new int[1];
-            final aasNode_s aasNode = new aasNode_s();
+            int[] areaNum = new int[1];
+            aasNode_s aasNode = new aasNode_s();
 
             if (NOT(node)) {
                 return 0;
@@ -1831,19 +1830,19 @@ public class AASBuild {
                 return 0;
             }
 
-            aasNode.planeNum = this.file.planeList.FindPlane(node.GetPlane(), AAS_PLANE_NORMAL_EPSILON, AAS_PLANE_DIST_EPSILON);
+            aasNode.planeNum = file.planeList.FindPlane(node.GetPlane(), AAS_PLANE_NORMAL_EPSILON, AAS_PLANE_DIST_EPSILON);
             aasNode.children[0] = aasNode.children[1] = 0;
-            nodeNum = this.file.nodes.Num();
-            this.file.nodes.Append(aasNode);
+            nodeNum = file.nodes.Num();
+            file.nodes.Append(aasNode);
 
             // !@#$%^ cause of some bug we cannot set the children directly with the StoreTree_r return value
             child0 = StoreTree_r(node.GetChild(0));
-            this.file.nodes.oGet(nodeNum).children[0] = child0;
+            file.nodes.oGet(nodeNum).children[0] = child0;
             child1 = StoreTree_r(node.GetChild(1));
-            this.file.nodes.oGet(nodeNum).children[1] = child1;
+            file.nodes.oGet(nodeNum).children[1] = child1;
 
-            if ((0 == child0) && (0 == child1)) {
-                this.file.nodes.SetNum(this.file.nodes.Num() - 1);
+            if (0 == child0 && 0 == child1) {
+                file.nodes.SetNum(file.nodes.Num() - 1);
                 return 0;
             }
 
@@ -1881,7 +1880,7 @@ public class AASBuild {
         }
 
         private void SetSizeEstimate(final idBrushBSP bsp, idAASFileLocal file) {
-            final sizeEstimate_s size = new sizeEstimate_s();
+            sizeEstimate_s size = new sizeEstimate_s();
 
             size.numEdgeIndexes = 1;
             size.numFaceIndexes = 1;
@@ -1911,45 +1910,45 @@ public class AASBuild {
             SetupHash();
             ClearHash(bsp.GetTreeBounds());
 
-            this.file = new idAASFileLocal();
+            file = new idAASFileLocal();
 
-            this.file.Clear();
+            file.Clear();
 
-            SetSizeEstimate(bsp, this.file);
+            SetSizeEstimate(bsp, file);
 
             // the first edge is a dummy
 //	memset( &edge, 0, sizeof( edge ) );
             edge = new aasEdge_s();
-            this.file.edges.Append(edge);
+            file.edges.Append(edge);
 
             // the first face is a dummy
 //	memset( &face, 0, sizeof( face ) );
             face = new aasFace_s();
-            this.file.faces.Append(face);
+            file.faces.Append(face);
 
             // the first area is a dummy
 //	memset( &area, 0, sizeof( area ) );
             area = new aasArea_s();
-            this.file.areas.Append(area);
+            file.areas.Append(area);
 
             // the first node is a dummy
 //	memset( &node, 0, sizeof( node ) );
             node = new aasNode_s();
-            this.file.nodes.Append(node);
+            file.nodes.Append(node);
 
             // store the tree
             StoreTree_r(bsp.GetRootNode());
 
             // calculate area bounds and a reachable point in the area
-            this.file.FinishAreas();
+            file.FinishAreas();
 
             ShutdownHash();
 
-            common.Printf("\r%6d areas\n", this.file.areas.Num());
+            common.Printf("\r%6d areas\n", file.areas.Num());
 
             return true;
         }
-    }
+    };
 
     /*
      ============
@@ -1998,8 +1997,8 @@ public class AASBuild {
         @Override
         public void run(idCmdArgs args) throws idException {
             int i;
-            final idAASBuild aas = new idAASBuild();
-            final idAASSettings settings = new idAASSettings();
+            idAASBuild aas = new idAASBuild();
+            idAASSettings settings = new idAASSettings();
             idStr mapName;
 
             if (args.Argc() <= 1) {
@@ -2023,11 +2022,11 @@ public class AASBuild {
 
             idKeyValue kv = dict.MatchPrefix("type");
             while (kv != null) {
-                final idDict settingsDict = GameEdit.gameEdit.FindEntityDefDict(kv.GetValue().getData(), false);
+                final idDict settingsDict = GameEdit.gameEdit.FindEntityDefDict(kv.GetValue().toString(), false);
                 if (NOT(settingsDict)) {
                     common.Warning("Unable to find '%s' in def/aas.def", kv.GetValue());
                 } else {
-                    settings.FromDict(kv.GetValue().getData(), settingsDict);
+                    settings.FromDict(kv.GetValue().toString(), settingsDict);
                     i = ParseOptions(args, settings);
                     mapName = new idStr(args.Argv(i));
                     mapName.BackSlashesToSlashes();
@@ -2045,7 +2044,7 @@ public class AASBuild {
             common.SetRefreshOnPrint(false);
             common.PrintWarnings();
         }
-    }
+    };
 
     /*
      ============
@@ -2063,8 +2062,8 @@ public class AASBuild {
         @Override
         public void run(idCmdArgs args) throws idException {
             int i;
-            final idAASBuild aas = new idAASBuild();
-            final idAASSettings settings = new idAASSettings();
+            idAASBuild aas = new idAASBuild();
+            idAASSettings settings = new idAASSettings();
             idFileList mapFiles;
 
             if (args.Argc() <= 1) {
@@ -2093,11 +2092,11 @@ public class AASBuild {
 
                 idKeyValue kv = dict.MatchPrefix("type");
                 while (kv != null) {
-                    final idDict settingsDict = GameEdit.gameEdit.FindEntityDefDict(kv.GetValue().getData(), false);
+                    final idDict settingsDict = GameEdit.gameEdit.FindEntityDefDict(kv.GetValue().toString(), false);
                     if (NOT(settingsDict)) {
                         common.Warning("Unable to find '%s' in def/aas.def", kv.GetValue());
                     } else {
-                        settings.FromDict(kv.GetValue().getData(), settingsDict);
+                        settings.FromDict(kv.GetValue().toString(), settingsDict);
                         aas.Build(new idStr("maps/" + args.Argv(1) + "/" + mapFiles.GetFile(i)), settings);
                     }
 
@@ -2113,7 +2112,7 @@ public class AASBuild {
             common.SetRefreshOnPrint(false);
             common.PrintWarnings();
         }
-    }
+    };
 
     /*
      ============
@@ -2131,8 +2130,8 @@ public class AASBuild {
         @Override
         public void run(idCmdArgs args) throws idException {
             int i;
-            final idAASBuild aas = new idAASBuild();
-            final idAASSettings settings = new idAASSettings();
+            idAASBuild aas = new idAASBuild();
+            idAASSettings settings = new idAASSettings();
 
             if (args.Argc() <= 1) {
                 common.Printf("runReach [options] <mapfile>\n");
@@ -2151,11 +2150,11 @@ public class AASBuild {
 
             idKeyValue kv = dict.MatchPrefix("type");
             while (kv != null) {
-                final idDict settingsDict = GameEdit.gameEdit.FindEntityDefDict(kv.GetValue().getData(), false);
+                final idDict settingsDict = GameEdit.gameEdit.FindEntityDefDict(kv.GetValue().toString(), false);
                 if (NOT(settingsDict)) {
                     common.Warning("Unable to find '%s' in def/aas.def", kv.GetValue());
                 } else {
-                    settings.FromDict(kv.GetValue().getData(), settingsDict);
+                    settings.FromDict(kv.GetValue().toString(), settingsDict);
                     i = ParseOptions(args, settings);
                     aas.BuildReachability(new idStr("maps/" + args.Argv(i)), settings);
                 }
@@ -2169,7 +2168,7 @@ public class AASBuild {
             common.SetRefreshOnPrint(false);
             common.PrintWarnings();
         }
-    }
+    };
 
     /*
      ============
@@ -2185,9 +2184,9 @@ public class AASBuild {
 
         @Override
         public boolean run(idBrush b1, idBrush b2) {
-            return ((b1.GetContents() == b2.GetContents()) && NOT((b1.GetFlags() | b2.GetFlags()) & BFL_PATCH));
+            return (b1.GetContents() == b2.GetContents() && NOT((b1.GetFlags() | b2.GetFlags()) & BFL_PATCH));
         }
-    }
+    };
 
     /*
      ============
@@ -2205,7 +2204,7 @@ public class AASBuild {
         public boolean run(idBrush b1, idBrush b2) {
             return (b1.GetContents() == b2.GetContents());
         }
-    }
+    };
 
     /*
      ============
@@ -2223,5 +2222,5 @@ public class AASBuild {
         public boolean run(idBrush b1, idBrush b2) {
             return (b1.GetContents() == b2.GetContents());
         }
-    }
+    };
 }

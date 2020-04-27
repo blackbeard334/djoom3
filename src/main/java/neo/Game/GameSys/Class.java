@@ -57,13 +57,13 @@ public class Class {
 
     @FunctionalInterface
     public interface eventCallback_t<T extends idClass> {
-        void accept(T t, idEventArg<?>...args);
+        void accept(T t, idEventArg...args);
     }
 
     @FunctionalInterface
     public interface eventCallback_t0<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(T t, idEventArg<?>...args) {
+        default void accept(T t, idEventArg... args) {
             accept(t);
         }
 
@@ -73,7 +73,7 @@ public class Class {
     @FunctionalInterface
     public interface eventCallback_t1<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(T t, idEventArg<?>...args) {
+        default void accept(T t, idEventArg... args) {
             accept(t, args[0]);
         }
 
@@ -83,7 +83,7 @@ public class Class {
     @FunctionalInterface
     public interface eventCallback_t2<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(T t, idEventArg<?>...args) {
+        default void accept(T t, idEventArg... args) {
             accept(t, args[0], args[1]);
         }
 
@@ -93,7 +93,7 @@ public class Class {
     @FunctionalInterface
     public interface eventCallback_t3<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(T t, idEventArg<?>...args) {
+        default void accept(T t, idEventArg... args) {
             accept(t, args[0], args[1], args[2]);
         }
 
@@ -103,7 +103,7 @@ public class Class {
     @FunctionalInterface
     public interface eventCallback_t4<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(T t, idEventArg<?>...args) {
+        default void accept(T t, idEventArg... args) {
             accept(t, args[0], args[1], args[2], args[3]);
         }
 
@@ -113,7 +113,7 @@ public class Class {
     @FunctionalInterface
     public interface eventCallback_t5<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(T t, idEventArg<?>...args) {
+        default void accept(T t, idEventArg... args) {
             accept(t, args[0], args[1], args[2], args[3], args[4]);
         }
 
@@ -123,7 +123,7 @@ public class Class {
     @FunctionalInterface
     public interface eventCallback_t6<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(T t, idEventArg<?>...args) {
+        default void accept(T t, idEventArg... args) {
             accept(t, args[0], args[1], args[2], args[3], args[4], args[5]);
         }
 
@@ -149,7 +149,7 @@ public class Class {
 
         idEventDef      event;
         eventCallback_t function;
-    }
+    };
 
     public static class idEventArg<T> {
 
@@ -159,78 +159,65 @@ public class Class {
 //
 
         private idEventArg(T data) {
-            if(data instanceof Integer) {
-				this.type = D_EVENT_INTEGER;
-			} else if(data instanceof Enum) {
-				this.type = D_EVENT_INTEGER;
-			} else if(data instanceof Float) {
-				this.type = D_EVENT_FLOAT;
-			} else if(data instanceof idVec3) {
-				this.type = D_EVENT_VECTOR;
-			} else if(data instanceof idStr) {
-				this.type = D_EVENT_STRING;
-			} else if(data instanceof String) {
-				this.type = D_EVENT_STRING;
-			} else if(data instanceof idEntity) {
-				this.type = D_EVENT_ENTITY;
-			} else if(data instanceof trace_s) {
-				this.type = D_EVENT_TRACE;
-			} else {
+            if(data instanceof Integer)         type = D_EVENT_INTEGER;
+            else if(data instanceof Enum)       type = D_EVENT_INTEGER;
+            else if(data instanceof Float)      type = D_EVENT_FLOAT;
+            else if(data instanceof idVec3)     type = D_EVENT_VECTOR;
+            else if(data instanceof idStr)      type = D_EVENT_STRING;
+            else if(data instanceof String)     type = D_EVENT_STRING;
+            else if(data instanceof idEntity)   type = D_EVENT_ENTITY;
+            else if(data instanceof trace_s)    type = D_EVENT_TRACE;
+            else {
 //                type = D_EVENT_VOID;
                 throw new TempDump.TypeErasure_Expection();
             }
-            this.value = data;
+            value = data;
         }
 
         private idEventArg(int type, T data) {
             this.type = type;
-            this.value = data;
+            value = data;
         }
 
         static <T> idEventArg<T> toArg(T data) {
-            return new idEventArg<>(data);
+            return new idEventArg(data);
         }
 
         public static idEventArg<Integer> toArg(int data) {
-            return new idEventArg<>(D_EVENT_INTEGER, data);
+            return new idEventArg(D_EVENT_INTEGER, data);
         }
 
         public static idEventArg<Float> toArg(float data) {
-            return new idEventArg<>(D_EVENT_FLOAT, data);
+            return new idEventArg(D_EVENT_FLOAT, data);
         }
 
         public static idEventArg<idVec3> toArg(idVec3 data) {
-            return new idEventArg<>(D_EVENT_VECTOR, data);
+            return new idEventArg(D_EVENT_VECTOR, data);
         }
 
         public static idEventArg<idStr> toArg(idStr data) {
-            return new idEventArg<>(D_EVENT_STRING, data);
+            return new idEventArg(D_EVENT_STRING, data);
         }
 
         public static idEventArg<String> toArg(String data) {
-            return new idEventArg<>(D_EVENT_STRING, data);
+            return new idEventArg(D_EVENT_STRING, data);
         }
 
         public static idEventArg<idEntity> toArg(idEntity data) {
-            return new idEventArg<>(D_EVENT_ENTITY, data);
+            return new idEventArg(D_EVENT_ENTITY, data);
         }
 
         public static idEventArg<trace_s> toArg(trace_s data) {
-            return new idEventArg<>(D_EVENT_TRACE, data);
+            return new idEventArg(D_EVENT_TRACE, data);
         }
-    }
+    };
 
     public static class idAllocError extends neo.idlib.Lib.idException {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public idAllocError(final String text /*= ""*/) {
+        public idAllocError(final String text /*= ""*/) {
             super(text);
         }
-    }
+    };
 //    /*
 //================
 //ABSTRACT_PROTOTYPE
@@ -299,9 +286,9 @@ public class Class {
 
         public abstract idClass CreateInstance();
 
-        public abstract java.lang.Class<?>/*idTypeInfo*/ GetType();
+        public abstract java.lang.Class/*idTypeInfo*/ GetType();
 
-        public abstract eventCallback_t<?> getEventCallBack(idEventDef event);
+        public abstract eventCallback_t getEventCallBack(idEventDef event);
 
         public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
             return eventCallbacks;
@@ -342,8 +329,8 @@ public class Class {
          passed in idTypeInfo.
          ================
          */
-        public boolean IsType(final java.lang.Class<?>/*idTypeInfo*/ superclass) {
-            java.lang.Class<?>/*idTypeInfo*/ subclass;
+        public boolean IsType(final java.lang.Class/*idTypeInfo*/ superclass) {
+            java.lang.Class/*idTypeInfo*/ subclass;
 
             subclass = this.getClass();
             return superclass.isAssignableFrom(subclass);
@@ -530,11 +517,10 @@ public class Class {
 
             if (g_debugTriggers.GetBool() && (ev == EV_Activate) && IsType(idEntity.class)) {
                 final String name;
-                if ((data[0] != null) && ((idClass) data[0].value).IsType(idEntity.class)) {
-					name = ((idEntity) data[0].value).GetName();
-				} else {
-					name = "NULL";
-				}
+                if (data[0] != null && ((idClass) data[0].value).IsType(idEntity.class))
+                    name = ((idEntity) data[0].value).GetName();
+                else
+                    name = "NULL";
                 gameLocal.Printf("%d: '%s' activated by '%s'\n", gameLocal.framenum, ((idEntity) this).GetName(), name);
             }
 
@@ -633,23 +619,14 @@ public class Class {
 
         public void Event_Remove() {
             //	delete this;//if only
-            if (this instanceof idBFGProjectile) {
-				idBFGProjectile.delete(this);
-			} else if (this instanceof idProjectile) {
-				idProjectile.delete(this);
-			} else if (this instanceof idTrigger_Multi) {
-				idTrigger_Multi.delete(this);
-			} else if (this instanceof idTarget_Remove) {
-				idTarget_Remove.delete(this);
-			} else if (this instanceof idAI) {
-				idAI.delete(this);
-			} else if (this instanceof idEntity) {
-				idEntity.delete(this);
-			} else if (this instanceof idThread) {
-				idThread.delete((idThread) this);
-			} else {
-				throw new TODO_Exception();
-			}
+            if (this instanceof idBFGProjectile) idBFGProjectile.delete((idBFGProjectile) this);
+            else if (this instanceof idProjectile) idProjectile.delete((idProjectile) this);
+            else if (this instanceof idTrigger_Multi) idTrigger_Multi.delete((idTrigger_Multi) this);
+            else if (this instanceof idTarget_Remove) idTarget_Remove.delete((idTarget_Remove) this);
+            else if (this instanceof idAI) idAI.delete((idAI) this);
+            else if (this instanceof idEntity) idEntity.delete((idEntity) this);
+            else if (this instanceof idThread) idThread.delete((idThread) this);
+            else throw new TODO_Exception();
         }
 
         // Static functions
@@ -792,7 +769,7 @@ public class Class {
             public void run(idCmdArgs args) {
                 gameLocal.Printf("Class memory status: %d bytes allocated in %d objects\n", memused, numobjects);
             }
-        }
+        };
 
         /*
          ================
@@ -825,7 +802,7 @@ public class Class {
 
                 gameLocal.Printf("...%d classes", types.Num());
             }
-        }
+        };
 
         public static idClass CreateInstance(final String name) {
 //            idTypeInfo type;
@@ -866,8 +843,8 @@ public class Class {
             return null;
         }
 
-        private classSpawnFunc_t<?> CallSpawnFunc(idTypeInfo cls) {
-            classSpawnFunc_t<?> func;
+        private classSpawnFunc_t CallSpawnFunc(idTypeInfo cls) {
+            classSpawnFunc_t func;
 
             if (cls.zuper != null) {//TODO:rename super
                 func = CallSpawnFunc(cls.zuper);
@@ -884,8 +861,8 @@ public class Class {
             return cls.Spawn;
         }
 
-        private boolean PostEventArgs(final idEventDef ev, int time, int numargs, idEventArg<?>...args) {
-            java.lang.Class<?> c;
+        private boolean PostEventArgs(final idEventDef ev, int time, int numargs, idEventArg... args) {
+            java.lang.Class c;
             idEvent event;
 //            va_list args;
 
@@ -919,10 +896,10 @@ public class Class {
             return true;
         }
 
-        private boolean ProcessEventArgs(final idEventDef ev, int numargs, idEventArg<?>...args) {
-            final idTypeInfo c;
-            final int num;
-            final idEventArg[] data = new idEventArg[D_EVENT_MAXARGS];
+        private boolean ProcessEventArgs(final idEventDef ev, int numargs, idEventArg... args) {
+            idTypeInfo c;
+            int num;
+            idEventArg[] data = new idEventArg[D_EVENT_MAXARGS];
 //            va_list args;
 
             assert (ev != null);
@@ -951,11 +928,9 @@ public class Class {
         }
 
         public static void delete(final idClass clazz){
-            if (clazz != null) {
-				clazz._deconstructor();
-			}
+            if (clazz != null) clazz._deconstructor();
         }
-    }
+    };
 
     /**
      * *********************************************************************
@@ -981,15 +956,15 @@ public class Class {
 //
         public idHierarchy<idTypeInfo> node;
 //
-        public classSpawnFunc_t<?> CreateInstance;
-        public classSpawnFunc_t<?> Spawn;
+        public classSpawnFunc_t CreateInstance;
+        public classSpawnFunc_t Spawn;
         public idClass_Save Save;
         public idClass_Restore Restore;
 //
 //
 
         public idTypeInfo(final String classname, final String superclass,
-                idEventFunc<idClass>[] eventCallbacks, classSpawnFunc_t<?> CreateInstance, classSpawnFunc_t<?> Spawn,
+                idEventFunc<idClass>[] eventCallbacks, classSpawnFunc_t CreateInstance, classSpawnFunc_t Spawn,
                 idClass_Save Save, idClass_Restore Restore) {
 
             idTypeInfo type;
@@ -1005,13 +980,13 @@ public class Class {
             this.CreateInstance = CreateInstance;
             this.zuper = idClass.GetClass(superclass);
             this.freeEventMap = false;
-            this.typeNum = 0;
-            this.lastChild = 0;
+            typeNum = 0;
+            lastChild = 0;
 
             // Check if any subclasses were initialized before their superclass
             for (type = typelist; type != null; type = type.next) {
                 if ((type.zuper == null) && NOT(idStr.Cmp(type.superclass, this.classname))
-                        && (idStr.Cmp(type.classname, "idClass") != 0)) {
+                        && idStr.Cmp(type.classname, "idClass") != 0) {
                     type.zuper = this;
                 }
             }
@@ -1020,14 +995,14 @@ public class Class {
             for (insert = typelist; insert != null; insert = insert.next) {
                 assert (idStr.Cmp(classname, insert.classname) != 0);
                 if (idStr.Cmp(classname, insert.classname) < 0) {
-                    this.next = insert;
+                    next = insert;
                     insert = this;
                     break;
                 }
             }
             if (null == insert) {
                 insert = this;
-                this.next = null;
+                next = null;
             }
         }
         // ~idTypeInfo();
@@ -1048,43 +1023,43 @@ public class Class {
             boolean[] set;
             int num;
 
-            if (this.eventMap != null) {
+            if (eventMap != null) {
                 // we've already been initialized by a subclass
                 return;
             }
 
             // make sure our superclass is initialized first
-            if ((this.zuper != null) && (null == this.zuper.eventMap)) {
-                this.zuper.Init();
+            if (zuper != null && null == zuper.eventMap) {
+                zuper.Init();
             }
 
             // add to our node hierarchy
-            if (this.zuper != null) {
-                this.node.ParentTo(this.zuper.node);
+            if (zuper != null) {
+                node.ParentTo(zuper.node);
             } else {
-                this.node.ParentTo(classHierarchy);
+                node.ParentTo(classHierarchy);
             }
-            this.node.SetOwner(this);
+            node.SetOwner(this);
 
             // keep track of the number of children below each class
-            for (c = this.zuper; c != null; c = c.zuper) {
+            for (c = zuper; c != null; c = c.zuper) {
                 c.lastChild++;
             }
 
             // if we're not adding any new event callbacks, we can just use our superclass's table
-            if (((null == this.eventCallbacks) || NOT(this.eventCallbacks[0].event)) && (this.zuper != null)) {
-                this.eventMap = this.zuper.eventMap;
+            if ((null == eventCallbacks || NOT(eventCallbacks[0].event)) && zuper != null) {
+                eventMap = zuper.eventMap;
                 return;
             }
 
             // set a flag so we know to delete the eventMap table
-            this.freeEventMap = true;
+            freeEventMap = true;
 
             // Allocate our new table.  It has to have as many entries as there
             // are events.  NOTE: could save some space by keeping track of the maximum
             // event that the class responds to and doing range checking.
             num = idEventDef.NumEventCommands();
-            this.eventMap = new eventCallback_t[num];
+            eventMap = new eventCallback_t[num];
 //	memset( eventMap, 0, sizeof( eventCallback_t ) * num );
             eventCallbackMemory += sizeof(eventCallback_t.class) * num;
 
@@ -1110,7 +1085,7 @@ public class Class {
                         continue;
                     }
                     set[ ev] = true;
-                    this.eventMap[ ev] = def[ i].function;
+                    eventMap[ ev] = def[ i].function;
                 }
             }
 
@@ -1128,14 +1103,14 @@ public class Class {
          */
         public void Shutdown() {
             // free up the memory used for event lookups
-            if (this.eventMap != null) {
+            if (eventMap != null) {
 //		if ( freeEventMap ) {
 //			delete[] eventMap;
 //		}
-                this.eventMap = null;
+                eventMap = null;
             }
-            this.typeNum = 0;
-            this.lastChild = 0;
+            typeNum = 0;
+            lastChild = 0;
         }
 
         /*
@@ -1147,21 +1122,21 @@ public class Class {
          ================
          */
         public boolean IsType(final idTypeInfo type) {
-            return ((this.typeNum >= type.typeNum) && (this.typeNum <= type.lastChild));
+            return ((typeNum >= type.typeNum) && (typeNum <= type.lastChild));
         }
 
-        public boolean IsType(final java.lang.Class<?> type) {
+        public boolean IsType(final java.lang.Class type) {
             throw new TODO_Exception();
         }
 
         public boolean RespondsTo(final idEventDef ev) {
             assert (idEvent.initialized);
-            if (null == this.eventMap[ ev.GetEventNum()]) {
+            if (null == eventMap[ ev.GetEventNum()]) {
                 // we don't respond to this event
                 return false;
             }
 
             return true;
         }
-    }
+    };
 }

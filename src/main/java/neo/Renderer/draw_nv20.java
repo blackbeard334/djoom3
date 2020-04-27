@@ -11,34 +11,34 @@ package neo.Renderer;
 //import static neo.Renderer.draw_nv20.fragmentProgram_t.FPROG_DIFFUSE_COLOR;
 //import static neo.Renderer.draw_nv20.fragmentProgram_t.FPROG_NUM_FRAGMENT_PROGRAMS;
 //import static neo.Renderer.draw_nv20.fragmentProgram_t.FPROG_SPECULAR_COLOR;
-//import static neo.Renderer.QGL.qGL_FALSE;
-//import static neo.Renderer.QGL.qGL_TRUE;
-//import static neo.Renderer.QGL.qglActiveTextureARB;
-//import static neo.Renderer.QGL.qglBindProgramARB;
-//import static neo.Renderer.QGL.qglCallList;
-//import static neo.Renderer.QGL.qglClear;
-//import static neo.Renderer.QGL.qglColor3f;
-//import static neo.Renderer.QGL.qglColorPointer;
-//import static neo.Renderer.QGL.qglCombinerInputNV;
-//import static neo.Renderer.QGL.qglCombinerOutputNV;
-//import static neo.Renderer.QGL.qglCombinerParameterfvNV;
-//import static neo.Renderer.QGL.qglCombinerParameteriNV;
-//import static neo.Renderer.QGL.qglDisable;
-//import static neo.Renderer.QGL.qglDisableClientState;
-//import static neo.Renderer.QGL.qglDisableVertexAttribArrayARB;
-//import static neo.Renderer.QGL.qglEnable;
-//import static neo.Renderer.QGL.qglEnableClientState;
-//import static neo.Renderer.QGL.qglEnableVertexAttribArrayARB;
-//import static neo.Renderer.QGL.qglEndList;
-//import static neo.Renderer.QGL.qglFinalCombinerInputNV;
-//import static neo.Renderer.QGL.qglGenLists;
-//import static neo.Renderer.QGL.qglNewList;
-//import static neo.Renderer.QGL.qglProgramEnvParameter4fvARB;
-//import static neo.Renderer.QGL.qglScissor;
-//import static neo.Renderer.QGL.qglStencilFunc;
-//import static neo.Renderer.QGL.qglTexCoordPointer;
-//import static neo.Renderer.QGL.qglVertexAttribPointerARB;
-//import static neo.Renderer.QGL.qglVertexPointer;
+//import static neo.Renderer.qgl.qGL_FALSE;
+//import static neo.Renderer.qgl.qGL_TRUE;
+//import static neo.Renderer.qgl.qglActiveTextureARB;
+//import static neo.Renderer.qgl.qglBindProgramARB;
+//import static neo.Renderer.qgl.qglCallList;
+//import static neo.Renderer.qgl.qglClear;
+//import static neo.Renderer.qgl.qglColor3f;
+//import static neo.Renderer.qgl.qglColorPointer;
+//import static neo.Renderer.qgl.qglCombinerInputNV;
+//import static neo.Renderer.qgl.qglCombinerOutputNV;
+//import static neo.Renderer.qgl.qglCombinerParameterfvNV;
+//import static neo.Renderer.qgl.qglCombinerParameteriNV;
+//import static neo.Renderer.qgl.qglDisable;
+//import static neo.Renderer.qgl.qglDisableClientState;
+//import static neo.Renderer.qgl.qglDisableVertexAttribArrayARB;
+//import static neo.Renderer.qgl.qglEnable;
+//import static neo.Renderer.qgl.qglEnableClientState;
+//import static neo.Renderer.qgl.qglEnableVertexAttribArrayARB;
+//import static neo.Renderer.qgl.qglEndList;
+//import static neo.Renderer.qgl.qglFinalCombinerInputNV;
+//import static neo.Renderer.qgl.qglGenLists;
+//import static neo.Renderer.qgl.qglNewList;
+//import static neo.Renderer.qgl.qglProgramEnvParameter4fvARB;
+//import static neo.Renderer.qgl.qglScissor;
+//import static neo.Renderer.qgl.qglStencilFunc;
+//import static neo.Renderer.qgl.qglTexCoordPointer;
+//import static neo.Renderer.qgl.qglVertexAttribPointerARB;
+//import static neo.Renderer.qgl.qglVertexPointer;
 //import static neo.Renderer.tr_backend.GL_SelectTexture;
 //import static neo.Renderer.tr_backend.GL_State;
 //import static neo.Renderer.tr_backend.RB_LogComment;
@@ -181,7 +181,7 @@ public class draw_nv20 {
 //                GL_TEXTURE0_ARB, GL_EXPAND_NORMAL_NV, GL_RGB);
 //        qglCombinerOutputNV(GL_COMBINER0_NV, GL_RGB,
 //                GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV,
-//                GL_NONE, GL_NONE, QGL_TRUE, QGL_FALSE, QGL_FALSE);
+//                GL_NONE, GL_NONE, qGL_TRUE, qGL_FALSE, qGL_FALSE);
 //
 //        // stage 1 rgb multiplies texture 2 and 3 together
 //        // SPARE1 = TEXTURE2 * TEXTURE3
@@ -191,7 +191,7 @@ public class draw_nv20 {
 //                GL_TEXTURE3_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
 //        qglCombinerOutputNV(GL_COMBINER1_NV, GL_RGB,
 //                GL_SPARE1_NV, GL_DISCARD_NV, GL_DISCARD_NV,
-//                GL_NONE, GL_NONE, QGL_FALSE, QGL_FALSE, QGL_FALSE);
+//                GL_NONE, GL_NONE, qGL_FALSE, qGL_FALSE, qGL_FALSE);
 //
 //        // stage 1 alpha does nohing
 //        // stage 2 color multiplies spare0 * spare 1 just for debugging
@@ -202,7 +202,7 @@ public class draw_nv20 {
 //                GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
 //        qglCombinerOutputNV(GL_COMBINER2_NV, GL_RGB,
 //                GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV,
-//                GL_NONE, GL_NONE, QGL_FALSE, QGL_FALSE, QGL_FALSE);
+//                GL_NONE, GL_NONE, qGL_FALSE, qGL_FALSE, qGL_FALSE);
 //
 //        // stage 2 alpha multiples spare0 * spare 1
 //        // SPARE0 = SPARE0 * SPARE1
@@ -212,7 +212,7 @@ public class draw_nv20 {
 //                GL_SPARE1_NV, GL_UNSIGNED_IDENTITY_NV, GL_BLUE);
 //        qglCombinerOutputNV(GL_COMBINER2_NV, GL_ALPHA,
 //                GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV,
-//                GL_NONE, GL_NONE, QGL_FALSE, QGL_FALSE, QGL_FALSE);
+//                GL_NONE, GL_NONE, qGL_FALSE, qGL_FALSE, qGL_FALSE);
 //
 //        // final combiner
 //        qglFinalCombinerInputNV(GL_VARIABLE_D_NV, GL_SPARE0_NV,
@@ -320,11 +320,11 @@ public class draw_nv20 {
 //                GL_PRIMARY_COLOR_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
 //        qglCombinerOutputNV(GL_COMBINER0_NV, GL_RGB,
 //                GL_TEXTURE0_ARB, GL_DISCARD_NV, GL_DISCARD_NV,
-//                GL_NONE, GL_NONE, QGL_FALSE, QGL_FALSE, QGL_FALSE);
+//                GL_NONE, GL_NONE, qGL_FALSE, qGL_FALSE, qGL_FALSE);
 //
 //        qglCombinerOutputNV(GL_COMBINER0_NV, GL_ALPHA,
 //                GL_DISCARD_NV, GL_DISCARD_NV, GL_DISCARD_NV,
-//                GL_NONE, GL_NONE, QGL_FALSE, QGL_FALSE, QGL_FALSE);
+//                GL_NONE, GL_NONE, qGL_FALSE, qGL_FALSE, qGL_FALSE);
 //
 //        // for GL_CONSTANT_COLOR0_NV * TEXTURE0 * TEXTURE1
 //        qglFinalCombinerInputNV(GL_VARIABLE_A_NV, GL_CONSTANT_COLOR0_NV,
@@ -432,7 +432,7 @@ public class draw_nv20 {
 //                GL_TEXTURE0_ARB, GL_EXPAND_NORMAL_NV, GL_RGB);
 //        qglCombinerOutputNV(GL_COMBINER0_NV, GL_RGB,
 //                GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV,
-//                GL_SCALE_BY_TWO_NV, GL_BIAS_BY_NEGATIVE_ONE_HALF_NV, QGL_TRUE, QGL_FALSE, QGL_FALSE);
+//                GL_SCALE_BY_TWO_NV, GL_BIAS_BY_NEGATIVE_ONE_HALF_NV, qGL_TRUE, qGL_FALSE, qGL_FALSE);
 //
 //        // stage 0 alpha does nothing
 //        // stage 1 color takes bump * bump
@@ -444,7 +444,7 @@ public class draw_nv20 {
 //                GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
 //        qglCombinerOutputNV(GL_COMBINER1_NV, GL_RGB,
 //                GL_SPARE0_NV, GL_DISCARD_NV, GL_DISCARD_NV,
-//                GL_SCALE_BY_TWO_NV, GL_BIAS_BY_NEGATIVE_ONE_HALF_NV, QGL_FALSE, QGL_FALSE, QGL_FALSE);
+//                GL_SCALE_BY_TWO_NV, GL_BIAS_BY_NEGATIVE_ONE_HALF_NV, qGL_FALSE, qGL_FALSE, qGL_FALSE);
 //
 //        // stage 1 alpha does nothing
 //        // stage 2 color
@@ -460,7 +460,7 @@ public class draw_nv20 {
 //                GL_TEXTURE2_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
 //        qglCombinerOutputNV(GL_COMBINER2_NV, GL_RGB,
 //                GL_SPARE0_NV, GL_SECONDARY_COLOR_NV, GL_DISCARD_NV,
-//                GL_NONE, GL_NONE, QGL_FALSE, QGL_FALSE, QGL_FALSE);
+//                GL_NONE, GL_NONE, qGL_FALSE, qGL_FALSE, qGL_FALSE);
 //
 //        // stage 2 alpha does nothing
 //        // stage 3 scales the texture by the vertex color
@@ -470,7 +470,7 @@ public class draw_nv20 {
 //                GL_PRIMARY_COLOR_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
 //        qglCombinerOutputNV(GL_COMBINER3_NV, GL_RGB,
 //                GL_SECONDARY_COLOR_NV, GL_DISCARD_NV, GL_DISCARD_NV,
-//                GL_NONE, GL_NONE, QGL_FALSE, QGL_FALSE, QGL_FALSE);
+//                GL_NONE, GL_NONE, qGL_FALSE, qGL_FALSE, qGL_FALSE);
 //
 //        // stage 3 alpha does nothing
 //        // final combiner = GL_SPARE0_NV * SECONDARY_COLOR + PRIMARY_COLOR * SECONDARY_COLOR
@@ -578,7 +578,7 @@ public class draw_nv20 {
 //                GL_TEXTURE0_ARB, GL_EXPAND_NORMAL_NV, GL_RGB);
 //        qglCombinerOutputNV(GL_COMBINER0_NV, GL_RGB,
 //                GL_SECONDARY_COLOR_NV, GL_DISCARD_NV, GL_DISCARD_NV,
-//                GL_SCALE_BY_TWO_NV, GL_BIAS_BY_NEGATIVE_ONE_HALF_NV, QGL_TRUE, QGL_FALSE, QGL_FALSE);
+//                GL_SCALE_BY_TWO_NV, GL_BIAS_BY_NEGATIVE_ONE_HALF_NV, qGL_TRUE, qGL_FALSE, qGL_FALSE);
 //
 //        // stage 0 alpha does nothing
 //        // stage 1 color takes bump * bump
@@ -590,7 +590,7 @@ public class draw_nv20 {
 //                GL_SECONDARY_COLOR_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
 //        qglCombinerOutputNV(GL_COMBINER1_NV, GL_RGB,
 //                GL_SECONDARY_COLOR_NV, GL_DISCARD_NV, GL_DISCARD_NV,
-//                GL_SCALE_BY_TWO_NV, GL_BIAS_BY_NEGATIVE_ONE_HALF_NV, QGL_FALSE, QGL_FALSE, QGL_FALSE);
+//                GL_SCALE_BY_TWO_NV, GL_BIAS_BY_NEGATIVE_ONE_HALF_NV, qGL_FALSE, qGL_FALSE, qGL_FALSE);
 //
 //        // stage 1 alpha does nothing
 //        // stage 2 color
@@ -606,7 +606,7 @@ public class draw_nv20 {
 //                GL_ZERO, GL_UNSIGNED_INVERT_NV, GL_RGB);
 //        qglCombinerOutputNV(GL_COMBINER2_NV, GL_RGB,
 //                GL_SECONDARY_COLOR_NV, GL_SPARE0_NV, GL_DISCARD_NV,
-//                GL_SCALE_BY_TWO_NV, GL_NONE, QGL_FALSE, QGL_FALSE, QGL_FALSE);
+//                GL_SCALE_BY_TWO_NV, GL_NONE, qGL_FALSE, qGL_FALSE, qGL_FALSE);
 //
 //        // stage 2 alpha does nothing
 //        // final combiner = TEXTURE2_ARB * CONSTANT_COLOR0_NV + PRIMARY_COLOR_NV * CONSTANT_COLOR1_NV

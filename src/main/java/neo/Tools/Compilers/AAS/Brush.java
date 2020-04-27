@@ -76,9 +76,9 @@ public class Brush {
 
         // friend class idBrush;
         public idBrushSide() {
-            this.flags = 0;
-            this.planeNum = -1;
-            this.winding = null;
+            flags = 0;
+            planeNum = -1;
+            winding = null;
         }
 
         public idBrushSide(final idPlane plane, int planeNum) {
@@ -90,40 +90,40 @@ public class Brush {
         // ~idBrushSide();
 
         public int GetFlags() {
-            return this.flags;
+            return flags;
         }
 
         public void SetFlag(int flag) {
-            this.flags |= flag;
+            flags |= flag;
         }
 
         public void RemoveFlag(int flag) {
-            this.flags &= ~flag;
+            flags &= ~flag;
         }
 
         public idPlane GetPlane() {
-            return this.plane;
+            return plane;
         }
 
         public void SetPlaneNum(int num) {
-            this.planeNum = num;
+            planeNum = num;
         }
 
         public int GetPlaneNum() {
-            return this.planeNum;
+            return planeNum;
         }
 
         public idWinding GetWinding() {
-            return this.winding;
+            return winding;
         }
 
         public idBrushSide Copy() {
             idBrushSide side;
 
-            side = new idBrushSide(this.plane, this.planeNum);
-            side.flags = this.flags;
-            if (this.winding != null) {
-                side.winding = this.winding.Copy();
+            side = new idBrushSide(plane, planeNum);
+            side.flags = flags;
+            if (winding != null) {
+                side.winding = winding.Copy();
             } else {
                 side.winding = null;
             }
@@ -131,24 +131,24 @@ public class Brush {
         }
 
         public int Split(final idPlane splitPlane, idBrushSide[] front, idBrushSide[] back) {
-            final idWinding frontWinding = new idWinding(), backWinding = new idWinding();
+            idWinding frontWinding = new idWinding(), backWinding = new idWinding();
 
-            assert (this.winding != null);
+            assert (winding != null);
 
             front[0] = back[0] = null;
 
-            this.winding.Split(splitPlane, 0.0f, frontWinding, backWinding);
+            winding.Split(splitPlane, 0.0f, frontWinding, backWinding);
 
             if (!frontWinding.isNULL()) {
-                front[0] = new idBrushSide(this.plane, this.planeNum);
+                front[0] = new idBrushSide(plane, planeNum);
                 front[0].winding = frontWinding;
-                front[0].flags = this.flags;
+                front[0].flags = flags;
             }
 
             if (!backWinding.isNULL()) {
-                back[0] = new idBrushSide(this.plane, this.planeNum);
+                back[0] = new idBrushSide(plane, planeNum);
                 back[0].winding = backWinding;
-                back[0].flags = this.flags;
+                back[0].flags = flags;
             }
 
             if (!frontWinding.isNULL() && !backWinding.isNULL()) {
@@ -159,7 +159,7 @@ public class Brush {
                 return PLANESIDE_BACK;
             }
         }
-    }
+    };
 
     //===============================================================
     //
@@ -184,31 +184,31 @@ public class Brush {
         // friend class idBrushList;
 
         public idBrush() {
-            this.contents = this.flags = 0;
-            this.bounds.Clear();
-            this.sides.Clear();
-            this.windingsValid = false;
+            contents = flags = 0;
+            bounds.Clear();
+            sides.Clear();
+            windingsValid = false;
         }
         // ~idBrush();
 
         public int GetFlags() {
-            return this.flags;
+            return flags;
         }
 
         public void SetFlag(int flag) {
-            this.flags |= flag;
+            flags |= flag;
         }
 
         public void RemoveFlag(int flag) {
-            this.flags &= ~flag;
+            flags &= ~flag;
         }
 
         public void SetEntityNum(int num) {
-            this.entityNum = num;
+            entityNum = num;
         }
 
         public void SetPrimitiveNum(int num) {
-            this.primitiveNum = num;
+            primitiveNum = num;
         }
 
         public void SetContents(int contents) {
@@ -216,11 +216,11 @@ public class Brush {
         }
 
         public int GetContents() {
-            return this.contents;
+            return contents;
         }
 
         public idBounds GetBounds() {
-            return this.bounds;
+            return bounds;
         }
 
         public float GetVolume() {
@@ -231,8 +231,8 @@ public class Brush {
 
             // grab the first valid point as a corner
             w = null;
-            for (i = 0; i < this.sides.Num(); i++) {
-                w = this.sides.oGet(i).winding;
+            for (i = 0; i < sides.Num(); i++) {
+                w = sides.oGet(i).winding;
                 if (w != null) {
                     break;
                 }
@@ -244,12 +244,12 @@ public class Brush {
 
             // create tetrahedrons to all other sides
             volume = 0.0f;
-            for (; i < this.sides.Num(); i++) {
-                w = this.sides.oGet(i).winding;
+            for (; i < sides.Num(); i++) {
+                w = sides.oGet(i).winding;
                 if (NOT(w)) {
                     continue;
                 }
-                d = -(corner.oMultiply(this.sides.oGet(i).plane.Normal()) - this.sides.oGet(i).plane.Dist());
+                d = -(corner.oMultiply(sides.oGet(i).plane.Normal()) - sides.oGet(i).plane.Dist());
                 area = w.GetArea();
                 volume += d * area;
             }
@@ -258,30 +258,30 @@ public class Brush {
         }
 
         public int GetNumSides() {
-            return this.sides.Num();
+            return sides.Num();
         }
 
         public idBrushSide GetSide(int i) {
-            return this.sides.oGet(i);
+            return sides.oGet(i);
         }
 
         public void SetPlaneSide(int s) {
-            this.planeSide = s;
+            planeSide = s;
         }
 
         public void SavePlaneSide() {
-            this.savedPlaneSide = this.planeSide;
+            savedPlaneSide = planeSide;
         }
 
         public int GetSavedPlaneSide() {
-            return this.savedPlaneSide;
+            return savedPlaneSide;
         }
 
         public boolean FromSides(idList<idBrushSide> sideList) {
             int i;
 
             for (i = 0; i < sideList.Num(); i++) {
-                this.sides.Append(sideList.oGet(i));
+                sides.Append(sideList.oGet(i));
             }
 
             sideList.Clear();
@@ -291,11 +291,11 @@ public class Brush {
 
         public boolean FromWinding(final idWinding w, final idPlane windingPlane) {
             int i, j, bestAxis;
-            final idPlane plane = new idPlane();
+            idPlane plane = new idPlane();
             idVec3 normal, axialNormal;
 
-            this.sides.Append(new idBrushSide(windingPlane, -1));
-            this.sides.Append(new idBrushSide(windingPlane.oNegative(), -1));
+            sides.Append(new idBrushSide(windingPlane, -1));
+            sides.Append(new idBrushSide(windingPlane.oNegative(), -1));
 
             bestAxis = 0;
             for (i = 1; i < 3; i++) {
@@ -318,20 +318,20 @@ public class Brush {
                 }
                 plane.SetNormal(normal);
                 plane.FitThroughPoint(w.oGet(j).ToVec3());
-                this.sides.Append(new idBrushSide(plane, -1));
+                sides.Append(new idBrushSide(plane, -1));
             }
 
-            if (this.sides.Num() < 4) {
-                for (i = 0; i < this.sides.Num(); i++) {
+            if (sides.Num() < 4) {
+                for (i = 0; i < sides.Num(); i++) {
 //			delete sides[i];
-                    this.sides.oSet(i, null);
+                    sides.oSet(i, null);
                 }
-                this.sides.Clear();
+                sides.Clear();
                 return false;
             }
 
-            this.sides.oGet(0).winding = w.Copy();
-            this.windingsValid = true;
+            sides.oGet(0).winding = w.Copy();
+            windingsValid = true;
             BoundBrush(null);
 
             return true;
@@ -340,7 +340,7 @@ public class Brush {
         public boolean FromBounds(final idBounds bounds) {
             int axis, dir;
             idVec3 normal;
-            final idPlane plane = new idPlane();
+            idPlane plane = new idPlane();
 
             for (axis = 0; axis < 3; axis++) {
                 for (dir = -1; dir <= 1; dir += 2) {
@@ -348,7 +348,7 @@ public class Brush {
                     normal.oSet(axis, dir);
                     plane.SetNormal(normal);
                     plane.SetDist(dir * bounds.oGet(dir == 1 ? 1 : 0, axis));
-                    this.sides.Append(new idBrushSide(plane, -1));
+                    sides.Append(new idBrushSide(plane, -1));
                 }
             }
 
@@ -360,14 +360,14 @@ public class Brush {
             boolean transformed = false;
 
             if (axis.IsRotated()) {
-                for (i = 0; i < this.sides.Num(); i++) {
-                    this.sides.oGet(i).plane.RotateSelf(getVec3_origin(), axis);
+                for (i = 0; i < sides.Num(); i++) {
+                    sides.oGet(i).plane.RotateSelf(getVec3_origin(), axis);
                 }
                 transformed = true;
             }
             if (!origin.equals(getVec3_origin())) {
-                for (i = 0; i < this.sides.Num(); i++) {
-                    this.sides.oGet(i).plane.TranslateSelf(origin);
+                for (i = 0; i < sides.Num(); i++) {
+                    sides.oGet(i).plane.TranslateSelf(origin);
                 }
                 transformed = true;
             }
@@ -381,13 +381,13 @@ public class Brush {
             idBrush b;
 
             b = new idBrush();
-            b.entityNum = this.entityNum;
-            b.primitiveNum = this.primitiveNum;
-            b.contents = this.contents;
-            b.windingsValid = this.windingsValid;
-            b.bounds = this.bounds;
-            for (i = 0; i < this.sides.Num(); i++) {
-                b.sides.Append(this.sides.oGet(i).Copy());
+            b.entityNum = entityNum;
+            b.primitiveNum = primitiveNum;
+            b.contents = contents;
+            b.windingsValid = windingsValid;
+            b.bounds = bounds;
+            for (i = 0; i < sides.Num(); i++) {
+                b.sides.Append(sides.oGet(i).Copy());
             }
             return b;
         }
@@ -400,10 +400,10 @@ public class Brush {
 
             // brush bounds should overlap
             for (i = 0; i < 3; i++) {
-                if (this.bounds.oGet(0, i) > (brush.bounds.oGet(1, i) + 0.1f)) {
+                if (bounds.oGet(0, i) > brush.bounds.oGet(1, i) + 0.1f) {
                     return false;
                 }
-                if (this.bounds.oGet(1, i) < (brush.bounds.oGet(0, i) - 0.1f)) {
+                if (bounds.oGet(1, i) < brush.bounds.oGet(0, i) - 0.1f) {
                     return false;
                 }
             }
@@ -471,10 +471,10 @@ public class Brush {
                     }
                 }
                 if (j < GetNumSides()) {
-                    this.sides.oGet(j).flags &= brush.GetSide(i).GetFlags();
+                    sides.oGet(j).flags &= brush.GetSide(i).GetFlags();
                     continue;
                 }
-                this.sides.Append(brush.GetSide(i).Copy());
+                sides.Append(brush.GetSide(i).Copy());
             }
 
             // remove any side from this brush that is the opposite of a side of the other brush
@@ -486,13 +486,13 @@ public class Brush {
                 }
                 if (j < brush.GetNumSides()) {
 //			delete sides[i];
-                    this.sides.RemoveIndex(i);
+                    sides.RemoveIndex(i);
                     i--;
 //                    continue;
                 }
             }
 
-            this.contents |= brush.contents;
+            contents |= brush.contents;
 
             CreateWindings();
             BoundBrush();
@@ -503,12 +503,12 @@ public class Brush {
         // returns true if the brushes did intersect
         public boolean Subtract(final idBrush b, idBrushList list) {
             int i;
-            final idBrush front = new idBrush(), back = new idBrush();
+            idBrush front = new idBrush(), back = new idBrush();
             idBrush in;
 
             list.Clear();
             in = this;
-            for (i = 0; (i < b.sides.Num()) && (in != null); i++) {
+            for (i = 0; i < b.sides.Num() && in != null; i++) {
 
                 in.Split(b.sides.oGet(i).plane, b.sides.oGet(i).planeNum, front, back);
 
@@ -535,12 +535,12 @@ public class Brush {
         public int Split(final idPlane plane, int planeNum, idBrush front, idBrush back) {//TODO:generic function pointer class.
             int res, i, j;
             idBrushSide side;
-            final idBrushSide[] frontSide = {null}, backSide = {null};
+            idBrushSide[] frontSide = {null}, backSide = {null};
             float dist, maxBack, maxFront;
             float[] maxBackWinding, maxFrontWinding;
             idWinding w, mid;
 
-            assert (this.windingsValid);
+            assert (windingsValid);
 
 //            if (front != null) {
 //                front[0] = null;
@@ -549,7 +549,7 @@ public class Brush {
 //                back[0] = null;
 //            }
 //            
-            res = this.bounds.PlaneSide(plane, -BRUSH_EPSILON);
+            res = bounds.PlaneSide(plane, -BRUSH_EPSILON);
             if (res == PLANESIDE_FRONT) {
                 if (front != null) {
                     front.oSet(Copy());
@@ -563,12 +563,12 @@ public class Brush {
                 return res;
             }
 
-            maxBackWinding = new float[this.sides.Num()];
-            maxFrontWinding = new float[this.sides.Num()];
+            maxBackWinding = new float[sides.Num()];
+            maxFrontWinding = new float[sides.Num()];
 
             maxFront = maxBack = 0.0f;
-            for (i = 0; i < this.sides.Num(); i++) {
-                side = this.sides.oGet(i);
+            for (i = 0; i < sides.Num(); i++) {
+                side = sides.oGet(i);
 
                 w = side.winding;
 
@@ -614,8 +614,8 @@ public class Brush {
 
             mid = new idWinding(plane.Normal(), plane.Dist());
 
-            for (i = 0; (i < this.sides.Num()) && (mid != null); i++) {
-                mid = mid.Clip(this.sides.oGet(i).plane.oNegative(), BRUSH_EPSILON, false);
+            for (i = 0; i < sides.Num() && mid != null; i++) {
+                mid = mid.Clip(sides.oGet(i).plane.oNegative(), BRUSH_EPSILON, false);
             }
 
             if (mid != null) {
@@ -625,10 +625,10 @@ public class Brush {
                 } else if (mid.IsHuge()) {
                     // if the winding is huge then the brush is unbounded
                     common.Warning("brush %d on entity %d is unbounded"
-                            + "( %1.2f %1.2f %1.2f )-( %1.2f %1.2f %1.2f )-( %1.2f %1.2f %1.2f )", this.primitiveNum, this.entityNum,
-                            this.bounds.oGet(0, 0), this.bounds.oGet(0, 1), this.bounds.oGet(0, 2),
-                            this.bounds.oGet(1, 0), this.bounds.oGet(1, 1), this.bounds.oGet(1, 2),
-                            this.bounds.oGet(1, 0) - this.bounds.oGet(0, 0), this.bounds.oGet(1, 1) - this.bounds.oGet(0, 1), this.bounds.oGet(1, 2) - this.bounds.oGet(0, 2));
+                            + "( %1.2f %1.2f %1.2f )-( %1.2f %1.2f %1.2f )-( %1.2f %1.2f %1.2f )", primitiveNum, entityNum,
+                            bounds.oGet(0, 0), bounds.oGet(0, 1), bounds.oGet(0, 2),
+                            bounds.oGet(1, 0), bounds.oGet(1, 1), bounds.oGet(1, 2),
+                            bounds.oGet(1, 0) - bounds.oGet(0, 0), bounds.oGet(1, 1) - bounds.oGet(0, 1), bounds.oGet(1, 2) - bounds.oGet(0, 2));
 //			delete mid;
                     mid = null;
                 }
@@ -654,16 +654,16 @@ public class Brush {
             }
 
             front.oSet(new idBrush());
-            front.SetContents(this.contents);
-            front.SetEntityNum(this.entityNum);
-            front.SetPrimitiveNum(this.primitiveNum);
+            front.SetContents(contents);
+            front.SetEntityNum(entityNum);
+            front.SetPrimitiveNum(primitiveNum);
             back.oSet(new idBrush());
-            back.SetContents(this.contents);
-            back.SetEntityNum(this.entityNum);
-            back.SetPrimitiveNum(this.primitiveNum);
+            back.SetContents(contents);
+            back.SetEntityNum(entityNum);
+            back.SetPrimitiveNum(primitiveNum);
 
-            for (i = 0; i < this.sides.Num(); i++) {
-                side = this.sides.oGet(i);
+            for (i = 0; i < sides.Num(); i++) {
+                side = sides.oGet(i);
 
                 if (NOT(side.winding)) {
                     continue;
@@ -720,12 +720,12 @@ public class Brush {
         public void ExpandForAxialBox(final idBounds bounds) {
             int i, j;
             idBrushSide side;
-            final idVec3 v = new idVec3();
+            idVec3 v = new idVec3();
 
             AddBevelsForAxialBox();
 
-            for (i = 0; i < this.sides.Num(); i++) {
-                side = this.sides.oGet(i);
+            for (i = 0; i < sides.Num(); i++) {
+                side = sides.oGet(i);
 
                 for (j = 0; j < 3; j++) {
                     if (side.plane.Normal().oGet(j) > 0.0f) {
@@ -739,7 +739,7 @@ public class Brush {
             }
 
             if (!CreateWindings()) {
-                common.Error("idBrush::ExpandForAxialBox: brush %d on entity %d imploded", this.primitiveNum, this.entityNum);
+                common.Error("idBrush::ExpandForAxialBox: brush %d on entity %d imploded", primitiveNum, entityNum);
             }
 
             /*
@@ -757,47 +757,47 @@ public class Brush {
 
         // next brush in list
         public idBrush Next() {
-            return this.next;
+            return next;
         }
 
         private boolean CreateWindings() {
             int i, j;
             idBrushSide side;
 
-            this.bounds.Clear();
-            for (i = 0; i < this.sides.Num(); i++) {
-                side = this.sides.oGet(i);
+            bounds.Clear();
+            for (i = 0; i < sides.Num(); i++) {
+                side = sides.oGet(i);
 
 //		if ( side.winding!=null ) {
 //			delete side.winding;
 //		}
                 side.winding = new idWinding(side.plane.Normal(), side.plane.Dist());
 
-                for (j = 0; (j < this.sides.Num()) && (side.winding != null); j++) {
+                for (j = 0; j < sides.Num() && side.winding != null; j++) {
                     if (i == j) {
                         continue;
                     }
                     // keep the winding if on the clip plane
-                    side.winding = side.winding.Clip(this.sides.oGet(j).plane.oNegative(), BRUSH_EPSILON, true);
+                    side.winding = side.winding.Clip(sides.oGet(j).plane.oNegative(), BRUSH_EPSILON, true);
                 }
 
                 if (side.winding != null) {
                     for (j = 0; j < side.winding.GetNumPoints(); j++) {
-                        this.bounds.AddPoint(side.winding.oGet(j).ToVec3());
+                        bounds.AddPoint(side.winding.oGet(j).ToVec3());
                     }
                 }
             }
 
-            if (this.bounds.oGet(0, 0) > this.bounds.oGet(1, 0)) {
+            if (bounds.oGet(0, 0) > bounds.oGet(1, 0)) {
                 return false;
             }
             for (i = 0; i < 3; i++) {
-                if ((this.bounds.oGet(0, i) < MIN_WORLD_COORD) || (this.bounds.oGet(1, i) > MAX_WORLD_COORD)) {
+                if (bounds.oGet(0, i) < MIN_WORLD_COORD || bounds.oGet(1, i) > MAX_WORLD_COORD) {
                     return false;
                 }
             }
 
-            this.windingsValid = true;
+            windingsValid = true;
 
             return true;
         }
@@ -807,11 +807,11 @@ public class Brush {
             idBrushSide side;
             idWinding w;
 
-            assert (this.windingsValid);
+            assert (windingsValid);
 
-            this.bounds.Clear();
-            for (i = 0; i < this.sides.Num(); i++) {
-                side = this.sides.oGet(i);
+            bounds.Clear();
+            for (i = 0; i < sides.Num(); i++) {
+                side = sides.oGet(i);
 
                 w = side.winding;
 
@@ -820,27 +820,27 @@ public class Brush {
                 }
 
                 for (j = 0; j < w.GetNumPoints(); j++) {
-                    this.bounds.AddPoint(w.oGet(j).ToVec3());
+                    bounds.AddPoint(w.oGet(j).ToVec3());
                 }
             }
 
-            if (this.bounds.oGet(0, 0) > this.bounds.oGet(1, 0)) {
+            if (bounds.oGet(0, 0) > bounds.oGet(1, 0)) {
                 if (original != null) {
-                    final idBrushMap bm = new idBrushMap("error_brush", "_original");
+                    idBrushMap bm = new idBrushMap("error_brush", "_original");
                     bm.WriteBrush(original);
 //			delete bm;
                 }
-                common.Error("idBrush::BoundBrush: brush %d on entity %d without windings", this.primitiveNum, this.entityNum);
+                common.Error("idBrush::BoundBrush: brush %d on entity %d without windings", primitiveNum, entityNum);
             }
 
             for (i = 0; i < 3; i++) {
-                if ((this.bounds.oGet(0, i) < MIN_WORLD_COORD) || (this.bounds.oGet(1, i) > MAX_WORLD_COORD)) {
+                if (bounds.oGet(0, i) < MIN_WORLD_COORD || bounds.oGet(1, i) > MAX_WORLD_COORD) {
                     if (original != null) {
-                        final idBrushMap bm = new idBrushMap("error_brush", "_original");
+                        idBrushMap bm = new idBrushMap("error_brush", "_original");
                         bm.WriteBrush(original);
 //				delete bm;
                     }
-                    common.Error("idBrush::BoundBrush: brush %d on entity %d is unbounded", this.primitiveNum, this.entityNum);
+                    common.Error("idBrush::BoundBrush: brush %d on entity %d is unbounded", primitiveNum, entityNum);
                 }
             }
         }
@@ -852,12 +852,12 @@ public class Brush {
         private void AddBevelsForAxialBox() {
             int axis, dir, i, j, k, l, order;
             idBrushSide side, newSide;
-            final idPlane plane = new idPlane();
+            idPlane plane = new idPlane();
             idVec3 normal, vec;
             idWinding w, w2;
             float d, minBack;
 
-            assert (this.windingsValid);
+            assert (windingsValid);
 
             // add the axial planes
             order = 0;
@@ -866,38 +866,38 @@ public class Brush {
                 for (dir = -1; dir <= 1; dir += 2, order++) {
 
                     // see if the plane is already present
-                    for (i = 0; i < this.sides.Num(); i++) {
+                    for (i = 0; i < sides.Num(); i++) {
                         if (dir > 0) {
-                            if (this.sides.oGet(i).plane.Normal().oGet(axis) >= 0.9999f) {
+                            if (sides.oGet(i).plane.Normal().oGet(axis) >= 0.9999f) {
                                 break;
                             }
                         } else {
-                            if (this.sides.oGet(i).plane.Normal().oGet(axis) <= -0.9999f) {
+                            if (sides.oGet(i).plane.Normal().oGet(axis) <= -0.9999f) {
                                 break;
                             }
                         }
                     }
 
-                    if (i >= this.sides.Num()) {
+                    if (i >= sides.Num()) {
                         normal = getVec3_origin();
                         normal.oSet(axis, dir);
                         plane.SetNormal(normal);
-                        plane.SetDist(dir * this.bounds.oGet(((dir == 1) ? 1 : 0), axis));
+                        plane.SetDist(dir * bounds.oGet(((dir == 1) ? 1 : 0), axis));
                         newSide = new idBrushSide(plane, -1);
                         newSide.SetFlag(SFL_BEVEL);
-                        this.sides.Append(newSide);
+                        sides.Append(newSide);
                     }
                 }
             }
 
             // if the brush is pure axial we're done
-            if (this.sides.Num() == 6) {
+            if (sides.Num() == 6) {
                 return;
             }
 
             // test the non-axial plane edges
-            for (i = 0; i < this.sides.Num(); i++) {
-                side = this.sides.oGet(i);
+            for (i = 0; i < sides.Num(); i++) {
+                side = sides.oGet(i);
                 w = side.winding;
                 if (NOT(w)) {
                     continue;
@@ -910,7 +910,7 @@ public class Brush {
                         continue;
                     }
                     for (k = 0; k < 3; k++) {
-                        if ((vec.oGet(k) == 1.0f) || (vec.oGet(k) == -1.0f) || ((vec.oGet(k) == 0.0f) && (vec.oGet((k + 1) % 3) == 0.0f))) {
+                        if (vec.oGet(k) == 1.0f || vec.oGet(k) == -1.0f || (vec.oGet(k) == 0.0f && vec.oGet((k + 1) % 3) == 0.0f)) {
                             break;	// axial
                         }
                     }
@@ -935,14 +935,14 @@ public class Brush {
 
                             // if all the points on all the sides are
                             // behind this plane, it is a proper edge bevel
-                            for (k = 0; k < this.sides.Num(); k++) {
+                            for (k = 0; k < sides.Num(); k++) {
 
                                 // if this plane has allready been used, skip it
-                                if (plane.Compare(this.sides.oGet(k).plane, 0.001f, 0.1f)) {
+                                if (plane.Compare(sides.oGet(k).plane, 0.001f, 0.1f)) {
                                     break;
                                 }
 
-                                w2 = this.sides.oGet(k).winding;
+                                w2 = sides.oGet(k).winding;
                                 if (NOT(w2)) {
                                     continue;
                                 }
@@ -966,14 +966,14 @@ public class Brush {
                                 }
                             }
 
-                            if (k < this.sides.Num()) {
+                            if (k < sides.Num()) {
                                 continue;	// wasn't part of the outer hull
                             }
 
                             // add this plane
                             newSide = new idBrushSide(plane, -1);
                             newSide.SetFlag(SFL_BEVEL);
-                            this.sides.Append(newSide);
+                            sides.Append(newSide);
                         }
                     }
                 }
@@ -983,28 +983,28 @@ public class Brush {
         private boolean RemoveSidesWithoutWinding() {
             int i;
 
-            for (i = 0; i < this.sides.Num(); i++) {
+            for (i = 0; i < sides.Num(); i++) {
 
-                if (this.sides.oGet(i).winding != null) {
+                if (sides.oGet(i).winding != null) {
                     continue;
                 }
 
-                this.sides.RemoveIndex(i);
+                sides.RemoveIndex(i);
                 i--;
             }
 
-            return (this.sides.Num() >= 4);
+            return (sides.Num() >= 4);
         }
 
         public boolean isNULL() {
-            return this.NULL;
+            return NULL;
         }
 
         private void oSet(idBrush Copy) {
-            this.NULL = false;
+            NULL = false;
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     //===============================================================
     //
@@ -1021,8 +1021,8 @@ public class Brush {
         //
 
         public idBrushList() {
-            this.numBrushes = this.numBrushSides = 0;
-            this.head = this.tail = null;
+            numBrushes = numBrushSides = 0;
+            head = tail = null;
         }
 
         private void oSet(idBrushList keep) {
@@ -1034,32 +1034,32 @@ public class Brush {
         // ~idBrushList();
 
         public int Num() {
-            return this.numBrushes;
+            return numBrushes;
         }
 
         public int NumSides() {
-            return this.numBrushSides;
+            return numBrushSides;
         }
 
         public idBrush Head() {
-            return this.head;
+            return head;
         }
 
         public idBrush Tail() {
-            return this.tail;
+            return tail;
         }
 
         public void Clear() {
-            this.head = this.tail = null;
-            this.numBrushes = 0;
+            head = tail = null;
+            numBrushes = 0;
         }
 
         public boolean IsEmpty() {
-            return (this.numBrushes == 0);
+            return (numBrushes == 0);
         }
 
         public idBounds GetBounds() {
-            final idBounds bounds = new idBounds();
+            idBounds bounds = new idBounds();
             idBrush b;
 
             bounds.Clear();
@@ -1072,15 +1072,15 @@ public class Brush {
         // add brush to the tail of the list
         public void AddToTail(idBrush brush) {
             brush.next = null;
-            if (this.tail != null) {
-                this.tail.next = brush;
+            if (tail != null) {
+                tail.next = brush;
             }
-            this.tail = brush;
-            if (NOT(this.head)) {
-                this.head = brush;
+            tail = brush;
+            if (NOT(head)) {
+                head = brush;
             }
-            this.numBrushes++;
-            this.numBrushSides += brush.sides.Num();
+            numBrushes++;
+            numBrushSides += brush.sides.Num();
         }
 
         // add list to the tail of the list
@@ -1090,15 +1090,15 @@ public class Brush {
             for (brush = list.head; brush != null; brush = next) {
                 next = brush.next;
                 brush.next = null;
-                if (this.tail != null) {
-                    this.tail.next = brush;
+                if (tail != null) {
+                    tail.next = brush;
                 }
-                this.tail = brush;
-                if (NOT(this.head)) {
-                    this.head = brush;
+                tail = brush;
+                if (NOT(head)) {
+                    head = brush;
                 }
-                this.numBrushes++;
-                this.numBrushSides += brush.sides.Num();
+                numBrushes++;
+                numBrushSides += brush.sides.Num();
             }
             list.head = list.tail = null;
             list.numBrushes = 0;
@@ -1106,13 +1106,13 @@ public class Brush {
 
         // add brush to the front of the list
         public void AddToFront(idBrush brush) {
-            brush.next = this.head;
-            this.head = brush;
-            if (NOT(this.tail)) {
-                this.tail = brush;
+            brush.next = head;
+            head = brush;
+            if (NOT(tail)) {
+                tail = brush;
             }
-            this.numBrushes++;
-            this.numBrushSides += brush.sides.Num();
+            numBrushes++;
+            numBrushSides += brush.sides.Num();
         }
 
         // add list to the front of the list
@@ -1121,13 +1121,13 @@ public class Brush {
 
             for (brush = list.head; brush != null; brush = next) {
                 next = brush.next;
-                brush.next = this.head;
-                this.head = brush;
-                if (NOT(this.tail)) {
-                    this.tail = brush;
+                brush.next = head;
+                head = brush;
+                if (NOT(tail)) {
+                    tail = brush;
                 }
-                this.numBrushes++;
-                this.numBrushSides += brush.sides.Num();
+                numBrushes++;
+                numBrushSides += brush.sides.Num();
             }
             list.head = list.tail = null;
             list.numBrushes = 0;
@@ -1138,18 +1138,18 @@ public class Brush {
             idBrush b, last;
 
             last = null;
-            for (b = this.head; b != null; b = b.next) {
+            for (b = head; b != null; b = b.next) {
                 if (b.equals(brush)) {
                     if (last != null) {
                         last.next = b.next;
                     } else {
-                        this.head = b.next;
+                        head = b.next;
                     }
-                    if (b.equals(this.tail)) {
-                        this.tail = last;
+                    if (b.equals(tail)) {
+                        tail = last;
                     }
-                    this.numBrushes--;
-                    this.numBrushSides -= brush.sides.Num();
+                    numBrushes--;
+                    numBrushSides -= brush.sides.Num();
                     return;
                 }
                 last = b;
@@ -1161,18 +1161,18 @@ public class Brush {
             idBrush b, last;
 
             last = null;
-            for (b = this.head; b != null; b = b.next) {
+            for (b = head; b != null; b = b.next) {
                 if (b.equals(brush)) {
                     if (last != null) {
                         last.next = b.next;
                     } else {
-                        this.head = b.next;
+                        head = b.next;
                     }
-                    if (b.equals(this.tail)) {
-                        this.tail = last;
+                    if (b.equals(tail)) {
+                        tail = last;
                     }
-                    this.numBrushes--;
-                    this.numBrushSides -= b.sides.Num();
+                    numBrushes--;
+                    numBrushSides -= b.sides.Num();
 //			delete b;
                     return;
                 }
@@ -1187,7 +1187,7 @@ public class Brush {
 
             list = new idBrushList();
 
-            for (brush = this.head; brush != null; brush = brush.next) {
+            for (brush = head; brush != null; brush = brush.next) {
                 list.AddToTail(brush.Copy());
             }
             return list;
@@ -1197,24 +1197,24 @@ public class Brush {
         public void Free() {
             idBrush brush, next;
 
-            for (brush = this.head; brush != null; brush = next) {
+            for (brush = head; brush != null; brush = next) {
                 next = brush.next;
 //		delete brush;
             }
-            this.head = this.tail = null;
-            this.numBrushes = this.numBrushSides = 0;
+            head = tail = null;
+            numBrushes = numBrushSides = 0;
         }
 
         // split the brushes in the list into two lists
         public void Split(final idPlane plane, int planeNum, idBrushList frontList, idBrushList backList, boolean useBrushSavedPlaneSide /*= false*/) {
             idBrush b;
-            final idBrush front = new idBrush(), back = new idBrush();
+            idBrush front = new idBrush(), back = new idBrush();
 
             frontList.Clear();
             backList.Clear();
 
             if (!useBrushSavedPlaneSide) {
-                for (b = this.head; b != null; b = b.next) {
+                for (b = head; b != null; b = b.next) {
                     b.Split(plane, planeNum, front, back);
                     if (!front.isNULL()) {
                         frontList.AddToTail(front);
@@ -1226,7 +1226,7 @@ public class Brush {
                 return;
             }
 
-            for (b = this.head; b != null; b = b.next) {
+            for (b = head; b != null; b = b.next) {
                 if ((b.savedPlaneSide & BRUSH_PLANESIDE_BOTH) != 0) {
                     b.Split(plane, planeNum, front, back);
                     if (!front.isNULL()) {
@@ -1250,9 +1250,9 @@ public class Brush {
         // chop away all brush overlap
         public void Chop(Allowance chopAllowed) {
             idBrush b1, b2, next;
-            final idBrushList sub1 = new idBrushList(), sub2 = new idBrushList(), keep = new idBrushList();
+            idBrushList sub1 = new idBrushList(), sub2 = new idBrushList(), keep = new idBrushList();
             int i, j, c1, c2;
-            final idPlaneSet planeList = new idPlaneSet();
+            idPlaneSet planeList = new idPlaneSet();
 
             if (OUTPUT_CHOP_STATS) {
                 common.Printf("[Brush CSG]\n");
@@ -1334,7 +1334,7 @@ public class Brush {
                     }
 
                     // don't allow too much fragmentation
-                    if ((c1 > 2) && (c2 > 2)) {
+                    if (c1 > 2 && c2 > 2) {
                         sub1.Free();
                         sub2.Free();
                         continue;
@@ -1372,7 +1372,7 @@ public class Brush {
 
         // merge brushes
         public void Merge(Allowance mergeAllowed) {
-            final idPlaneSet planeList = new idPlaneSet();
+            idPlaneSet planeList = new idPlaneSet();
             idBrush b1, b2, nextb2;
             int numMerges;
 
@@ -1391,7 +1391,7 @@ public class Brush {
                         continue;
                     }
 
-                    if ((mergeAllowed != null) && !mergeAllowed.run(b1, b2)) {
+                    if (mergeAllowed != null && !mergeAllowed.run(b1, b2)) {
                         continue;
                     }
 
@@ -1412,7 +1412,7 @@ public class Brush {
             idBrush b;
             idWinding w;
 
-            for (b = this.head; b != null; b = b.next) {
+            for (b = head; b != null; b = b.next) {
                 if (idMath.Fabs(b.GetBounds().PlaneDistance(plane)) > 0.1f) {
                     continue;
                 }
@@ -1454,7 +1454,7 @@ public class Brush {
             map.WriteBrushList(this);
 //	delete map;
         }
-    }
+    };
 
     //===============================================================
     //
@@ -1470,7 +1470,7 @@ public class Brush {
         //
 
         idBrushMap(final idStr fileName, final idStr ext) {
-            this(fileName.getData(), ext.getData());
+            this(fileName.toString(), ext.toString());
         }
 
         public idBrushMap(final String fileName, final String ext) {
@@ -1483,24 +1483,24 @@ public class Brush {
 
             common.Printf("writing %s...\n", qpath);
 
-            this.fp = fileSystem.OpenFileWrite(qpath.getData(), "fs_devpath");
-            if (NOT(this.fp)) {
+            fp = fileSystem.OpenFileWrite(qpath.toString(), "fs_devpath");
+            if (NOT(fp)) {
                 common.Error("Couldn't open %s\n", qpath);
                 return;
             }
 
-            this.texture.oSet("textures/washroom/btile01");
+            texture.oSet("textures/washroom/btile01");
 
-            this.fp.WriteFloatString("Version %1.2f\n", (float) CURRENT_MAP_VERSION);
-            this.fp.WriteFloatString("{\n");
-            this.fp.WriteFloatString("\"classname\" \"worldspawn\"\n");
+            fp.WriteFloatString("Version %1.2f\n", (float) CURRENT_MAP_VERSION);
+            fp.WriteFloatString("{\n");
+            fp.WriteFloatString("\"classname\" \"worldspawn\"\n");
 
-            this.brushCount = 0;
+            brushCount = 0;
         }
 
         // ~idBrushMap( void );
         public void SetTexture(final idStr textureName) {
-            this.texture = textureName;
+            texture = textureName;
         }
 
         public void SetTexture(final String textureName) {
@@ -1511,25 +1511,25 @@ public class Brush {
             int i;
             idBrushSide side;
 
-            if (NOT(this.fp)) {
+            if (NOT(fp)) {
                 return;
             }
 
-            this.fp.WriteFloatString("// primitive %d\n{\nbrushDef3\n{\n", this.brushCount++);
+            fp.WriteFloatString("// primitive %d\n{\nbrushDef3\n{\n", brushCount++);
 
             for (i = 0; i < brush.GetNumSides(); i++) {
                 side = brush.GetSide(i);
-                this.fp.WriteFloatString(" ( %f %f %f %f ) ", side.GetPlane().oGet(0), side.GetPlane().oGet(1), side.GetPlane().oGet(2), -side.GetPlane().Dist());
-                this.fp.WriteFloatString("( ( 0.031250 0 0 ) ( 0 0.031250 0 ) ) %s 0 0 0\n", this.texture);
+                fp.WriteFloatString(" ( %f %f %f %f ) ", side.GetPlane().oGet(0), side.GetPlane().oGet(1), side.GetPlane().oGet(2), -side.GetPlane().Dist());
+                fp.WriteFloatString("( ( 0.031250 0 0 ) ( 0 0.031250 0 ) ) %s 0 0 0\n", texture);
 
             }
-            this.fp.WriteFloatString("}\n}\n");
+            fp.WriteFloatString("}\n}\n");
         }
 
         public void WriteBrushList(final idBrushList brushList) {
             idBrush b;
 
-            if (NOT(this.fp)) {
+            if (NOT(fp)) {
                 return;
             }
 
@@ -1537,7 +1537,7 @@ public class Brush {
                 WriteBrush(b);
             }
         }
-    }
+    };
 
     /*
      ============
@@ -1550,7 +1550,7 @@ public class Brush {
         int time;
 
         time = Sys_Milliseconds();
-        if (time > (lastUpdateTime + OUTPUT_UPDATE_TIME)) {
+        if (time > lastUpdateTime + OUTPUT_UPDATE_TIME) {
 //            va_start(argPtr, string);
 //            vsprintf(buf, string, argPtr);
 //            va_end(argPtr);

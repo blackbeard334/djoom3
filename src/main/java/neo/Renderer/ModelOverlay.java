@@ -19,7 +19,6 @@ import neo.framework.DemoFile.idDemoFile;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec2;
-import neo.open.Nio;
 
 /**
  *
@@ -39,7 +38,7 @@ public class ModelOverlay {
 
         int vertexNum;
         float[] st = new float[2];
-    }
+    };
 
     private static class overlaySurface_s {
 
@@ -53,13 +52,13 @@ public class ModelOverlay {
         private void clear() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     static class overlayMaterial_s {
 
         idMaterial material;
         idList<overlaySurface_s> surfaces;
-    }
+    };
 
     static class idRenderModelOverlay {
 
@@ -93,7 +92,7 @@ public class ModelOverlay {
         // texture since no new clip vertexes are generated.
         public void CreateOverlay(final idRenderModel model, final idPlane[] localTextureAxis/*[2]*/, final idMaterial mtr) {
             int i, maxVerts, maxIndexes, surfNum;
-            final idRenderModelOverlay overlay = null;
+            idRenderModelOverlay overlay = null;
 
             // count up the maximum possible vertices and indexes per surface
             maxVerts = 0;
@@ -103,21 +102,21 @@ public class ModelOverlay {
                 if (surf.geometry.numVerts > maxVerts) {
                     maxVerts = surf.geometry.numVerts;
                 }
-                if (surf.geometry.getIndexes().getNumValues() > maxIndexes) {
-                    maxIndexes = surf.geometry.getIndexes().getNumValues();
+                if (surf.geometry.numIndexes > maxIndexes) {
+                    maxIndexes = surf.geometry.numIndexes;
                 }
             }
 
             // make temporary buffers for the building process
-            final overlayVertex_s[] overlayVerts = new overlayVertex_s[maxVerts];
-            final int[]/*glIndex_t*/ overlayIndexes = new int[maxIndexes];
+            overlayVertex_s[] overlayVerts = new overlayVertex_s[maxVerts];
+            int[]/*glIndex_t*/ overlayIndexes = new int[maxIndexes];
 
             // pull out the triangles we need from the base surfaces
             for (surfNum = 0; surfNum < model.NumBaseSurfaces(); surfNum++) {
                 final modelSurface_s surf = model.Surface(surfNum);
                 float d;
 
-                if ((null == surf.geometry) || (null == surf.shader)) {
+                if (null == surf.geometry || null == surf.shader) {
                     continue;
                 }
 
@@ -130,32 +129,32 @@ public class ModelOverlay {
 
                 // try to cull the whole surface along the first texture axis
                 d = stri.bounds.PlaneDistance(localTextureAxis[0]);
-                if ((d < 0.0f) || (d > 1.0f)) {
+                if (d < 0.0f || d > 1.0f) {
                     continue;
                 }
 
                 // try to cull the whole surface along the second texture axis
                 d = stri.bounds.PlaneDistance(localTextureAxis[1]);
-                if ((d < 0.0f) || (d > 1.0f)) {
+                if (d < 0.0f || d > 1.0f) {
                     continue;
                 }
 
-                final byte[] cullBits = new byte[stri.numVerts];
-                final idVec2[] texCoords = new idVec2[stri.numVerts];
+                byte[] cullBits = new byte[stri.numVerts];
+                idVec2[] texCoords = new idVec2[stri.numVerts];
 
                 SIMDProcessor.OverlayPointCull(cullBits, texCoords, localTextureAxis, stri.verts, stri.numVerts);
 
-                final int[]/*glIndex_t */ vertexRemap = new int[stri.numVerts];
+                int[]/*glIndex_t */ vertexRemap = new int[stri.numVerts];
                 SIMDProcessor.Memset(vertexRemap, -1, stri.numVerts);
 
                 // find triangles that need the overlay
                 int numVerts = 0;
                 int numIndexes = 0;
                 int triNum = 0;
-                for (int index = 0; index < stri.getIndexes().getNumValues(); index += 3, triNum++) {
-                    final int v1 = stri.getIndexes().getValues().get(index + 0);
-                    final int v2 = stri.getIndexes().getValues().get(index + 1);
-                    final int v3 = stri.getIndexes().getValues().get(index + 2);
+                for (int index = 0; index < stri.numIndexes; index += 3, triNum++) {
+                    int v1 = stri.indexes[index + 0];
+                    int v2 = stri.indexes[index + 1];
+                    int v3 = stri.indexes[index + 2];
 
                     // skip triangles completely off one side
                     if ((cullBits[v1] & cullBits[v2] & cullBits[v3]) != 0) {
@@ -165,7 +164,7 @@ public class ModelOverlay {
                     // we could do more precise triangle culling, like the light interaction does, if desired
                     // keep this triangle
                     for (int vnum = 0; vnum < 3; vnum++) {
-                        final int ind = stri.getIndexes().getValues().get(index + vnum);
+                        int ind = stri.indexes[index + vnum];
                         if (vertexRemap[ind] == -1) {
                             vertexRemap[ind] = numVerts;
 
@@ -183,7 +182,7 @@ public class ModelOverlay {
                     continue;
                 }
 
-                final overlaySurface_s s = new overlaySurface_s();// Mem_Alloc(sizeof(overlaySurface_t));
+                overlaySurface_s s = new overlaySurface_s();// Mem_Alloc(sizeof(overlaySurface_t));
                 s.surfaceNum[0] = surfNum;
                 s.surfaceId = surf.id;
                 s.verts = new overlayVertex_s[numVerts];// Mem_Alloc(numVerts);
@@ -192,29 +191,29 @@ public class ModelOverlay {
                 s.numVerts = numVerts;
                 s.indexes = new int[numIndexes];///*(glIndex_t *)*/Mem_Alloc(numIndexes);
 //                memcpy(s.indexes, overlayIndexes, numIndexes * sizeof(s.indexes[0]));
-                Nio.arraycopy(overlayIndexes, 0, s.indexes, 0, numIndexes);
+                System.arraycopy(overlayIndexes, 0, s.indexes, 0, numIndexes);
                 s.numIndexes = numIndexes;
 
-                for (i = 0; i < this.materials.Num(); i++) {
-                    if (this.materials.oGet(i).material == mtr) {
+                for (i = 0; i < materials.Num(); i++) {
+                    if (materials.oGet(i).material == mtr) {
                         break;
                     }
                 }
-                if (i < this.materials.Num()) {
-                    this.materials.oGet(i).surfaces.Append(s);
+                if (i < materials.Num()) {
+                    materials.oGet(i).surfaces.Append(s);
                 } else {
-                    final overlayMaterial_s mat = new overlayMaterial_s();
+                    overlayMaterial_s mat = new overlayMaterial_s();
                     mat.material = mtr;
                     mat.surfaces.Append(s);
-                    this.materials.Append(mat);
+                    materials.Append(mat);
                 }
             }
 
             // remove the oldest overlay surfaces if there are too many per material
-            for (i = 0; i < this.materials.Num(); i++) {
-                while (this.materials.oGet(i).surfaces.Num() > MAX_OVERLAY_SURFACES) {
-                    FreeSurface(this.materials.oGet(i).surfaces.oGet(0));
-                    this.materials.oGet(i).surfaces.RemoveIndex(0);
+            for (i = 0; i < materials.Num(); i++) {
+                while (materials.oGet(i).surfaces.Num() > MAX_OVERLAY_SURFACES) {
+                    FreeSurface(materials.oGet(i).surfaces.oGet(0));
+                    materials.oGet(i).surfaces.RemoveIndex(0);
                 }
             }
         }
@@ -229,7 +228,7 @@ public class ModelOverlay {
             srfTriangles_s newTri;
             modelSurface_s newSurf;
 
-            if ((baseModel == null) || baseModel.IsDefaultModel()) {
+            if (baseModel == null || baseModel.IsDefaultModel()) {
                 return;
             }
 
@@ -247,17 +246,17 @@ public class ModelOverlay {
 
             staticModel.overlaysAdded = 0;
 
-            if (0 == this.materials.Num()) {
+            if (0 == materials.Num()) {
                 staticModel.DeleteSurfacesWithNegativeId();
                 return;
             }
 
-            for (k = 0; k < this.materials.Num(); k++) {
+            for (k = 0; k < materials.Num(); k++) {
 
                 numVerts = numIndexes = 0;
-                for (i = 0; i < this.materials.oGet(k).surfaces.Num(); i++) {
-                    numVerts += this.materials.oGet(k).surfaces.oGet(i).numVerts;
-                    numIndexes += this.materials.oGet(k).surfaces.oGet(i).numIndexes;
+                for (i = 0; i < materials.oGet(k).surfaces.Num(); i++) {
+                    numVerts += materials.oGet(k).surfaces.oGet(i).numVerts;
+                    numIndexes += materials.oGet(k).surfaces.oGet(i).numIndexes;
                 }
 
                 if (staticModel.FindSurfaceWithId(-1 - k, surfaceNum)) {
@@ -265,11 +264,11 @@ public class ModelOverlay {
                 } else {
                     newSurf = staticModel.surfaces.Alloc();
                     newSurf.geometry = null;
-                    newSurf.shader = this.materials.oGet(k).material;
+                    newSurf.shader = materials.oGet(k).material;
                     newSurf.id = -1 - k;
                 }
 
-                if ((newSurf.geometry == null) || (newSurf.geometry.numVerts < numVerts) || (newSurf.geometry.getIndexes().getNumValues() < numIndexes)) {
+                if (newSurf.geometry == null || newSurf.geometry.numVerts < numVerts || newSurf.geometry.numIndexes < numIndexes) {
                     R_FreeStaticTriSurf(newSurf.geometry);
                     newSurf.geometry = R_AllocStaticTriSurf();
                     R_AllocStaticTriSurfVerts(newSurf.geometry, numVerts);
@@ -282,8 +281,8 @@ public class ModelOverlay {
                 newTri = newSurf.geometry;
                 numVerts = numIndexes = 0;
 
-                for (i = 0; i < this.materials.oGet(k).surfaces.Num(); i++) {
-                    surf = this.materials.oGet(k).surfaces.oGet(i);
+                for (i = 0; i < materials.oGet(k).surfaces.Num(); i++) {
+                    surf = materials.oGet(k).surfaces.oGet(i);
 
                     // get the model surface for this overlay surface
                     if (surf.surfaceNum[0] < staticModel.NumSurfaces()) {
@@ -293,14 +292,14 @@ public class ModelOverlay {
                     }
 
                     // if the surface ids no longer match
-                    if ((null == baseSurf) || (baseSurf.id != surf.surfaceId)) {
+                    if (null == baseSurf || baseSurf.id != surf.surfaceId) {
                         // find the surface with the correct id
                         if (staticModel.FindSurfaceWithId(surf.surfaceId, surf.surfaceNum)) {
                             baseSurf = staticModel.Surface(surf.surfaceNum[0]);
                         } else {
                             // the surface with this id no longer exists
                             FreeSurface(surf);
-                            this.materials.oGet(k).surfaces.RemoveIndex(i);
+                            materials.oGet(k).surfaces.RemoveIndex(i);
                             i--;
                             continue;
                         }
@@ -308,13 +307,13 @@ public class ModelOverlay {
 
                     // copy indexes;
                     for (j = 0; j < surf.numIndexes; j++) {
-                        newTri.getIndexes().getValues().put(numIndexes + j, numVerts + surf.indexes[j]);
+                        newTri.indexes[numIndexes + j] = numVerts + surf.indexes[j];
                     }
                     numIndexes += surf.numIndexes;
 
                     // copy vertices
                     for (j = 0; j < surf.numVerts; j++) {
-                        final overlayVertex_s overlayVert = surf.verts[j];
+                        overlayVertex_s overlayVert = surf.verts[j];
 
                         newTri.verts[numVerts].st.oSet(0, overlayVert.st[0]);
                         newTri.verts[numVerts].st.oSet(1, overlayVert.st[1]);
@@ -323,7 +322,7 @@ public class ModelOverlay {
                             // This can happen when playing a demofile and a model has been changed since it was recorded, so just issue a warning and go on.
                             common.Warning("idRenderModelOverlay::AddOverlaySurfacesToModel: overlay vertex out of range.  Model has probably changed since generating the overlay.");
                             FreeSurface(surf);
-                            this.materials.oGet(k).surfaces.RemoveIndex(i);
+                            materials.oGet(k).surfaces.RemoveIndex(i);
                             staticModel.DeleteSurfaceWithId(newSurf.id);
                             return;
                         }
@@ -333,7 +332,7 @@ public class ModelOverlay {
                 }
 
                 newTri.numVerts = numVerts;
-                newTri.getIndexes().setNumValues(numIndexes);
+                newTri.numIndexes = numIndexes;
                 R_BoundTriSurf(newTri);
 
                 staticModel.overlaysAdded++;	// so we don't create an overlay on an overlay surface
@@ -373,5 +372,5 @@ public class ModelOverlay {
             }
             surface.clear();
         }
-    }
+    };
 }

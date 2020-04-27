@@ -6,8 +6,6 @@ import static neo.idlib.Lib.colorGreen;
 import static neo.idlib.Lib.colorRed;
 import static neo.idlib.Lib.colorYellow;
 
-import java.util.ArrayList;
-
 import neo.Renderer.tr_local.idRenderEntityLocal;
 import neo.Renderer.tr_local.idRenderLightLocal;
 import neo.Renderer.tr_local.idScreenRect;
@@ -16,7 +14,6 @@ import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat4;
-import neo.open.MatrixUtil;
 
 /**
  *
@@ -29,58 +26,56 @@ public class tr_shadowbounds {
 // --cass
     static class MyArray<T> {
 
-        //private MyArray() {
-        //    this.N = -1;
-        //}
+        private MyArray() {
+            N = -1;
+        }
 
         public MyArray(final int N) //: s(0) 
         {
-        	//this.N = N;
-            this.v = new ArrayList<T>();
+            this.N = N;
+            v = (T[]) new Object[N];
         }
 
         public MyArray(final int N, final MyArray<T> cpy) //: s(cpy.s)
         {
-            //this.N = N;
-            this.v = new ArrayList<T>();
-            for (int i = 0; i < cpy.size(); i++) {
-            	this.v.add(cpy.v.get(i));
+            this.N = N;
+            v = (T[]) new Object[N];
+            for (int i = 0; i < s; i++) {
+                v[i] = cpy.v[i];
             }
         }
-        
+
         public void push_back(final T i) {
-            //this.v[this.s] = i;
-        	this.v.add(i);
-            //this.s++;
+            v[s] = i;
+            s++;
             //if(s > max_size)
             //	max_size = int(s);
         }
 
         public T oGet(final int index) {
-            return this.v.get(index);
+            return v[index];
         }
 
         public T oSet(final int index, final T value) {
-            return this.v.set(index, value);
+            return v[index] = value;
         }
 
 //	const T & operator[](int i) const {
 //		return v[i];
 //	}
         int size() {
-            return this.v.size();
+            return s;
         }
 
         void empty() {
-            this.v.clear();
+            s = 0;
         }
 //
-       // private final int N;
-        ArrayList<T> v;
-        //T[] v;// = (T[]) new Object[N];
-        //int s;
+        private int N;
+        T[] v;// = (T[]) new Object[N];
+        int s;
 //	static int max_size;
-    }
+    };
 
     static class MyArrayInt extends MyArray<Integer> {
 
@@ -105,7 +100,7 @@ public class tr_shadowbounds {
         MyArrayInt vi;
         MyArrayInt ni;
         idVec4 plane;
-    }
+    };
 
     static class MyArrayPoly extends MyArray<poly> {
 
@@ -120,7 +115,7 @@ public class tr_shadowbounds {
 
         int[] vi = new int[2];
         int[] pi = new int[2];
-    }
+    };
 
     static class MyArrayEdge extends MyArray<edge> {
 
@@ -132,7 +127,7 @@ public class tr_shadowbounds {
 //int MyArrayEdge::max_size = 0;
 
     public static MyArrayInt four_ints(int a, int b, int c, int d) {
-        final MyArrayInt vi = new MyArrayInt();
+        MyArrayInt vi = new MyArrayInt();
         vi.push_back(a);
         vi.push_back(b);
         vi.push_back(c);
@@ -141,17 +136,16 @@ public class tr_shadowbounds {
     }
 
     public static idVec3 homogeneous_difference(idVec4 a, idVec4 b) {
-        final idVec3 v = new idVec3();
-        v.x = (b.x * a.w) - (a.x * b.w);
-        v.y = (b.y * a.w) - (a.y * b.w);
-        v.z = (b.z * a.w) - (a.z * b.w);
+        idVec3 v = new idVec3();
+        v.x = b.x * a.w - a.x * b.w;
+        v.y = b.y * a.w - a.y * b.w;
+        v.z = b.z * a.w - a.z * b.w;
         return v;
     }
 
 // handles positive w only
     public static idVec4 compute_homogeneous_plane(idVec4 a, idVec4 b, idVec4 c) {
-        final idVec4 v = new idVec4();
-		idVec4 t;
+        idVec4 v = new idVec4(), t;
 
         if (a.oGet(3) == 0) {
             t = a;
@@ -171,10 +165,10 @@ public class tr_shadowbounds {
             return v;
         }
 
-        final idVec3 vb = homogeneous_difference(a, b);
-        final idVec3 vc = homogeneous_difference(a, c);
+        idVec3 vb = homogeneous_difference(a, b);
+        idVec3 vc = homogeneous_difference(a, c);
 
-        final idVec3 n = vb.Cross(vc);
+        idVec3 n = vb.Cross(vc);
         n.Normalize();
 
         v.x = n.x;
@@ -201,16 +195,16 @@ public class tr_shadowbounds {
         }
 
         void add_quad(int va, int vb, int vc, int vd) {
-            final poly pg = new poly();
+            poly pg = new poly();
             pg.vi = four_ints(va, vb, vc, vd);
             pg.ni = four_ints(-1, -1, -1, -1);
-            pg.plane = compute_homogeneous_plane(this.v.oGet(va), this.v.oGet(vb), this.v.oGet(vc));
-            this.p.push_back(pg);
+            pg.plane = compute_homogeneous_plane(v.oGet(va), v.oGet(vb), v.oGet(vc));
+            p.push_back(pg);
         }
 
         void discard_neighbor_info() {
-            for (int i = 0; i < this.p.size(); i++) {
-                final MyArrayInt ni = this.p.oGet(i).ni;
+            for (int i = 0; i < p.size(); i++) {
+                MyArrayInt ni = p.oGet(i).ni;
                 for (int j = 0; j < ni.size(); j++) {
                     ni.oSet(j, -1);
                 }
@@ -218,22 +212,22 @@ public class tr_shadowbounds {
         }
 
         void compute_neighbors() {
-            this.e.empty();
+            e.empty();
 
             discard_neighbor_info();
 
             boolean found;
-            final int P = this.p.size();
+            int P = p.size();
             // for each polygon
-            for (int i = 0; i < (P - 1); i++) {
-                final MyArrayInt vi = this.p.oGet(i).vi;
-                final MyArrayInt ni = this.p.oGet(i).ni;
-                final int Si = vi.size();
+            for (int i = 0; i < P - 1; i++) {
+                final MyArrayInt vi = p.oGet(i).vi;
+                MyArrayInt ni = p.oGet(i).ni;
+                int Si = vi.size();
 
                 // for each edge of that polygon
                 for (int ii = 0; ii < Si; ii++) {
-                    final int ii0 = ii;
-                    final int ii1 = (ii + 1) % Si;
+                    int ii0 = ii;
+                    int ii1 = (ii + 1) % Si;
 
                     // continue if we've already found this neighbor
                     if (ni.oGet(ii) != -1) {
@@ -242,25 +236,25 @@ public class tr_shadowbounds {
                     found = false;
                     // check all remaining polygons
                     for (int j = i + 1; j < P; j++) {
-                        final MyArrayInt vj = this.p.oGet(j).vi;
-                        //final MyArrayInt nj = this.p.oGet(j).ni;
-                        final int Sj = vj.size();
+                        final MyArrayInt vj = p.oGet(j).vi;
+                        MyArrayInt nj = p.oGet(j).ni;
+                        int Sj = vj.size();
 
                         for (int jj = 0; jj < Sj; jj++) {
-                            final int jj0 = jj;
-                            final int jj1 = (jj + 1) % Sj;
-                            if ((vi.oGet(ii0) == vj.oGet(jj1)) && (vi.oGet(ii1) == vj.oGet(jj0))) {
-                                final edge ed = new edge();
+                            int jj0 = jj;
+                            int jj1 = (jj + 1) % Sj;
+                            if (vi.oGet(ii0) == vj.oGet(jj1) && vi.oGet(ii1) == vj.oGet(jj0)) {
+                                edge ed = new edge();
                                 ed.vi[0] = vi.oGet(ii0);
                                 ed.vi[1] = vi.oGet(ii1);
                                 ed.pi[0] = i;
                                 ed.pi[1] = j;
-                                this.e.push_back(ed);
+                                e.push_back(ed);
                                 ni.oSet(ii, j);
                                 ni.oSet(jj, i);
                                 found = true;
                                 break;
-                            } else if ((vi.oGet(ii0) == vj.oGet(jj0)) && (vi.oGet(ii1) == vj.oGet(jj1))) {
+                            } else if (vi.oGet(ii0) == vj.oGet(jj0) && vi.oGet(ii1) == vj.oGet(jj1)) {
                                 System.err.printf("why am I here?\n");
                             }
                         }
@@ -274,21 +268,21 @@ public class tr_shadowbounds {
 
         void recompute_planes() {
             // for each polygon
-            for (int i = 0; i < this.p.size(); i++) {
-                this.p.oGet(i).plane = compute_homogeneous_plane(
-                        this.v.oGet(this.p.oGet(i).vi.oGet(0)),
-                        this.v.oGet(this.p.oGet(i).vi.oGet(1)),
-                        this.v.oGet(this.p.oGet(i).vi.oGet(2)));
+            for (int i = 0; i < p.size(); i++) {
+                p.oGet(i).plane = compute_homogeneous_plane(
+                        v.oGet(p.oGet(i).vi.oGet(0)),
+                        v.oGet(p.oGet(i).vi.oGet(1)),
+                        v.oGet(p.oGet(i).vi.oGet(2)));
             }
         }
 
         void transform(final idMat4 m) {
-            for (int i = 0; i < this.v.size(); i++) {
-                this.v.oSet(i, m.oMultiply(this.v.oGet(i)));
+            for (int i = 0; i < v.size(); i++) {
+                v.oSet(i, m.oMultiply(v.oGet(i)));
             }
             recompute_planes();
         }
-    }
+    };
     private static polyhedron p;
 
 // make a unit cube
@@ -327,7 +321,7 @@ public class tr_shadowbounds {
             p.v.empty(); // no need to copy this data since it'll be replaced
         }
 
-        final polyhedron p2 = new polyhedron(p);
+        polyhedron p2 = new polyhedron(p);
 
         final idVec3 min = b.oGet(0);
         final idVec3 max = b.oGet(1);
@@ -357,11 +351,11 @@ public class tr_shadowbounds {
         }
 
         if (lut[index].e.size() == 0) {
-            final polyhedron ph = lut[index] = oc;
+            polyhedron ph = lut[index] = oc;
 
-            final int V = ph.v.size();
+            int V = ph.v.size();
             for (int j = 0; j < V; j++) {
-                final idVec3 proj = homogeneous_difference(light, ph.v.oGet(j));
+                idVec3 proj = homogeneous_difference(light, ph.v.oGet(j));
                 ph.v.push_back(new idVec4(proj.x, proj.y, proj.z, 0));
             }
 
@@ -379,19 +373,19 @@ public class tr_shadowbounds {
 
             ph.compute_neighbors();
 
-            final MyArrayPoly vpg = new MyArrayPoly();
-            final int I = ph.p.size();
+            MyArrayPoly vpg = new MyArrayPoly();
+            int I = ph.p.size();
 
             for (int i = 0; i < I; i++) {
-                final MyArrayInt vi = ph.p.oGet(i).vi;
-                final MyArrayInt ni = ph.p.oGet(i).ni;
-                final int S = vi.size();
+                MyArrayInt vi = ph.p.oGet(i).vi;
+                MyArrayInt ni = ph.p.oGet(i).ni;
+                int S = vi.size();
 
                 for (int j = 0; j < S; j++) {
                     if (ni.oGet(j) == -1) {
-                        final poly pg = new poly();
-                        final int a = vi.oGet((j + 1) % S);
-                        final int b = vi.oGet(j);
+                        poly pg = new poly();
+                        int a = vi.oGet((j + 1) % S);
+                        int b = vi.oGet(j);
                         pg.vi = four_ints(a, b, b + V, a + V);
                         pg.ni = four_ints(-1, -1, -1, -1);
                         vpg.push_back(pg);
@@ -406,13 +400,13 @@ public class tr_shadowbounds {
             ph.v.empty(); // no need to copy this data since it'll be replaced
         }
 
-        final polyhedron ph2 = lut[index];
+        polyhedron ph2 = lut[index];
 
         // initalize vertices
         ph2.v = oc.v;
-        final int V = ph2.v.size();
+        int V = ph2.v.size();
         for (int j = 0; j < V; j++) {
-            final idVec3 proj = homogeneous_difference(light, ph2.v.oGet(j));
+            idVec3 proj = homogeneous_difference(light, ph2.v.oGet(j));
             ph2.v.push_back(new idVec4(proj.x, proj.y, proj.z, 0));
         }
 
@@ -433,7 +427,7 @@ public class tr_shadowbounds {
 
     public static void polyhedron_edges(polyhedron a, MySegments e) {
         e.empty();
-        if ((a.e.size() == 0) && (a.p.size() != 0)) {
+        if (a.e.size() == 0 && a.p.size() != 0) {
             a.compute_neighbors();
         }
 
@@ -456,9 +450,9 @@ public class tr_shadowbounds {
             boolean discard = false;
 
             for (int j = 0; j < p.size(); j++) {
-                final float da = a.oMultiply(p.oGet(j).plane);
-                final float db = b.oMultiply(p.oGet(j).plane);
-                final float rdw = 1 / (da - db);
+                float da = a.oMultiply(p.oGet(j).plane);
+                float db = b.oMultiply(p.oGet(j).plane);
+                float rdw = 1 / (da - db);
 
                 int code = 0;
                 if (da > 0) {
@@ -529,16 +523,33 @@ public class tr_shadowbounds {
     }
 
     public static void world_to_hclip(final viewDef_s viewDef, final idVec4 global, idVec4 clip) {
-        MatrixUtil.matrixToClipGet4Set4(global, clip, new idVec4(), viewDef.worldSpace.getModelViewMatrix(), viewDef.getProjectionMatrix());
+        int i;
+        idVec4 view = new idVec4();
+
+        for (i = 0; i < 4; i++) {
+            view.oSet(i,
+                    global.oGet(0) * viewDef.worldSpace.modelViewMatrix[ i + 0 * 4]
+                    + global.oGet(1) * viewDef.worldSpace.modelViewMatrix[ i + 1 * 4]
+                    + global.oGet(2) * viewDef.worldSpace.modelViewMatrix[ i + 2 * 4]
+                    + global.oGet(3) * viewDef.worldSpace.modelViewMatrix[ i + 3 * 4]);
+        }
+
+        for (i = 0; i < 4; i++) {
+            clip.oSet(i,
+                    view.oGet(0) * viewDef.projectionMatrix[ i + 0 * 4]
+                    + view.oGet(1) * viewDef.projectionMatrix[ i + 1 * 4]
+                    + view.oGet(2) * viewDef.projectionMatrix[ i + 2 * 4]
+                    + view.oGet(3) * viewDef.projectionMatrix[ i + 3 * 4]);
+        }
     }
 
     public static idScreenRect R_CalcIntersectionScissor(final idRenderLightLocal lightDef, final idRenderEntityLocal entityDef, final viewDef_s viewDef) {
 
-        final idMat4 omodel = make_idMat4(entityDef.modelMatrix);
-        final idMat4 lmodel = make_idMat4(lightDef.modelMatrix);
+        idMat4 omodel = make_idMat4(entityDef.modelMatrix);
+        idMat4 lmodel = make_idMat4(lightDef.modelMatrix);
 
         // compute light polyhedron
-        final polyhedron lvol = PolyhedronFromBounds(lightDef.frustumTris.bounds);
+        polyhedron lvol = PolyhedronFromBounds(lightDef.frustumTris.bounds);
         // transform it into world space
         //lvol.transform( lmodel );
 
@@ -548,7 +559,7 @@ public class tr_shadowbounds {
         }
 
         // compute object polyhedron
-        final polyhedron vol = PolyhedronFromBounds(entityDef.referenceBounds);
+        polyhedron vol = PolyhedronFromBounds(entityDef.referenceBounds);
 
         //viewDef.renderWorld.DebugBounds( colorRed, lightDef.frustumTris.bounds );
         //viewDef.renderWorld.DebugBox( colorBlue, idBox( model.Bounds(), entityDef.parms.origin, entityDef.parms.axis ) );
@@ -561,16 +572,16 @@ public class tr_shadowbounds {
         }
 
         // transform light position into world space
-        final idVec4 lightpos = new idVec4(
+        idVec4 lightpos = new idVec4(
                 lightDef.globalLightOrigin.x,
                 lightDef.globalLightOrigin.y,
                 lightDef.globalLightOrigin.z,
                 1.0f);
 
         // generate shadow volume "polyhedron"
-        final polyhedron sv = make_sv(vol, lightpos);
+        polyhedron sv = make_sv(vol, lightpos);
 
-        final MySegments in_segs = new MySegments(), out_segs = new MySegments();
+        MySegments in_segs = new MySegments(), out_segs = new MySegments();
 
         // get shadow volume edges
         polyhedron_edges(sv, in_segs);
@@ -587,18 +598,18 @@ public class tr_shadowbounds {
             draw_segments(viewDef, out_segs, colorGreen);
         }
 
-        final idBounds outbounds = new idBounds();
+        idBounds outbounds = new idBounds();
         outbounds.Clear();
         for (int i = 0; i < out_segs.size(); i++) {
 
-            final idVec4 v = new idVec4();
+            idVec4 v = new idVec4();
             world_to_hclip(viewDef, out_segs.oGet(i), v);
 
             if (v.w <= 0.0f) {
                 return lightDef.viewLight.scissorRect;
             }
 
-            final idVec3 rv = new idVec3(v.x, v.y, v.z);
+            idVec3 rv = new idVec3(v.x, v.y, v.z);
             rv.oDivSet(v.w);
 
             outbounds.AddPoint(rv);
@@ -618,22 +629,22 @@ public class tr_shadowbounds {
             outbounds.oGet(1).y = 1.0f;
         }
 
-        final float w2 = ((viewDef.viewport.x2 - viewDef.viewport.x1) + 1) / 2.0f;
-        final float x = viewDef.viewport.x1;
-        final float h2 = ((viewDef.viewport.y2 - viewDef.viewport.y1) + 1) / 2.0f;
-        final float y = viewDef.viewport.y1;
+        float w2 = (viewDef.viewport.x2 - viewDef.viewport.x1 + 1) / 2.0f;
+        float x = viewDef.viewport.x1;
+        float h2 = (viewDef.viewport.y2 - viewDef.viewport.y1 + 1) / 2.0f;
+        float y = viewDef.viewport.y1;
 
-        final idScreenRect rect = new idScreenRect();
-        rect.x1 = (int) ((outbounds.oGet(0).x * w2) + w2 + x);
-        rect.x2 = (int) ((outbounds.oGet(1).x * w2) + w2 + x);
-        rect.y1 = (int) ((outbounds.oGet(0).y * h2) + h2 + y);
-        rect.y2 = (int) ((outbounds.oGet(1).y * h2) + h2 + y);
+        idScreenRect rect = new idScreenRect();
+        rect.x1 = (int) (outbounds.oGet(0).x * w2 + w2 + x);
+        rect.x2 = (int) (outbounds.oGet(1).x * w2 + w2 + x);
+        rect.y1 = (int) (outbounds.oGet(0).y * h2 + h2 + y);
+        rect.y2 = (int) (outbounds.oGet(1).y * h2 + h2 + y);
         rect.Expand();
 
         rect.Intersect(lightDef.viewLight.scissorRect);
 
         // debug //
-        if ((RenderSystem_init.r_useInteractionScissors.GetInteger() == -2) && !rect.IsEmpty()) {
+        if (RenderSystem_init.r_useInteractionScissors.GetInteger() == -2 && !rect.IsEmpty()) {
             viewDef.renderWorld.DebugScreenRect(colorYellow, rect, viewDef);
         }
 

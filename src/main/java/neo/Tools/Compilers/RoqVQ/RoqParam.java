@@ -45,7 +45,7 @@ public class RoqParam {
         private byte  keyR, keyG, keyB;
         private int field;
         private int realnum;
-        private final int[] onFrame = {0};
+        private int[] onFrame = {0};
         private int     firstframesize;
         private int     normalframesize;
         private int     jpegDefault;
@@ -72,59 +72,59 @@ public class RoqParam {
         //
 
         public String RoqFilename() {
-            return this.outputFilename.getData();
+            return outputFilename.toString();
         }
 
         public String RoqTempFilename() {
             int i, j, len;
 
             j = 0;
-            len = this.outputFilename.Length();
+            len = outputFilename.Length();
             for (i = 0; i < len; i++) {
-                if (this.outputFilename.oGet(i) == '/') {
+                if (outputFilename.oGet(i) == '/') {
                     j = i;
                 }
             }
 
-            this.tempFilename = new idStr(String.format("/%s.temp", this.outputFilename.getData().substring(j + 1)));
+            tempFilename = new idStr(String.format("/%s.temp", outputFilename.toString().substring(j + 1)));
 
-            return this.tempFilename.getData();
+            return tempFilename.toString();
         }
 
         public String GetNextImageFilename() {
-            final idStr tempBuffer = new idStr();
+            idStr tempBuffer = new idStr();
             int i;
             int len;
 
-            this.onFrame[0]++;
-            GetNthInputFileName(tempBuffer, this.onFrame);
-            if (this.justDeltaFlag == true) {
-                this.onFrame[0]--;
-                this.justDeltaFlag = false;
+            onFrame[0]++;
+            GetNthInputFileName(tempBuffer, onFrame);
+            if (justDeltaFlag == true) {
+                onFrame[0]--;
+                justDeltaFlag = false;
             }
 
-            if (this.addPath == true) {
-                this.currentFile.oSet(this.currentPath + "/" + tempBuffer);
+            if (addPath == true) {
+                currentFile.oSet(currentPath + "/" + tempBuffer);
             } else {
-                this.currentFile = tempBuffer;
+                currentFile = tempBuffer;
             }
-            len = this.currentFile.Length();
+            len = currentFile.Length();
             for (i = 0; i < len; i++) {
-                if (this.currentFile.oGet(i) == '^') {
-                    this.currentFile.oSet(i, ' ');
+                if (currentFile.oGet(i) == '^') {
+                    currentFile.oSet(i, ' ');
                 }
             }
 
-            return this.currentFile.getData();
+            return currentFile.toString();
         }
 
         public String SoundFilename() {
-            return this.soundfile.getData();
+            return soundfile.toString();
         }
 
         public void InitFromFile(final String fileName) {
             idParser src;
-            final idToken token = new idToken();
+            idToken token = new idToken();
             int i, readarg;
 
             src = new idParser(fileName, LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS | LEXFL_ALLOWPATHNAMES);
@@ -136,32 +136,32 @@ public class RoqParam {
 
             common.Printf("initFromFile: %s\n", fileName);
 
-            this.fullSearch = false;
-            this.scaleDown = false;
-            this.encodeVideo = false;
-            this.addPath = false;
-            this.screenShots = false;
-            this.startPalette = false;
-            this.endPalette = false;
-            this.fixedPalette = false;
-            this.keyColor = false;
-            this.justDelta = false;
-            this.useTimecodeForRange = false;
-            this.onFrame[0] = 0;
-            this.numInputFiles = 0;
-            this.currentPath = new idStr('\0');
-            this.make3DO = false;
-            this.makeVectors = false;
-            this.justDeltaFlag = false;
-            this.noAlphaAtAll = false;
-            this.twentyFourToThirty = false;
-            this.hasSound = false;
-            this.isScaleable = false;
-            this.firstframesize = 56 * 1024;
-            this.normalframesize = 20000;
-            this.jpegDefault = 85;
+            fullSearch = false;
+            scaleDown = false;
+            encodeVideo = false;
+            addPath = false;
+            screenShots = false;
+            startPalette = false;
+            endPalette = false;
+            fixedPalette = false;
+            keyColor = false;
+            justDelta = false;
+            useTimecodeForRange = false;
+            onFrame[0] = 0;
+            numInputFiles = 0;
+            currentPath = new idStr('\0');
+            make3DO = false;
+            makeVectors = false;
+            justDeltaFlag = false;
+            noAlphaAtAll = false;
+            twentyFourToThirty = false;
+            hasSound = false;
+            isScaleable = false;
+            firstframesize = 56 * 1024;
+            normalframesize = 20000;
+            jpegDefault = 85;
 
-            this.realnum = 0;
+            realnum = 0;
             while (true) {
                 if (!src.ReadToken(token)) {
                     break;
@@ -171,76 +171,76 @@ public class RoqParam {
 // input dir
                 if (token.Icmp("input_dir") == 0) {
                     src.ReadToken(token);
-                    this.addPath = true;
-                    this.currentPath = token;
+                    addPath = true;
+                    currentPath = token;
 //			common.Printf("  + input directory is %s\n", currentPath );
                     readarg++;
                     continue;
                 }
 // input dir
                 if (token.Icmp("scale_down") == 0) {
-                    this.scaleDown = true;
+                    scaleDown = true;
 //			common.Printf("  + scaling down input\n" );
                     readarg++;
                     continue;
                 }
 // full search
                 if (token.Icmp("fullsearch") == 0) {
-                    this.normalframesize += this.normalframesize / 2;
-                    this.fullSearch = true;
+                    normalframesize += normalframesize / 2;
+                    fullSearch = true;
                     readarg++;
                     continue;
                 }
 // scaleable
                 if (token.Icmp("scaleable") == 0) {
-                    this.isScaleable = true;
+                    isScaleable = true;
                     readarg++;
                     continue;
                 }
 // input dir
                 if (token.Icmp("no_alpha") == 0) {
-                    this.noAlphaAtAll = true;
+                    noAlphaAtAll = true;
 //			common.Printf("  + scaling down input\n" );
                     readarg++;
                     continue;
                 }
                 if (token.Icmp("24_fps_in_30_fps_out") == 0) {
-                    this.twentyFourToThirty = true;
+                    twentyFourToThirty = true;
                     readarg++;
                     continue;
                 }
 // video in
                 if (token.Icmp("video_in") == 0) {
-                    this.encodeVideo = true;
+                    encodeVideo = true;
 //			common.Printf("  + Using the video port as input\n");
                     continue;
                 }
 //timecode range
                 if (token.Icmp("timecode") == 0) {
-                    this.useTimecodeForRange = true;
-                    this.firstframesize = 12 * 1024;
-                    this.normalframesize = 4500;
+                    useTimecodeForRange = true;
+                    firstframesize = 12 * 1024;
+                    normalframesize = 4500;
 //			common.Printf("  + Using timecode as range\n");
                     continue;
                 }
 // soundfile for making a .RnR
                 if (token.Icmp("sound") == 0) {
                     src.ReadToken(token);
-                    this.soundfile = token;
-                    this.hasSound = true;
+                    soundfile = token;
+                    hasSound = true;
 //			common.Printf("  + Using timecode as range\n");
                     continue;
                 }
 // soundfile for making a .RnR
                 if (token.Icmp("has_sound") == 0) {
-                    this.hasSound = true;
+                    hasSound = true;
                     continue;
                 }
 // outfile	
                 if (token.Icmp("filename") == 0) {
                     src.ReadToken(token);
-                    this.outputFilename = token;
-                    i = this.outputFilename.Length();
+                    outputFilename = token;
+                    i = outputFilename.Length();
 //			common.Printf("  + output file is %s\n", outputFilename );
                     readarg++;
                     continue;
@@ -248,43 +248,43 @@ public class RoqParam {
 // starting palette
                 if (token.Icmp("start_palette") == 0) {
                     src.ReadToken(token);
-                    this.startPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.getData()));
+                    startPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.toString()));
 //			common.Error("  + starting palette is %s\n", startPal );
-                    this.startPalette = true;
+                    startPalette = true;
                     readarg++;
                     continue;
                 }
 // ending palette
                 if (token.Icmp("end_palette") == 0) {
                     src.ReadToken(token);
-                    this.endPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.getData()));
+                    endPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.toString()));
 //			common.Printf("  + ending palette is %s\n", endPal );
-                    this.endPalette = true;
+                    endPalette = true;
                     readarg++;
                     continue;
                 }
 // fixed palette
                 if (token.Icmp("fixed_palette") == 0) {
                     src.ReadToken(token);
-                    this.startPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.getData()));
+                    startPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.toString()));
 //			common.Printf("  + fixed palette is %s\n", startPal );
-                    this.fixedPalette = true;
+                    fixedPalette = true;
                     readarg++;
                     continue;
                 }
 // these are screen shots
                 if (token.Icmp("screenshot") == 0) {
 //			common.Printf("  + shooting screen shots\n" );
-                    this.screenShots = true;
+                    screenShots = true;
                     readarg++;
                     continue;
                 }
 //	key_color	r g b	
                 if (token.Icmp("key_color") == 0) {
-                    this.keyR = (byte) src.ParseInt();
-                    this.keyG = (byte) src.ParseInt();
-                    this.keyB = (byte) src.ParseInt();
-                    this.keyColor = true;
+                    keyR = (byte) src.ParseInt();
+                    keyG = (byte) src.ParseInt();
+                    keyB = (byte) src.ParseInt();
+                    keyColor = true;
 //			common.Printf("  + key color is %03d %03d %03d\n", keyR, keyG, keyB );
                     readarg++;
                     continue;
@@ -299,126 +299,126 @@ public class RoqParam {
                 }
 // doing 3DO
                 if (token.Icmp("3DO") == 0) {
-                    this.make3DO = true;
+                    make3DO = true;
                     readarg++;
                     continue;
                 }
 // makes codebook vector tables
                 if (token.Icmp("codebook") == 0) {
-                    this.makeVectors = true;
+                    makeVectors = true;
                     readarg++;
                     continue;
                 }
 // set first frame size
                 if (token.Icmp("firstframesize") == 0) {
-                    this.firstframesize = src.ParseInt();
+                    firstframesize = src.ParseInt();
                     readarg++;
                     continue;
                 }
 // set normal frame size
                 if (token.Icmp("normalframesize") == 0) {
-                    this.normalframesize = src.ParseInt();
+                    normalframesize = src.ParseInt();
                     readarg++;
                     continue;
                 }
 // set normal frame size
                 if (token.Icmp("stillframequality") == 0) {
-                    this.jpegDefault = src.ParseInt();
+                    jpegDefault = src.ParseInt();
                     readarg++;
                     continue;
                 }
                 if (token.Icmp("input") == 0) {
-                    final int num_files = 255;
+                    int num_files = 255;
 
-                    this.range = new int[num_files];// Mem_ClearedAlloc(num_files);
-                    this.padding = new boolean[num_files];// Mem_ClearedAlloc(num_files);
-                    this.padding2 = new boolean[num_files];// Mem_ClearedAlloc(num_files);
-                    this.skipnum = new int[num_files];// Mem_ClearedAlloc(num_files);
-                    this.skipnum2 = new int[num_files];// Mem_ClearedAlloc(num_files);
-                    this.startnum = new int[num_files];// Mem_ClearedAlloc(num_files);
-                    this.startnum2 = new int[num_files];// Mem_ClearedAlloc(num_files);
-                    this.endnum = new int[num_files];// Mem_ClearedAlloc(num_files);
-                    this.endnum2 = new int[num_files];// Mem_ClearedAlloc(num_files);
-                    this.numpadding = new int[num_files];// Mem_ClearedAlloc(num_files);
-                    this.numpadding2 = new int[num_files];// Mem_ClearedAlloc(num_files);
-                    this.numfiles = new int[num_files];// Mem_ClearedAlloc(num_files);
-                    final idStr empty = new idStr();
-                    this.file.AssureSize(num_files, empty);
+                    range = new int[num_files];// Mem_ClearedAlloc(num_files);
+                    padding = new boolean[num_files];// Mem_ClearedAlloc(num_files);
+                    padding2 = new boolean[num_files];// Mem_ClearedAlloc(num_files);
+                    skipnum = new int[num_files];// Mem_ClearedAlloc(num_files);
+                    skipnum2 = new int[num_files];// Mem_ClearedAlloc(num_files);
+                    startnum = new int[num_files];// Mem_ClearedAlloc(num_files);
+                    startnum2 = new int[num_files];// Mem_ClearedAlloc(num_files);
+                    endnum = new int[num_files];// Mem_ClearedAlloc(num_files);
+                    endnum2 = new int[num_files];// Mem_ClearedAlloc(num_files);
+                    numpadding = new int[num_files];// Mem_ClearedAlloc(num_files);
+                    numpadding2 = new int[num_files];// Mem_ClearedAlloc(num_files);
+                    numfiles = new int[num_files];// Mem_ClearedAlloc(num_files);
+                    idStr empty = new idStr();
+                    file.AssureSize(num_files, empty);
 //                    file.AssureSize(num_files, empty);//TODO:should this really be called twice?
 
-                    this.field = 0;
-                    this.realnum = 0;
+                    field = 0;
+                    realnum = 0;
                     do {
                         src.ReadToken(token);
                         if (token.Icmp("end_input") != 0) {
                             idStr arg1, arg2, arg3;
 
-                            this.file.oSet(this.field, token);
-                            while (src.ReadTokenOnLine(token) && (token.Icmp("[") != 0)) {
-                                this.file.oGet(this.field).Append(token);
+                            file.oSet(field, token);
+                            while (src.ReadTokenOnLine(token) && token.Icmp("[") != 0) {
+                                file.oGet(field).Append(token);
                             }
 
                             arg1 = token;
-                            while (src.ReadTokenOnLine(token) && (token.Icmp("[") != 0)) {
+                            while (src.ReadTokenOnLine(token) && token.Icmp("[") != 0) {
                                 arg1.Append(token);
                             }
 
                             arg2 = token;
-                            while (src.ReadTokenOnLine(token) && (token.Icmp("[") != 0)) {
+                            while (src.ReadTokenOnLine(token) && token.Icmp("[") != 0) {
 //						arg2 += token;
                                 arg2.Append(token);
                             }
 
                             arg3 = token;
-                            while (src.ReadTokenOnLine(token) && (token.Icmp("[") != 0)) {
+                            while (src.ReadTokenOnLine(token) && token.Icmp("[") != 0) {
 //						arg3 += token;
                                 arg3.Append(token);
                             }
 
                             if (arg1.oGet(0) != '[') {
 //						common.Printf("  + reading %s\n", file[field] );
-                                this.range[this.field] = 0;
-                                this.numfiles[this.field] = 1;
-                                this.realnum++;
+                                range[field] = 0;
+                                numfiles[field] = 1;
+                                realnum++;
                             } else {
                                 if (arg1.oGet(0) == '[') {
-                                    this.range[this.field] = 1;
-                                    if (this.useTimecodeForRange) {
-                                        this.realnum += parseTimecodeRange(arg1.getData(), this.field, this.skipnum, this.startnum, this.endnum, this.numfiles, this.padding, this.numpadding);
+                                    range[field] = 1;
+                                    if (useTimecodeForRange) {
+                                        realnum += parseTimecodeRange(arg1.toString(), field, skipnum, startnum, endnum, numfiles, padding, numpadding);
 //								common.Printf("  + reading %s from %d to %d\n", file[field], startnum[field], endnum[field]);
                                     } else {
-                                        this.realnum += parseRange(arg1.getData(), this.field, this.skipnum, this.startnum, this.endnum, this.numfiles, this.padding, this.numpadding);
+                                        realnum += parseRange(arg1.toString(), field, skipnum, startnum, endnum, numfiles, padding, numpadding);
 //								common.Printf("  + reading %s from %d to %d\n", file[field], startnum[field], endnum[field]);
                                     }
                                 } else if ((arg1.oGet(0) != '[') && (arg2.oGet(0) == '[') && (arg3.oGet(0) == '[')) {  //a double ranger...
                                     int files1, files2;
 
-                                    this.file2.oSet(this.field, arg1);
-                                    this.range[this.field] = 2;
-                                    files1 = parseRange(arg2.getData(), this.field, this.skipnum, this.startnum, this.endnum, this.numfiles, this.padding, this.numpadding);
+                                    file2.oSet(field, arg1);
+                                    range[field] = 2;
+                                    files1 = parseRange(arg2.toString(), field, skipnum, startnum, endnum, numfiles, padding, numpadding);
 //							common.Printf("  + reading %s from %d to %d\n", file[field], startnum[field], endnum[field]);
-                                    files2 = parseRange(arg3.getData(), this.field, this.skipnum2, this.startnum2, this.endnum2, this.numfiles, this.padding2, this.numpadding2);
+                                    files2 = parseRange(arg3.toString(), field, skipnum2, startnum2, endnum2, numfiles, padding2, numpadding2);
 //							common.Printf("  + reading %s from %d to %d\n", file2[field], startnum2[field], endnum2[field]);
                                     if (files1 != files2) {
                                         common.Error("You had %d files for %s and %d for %s!", files1, arg1, files2, arg2);
                                     } else {
-                                        this.realnum += files1;//not both, they are parallel
+                                        realnum += files1;//not both, they are parallel
                                     }
                                 } else {
                                     common.Error("Error: invalid range on open (%s %s %s)\n", arg1, arg2, arg3);
                                 }
                             }
-                            this.field++;
+                            field++;
                         }
                     } while (token.Icmp("end_input") != 0);
                 }
             }
 
             if (TwentyFourToThirty()) {
-                this.realnum = this.realnum + (this.realnum >> 2);
+                realnum = realnum + (realnum >> 2);
             }
-            this.numInputFiles = this.realnum;
-            common.Printf("  + reading a total of %d frames in %s\n", this.numInputFiles, this.currentPath);
+            numInputFiles = realnum;
+            common.Printf("  + reading a total of %d frames in %s\n", numInputFiles, currentPath);
 //	delete src;
         }
 
@@ -427,13 +427,13 @@ public class RoqParam {
 //	char tempfile[33], left[256], right[256], *strp;
             String tempfile, left, right;
             int strp;
-            if (n[0] > this.realnum) {
-                n[0] = this.realnum;
+            if (n[0] > realnum) {
+                n[0] = realnum;
             }
 // overcome starting at zero by ++ing and then --ing.
             if (TwentyFourToThirty()) {
                 n[0]++;
-                n[0] = ((n[0] / 5) * 4) + (n[0] % 5);
+                n[0] = (n[0] / 5) * 4 + (n[0] % 5);
                 n[0]--;
             }
 
@@ -441,26 +441,26 @@ public class RoqParam {
             myfield = 0;
 
             while (i <= n[0]) {
-                i += this.numfiles[myfield++];
+                i += numfiles[myfield++];
             }
             myfield--;
-            i -= this.numfiles[myfield];
+            i -= numfiles[myfield];
 
-            if (this.range[myfield] == 1) {
+            if (range[myfield] == 1) {
 
-                left = this.file.oGet(myfield).getData();
+                left = file.oGet(myfield).toString();
                 strp = left.indexOf("*");
                 strp++;
                 right = String.format("%s", left.substring(strp));
 
-                if (this.startnum[myfield] <= this.endnum[myfield]) {
-                    index = this.startnum[myfield] + ((n[0] - i) * this.skipnum[myfield]);
+                if (startnum[myfield] <= endnum[myfield]) {
+                    index = startnum[myfield] + ((n[0] - i) * skipnum[myfield]);
                 } else {
-                    index = this.startnum[myfield] - ((n[0] - i) * this.skipnum[myfield]);
+                    index = startnum[myfield] - ((n[0] - i) * skipnum[myfield]);
                 }
 
-                if (this.padding[myfield] == true) {
-                    if (this.useTimecodeForRange) {
+                if (padding[myfield] == true) {
+                    if (useTimecodeForRange) {
                         hrs = index / (30 * 60 * 60);
                         mins = (index / (30 * 60)) % 60;
                         secs = (index / (30)) % 60;
@@ -468,10 +468,10 @@ public class RoqParam {
                         fileName.oSet(String.format("%s%.02d%.02d/%.02d%.02d%.02d%.02d%s", left, hrs, mins, hrs, mins, secs, frs, right));
                     } else {
                         tempfile = String.format("%032d", index);
-                        fileName.oSet(String.format("%s%s%s", left, tempfile.substring(32 - this.numpadding[myfield]), right));
+                        fileName.oSet(String.format("%s%s%s", left, tempfile.substring(32 - numpadding[myfield]), right));
                     }
                 } else {
-                    if (this.useTimecodeForRange) {
+                    if (useTimecodeForRange) {
                         hrs = index / (30 * 60 * 60);
                         mins = (index / (30 * 60)) % 60;
                         secs = (index / (30)) % 60;
@@ -481,50 +481,50 @@ public class RoqParam {
                         fileName.oSet(String.format("%s%d%s", left, index, right));
                     }
                 }
-            } else if (this.range[myfield] == 2) {
+            } else if (range[myfield] == 2) {
 
-                left = this.file.oGet(myfield).getData();
+                left = file.oGet(myfield).toString();
                 strp = left.indexOf("*");
                 strp++;
                 right = String.format("%s", left.substring(strp));
 
-                if (this.startnum[myfield] <= this.endnum[myfield]) {
-                    index = this.startnum[myfield] + ((n[0] - i) * this.skipnum[myfield]);
+                if (startnum[myfield] <= endnum[myfield]) {
+                    index = startnum[myfield] + ((n[0] - i) * skipnum[myfield]);
                 } else {
-                    index = this.startnum[myfield] - ((n[0] - i) * this.skipnum[myfield]);
+                    index = startnum[myfield] - ((n[0] - i) * skipnum[myfield]);
                 }
 
-                if (this.padding[myfield] == true) {
+                if (padding[myfield] == true) {
                     tempfile = String.format("%032d", index);
-                    fileName.oSet(String.format("%s%s%s", left, tempfile.substring(32 - this.numpadding[myfield]), right));
+                    fileName.oSet(String.format("%s%s%s", left, tempfile.substring(32 - numpadding[myfield]), right));
                 } else {
                     fileName.oSet(String.format("%s%d%s", left, index, right));
                 }
 
-                left = this.file2.oGet(myfield).getData();
+                left = file2.oGet(myfield).toString();
                 strp = left.indexOf("*");
                 strp++;
                 right = String.format("%s", left.substring(strp));
 
-                if (this.startnum2[myfield] <= this.endnum2[myfield]) {
-                    index = this.startnum2[myfield] + ((n[0] - i) * this.skipnum2[myfield]);
+                if (startnum2[myfield] <= endnum2[myfield]) {
+                    index = startnum2[myfield] + ((n[0] - i) * skipnum2[myfield]);
                 } else {
-                    index = this.startnum2[myfield] - ((n[0] - i) * this.skipnum2[myfield]);
+                    index = startnum2[myfield] - ((n[0] - i) * skipnum2[myfield]);
                 }
 
-                if (this.padding2[myfield] == true) {
+                if (padding2[myfield] == true) {
                     tempfile = String.format("%032d", index);
-                    fileName.oPluSet(va("\n%s%s%s", left, tempfile.substring(32 - this.numpadding2[myfield]), right));
+                    fileName.oPluSet(va("\n%s%s%s", left, tempfile.substring(32 - numpadding2[myfield]), right));
                 } else {
                     fileName.oPluSet(va("\n%s%d%s", left, index, right));
                 }
             } else {
-                fileName.oSet(this.file.oGet(myfield).getData());
+                fileName.oSet(file.oGet(myfield).toString());
             }
         }
 
         public boolean MoreFrames() {
-            if (this.onFrame[0] < this.numInputFiles) {
+            if (onFrame[0] < numInputFiles) {
                 return true;
             } else {
                 return false;
@@ -532,56 +532,56 @@ public class RoqParam {
         }
 
         public boolean OutputVectors() {
-            return this.makeVectors;
+            return makeVectors;
         }
 
         public boolean Timecode() {
-            return this.useTimecodeForRange;
+            return useTimecodeForRange;
         }
 
         public boolean DeltaFrames() {
-            return this.justDelta;
+            return justDelta;
         }
 
         public boolean NoAlpha() {
-            return this.noAlphaAtAll;
+            return noAlphaAtAll;
         }
 
         public boolean SearchType() {
-            return this.fullSearch;
+            return fullSearch;
         }
 
         public boolean TwentyFourToThirty() {
-            return this.twentyFourToThirty;
+            return twentyFourToThirty;
         }
 
         public boolean HasSound() {
-            return this.hasSound;
+            return hasSound;
         }
 
         public int NumberOfFrames() {
-            return this.numInputFiles;
+            return numInputFiles;
         }
 
         public int NormalFrameSize() {
-            return this.normalframesize;
+            return normalframesize;
         }
 
         public int FirstFrameSize() {
-            return this.firstframesize;
+            return firstframesize;
         }
 
         public int JpegQuality() {
-            return this.jpegDefault;
+            return jpegDefault;
         }
 
         public boolean IsScaleable() {
-            return this.isScaleable;
+            return isScaleable;
         }
-    }
+    };
 
     static int parseRange(final String rangeStr, int field, int[] skipnum, int[] startnum, int[] endnum, int[] numfiles, boolean[] padding, int[] numpadding) {
-        final char[] start = new char[64], end = new char[64], skip = new char[64];
+        char[] start = new char[64], end = new char[64], skip = new char[64];
         int stptr, enptr, skptr;
         int i, realnum;
 
@@ -593,14 +593,14 @@ public class RoqParam {
         stptr = enptr = skptr = 0;
         do {
             start[stptr++] = rangeStr.charAt(i++);
-        } while ((rangeStr.charAt(i) >= '0') && (rangeStr.charAt(i) <= '9'));
+        } while (rangeStr.charAt(i) >= '0' && rangeStr.charAt(i) <= '9');
         start[stptr] = '\0';
         if (rangeStr.charAt(i++) != '-') {
             common.Error("Error: invalid range on middle \n");
         }
         do {
             end[enptr++] = rangeStr.charAt(i++);
-        } while ((rangeStr.charAt(i) >= '0') && (rangeStr.charAt(i) <= '9'));
+        } while (rangeStr.charAt(i) >= '0' && rangeStr.charAt(i) <= '9');
         end[enptr] = '\0';
         if (rangeStr.charAt(i) != ']') {
             if (rangeStr.charAt(i++) != '+') {
@@ -608,7 +608,7 @@ public class RoqParam {
             }
             do {
                 skip[skptr++] = rangeStr.charAt(i++);
-            } while ((rangeStr.charAt(i) >= '0') && (rangeStr.charAt(i) <= '9'));
+            } while (rangeStr.charAt(i) >= '0' && rangeStr.charAt(i) <= '9');
             skip[skptr] = '\0';
             skipnum[field] = atoi(skip);
         } else {
@@ -618,7 +618,7 @@ public class RoqParam {
         endnum[field] = atoi(end);
         numfiles[field] = (abs(startnum[field] - endnum[field]) / skipnum[field]) + 1;
         realnum += numfiles[field];
-        if ((start[0] == '0') && (start[1] != '\0')) {
+        if (start[0] == '0' && start[1] != '\0') {
             padding[field] = true;
             numpadding[field] = strLen(start);
         } else {
@@ -628,10 +628,10 @@ public class RoqParam {
     }
 
     static int parseTimecodeRange(final String rangeStr, int field, int[] skipnum, int[] startnum, int[] endnum, int[] numfiles, boolean[] padding, int[] numpadding) {
-        final char[] start = new char[64], end = new char[64], skip = new char[64];
+        char[] start = new char[64], end = new char[64], skip = new char[64];
         int stptr, enptr, skptr;
         int i, realnum;
-        final int[] hrs = {0}, mins = {0}, secs = {0}, frs = {0};
+        int[] hrs = {0}, mins = {0}, secs = {0}, frs = {0};
 
         i = 1;//skip the '['
         realnum = 0;
@@ -641,14 +641,14 @@ public class RoqParam {
         stptr = enptr = skptr = 0;
         do {
             start[stptr++] = rangeStr.charAt(i++);
-        } while ((rangeStr.charAt(i) >= '0') && (rangeStr.charAt(i) <= '9'));
+        } while (rangeStr.charAt(i) >= '0' && rangeStr.charAt(i) <= '9');
         start[stptr] = '\0';
         if (rangeStr.charAt(i++) != '-') {
             common.Error("Error: invalid range on middle \n");
         }
         do {
             end[enptr++] = rangeStr.charAt(i++);
-        } while ((rangeStr.charAt(i) >= '0') && (rangeStr.charAt(i) <= '9'));
+        } while (rangeStr.charAt(i) >= '0' && rangeStr.charAt(i) <= '9');
         end[enptr] = '\0';
         if (rangeStr.charAt(i) != ']') {
             if (rangeStr.charAt(i++) != '+') {
@@ -656,19 +656,19 @@ public class RoqParam {
             }
             do {
                 skip[skptr++] = rangeStr.charAt(i++);
-            } while ((rangeStr.charAt(i) >= '0') && (rangeStr.charAt(i) <= '9'));
+            } while (rangeStr.charAt(i) >= '0' && rangeStr.charAt(i) <= '9');
             skip[skptr] = '\0';
             skipnum[field] = atoi(skip);
         } else {
             skipnum[field] = 1;
         }
         sscanf(start, "%2d%2d%2d%2d", hrs, mins, secs, frs);
-        startnum[field] = (hrs[0] * 30 * 60 * 60) + (mins[0] * 60 * 30) + (secs[0] * 30) + frs[0];
+        startnum[field] = hrs[0] * 30 * 60 * 60 + mins[0] * 60 * 30 + secs[0] * 30 + frs[0];
         sscanf(end, "%2d%2d%2d%2d", hrs, mins, secs, frs);
-        endnum[field] = (hrs[0] * 30 * 60 * 60) + (mins[0] * 60 * 30) + (secs[0] * 30) + frs[0];
+        endnum[field] = hrs[0] * 30 * 60 * 60 + mins[0] * 60 * 30 + secs[0] * 30 + frs[0];
         numfiles[field] = (abs(startnum[field] - endnum[field]) / skipnum[field]) + 1;
         realnum += numfiles[field];
-        if ((start[0] == '0') && (start[1] != '\0')) {
+        if (start[0] == '0' && start[1] != '\0') {
             padding[field] = true;
             numpadding[field] = strLen(start);
         } else {
@@ -681,7 +681,7 @@ public class RoqParam {
         ... args) {
 
         try (Scanner scanner = new Scanner(ctos(start))) {
-            for (final int[] a : args) {
+            for (int[] a : args) {
                 a[0] = scanner.nextInt();
             }
         }

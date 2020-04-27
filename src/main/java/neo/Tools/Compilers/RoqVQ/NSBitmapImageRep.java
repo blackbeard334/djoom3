@@ -17,9 +17,9 @@ public class NSBitmapImageRep {
     //
 
     public NSBitmapImageRep() {
-        this.bmap = null;
-        this.width = this.height = 0;
-        this.timestamp = 0;
+        bmap = null;
+        width = height = 0;
+        timestamp = 0;
     }
 
     public NSBitmapImageRep(final String filename) {
@@ -27,19 +27,19 @@ public class NSBitmapImageRep {
         final int[] w = {0}, h = {0};
         final long[] t = {0};
 
-        R_LoadImage(filename, this.bmap, w, h, t, false);
-        this.width = w[0];
-        this.height = h[0];
-        this.timestamp = t[0];
-        if ((0 == this.width) || (0 == this.height)) {
+        R_LoadImage(filename, bmap, w, h, t, false);
+        width = w[0];
+        height = h[0];
+        timestamp = t[0];
+        if (0 == width || 0 == height) {
             common.FatalError("roqvq: unable to load image %s\n", filename);
         }
     }
 
     public NSBitmapImageRep(int wide, int high) {
-        this.bmap = new byte[wide * high * 4];// Mem_ClearedAlloc(wide * high * 4);
-        this.width = wide;
-        this.height = high;
+        bmap = new byte[wide * high * 4];// Mem_ClearedAlloc(wide * high * 4);
+        width = wide;
+        height = high;
     }
     // ~NSBitmapImageRep();
 
@@ -51,16 +51,16 @@ public class NSBitmapImageRep {
             return this;
         }
 
-        if (this.bmap != null) {
-            this.bmap = null;//Mem_Free(bmap);
+        if (bmap != null) {
+            bmap = null;//Mem_Free(bmap);
         }
-        this.bmap = new byte[a.width * a.height * 4];// Mem_Alloc(a.width * a.height * 4);
+        bmap = new byte[a.width * a.height * 4];// Mem_Alloc(a.width * a.height * 4);
 //	memcpy( bmap, a.bmap, a.width * a.height * 4 );
-//        Nio.arraycopy(a.bmap, 0, this.bmap, 0, a.width * a.height * 4);
+//        System.arraycopy(a.bmap, 0, this.bmap, 0, a.width * a.height * 4);
         this.bmap = a.bmap;
-        this.width = a.width;
-        this.height = a.height;
-        this.timestamp = a.timestamp;
+        width = a.width;
+        height = a.height;
+        timestamp = a.timestamp;
 
         return this;
     }
@@ -70,15 +70,15 @@ public class NSBitmapImageRep {
     }
 
     public int pixelsWide() {
-        return this.width;
+        return width;
     }
 
     public int pixelsHigh() {
-        return this.height;
+        return height;
     }
 
     public byte[] bitmapData() {
-        return this.bmap;
+        return bmap;
     }
 
     public boolean hasAlpha() {

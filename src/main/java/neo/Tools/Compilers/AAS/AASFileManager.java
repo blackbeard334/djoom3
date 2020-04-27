@@ -25,7 +25,7 @@ public class AASFileManager {
         public abstract idAASFile LoadAAS(final String fileName, long/*unsigned int*/ mapFileCRC);
 
         public abstract void FreeAAS(idAASFile file);
-    }
+    };
 
     /*
      ===============================================================================
@@ -39,7 +39,7 @@ public class AASFileManager {
 //        virtual						~idAASFileManagerLocal( void ) {}
         @Override
         public idAASFile LoadAAS(String fileName, long mapFileCRC) {
-            final idAASFileLocal file = new idAASFileLocal();
+            idAASFileLocal file = new idAASFileLocal();
             if (!file.Load(new idStr(fileName), mapFileCRC)) {
 //		delete file;
                 return null;
@@ -51,7 +51,7 @@ public class AASFileManager {
         public void FreeAAS(idAASFile file) {
 //            delete file
         }
-    }
+    };
 
     public static void setAASFileManager(idAASFileManager AASFileManager) {
         neo.Tools.Compilers.AAS.AASFileManager.AASFileManager

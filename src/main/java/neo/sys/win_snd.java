@@ -10,10 +10,11 @@ import java.util.logging.Logger;
 
 import javax.sound.sampled.SourceDataLine;
 
+import org.lwjgl.openal.ALC;
+
 import neo.TempDump.TODO_Exception;
 import neo.Sound.snd_local.idAudioHardware;
 import neo.Sound.snd_system.idSoundSystemLocal;
-import neo.open.al.QAL;
 
 /**
  *
@@ -141,12 +142,12 @@ public class win_snd {
 
         @Override
         public int GetNumberOfSpeakers() {
-            return this.numSpeakers;
+            return numSpeakers;
         }
 
         @Override
         public int GetMixBufferSize() {
-            return MIXBUFFER_SAMPLES * this.blockAlign;
+            return MIXBUFFER_SAMPLES * blockAlign;
         }
 
         // WIN32 driver doesn't support write API
@@ -167,8 +168,8 @@ public class win_snd {
         @Override
         public boolean Initialize() {
 //            throw new TODO_Exception();
-            final SourceDataLine dataLine;//for streaming
-            final int hr;
+            SourceDataLine dataLine;//for streaming
+            int hr;
 //            AudioInputStream  audioInputStream = AudioSystem.getAudioInputStream(null);
 //            dataLine.
 //
@@ -215,7 +216,7 @@ public class win_snd {
 //	return false;
         }
 
-    }
+    };
 
     /*
      ===============
@@ -225,12 +226,12 @@ public class win_snd {
     public static boolean Sys_LoadOpenAL() {
         if (ID_OPENAL) {
             try {
-            	QAL.loadOpenAL();
-            } catch (final UnsatisfiedLinkError ex) {
+                ALC.create();
+            } catch (UnsatisfiedLinkError ex) {
                 Logger.getLogger(win_snd.class.getName()).log(Level.SEVERE, null, ex);
                 common.Warning("LoadLibrary %s failed.", idSoundSystemLocal.s_libOpenAL.GetString());
                 return false;
-            } catch (final IllegalStateException ex) {
+            } catch (IllegalStateException ex) {
                 return "ALC has already been created.".equals(ex.getMessage());
             }
 
@@ -246,7 +247,7 @@ public class win_snd {
      ===============
      */
     public static void Sys_FreeOpenAL() {
-    	QAL.freeOpenAL();
+        ALC.destroy();
     }
 
 }

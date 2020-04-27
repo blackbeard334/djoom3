@@ -85,9 +85,9 @@ public class GameSSDWindow {
 
         public void WriteToSaveGame(idFile savefile) {
 
-            savefile.WriteInt(this.currentCrosshair);
-            savefile.WriteFloat(this.crosshairWidth);
-            savefile.WriteFloat(this.crosshairHeight);
+            savefile.WriteInt(currentCrosshair);
+            savefile.WriteFloat(crosshairWidth);
+            savefile.WriteFloat(crosshairHeight);
 
         }
 
@@ -95,31 +95,31 @@ public class GameSSDWindow {
 
             InitCrosshairs();
 
-            this.currentCrosshair = savefile.ReadInt();
-            this.crosshairWidth = savefile.ReadFloat();
-            this.crosshairHeight = savefile.ReadFloat();
+            currentCrosshair = savefile.ReadInt();
+            crosshairWidth = savefile.ReadFloat();
+            crosshairHeight = savefile.ReadFloat();
 
         }
 
         public void InitCrosshairs() {
 
-            this.crosshairMaterial[CROSSHAIR_STANDARD] = declManager.FindMaterial(CROSSHAIR_STANDARD_MATERIAL);
-            this.crosshairMaterial[CROSSHAIR_SUPER] = declManager.FindMaterial(CROSSHAIR_SUPER_MATERIAL);
+            crosshairMaterial[CROSSHAIR_STANDARD] = declManager.FindMaterial(CROSSHAIR_STANDARD_MATERIAL);
+            crosshairMaterial[CROSSHAIR_SUPER] = declManager.FindMaterial(CROSSHAIR_SUPER_MATERIAL);
 
-            this.crosshairWidth = 64;
-            this.crosshairHeight = 64;
+            crosshairWidth = 64;
+            crosshairHeight = 64;
 
-            this.currentCrosshair = CROSSHAIR_STANDARD;
+            currentCrosshair = CROSSHAIR_STANDARD;
 
         }
 
         public void Draw(idDeviceContext dc, final idVec2 cursor) {
 
-            dc.DrawMaterial(cursor.x - (this.crosshairWidth / 2), cursor.y - (this.crosshairHeight / 2),
-                    this.crosshairWidth, this.crosshairHeight,
-                    this.crosshairMaterial[this.currentCrosshair], colorWhite, 1.0f, 1.0f);
+            dc.DrawMaterial(cursor.x - (crosshairWidth / 2), cursor.y - (crosshairHeight / 2),
+                    crosshairWidth, crosshairHeight,
+                    crosshairMaterial[currentCrosshair], colorWhite, 1.0f, 1.0f);
         }
-    }
+    };
 
     public enum SSD {
 
@@ -130,7 +130,7 @@ public class GameSSDWindow {
         SSD_ENTITY_POINTS,
         SSD_ENTITY_PROJECTILE,
         SSD_ENTITY_POWERUP
-    }
+    };
 
     /*
      *****************************************************************************
@@ -176,150 +176,150 @@ public class GameSSDWindow {
 
         public void WriteToSaveGame(idFile savefile) {
 
-            savefile.WriteInt(this.type);
-            this.game.WriteSaveGameString(this.materialName, savefile);
-            savefile.Write(this.position);
-            savefile.Write(this.size);
-            savefile.WriteFloat(this.radius);
-            savefile.WriteFloat(this.hitRadius);
-            savefile.WriteFloat(this.rotation);
+            savefile.WriteInt(type);
+            game.WriteSaveGameString(materialName, savefile);
+            savefile.Write(position);
+            savefile.Write(size);
+            savefile.WriteFloat(radius);
+            savefile.WriteFloat(hitRadius);
+            savefile.WriteFloat(rotation);
 
-            savefile.Write(this.matColor);
+            savefile.Write(matColor);
 
-            this.game.WriteSaveGameString(this.text, savefile);
-            savefile.WriteFloat(this.textScale);
-            savefile.Write(this.foreColor);
+            game.WriteSaveGameString(text, savefile);
+            savefile.WriteFloat(textScale);
+            savefile.Write(foreColor);
 
-            savefile.WriteInt(this.currentTime);
-            savefile.WriteInt(this.lastUpdate);
-            savefile.WriteInt(this.elapsed);
+            savefile.WriteInt(currentTime);
+            savefile.WriteInt(lastUpdate);
+            savefile.WriteInt(elapsed);
 
-            savefile.WriteBool(this.destroyed);
-            savefile.WriteBool(this.noHit);
-            savefile.WriteBool(this.noPlayerDamage);
+            savefile.WriteBool(destroyed);
+            savefile.WriteBool(noHit);
+            savefile.WriteBool(noPlayerDamage);
 
-            savefile.WriteBool(this.inUse);
+            savefile.WriteBool(inUse);
 
         }
 
         public void ReadFromSaveGame(idFile savefile, idGameSSDWindow _game) {
 
-            this.type = SSD.values()[savefile.ReadInt()];
-            this.game.ReadSaveGameString(this.materialName, savefile);
-            SetMaterial(this.materialName.getData());
-            savefile.Read(this.position);
-            savefile.Read(this.size);
-            this.radius = savefile.ReadFloat();
-            this.hitRadius = savefile.ReadFloat();
-            this.rotation = savefile.ReadFloat();
+            type = SSD.values()[savefile.ReadInt()];
+            game.ReadSaveGameString(materialName, savefile);
+            SetMaterial(materialName.toString());
+            savefile.Read(position);
+            savefile.Read(size);
+            radius = savefile.ReadFloat();
+            hitRadius = savefile.ReadFloat();
+            rotation = savefile.ReadFloat();
 
-            savefile.Read(this.matColor);
+            savefile.Read(matColor);
 
-            this.game.ReadSaveGameString(this.text, savefile);
-            this.textScale = savefile.ReadFloat();
-            savefile.Read(this.foreColor);
+            game.ReadSaveGameString(text, savefile);
+            textScale = savefile.ReadFloat();
+            savefile.Read(foreColor);
 
-            this.game = _game;
-            this.currentTime = savefile.ReadInt();
-            this.lastUpdate = savefile.ReadInt();
-            this.elapsed = savefile.ReadInt();
+            game = _game;
+            currentTime = savefile.ReadInt();
+            lastUpdate = savefile.ReadInt();
+            elapsed = savefile.ReadInt();
 
-            this.destroyed = savefile.ReadBool();
-            this.noHit = savefile.ReadBool();
-            this.noPlayerDamage = savefile.ReadBool();
+            destroyed = savefile.ReadBool();
+            noHit = savefile.ReadBool();
+            noPlayerDamage = savefile.ReadBool();
 
-            this.inUse = savefile.ReadBool();
+            inUse = savefile.ReadBool();
         }
 
         public void EntityInit() {
 
-            this.inUse = false;
+            inUse = false;
 
-            this.type = SSD_ENTITY_BASE;
+            type = SSD_ENTITY_BASE;
 
-            this.materialName = new idStr("");
-            this.material = null;
-            this.position.Zero();
-            this.size.Zero();
-            this.radius = 0.0f;
-            this.hitRadius = 0.0f;
-            this.rotation = 0.0f;
+            materialName = new idStr("");
+            material = null;
+            position.Zero();
+            size.Zero();
+            radius = 0.0f;
+            hitRadius = 0.0f;
+            rotation = 0.0f;
 
-            this.currentTime = 0;
-            this.lastUpdate = 0;
+            currentTime = 0;
+            lastUpdate = 0;
 
-            this.destroyed = false;
-            this.noHit = false;
-            this.noPlayerDamage = false;
+            destroyed = false;
+            noHit = false;
+            noPlayerDamage = false;
 
-            this.matColor.Set(1, 1, 1, 1);
+            matColor.Set(1, 1, 1, 1);
 
-            this.text = new idStr("");
-            this.textScale = 1.0f;
-            this.foreColor.Set(1, 1, 1, 1);
+            text = new idStr("");
+            textScale = 1.0f;
+            foreColor.Set(1, 1, 1, 1);
         }
 
         public void SetGame(idGameSSDWindow _game) {
-            this.game = _game;
+            game = _game;
         }
 
         public void SetMaterial(final String _name) {
-            this.materialName.oSet(_name);
-            this.material = declManager.FindMaterial(_name);
-            this.material.SetSort(SS_GUI);
+            materialName.oSet(_name);
+            material = declManager.FindMaterial(_name);
+            material.SetSort(SS_GUI);
         }
 
         public void SetPosition(final idVec3 _position) {
-            this.position = _position;//TODO:is this by value, or by reference?
+            position = _position;//TODO:is this by value, or by reference?
         }
 
         public void SetSize(final idVec2 _size) {
-            this.size = _size;
+            size = _size;
         }
 
         public void SetRadius(float _radius, float _hitFactor /*= 1.0f*/) {
-            this.radius = _radius;
-            this.hitRadius = _radius * _hitFactor;
+            radius = _radius;
+            hitRadius = _radius * _hitFactor;
         }
 
         public void SetRotation(float _rotation) {
-            this.rotation = _rotation;
+            rotation = _rotation;
         }
 
         public void Update() {
 
-            this.currentTime = this.game.ssdTime;
+            currentTime = game.ssdTime;
 
             //Is this the first update
-            if (this.lastUpdate == 0) {
-                this.lastUpdate = this.currentTime;
+            if (lastUpdate == 0) {
+                lastUpdate = currentTime;
                 return;
             }
 
-            this.elapsed = this.currentTime - this.lastUpdate;
+            elapsed = currentTime - lastUpdate;
 
             EntityUpdate();
 
-            this.lastUpdate = this.currentTime;
+            lastUpdate = currentTime;
         }
 
         public boolean HitTest(final idVec2 pt) {
 
-            if (this.noHit) {
+            if (noHit) {
                 return false;
             }
 
-            final idVec3 screenPos = WorldToScreen(this.position);
+            idVec3 screenPos = WorldToScreen(position);
 
             //Scale the radius based on the distance from the player
-            final float scale = 1.0f - ((screenPos.z - Z_NEAR) / (Z_FAR - Z_NEAR));
-            final float scaledRad = scale * this.hitRadius;
+            float scale = 1.0f - ((screenPos.z - Z_NEAR) / (Z_FAR - Z_NEAR));
+            float scaledRad = scale * hitRadius;
 
             //So we can compare against the square of the length between two points
-            final float scaleRadSqr = scaledRad * scaledRad;
+            float scaleRadSqr = scaledRad * scaledRad;
 
-            final idVec2 diff = screenPos.ToVec2().oMinus(pt);
-            final float dist = idMath.Fabs(diff.LengthSqr());
+            idVec2 diff = screenPos.ToVec2().oMinus(pt);
+            float dist = idMath.Fabs(diff.LengthSqr());
 
             if (dist < scaleRadSqr) {
                 return true;
@@ -332,31 +332,31 @@ public class GameSSDWindow {
 
         public void Draw(idDeviceContext dc) {
 
-            final idVec2 persize = new idVec2();
+            idVec2 persize = new idVec2();
             float x, y;
 
-            final idBounds bounds = new idBounds();
-            bounds.oSet(0, new idVec3(this.position.x - (this.size.x / 2.0f), this.position.y - (this.size.y / 2.0f), this.position.z));
-            bounds.oSet(1, new idVec3(this.position.x + (this.size.x / 2.0f), this.position.y + (this.size.y / 2.0f), this.position.z));
+            idBounds bounds = new idBounds();
+            bounds.oSet(0, new idVec3(position.x - (size.x / 2.0f), position.y - (size.y / 2.0f), position.z));
+            bounds.oSet(1, new idVec3(position.x + (size.x / 2.0f), position.y + (size.y / 2.0f), position.z));
 
-            final idBounds screenBounds = WorldToScreen(bounds);
+            idBounds screenBounds = WorldToScreen(bounds);
             persize.x = idMath.Fabs(screenBounds.oGet(1).x - screenBounds.oGet(0).x);
             persize.y = idMath.Fabs(screenBounds.oGet(1).y - screenBounds.oGet(0).y);
 
 //	idVec3 center = screenBounds.GetCenter();
             x = screenBounds.oGet(0).x;
             y = screenBounds.oGet(1).y;
-            dc.DrawMaterialRotated(x, y, persize.x, persize.y, this.material, this.matColor, 1.0f, 1.0f, DEG2RAD(this.rotation));
+            dc.DrawMaterialRotated(x, y, persize.x, persize.y, material, matColor, 1.0f, 1.0f, (float) DEG2RAD(rotation));
 
-            if (this.text.Length() > 0) {
-                final idRectangle rect = new idRectangle(x, y, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
-                dc.DrawText(this.text.getData(), this.textScale, 0, this.foreColor, rect, false);
+            if (text.Length() > 0) {
+                idRectangle rect = new idRectangle(x, y, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+                dc.DrawText(text.toString(), textScale, 0, foreColor, rect, false);
             }
 
         }
 
         public void DestroyEntity() {
-            this.inUse = false;
+            inUse = false;
         }
 
         public void OnHit(int key) {
@@ -367,26 +367,26 @@ public class GameSSDWindow {
 
         public idBounds WorldToScreen(final idBounds worldBounds) {
 
-            final idVec3 screenMin = WorldToScreen(worldBounds.oGet(0));
-            final idVec3 screenMax = WorldToScreen(worldBounds.oGet(1));
+            idVec3 screenMin = WorldToScreen(worldBounds.oGet(0));
+            idVec3 screenMax = WorldToScreen(worldBounds.oGet(1));
 
-            final idBounds screenBounds = new idBounds(screenMin, screenMax);
+            idBounds screenBounds = new idBounds(screenMin, screenMax);
             return screenBounds;
         }
 
         public idVec3 WorldToScreen(final idVec3 worldPos) {
 
-            final float d = 0.5f * V_WIDTH * idMath.Tan(DEG2RAD(90.0f) / 2.0f);
+            float d = 0.5f * V_WIDTH * idMath.Tan((float) (DEG2RAD(90.0f) / 2.0f));
 
             //World To Camera Coordinates
-            final idVec3 cameraTrans = new idVec3(0, 0, d);
+            idVec3 cameraTrans = new idVec3(0, 0, d);
             idVec3 cameraPos;
             cameraPos = worldPos.oPlus(cameraTrans);
 
             //Camera To Screen Coordinates
-            final idVec3 screenPos = new idVec3();
-            screenPos.x = ((d * cameraPos.x) / cameraPos.z) + ((0.5f * V_WIDTH) - 0.5f);
-            screenPos.y = ((-d * cameraPos.y) / cameraPos.z) + ((0.5f * V_HEIGHT) - 0.5f);
+            idVec3 screenPos = new idVec3();
+            screenPos.x = d * cameraPos.x / cameraPos.z + (0.5f * V_WIDTH - 0.5f);
+            screenPos.y = -d * cameraPos.y / cameraPos.z + (0.5f * V_HEIGHT - 0.5f);
             screenPos.z = cameraPos.z;
 
             return screenPos;
@@ -394,15 +394,15 @@ public class GameSSDWindow {
 
         public idVec3 ScreenToWorld(final idVec3 screenPos) {
 
-            final idVec3 worldPos = new idVec3();
+            idVec3 worldPos = new idVec3();
 
-            worldPos.x = screenPos.x - (0.5f * V_WIDTH);
-            worldPos.y = -(screenPos.y - (0.5f * V_HEIGHT));
+            worldPos.x = screenPos.x - 0.5f * V_WIDTH;
+            worldPos.y = -(screenPos.y - 0.5f * V_HEIGHT);
             worldPos.z = screenPos.z;
 
             return worldPos;
         }
-    }
+    };
 
     /*
      *****************************************************************************
@@ -423,22 +423,22 @@ public class GameSSDWindow {
         public void WriteToSaveGame(idFile savefile) {
             super.WriteToSaveGame(savefile);
 
-            savefile.Write(this.speed);
-            savefile.WriteFloat(this.rotationSpeed);
+            savefile.Write(speed);
+            savefile.WriteFloat(rotationSpeed);
         }
 
         @Override
         public void ReadFromSaveGame(idFile savefile, idGameSSDWindow _game) {
             super.ReadFromSaveGame(savefile, _game);
 
-            savefile.Read(this.speed);
-            this.rotationSpeed = savefile.ReadFloat();
+            savefile.Read(speed);
+            rotationSpeed = savefile.ReadFloat();
         }
 
         public void MoverInit(final idVec3 _speed, float _rotationSpeed) {
 
-            this.speed = _speed;
-            this.rotationSpeed = _rotationSpeed;
+            speed = _speed;
+            rotationSpeed = _rotationSpeed;
         }
 
         @Override
@@ -447,19 +447,19 @@ public class GameSSDWindow {
             super.EntityUpdate();
 
             //Move forward based on speed (units per second)
-            final idVec3 moved = this.speed.oMultiply(this.elapsed / 1000.0f);
-            this.position.oPluSet(moved);
+            idVec3 moved = speed.oMultiply((float) elapsed / 1000.0f);
+            position.oPluSet(moved);
 
-            final float rotated = (this.elapsed / 1000.0f) * this.rotationSpeed * 360.0f;
-            this.rotation += rotated;
-            if (this.rotation >= 360) {
-                this.rotation -= 360.0f;
+            float rotated = ((float) elapsed / 1000.0f) * rotationSpeed * 360.0f;
+            rotation += rotated;
+            if (rotation >= 360) {
+                rotation -= 360.0f;
             }
-            if (this.rotation < 0) {
-                this.rotation += 360.0f;
+            if (rotation < 0) {
+                rotation += 360.0f;
             }
         }
-    }
+    };
     /*
      *****************************************************************************
      * SSDAsteroid	
@@ -480,14 +480,14 @@ public class GameSSDWindow {
         public void WriteToSaveGame(idFile savefile) {
             super.WriteToSaveGame(savefile);
 
-            savefile.WriteInt(this.health);
+            savefile.WriteInt(health);
         }
 
         @Override
         public void ReadFromSaveGame(idFile savefile, idGameSSDWindow _game) {
             super.ReadFromSaveGame(savefile, _game);
 
-            this.health = savefile.ReadInt();
+            health = savefile.ReadInt();
         }
 
         public void Init(idGameSSDWindow _game, final idVec3 startPosition, final idVec2 _size, float _speed, float rotate, int _health) {
@@ -497,16 +497,16 @@ public class GameSSDWindow {
 
             SetGame(_game);
 
-            this.type = SSD_ENTITY_ASTEROID;
+            type = SSD_ENTITY_ASTEROID;
 
             SetMaterial(ASTEROID_MATERIAL);
             SetSize(_size);
-            SetRadius(Max(this.size.x, this.size.y), 0.3f);
-            SetRotation(idGameSSDWindow.random.RandomInt(360));
+            SetRadius((float) Max(size.x, size.y), 0.3f);
+            SetRotation(game.random.RandomInt(360));
 
-            this.position = startPosition;
+            position = startPosition;
 
-            this.health = _health;
+            health = _health;
         }
 
         @Override
@@ -555,13 +555,13 @@ public class GameSSDWindow {
             for (int i = 0; i < count; i++) {
                 int id;
                 id = savefile.ReadInt();
-                final SSDAsteroid ent = GetSpecificAsteroid(id);
+                SSDAsteroid ent = GetSpecificAsteroid(id);
                 ent.ReadFromSaveGame(savefile, _game);
             }
         }
 //        
         protected static final SSDAsteroid[] asteroidPool = new SSDAsteroid[MAX_ASTEROIDS];
-    }
+    };
     /*
      *****************************************************************************
      * SSDAstronaut	
@@ -582,14 +582,14 @@ public class GameSSDWindow {
         public void WriteToSaveGame(idFile savefile) {
             super.WriteToSaveGame(savefile);
 
-            savefile.WriteInt(this.health);
+            savefile.WriteInt(health);
         }
 
         @Override
         public void ReadFromSaveGame(idFile savefile, idGameSSDWindow _game) {
             super.ReadFromSaveGame(savefile, _game);
 
-            this.health = savefile.ReadInt();
+            health = savefile.ReadInt();
         }
 
         public void Init(idGameSSDWindow _game, final idVec3 startPosition, float _speed, float rotate, int _health) {
@@ -599,15 +599,15 @@ public class GameSSDWindow {
 
             SetGame(_game);
 
-            this.type = SSD_ENTITY_ASTRONAUT;
+            type = SSD_ENTITY_ASTRONAUT;
 
             SetMaterial(ASTRONAUT_MATERIAL);
             SetSize(new idVec2(256, 256));
-            SetRadius(Max(this.size.x, this.size.y), 0.3f);
-            SetRotation(idGameSSDWindow.random.RandomInt(360));
+            SetRadius((float) Max(size.x, size.y), 0.3f);
+            SetRotation(game.random.RandomInt(360));
 
-            this.position = startPosition;
-            this.health = _health;
+            position = startPosition;
+            health = _health;
         }
 
         public static SSDAstronaut GetNewAstronaut(idGameSSDWindow _game, final idVec3 startPosition, float _speed, float rotate, int _health) {
@@ -649,13 +649,13 @@ public class GameSSDWindow {
             for (int i = 0; i < count; i++) {
                 int id;
                 id = savefile.ReadInt();
-                final SSDAstronaut ent = GetSpecificAstronaut(id);
+                SSDAstronaut ent = GetSpecificAstronaut(id);
                 ent.ReadFromSaveGame(savefile, _game);
             }
         }
 //        
         protected static final SSDAstronaut[] astronautPool = new SSDAstronaut[MAX_ASTRONAUT];
-    }
+    };
     /*
      *****************************************************************************
      * SSDExplosion	
@@ -686,7 +686,7 @@ public class GameSSDWindow {
         // };
 
         public SSDExplosion() {
-            this.type = SSD_ENTITY_EXPLOSION;
+            type = SSD_ENTITY_EXPLOSION;
         }
         // ~SSDExplosion();
 
@@ -694,28 +694,28 @@ public class GameSSDWindow {
         public void WriteToSaveGame(idFile savefile) {
             super.WriteToSaveGame(savefile);
 
-            savefile.Write(this.finalSize);
-            savefile.WriteInt(this.length);
-            savefile.WriteInt(this.beginTime);
-            savefile.WriteInt(this.endTime);
-            savefile.WriteInt(this.explosionType);
+            savefile.Write(finalSize);
+            savefile.WriteInt(length);
+            savefile.WriteInt(beginTime);
+            savefile.WriteInt(endTime);
+            savefile.WriteInt(explosionType);
 
-            savefile.WriteInt(this.buddy.type);
-            savefile.WriteInt(this.buddy.id);
+            savefile.WriteInt(buddy.type);
+            savefile.WriteInt(buddy.id);
 
-            savefile.WriteBool(this.killBuddy);
-            savefile.WriteBool(this.followBuddy);
+            savefile.WriteBool(killBuddy);
+            savefile.WriteBool(followBuddy);
         }
 
         @Override
         public void ReadFromSaveGame(idFile savefile, idGameSSDWindow _game) {
             super.ReadFromSaveGame(savefile, _game);
 
-            savefile.Read(this.finalSize);
-            this.length = savefile.ReadInt();
-            this.beginTime = savefile.ReadInt();
-            this.endTime = savefile.ReadInt();
-            this.explosionType = savefile.ReadInt();
+            savefile.Read(finalSize);
+            length = savefile.ReadInt();
+            beginTime = savefile.ReadInt();
+            endTime = savefile.ReadInt();
+            explosionType = savefile.ReadInt();
 
             SSD type;
             int id;
@@ -723,10 +723,10 @@ public class GameSSDWindow {
             id = savefile.ReadInt();
 
             //Get a pointer to my buddy
-            this.buddy = _game.GetSpecificEntity(type, id);
+            buddy = _game.GetSpecificEntity(type, id);
 
-            this.killBuddy = savefile.ReadBool();
-            this.followBuddy = savefile.ReadBool();
+            killBuddy = savefile.ReadBool();
+            followBuddy = savefile.ReadBool();
         }
 
         public void Init(idGameSSDWindow _game, final idVec3 _position, final idVec2 _size, int _length, int _type, SSDEntity _buddy, boolean _killBuddy /*= true*/, boolean _followBuddy /*= true*/) {
@@ -735,27 +735,27 @@ public class GameSSDWindow {
 
             SetGame(_game);
 
-            this.type = SSD_ENTITY_EXPLOSION;
-            this.explosionType = _type;
+            type = SSD_ENTITY_EXPLOSION;
+            explosionType = _type;
 
-            SetMaterial(explosionMaterials[this.explosionType]);
+            SetMaterial(explosionMaterials[explosionType]);
             SetPosition(_position);
-            this.position.z -= 50;
+            position.z -= 50;
 
-            this.finalSize = _size;
-            this.length = _length;
-            this.beginTime = this.game.ssdTime;
-            this.endTime = this.beginTime + this.length;
+            finalSize = _size;
+            length = _length;
+            beginTime = game.ssdTime;
+            endTime = beginTime + length;
 
-            this.buddy = _buddy;
-            this.killBuddy = _killBuddy;
-            this.followBuddy = _followBuddy;
+            buddy = _buddy;
+            killBuddy = _killBuddy;
+            followBuddy = _followBuddy;
 
             //Explosion Starts from nothing and will increase in size until it gets to final size
-            this.size.Zero();
+            size.Zero();
 
-            this.noPlayerDamage = true;
-            this.noHit = true;
+            noPlayerDamage = true;
+            noHit = true;
         }
 
         @Override
@@ -764,24 +764,24 @@ public class GameSSDWindow {
             super.EntityUpdate();
 
             //Always set my position to my buddies position except change z to be on top
-            if (this.followBuddy) {
-                this.position = this.buddy.position;
-                this.position.z -= 50;
+            if (followBuddy) {
+                position = buddy.position;
+                position.z -= 50;
             } else {
                 //Only mess with the z if we are not following
-                this.position.z = this.buddy.position.z - 50;
+                position.z = buddy.position.z - 50;
             }
 
             //Scale the image based on the time
-            this.size = this.finalSize.oMultiply((this.currentTime - this.beginTime) / this.length);
+            size = finalSize.oMultiply((currentTime - beginTime) / length);
 
             //Destroy myself after the explosion is done
-            if (this.currentTime > this.endTime) {
-                this.destroyed = true;
+            if (currentTime > endTime) {
+                destroyed = true;
 
-                if (this.killBuddy) {
+                if (killBuddy) {
                     //Destroy the exploding object
-                    this.buddy.destroyed = true;
+                    buddy.destroyed = true;
                 }
             }
         }
@@ -832,13 +832,13 @@ public class GameSSDWindow {
             for (int i = 0; i < count; i++) {
                 int id;
                 id = savefile.ReadInt();
-                final SSDExplosion ent = GetSpecificExplosion(id);
+                SSDExplosion ent = GetSpecificExplosion(id);
                 ent.ReadFromSaveGame(savefile, _game);
             }
         }
 //        
         protected static final SSDExplosion[] explosionPool = new SSDExplosion[MAX_EXPLOSIONS];
-    }
+    };
     /*
      *****************************************************************************
      * SSDPoints
@@ -858,7 +858,7 @@ public class GameSSDWindow {
         idVec4 endColor;
 
         public SSDPoints() {
-            this.type = SSD_ENTITY_POINTS;
+            type = SSD_ENTITY_POINTS;
         }
         // ~SSDPoints();
 
@@ -866,16 +866,16 @@ public class GameSSDWindow {
         public void WriteToSaveGame(idFile savefile) {
             super.WriteToSaveGame(savefile);
 
-            savefile.WriteInt(this.length);
-            savefile.WriteInt(this.distance);
-            savefile.WriteInt(this.beginTime);
-            savefile.WriteInt(this.endTime);
+            savefile.WriteInt(length);
+            savefile.WriteInt(distance);
+            savefile.WriteInt(beginTime);
+            savefile.WriteInt(endTime);
 
-            savefile.Write(this.beginPosition);
-            savefile.Write(this.endPosition);
+            savefile.Write(beginPosition);
+            savefile.Write(endPosition);
 
-            savefile.Write(this.beginColor);
-            savefile.Write(this.endColor);
+            savefile.Write(beginColor);
+            savefile.Write(endColor);
 
         }
 
@@ -883,16 +883,16 @@ public class GameSSDWindow {
         public void ReadFromSaveGame(idFile savefile, idGameSSDWindow _game) {
             super.ReadFromSaveGame(savefile, _game);
 
-            this.length = savefile.ReadInt();
-            this.distance = savefile.ReadInt();
-            this.beginTime = savefile.ReadInt();
-            this.endTime = savefile.ReadInt();
+            length = savefile.ReadInt();
+            distance = savefile.ReadInt();
+            beginTime = savefile.ReadInt();
+            endTime = savefile.ReadInt();
 
-            savefile.Read(this.beginPosition);
-            savefile.Read(this.endPosition);
+            savefile.Read(beginPosition);
+            savefile.Read(endPosition);
 
-            savefile.Read(this.beginColor);
-            savefile.Read(this.endColor);
+            savefile.Read(beginColor);
+            savefile.Read(endColor);
         }
 
         public void Init(idGameSSDWindow _game, SSDEntity _ent, int _points, int _length, int _distance, final idVec4 color) {
@@ -901,56 +901,56 @@ public class GameSSDWindow {
 
             SetGame(_game);
 
-            this.length = _length;
-            this.distance = _distance;
-            this.beginTime = this.game.ssdTime;
-            this.endTime = this.beginTime + this.length;
+            length = _length;
+            distance = _distance;
+            beginTime = game.ssdTime;
+            endTime = beginTime + length;
 
-            this.textScale = 0.4f;
-            this.text = new idStr(va("%d", _points));
+            textScale = 0.4f;
+            text = new idStr(va("%d", _points));
 
             float width = 0;
-            for (int i = 0; i < this.text.Length(); i++) {
-                width += this.game.GetDC().CharWidth(this.text.oGet(i), this.textScale);
+            for (int i = 0; i < text.Length(); i++) {
+                width += game.GetDC().CharWidth(text.oGet(i), textScale);
             }
 
-            this.size.Set(0, 0);
+            size.Set(0, 0);
 
             //Set the start position at the top of the passed in entity
-            this.position = WorldToScreen(_ent.position);
-            this.position = ScreenToWorld(this.position);
+            position = WorldToScreen(_ent.position);
+            position = ScreenToWorld(position);
 
-            this.position.z = 0;
-            this.position.x -= (width / 2.0f);
+            position.z = 0;
+            position.x -= (width / 2.0f);
 
-            this.beginPosition = this.position;
+            beginPosition = position;
 
-            this.endPosition = this.beginPosition;
-            this.endPosition.y += _distance;
+            endPosition = beginPosition;
+            endPosition.y += _distance;
 
             //beginColor.Set(0,1,0,1);
-            this.endColor.Set(1, 1, 1, 0);
+            endColor.Set(1, 1, 1, 0);
 
-            this.beginColor = color;
-            this.beginColor.w = 1;
+            beginColor = color;
+            beginColor.w = 1;
 
-            this.noPlayerDamage = true;
-            this.noHit = true;
+            noPlayerDamage = true;
+            noHit = true;
         }
 
         @Override
         public void EntityUpdate() {
 
-            final float t = (float) (this.currentTime - this.beginTime) / (float) this.length;
+            float t = (float) (currentTime - beginTime) / (float) length;
 
             //Move up from the start position
-            this.position.Lerp(this.beginPosition, this.endPosition, t);
+            position.Lerp(beginPosition, endPosition, t);
 
             //Interpolate the color
-            this.foreColor.Lerp(this.beginColor, this.endColor, t);
+            foreColor.Lerp(beginColor, endColor, t);
 
-            if (this.currentTime > this.endTime) {
-                this.destroyed = true;
+            if (currentTime > endTime) {
+                destroyed = true;
             }
         }
 
@@ -992,13 +992,13 @@ public class GameSSDWindow {
             for (int i = 0; i < count; i++) {
                 int id;
                 id = savefile.ReadInt();
-                final SSDPoints ent = GetSpecificPoints(id);
+                SSDPoints ent = GetSpecificPoints(id);
                 ent.ReadFromSaveGame(savefile, _game);
             }
         }
 //
         protected static final SSDPoints[] pointsPool = new SSDPoints[MAX_POINTS];
-    }
+    };
     /*
      *****************************************************************************
      * SSDProjectile
@@ -1016,7 +1016,7 @@ public class GameSSDWindow {
         idVec3 endPosition;
 
         public SSDProjectile() {
-            this.type = SSD_ENTITY_PROJECTILE;
+            type = SSD_ENTITY_PROJECTILE;
         }
         // ~SSDProjectile();
 
@@ -1024,24 +1024,24 @@ public class GameSSDWindow {
         public void WriteToSaveGame(idFile savefile) {
             super.WriteToSaveGame(savefile);
 
-            savefile.Write(this.dir);
-            savefile.Write(this.speed);
-            savefile.WriteInt(this.beginTime);
-            savefile.WriteInt(this.endTime);
+            savefile.Write(dir);
+            savefile.Write(speed);
+            savefile.WriteInt(beginTime);
+            savefile.WriteInt(endTime);
 
-            savefile.Write(this.endPosition);
+            savefile.Write(endPosition);
         }
 
         @Override
         public void ReadFromSaveGame(idFile savefile, idGameSSDWindow _game) {
             super.ReadFromSaveGame(savefile, _game);
 
-            savefile.Read(this.dir);
-            savefile.Read(this.speed);
-            this.beginTime = savefile.ReadInt();
-            this.endTime = savefile.ReadInt();
+            savefile.Read(dir);
+            savefile.Read(speed);
+            beginTime = savefile.ReadInt();
+            endTime = savefile.ReadInt();
 
-            savefile.Read(this.endPosition);
+            savefile.Read(endPosition);
         }
 
         public void Init(idGameSSDWindow _game, final idVec3 _beginPosition, final idVec3 _endPosition, float _speed, float _size) {
@@ -1051,18 +1051,18 @@ public class GameSSDWindow {
             SetGame(_game);
 
             SetMaterial(PROJECTILE_MATERIAL);
-            this.size.Set(_size, _size);
+            size.Set(_size, _size);
 
-            this.position = _beginPosition;
-            this.endPosition = _endPosition;
+            position = _beginPosition;
+            endPosition = _endPosition;
 
-            this.dir = _endPosition.oMinus(this.position);
-            this.dir.Normalize();
+            dir = _endPosition.oMinus(position);
+            dir.Normalize();
 
             //speed.Zero();
-            this.speed.x = this.speed.y = this.speed.z = _speed;
+            speed.x = speed.y = speed.z = _speed;
 
-            this.noHit = true;
+            noHit = true;
         }
 
         @Override
@@ -1071,12 +1071,12 @@ public class GameSSDWindow {
             super.EntityUpdate();
 
             //Move forward based on speed (units per second)
-            final idVec3 moved = this.dir.oMultiply((this.elapsed / 1000.0f) * this.speed.z);
-            this.position.oPluSet(moved);
+            idVec3 moved = dir.oMultiply(((float) elapsed / 1000.0f) * speed.z);
+            position.oPluSet(moved);
 
-            if (this.position.z > this.endPosition.z) {
+            if (position.z > endPosition.z) {
                 //We have reached our position
-                this.destroyed = true;
+                destroyed = true;
             }
         }
 
@@ -1118,13 +1118,13 @@ public class GameSSDWindow {
             for (int i = 0; i < count; i++) {
                 int id;
                 id = savefile.ReadInt();
-                final SSDProjectile ent = GetSpecificProjectile(id);
+                SSDProjectile ent = GetSpecificProjectile(id);
                 ent.ReadFromSaveGame(savefile, _game);
             }
         }
 //
         protected static final SSDProjectile[] projectilePool = new SSDProjectile[MAX_PROJECTILES];
-    }
+    };
     /*
      *****************************************************************************
      * SSDPowerup
@@ -1180,81 +1180,81 @@ public class GameSSDWindow {
         public void WriteToSaveGame(idFile savefile) {
             super.WriteToSaveGame(savefile);
 
-            savefile.WriteInt(this.powerupState);
-            savefile.WriteInt(this.powerupType);
+            savefile.WriteInt(powerupState);
+            savefile.WriteInt(powerupType);
         }
 
         @Override
         public void ReadFromSaveGame(idFile savefile, idGameSSDWindow _game) {
             super.ReadFromSaveGame(savefile, _game);
 
-            this.powerupState = savefile.ReadInt();
-            this.powerupType = savefile.ReadInt();
+            powerupState = savefile.ReadInt();
+            powerupType = savefile.ReadInt();
         }
 
         @Override
         public void OnHit(int key) {
 
-            if (this.powerupState == POWERUP_STATE_CLOSED) {
+            if (powerupState == POWERUP_STATE_CLOSED) {
 
                 //Small explosion to indicate it is opened
-                final SSDExplosion explosion = SSDExplosion.GetNewExplosion(this.game, this.position, this.size.oMultiply(2.0f), 300, SSDExplosion.EXPLOSION_NORMAL, this, false, true);
-                this.game.entities.Append(explosion);
+                SSDExplosion explosion = SSDExplosion.GetNewExplosion(game, position, size.oMultiply(2.0f), 300, SSDExplosion.EXPLOSION_NORMAL, this, false, true);
+                game.entities.Append(explosion);
 
-                this.powerupState = POWERUP_STATE_OPEN;
-                SetMaterial(powerupMaterials[this.powerupType][this.powerupState]);
+                powerupState = POWERUP_STATE_OPEN;
+                SetMaterial(powerupMaterials[powerupType][powerupState]);
             } else {
                 //Destory the powerup with a big explosion
-                final SSDExplosion explosion = SSDExplosion.GetNewExplosion(this.game, this.position, this.size.oMultiply(2), 300, SSDExplosion.EXPLOSION_NORMAL, this);
-                this.game.entities.Append(explosion);
-                this.game.PlaySound("arcade_explode");
+                SSDExplosion explosion = SSDExplosion.GetNewExplosion(game, position, size.oMultiply(2), 300, SSDExplosion.EXPLOSION_NORMAL, this);
+                game.entities.Append(explosion);
+                game.PlaySound("arcade_explode");
 
-                this.noHit = true;
-                this.noPlayerDamage = true;
+                noHit = true;
+                noPlayerDamage = true;
             }
         }
 
         @Override
         public void OnStrikePlayer() {
 
-            if (this.powerupState == POWERUP_STATE_OPEN) {
+            if (powerupState == POWERUP_STATE_OPEN) {
                 //The powerup was open so activate it
                 OnActivatePowerup();
             }
 
             //Just destroy the powerup
-            this.destroyed = true;
+            destroyed = true;
         }
 
         public void OnOpenPowerup() {
         }
 
         public void OnActivatePowerup() {
-            switch (this.powerupType) {
+            switch (powerupType) {
                 case POWERUP_TYPE_HEALTH: {
-                    this.game.AddHealth(10);
+                    game.AddHealth(10);
                     break;
                 }
                 case POWERUP_TYPE_SUPER_BLASTER: {
-                    this.game.OnSuperBlaster();
+                    game.OnSuperBlaster();
                     break;
                 }
                 case POWERUP_TYPE_ASTEROID_NUKE: {
-                    this.game.OnNuke();
+                    game.OnNuke();
                     break;
                 }
                 case POWERUP_TYPE_RESCUE_ALL: {
-                    this.game.OnRescueAll();
+                    game.OnRescueAll();
                     break;
                 }
                 case POWERUP_TYPE_BONUS_POINTS: {
-                    final int points = (idGameSSDWindow.random.RandomInt(5) + 1) * 100;
-                    this.game.AddScore(this, points);
+                    int points = (game.random.RandomInt(5) + 1) * 100;
+                    game.AddScore(this, points);
                     break;
                 }
                 case POWERUP_TYPE_DAMAGE: {
-                    this.game.AddDamage(10);
-                    this.game.PlaySound("arcade_explode");
+                    game.AddDamage(10);
+                    game.PlaySound("arcade_explode");
                     break;
                 }
 
@@ -1268,29 +1268,29 @@ public class GameSSDWindow {
 
             SetGame(_game);
             SetSize(new idVec2(200, 200));
-            SetRadius(Max(this.size.x, this.size.y), 0.3f);
+            SetRadius((float) Max(size.x, size.y), 0.3f);
 
-            this.type = SSD_ENTITY_POWERUP;
+            type = SSD_ENTITY_POWERUP;
 
-            final idVec3 startPosition = new idVec3();
-            startPosition.x = idGameSSDWindow.random.RandomInt(V_WIDTH) - (V_WIDTH / 2.0f);
-            startPosition.y = idGameSSDWindow.random.RandomInt(V_HEIGHT) - (V_HEIGHT / 2.0f);
+            idVec3 startPosition = new idVec3();
+            startPosition.x = game.random.RandomInt(V_WIDTH) - (V_WIDTH / 2.0f);
+            startPosition.y = game.random.RandomInt(V_HEIGHT) - (V_HEIGHT / 2.0f);
             startPosition.z = ENTITY_START_DIST;
 
-            this.position = startPosition;
+            position = startPosition;
             //SetPosition(startPosition);
 
-            this.powerupState = POWERUP_STATE_CLOSED;
-            this.powerupType = idGameSSDWindow.random.RandomInt(POWERUP_TYPE_MAX + 1);
-            if (this.powerupType >= POWERUP_TYPE_MAX) {
-                this.powerupType = 0;
+            powerupState = POWERUP_STATE_CLOSED;
+            powerupType = game.random.RandomInt(POWERUP_TYPE_MAX + 1);
+            if (powerupType >= POWERUP_TYPE_MAX) {
+                powerupType = 0;
             }
 
             /*OutputDebugString(va("Powerup: %d\n", powerupType));
              if(powerupType == 0) {
              int x = 0;
              }*/
-            SetMaterial(powerupMaterials[this.powerupType][this.powerupState]);
+            SetMaterial(powerupMaterials[powerupType][powerupState]);
         }
 
         public static SSDPowerup GetNewPowerup(idGameSSDWindow _game, float _speed, float _rotation) {
@@ -1332,21 +1332,17 @@ public class GameSSDWindow {
             for (int i = 0; i < count; i++) {
                 int id;
                 id = savefile.ReadInt();
-                final SSDPowerup ent = GetSpecificPowerup(id);
+                SSDPowerup ent = GetSpecificPowerup(id);
                 ent.ReadFromSaveGame(savefile, _game);
             }
         }
 //
         protected static final SSDPowerup[] powerupPool = new SSDPowerup[MAX_POWERUPS];
-    }
+    };
 
     public static class SSDLevelData_t implements SERiAL {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		float spawnBuffer;
+        float spawnBuffer;
         int needToWin;
 
         @Override
@@ -1363,15 +1359,11 @@ public class GameSSDWindow {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     public static class SSDAsteroidData_t implements SERiAL {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		float speedMin, speedMax;
+        float speedMin, speedMax;
         float sizeMin, sizeMax;
         float rotateMin, rotateMax;
         int spawnMin, spawnMax;
@@ -1393,15 +1385,11 @@ public class GameSSDWindow {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     public static class SSDAstronautData_t implements SERiAL {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		float speedMin, speedMax;
+        float speedMin, speedMax;
         float rotateMin, rotateMax;
         int spawnMin, spawnMax;
         int health;
@@ -1422,15 +1410,11 @@ public class GameSSDWindow {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     public static class SSDPowerupData_t implements SERiAL {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		float speedMin, speedMax;
+        float speedMin, speedMax;
         float rotateMin, rotateMax;
         int spawnMin, spawnMax;
 
@@ -1448,15 +1432,11 @@ public class GameSSDWindow {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     public static class SSDWeaponData_t implements SERiAL {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		float speed;
+        float speed;
         int damage;
         int size;
 
@@ -1474,7 +1454,7 @@ public class GameSSDWindow {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     /**
      * SSDLevelStats_t Data that is used for each level. This data is reset each
@@ -1497,7 +1477,7 @@ public class GameSSDWindow {
         int nextPowerupSpawnTime;
 //
         SSDEntity targetEnt;
-    }
+    };
 
     /**
      * SSDGameStats_t Data that is used for the game that is currently running.
@@ -1505,11 +1485,7 @@ public class GameSSDWindow {
      */
     public static class SSDGameStats_t implements SERiAL {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		boolean gameRunning;
+        boolean gameRunning;
 //
         int score;
         int prebonusscore;
@@ -1536,7 +1512,7 @@ public class GameSSDWindow {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     /*
      *****************************************************************************
@@ -1594,31 +1570,31 @@ public class GameSSDWindow {
         public void WriteToSaveGame(idFile savefile) {
             super.WriteToSaveGame(savefile);
 
-            savefile.WriteInt(this.ssdTime);
+            savefile.WriteInt(ssdTime);
 
-            this.beginLevel.WriteToSaveGame(savefile);
-            this.resetGame.WriteToSaveGame(savefile);
-            this.continueGame.WriteToSaveGame(savefile);
-            this.refreshGuiData.WriteToSaveGame(savefile);
+            beginLevel.WriteToSaveGame(savefile);
+            resetGame.WriteToSaveGame(savefile);
+            continueGame.WriteToSaveGame(savefile);
+            refreshGuiData.WriteToSaveGame(savefile);
 
-            this.crosshair.WriteToSaveGame(savefile);
-            savefile.Write(this.screenBounds);
+            crosshair.WriteToSaveGame(savefile);
+            savefile.Write(screenBounds);
 
-            savefile.WriteInt(this.levelCount);
-            for (int i = 0; i < this.levelCount; i++) {
-                savefile.Write(this.levelData.oGet(i));
-                savefile.Write(this.asteroidData.oGet(i));
-                savefile.Write(this.astronautData.oGet(i));
-                savefile.Write(this.powerupData.oGet(i));
+            savefile.WriteInt(levelCount);
+            for (int i = 0; i < levelCount; i++) {
+                savefile.Write(levelData.oGet(i));
+                savefile.Write(asteroidData.oGet(i));
+                savefile.Write(astronautData.oGet(i));
+                savefile.Write(powerupData.oGet(i));
             }
 
-            savefile.WriteInt(this.weaponCount);
-            for (int i = 0; i < this.weaponCount; i++) {
-                savefile.Write(this.weaponData.oGet(i));
+            savefile.WriteInt(weaponCount);
+            for (int i = 0; i < weaponCount; i++) {
+                savefile.Write(weaponData.oGet(i));
             }
 
-            savefile.WriteInt(this.superBlasterTimeout);
-            savefile.Write(this.gameStats);
+            savefile.WriteInt(superBlasterTimeout);
+            savefile.Write(gameStats);
 
             //Write All Static Entities
             SSDAsteroid.WriteAsteroids(savefile);
@@ -1628,11 +1604,11 @@ public class GameSSDWindow {
             SSDProjectile.WriteProjectiles(savefile);
             SSDPowerup.WritePowerups(savefile);
 
-            final int entCount = this.entities.Num();
+            int entCount = entities.Num();
             savefile.WriteInt(entCount);
             for (int i = 0; i < entCount; i++) {
-                savefile.WriteInt(this.entities.oGet(i).type);
-                savefile.WriteInt(this.entities.oGet(i).id);
+                savefile.WriteInt(entities.oGet(i).type);
+                savefile.WriteInt(entities.oGet(i).id);
             }
         }
 
@@ -1640,47 +1616,47 @@ public class GameSSDWindow {
         public void ReadFromSaveGame(idFile savefile) {
             super.ReadFromSaveGame(savefile);
 
-            this.ssdTime = savefile.ReadInt();
+            ssdTime = savefile.ReadInt();
 
-            this.beginLevel.ReadFromSaveGame(savefile);
-            this.resetGame.ReadFromSaveGame(savefile);
-            this.continueGame.ReadFromSaveGame(savefile);
-            this.refreshGuiData.ReadFromSaveGame(savefile);
+            beginLevel.ReadFromSaveGame(savefile);
+            resetGame.ReadFromSaveGame(savefile);
+            continueGame.ReadFromSaveGame(savefile);
+            refreshGuiData.ReadFromSaveGame(savefile);
 
-            this.crosshair.ReadFromSaveGame(savefile);
-            savefile.Read(this.screenBounds);
+            crosshair.ReadFromSaveGame(savefile);
+            savefile.Read(screenBounds);
 
-            this.levelCount = savefile.ReadInt();
-            for (int i = 0; i < this.levelCount; i++) {
-                final SSDLevelData_t newLevel = new SSDLevelData_t();
+            levelCount = savefile.ReadInt();
+            for (int i = 0; i < levelCount; i++) {
+                SSDLevelData_t newLevel = new SSDLevelData_t();
                 savefile.Read(newLevel);
-                this.levelData.Append(newLevel);
+                levelData.Append(newLevel);
 
-                final SSDAsteroidData_t newAsteroid = new SSDAsteroidData_t();
+                SSDAsteroidData_t newAsteroid = new SSDAsteroidData_t();
                 savefile.Read(newAsteroid);
-                this.asteroidData.Append(newAsteroid);
+                asteroidData.Append(newAsteroid);
 
-                final SSDAstronautData_t newAstronaut = new SSDAstronautData_t();
+                SSDAstronautData_t newAstronaut = new SSDAstronautData_t();
                 savefile.Read(newAstronaut);
-                this.astronautData.Append(newAstronaut);
+                astronautData.Append(newAstronaut);
 
-                final SSDPowerupData_t newPowerup = new SSDPowerupData_t();
+                SSDPowerupData_t newPowerup = new SSDPowerupData_t();
                 savefile.Read(newPowerup);
-                this.powerupData.Append(newPowerup);
+                powerupData.Append(newPowerup);
             }
 
-            this.weaponCount = savefile.ReadInt();
-            for (int i = 0; i < this.weaponCount; i++) {
-                final SSDWeaponData_t newWeapon = new SSDWeaponData_t();
+            weaponCount = savefile.ReadInt();
+            for (int i = 0; i < weaponCount; i++) {
+                SSDWeaponData_t newWeapon = new SSDWeaponData_t();
                 savefile.Read(newWeapon);
-                this.weaponData.Append(newWeapon);
+                weaponData.Append(newWeapon);
             }
 
-            this.superBlasterTimeout = savefile.ReadInt();
+            superBlasterTimeout = savefile.ReadInt();
 
-            savefile.Read(this.gameStats);
+            savefile.Read(gameStats);
             //Reset this because it is no longer valid
-            this.gameStats.levelStats.targetEnt = null;
+            gameStats.levelStats.targetEnt = null;
 
             SSDAsteroid.ReadAsteroids(savefile, this);
             SSDAstronaut.ReadAstronauts(savefile, this);
@@ -1698,9 +1674,9 @@ public class GameSSDWindow {
                 type = SSD.values()[savefile.ReadInt()];
                 id = savefile.ReadInt();
 
-                final SSDEntity ent = GetSpecificEntity(type, id);
+                SSDEntity ent = GetSpecificEntity(type, id);
                 if (ent != null) {
-                    this.entities.Append(ent);
+                    entities.Append(ent);
                 }
             }
         }
@@ -1711,11 +1687,11 @@ public class GameSSDWindow {
             // need to call this to allow proper focus and capturing on embedded children
             final String ret = super.HandleEvent(event, updateVisuals);
 
-            if (!this.gameStats.gameRunning) {
+            if (!gameStats.gameRunning) {
                 return ret;
             }
 
-            final int key = event.evValue;
+            int key = event.evValue;
 
             if (event.evType == SE_KEY) {
 
@@ -1723,7 +1699,7 @@ public class GameSSDWindow {
                     return ret;
                 }
 
-                if ((key == K_MOUSE1) || (key == K_MOUSE2)) {
+                if (key == K_MOUSE1 || key == K_MOUSE2) {
                     FireWeapon(key);
                 } else {
                     return ret;
@@ -1738,18 +1714,18 @@ public class GameSSDWindow {
             idWinVar retVar = null;
 
             if (idStr.Icmp(_name, "beginLevel") == 0) {
-                retVar = this.beginLevel;
+                retVar = beginLevel;
             }
 
             if (idStr.Icmp(_name, "resetGame") == 0) {
-                retVar = this.resetGame;
+                retVar = resetGame;
             }
 
             if (idStr.Icmp(_name, "continueGame") == 0) {
-                retVar = this.continueGame;
+                retVar = continueGame;
             }
             if (idStr.Icmp(_name, "refreshGuiData") == 0) {
-                retVar = this.refreshGuiData;
+                retVar = refreshGuiData;
             }
 
             if (retVar != null) {
@@ -1767,28 +1743,28 @@ public class GameSSDWindow {
 
             RefreshGuiData();
 
-            if (this.gameStats.gameRunning) {
+            if (gameStats.gameRunning) {
 
                 ZOrderEntities();
 
                 //Draw from back to front
-                for (int i = this.entities.Num() - 1; i >= 0; i--) {
-                    this.entities.oGet(i).Draw(this.dc);
+                for (int i = entities.Num() - 1; i >= 0; i--) {
+                    entities.oGet(i).Draw(dc);
                 }
 
                 //The last thing to draw is the crosshair
-                final idVec2 cursor = new idVec2();
+                idVec2 cursor = new idVec2();
                 //GetCursor(cursor);
-                cursor.x = this.gui.CursorX();
-                cursor.y = this.gui.CursorY();
+                cursor.x = gui.CursorX();
+                cursor.y = gui.CursorY();
 
-                this.crosshair.Draw(this.dc, cursor);
+                crosshair.Draw(dc, cursor);
             }
         }
 
         public void AddHealth(int health) {
-            this.gameStats.health += health;
-            this.gameStats.health = Min(100, this.gameStats.health);
+            gameStats.health += health;
+            gameStats.health = Min(100, gameStats.health);
         }
 
         public void AddScore(SSDEntity ent, int points) {
@@ -1800,19 +1776,19 @@ public class GameSSDWindow {
             } else {
                 pointsEnt = SSDPoints.GetNewPoints(this, ent, points, 1000, 50, new idVec4(1, 0, 0, 1));
             }
-            this.entities.Append(pointsEnt);
+            entities.Append(pointsEnt);
 
-            this.gameStats.score += points;
-            this.gui.SetStateString("player_score", va("%d", this.gameStats.score));
+            gameStats.score += points;
+            gui.SetStateString("player_score", va("%d", gameStats.score));
         }
 
         public void AddDamage(int damage) {
-            this.gameStats.health -= damage;
-            this.gui.SetStateString("player_health", va("%d", this.gameStats.health));
+            gameStats.health -= damage;
+            gui.SetStateString("player_health", va("%d", gameStats.health));
 
-            this.gui.HandleNamedEvent("playerDamage");
+            gui.HandleNamedEvent("playerDamage");
 
-            if (this.gameStats.health <= 0) {
+            if (gameStats.health <= 0) {
                 //The player is dead
                 GameOver();
             }
@@ -1820,23 +1796,23 @@ public class GameSSDWindow {
 
         public void OnNuke() {
 
-            this.gui.HandleNamedEvent("nuke");
+            gui.HandleNamedEvent("nuke");
 
             //Destory All Asteroids
-            for (int i = 0; i < this.entities.Num(); i++) {
+            for (int i = 0; i < entities.Num(); i++) {
 
-                if (this.entities.oGet(i).type == SSD_ENTITY_ASTEROID) {
+                if (entities.oGet(i).type == SSD_ENTITY_ASTEROID) {
 
                     //The asteroid has been destroyed
-                    final SSDExplosion explosion = SSDExplosion.GetNewExplosion(this, this.entities.oGet(i).position, this.entities.oGet(i).size.oMultiply(2), 300, SSDExplosion.EXPLOSION_NORMAL, this.entities.oGet(i));
-                    this.entities.Append(explosion);
+                    SSDExplosion explosion = SSDExplosion.GetNewExplosion(this, entities.oGet(i).position, entities.oGet(i).size.oMultiply(2), 300, SSDExplosion.EXPLOSION_NORMAL, entities.oGet(i));
+                    entities.Append(explosion);
 
-                    AddScore(this.entities.oGet(i), this.asteroidData.oGet(this.gameStats.currentLevel).asteroidPoints);
+                    AddScore(entities.oGet(i), asteroidData.oGet(gameStats.currentLevel).asteroidPoints);
 
                     //Don't let the player hit it anymore because 
-                    this.entities.oGet(i).noHit = true;
+                    entities.oGet(i).noHit = true;
 
-                    this.gameStats.levelStats.destroyedAsteroids++;
+                    gameStats.levelStats.destroyedAsteroids++;
                 }
             }
             PlaySound("arcade_explode");
@@ -1850,14 +1826,14 @@ public class GameSSDWindow {
 
         public void OnRescueAll() {
 
-            this.gui.HandleNamedEvent("rescueAll");
+            gui.HandleNamedEvent("rescueAll");
 
             //Rescue All Astronauts
-            for (int i = 0; i < this.entities.Num(); i++) {
+            for (int i = 0; i < entities.Num(); i++) {
 
-                if (this.entities.oGet(i).type == SSD_ENTITY_ASTRONAUT) {
+                if (entities.oGet(i).type == SSD_ENTITY_ASTRONAUT) {
 
-                    AstronautStruckPlayer((SSDAstronaut) this.entities.oGet(i));
+                    AstronautStruckPlayer((SSDAstronaut) entities.oGet(i));
                 }
             }
         }
@@ -1888,9 +1864,6 @@ public class GameSSDWindow {
                 case SSD_ENTITY_POWERUP:
                     ent = SSDPowerup.GetSpecificPowerup(id);
                     break;
-			default:
-				// TODO check unused Enum case labels
-				break;
             }
             return ent;
         }
@@ -1898,11 +1871,11 @@ public class GameSSDWindow {
 
         public void PlaySound(final String sound) {
 
-            session.sw.PlayShaderDirectly(sound, this.currentSound);
+            session.sw.PlayShaderDirectly(sound, currentSound);
 
-            this.currentSound++;
-            if (this.currentSound >= MAX_SOUND_CHANNEL) {
-                this.currentSound = 0;
+            currentSound++;
+            if (currentSound >= MAX_SOUND_CHANNEL) {
+                currentSound = 0;
             }
         }
 //
@@ -1915,99 +1888,99 @@ public class GameSSDWindow {
         protected boolean ParseInternalVar(final String _name, idParser src) {
 
             if (idStr.Icmp(_name, "beginLevel") == 0) {
-                this.beginLevel.oSet(src.ParseBool());
+                beginLevel.oSet(src.ParseBool());
                 return true;
             }
             if (idStr.Icmp(_name, "resetGame") == 0) {
-                this.resetGame.oSet(src.ParseBool());
+                resetGame.oSet(src.ParseBool());
                 return true;
             }
             if (idStr.Icmp(_name, "continueGame") == 0) {
-                this.continueGame.oSet(src.ParseBool());
+                continueGame.oSet(src.ParseBool());
                 return true;
             }
             if (idStr.Icmp(_name, "refreshGuiData") == 0) {
-                this.refreshGuiData.oSet(src.ParseBool());
+                refreshGuiData.oSet(src.ParseBool());
                 return true;
             }
 
             if (idStr.Icmp(_name, "levelcount") == 0) {
-                this.levelCount = src.ParseInt();
-                for (int i = 0; i < this.levelCount; i++) {
-                    final SSDLevelData_t newLevel = new SSDLevelData_t();
+                levelCount = src.ParseInt();
+                for (int i = 0; i < levelCount; i++) {
+                    SSDLevelData_t newLevel = new SSDLevelData_t();
 //                    memset(newLevel, 0, sizeof(SSDLevelData_t));
-                    this.levelData.Append(newLevel);
+                    levelData.Append(newLevel);
 
-                    final SSDAsteroidData_t newAsteroid = new SSDAsteroidData_t();
+                    SSDAsteroidData_t newAsteroid = new SSDAsteroidData_t();
 //                    memset(newAsteroid, 0, sizeof(SSDAsteroidData_t));
-                    this.asteroidData.Append(newAsteroid);
+                    asteroidData.Append(newAsteroid);
 
-                    final SSDAstronautData_t newAstronaut = new SSDAstronautData_t();
+                    SSDAstronautData_t newAstronaut = new SSDAstronautData_t();
 //                    memset(newAstronaut, 0, sizeof(SSDAstronautData_t));
-                    this.astronautData.Append(newAstronaut);
+                    astronautData.Append(newAstronaut);
 
-                    final SSDPowerupData_t newPowerup = new SSDPowerupData_t();
+                    SSDPowerupData_t newPowerup = new SSDPowerupData_t();
 //                    memset(newPowerup, 0, sizeof(SSDPowerupData_t));
-                    this.powerupData.Append(newPowerup);
+                    powerupData.Append(newPowerup);
 
                 }
                 return true;
             }
             if (idStr.Icmp(_name, "weaponCount") == 0) {
-                this.weaponCount = src.ParseInt();
-                for (int i = 0; i < this.weaponCount; i++) {
-                    final SSDWeaponData_t newWeapon = new SSDWeaponData_t();
+                weaponCount = src.ParseInt();
+                for (int i = 0; i < weaponCount; i++) {
+                    SSDWeaponData_t newWeapon = new SSDWeaponData_t();
 //                    memset(newWeapon, 0, sizeof(SSDWeaponData_t));
-                    this.weaponData.Append(newWeapon);
+                    weaponData.Append(newWeapon);
                 }
                 return true;
             }
 
             if (idStr.FindText(_name, "leveldata", false) >= 0) {
-                final idStr tempName = new idStr(_name);
-                final int level = atoi(tempName.Right(2)) - 1;
+                idStr tempName = new idStr(_name);
+                int level = atoi(tempName.Right(2)) - 1;
 
-                final idStr levelData = new idStr();
+                idStr levelData = new idStr();
                 ParseString(src, levelData);
                 ParseLevelData(level, levelData);
                 return true;
             }
 
             if (idStr.FindText(_name, "asteroiddata", false) >= 0) {
-                final idStr tempName = new idStr(_name);
-                final int level = atoi(tempName.Right(2)) - 1;
+                idStr tempName = new idStr(_name);
+                int level = atoi(tempName.Right(2)) - 1;
 
-                final idStr asteroidData = new idStr();
+                idStr asteroidData = new idStr();
                 ParseString(src, asteroidData);
                 ParseAsteroidData(level, asteroidData);
                 return true;
             }
 
             if (idStr.FindText(_name, "weapondata", false) >= 0) {
-                final idStr tempName = new idStr(_name);
-                final int weapon = atoi(tempName.Right(2)) - 1;
+                idStr tempName = new idStr(_name);
+                int weapon = atoi(tempName.Right(2)) - 1;
 
-                final idStr weaponData = new idStr();
+                idStr weaponData = new idStr();
                 ParseString(src, weaponData);
                 ParseWeaponData(weapon, weaponData);
                 return true;
             }
 
             if (idStr.FindText(_name, "astronautdata", false) >= 0) {
-                final idStr tempName = new idStr(_name);
-                final int level = atoi(tempName.Right(2)) - 1;
+                idStr tempName = new idStr(_name);
+                int level = atoi(tempName.Right(2)) - 1;
 
-                final idStr astronautData = new idStr();
+                idStr astronautData = new idStr();
                 ParseString(src, astronautData);
                 ParseAstronautData(level, astronautData);
                 return true;
             }
 
             if (idStr.FindText(_name, "powerupdata", false) >= 0) {
-                final idStr tempName = new idStr(_name);
-                final int level = atoi(tempName.Right(2)) - 1;
+                idStr tempName = new idStr(_name);
+                int level = atoi(tempName.Right(2)) - 1;
 
-                final idStr powerupData = new idStr();
+                idStr powerupData = new idStr();
                 ParseString(src, powerupData);
                 ParsePowerupData(level, powerupData);
                 return true;
@@ -2018,102 +1991,102 @@ public class GameSSDWindow {
 
         private void ParseLevelData(int level, final idStr levelDataString) {
 
-            final idParser parser = new idParser();
-            final idToken token;
-            parser.LoadMemory(levelDataString.getData(), levelDataString.Length(), "LevelData");
+            idParser parser = new idParser();
+            idToken token;
+            parser.LoadMemory(levelDataString.toString(), levelDataString.Length(), "LevelData");
 
-            this.levelData.oGet(level).spawnBuffer = parser.ParseFloat();
-            this.levelData.oGet(level).needToWin = parser.ParseInt(); //Required Destroyed
+            levelData.oGet(level).spawnBuffer = parser.ParseFloat();
+            levelData.oGet(level).needToWin = parser.ParseInt(); //Required Destroyed
 
         }
 
         private void ParseAsteroidData(int level, final idStr asteroidDataString) {
 
-            final idParser parser = new idParser();
-            final idToken token;
-            parser.LoadMemory(asteroidDataString.getData(), asteroidDataString.Length(), "AsteroidData");
+            idParser parser = new idParser();
+            idToken token;
+            parser.LoadMemory(asteroidDataString.toString(), asteroidDataString.Length(), "AsteroidData");
 
-            this.asteroidData.oGet(level).speedMin = parser.ParseFloat(); //Speed Min 
-            this.asteroidData.oGet(level).speedMax = parser.ParseFloat(); //Speed Max
+            asteroidData.oGet(level).speedMin = parser.ParseFloat(); //Speed Min 
+            asteroidData.oGet(level).speedMax = parser.ParseFloat(); //Speed Max
 
-            this.asteroidData.oGet(level).sizeMin = parser.ParseFloat(); //Size Min 
-            this.asteroidData.oGet(level).sizeMax = parser.ParseFloat(); //Size Max
+            asteroidData.oGet(level).sizeMin = parser.ParseFloat(); //Size Min 
+            asteroidData.oGet(level).sizeMax = parser.ParseFloat(); //Size Max
 
-            this.asteroidData.oGet(level).rotateMin = parser.ParseFloat(); //Rotate Min (rotations per second) 
-            this.asteroidData.oGet(level).rotateMax = parser.ParseFloat(); //Rotate Max (rotations per second)
+            asteroidData.oGet(level).rotateMin = parser.ParseFloat(); //Rotate Min (rotations per second) 
+            asteroidData.oGet(level).rotateMax = parser.ParseFloat(); //Rotate Max (rotations per second)
 
-            this.asteroidData.oGet(level).spawnMin = parser.ParseInt(); //Spawn Min
-            this.asteroidData.oGet(level).spawnMax = parser.ParseInt(); //Spawn Max
+            asteroidData.oGet(level).spawnMin = parser.ParseInt(); //Spawn Min
+            asteroidData.oGet(level).spawnMax = parser.ParseInt(); //Spawn Max
 
-            this.asteroidData.oGet(level).asteroidHealth = parser.ParseInt(); //Health of the asteroid
-            this.asteroidData.oGet(level).asteroidDamage = parser.ParseInt(); //Asteroid Damage
-            this.asteroidData.oGet(level).asteroidPoints = parser.ParseInt(); //Points awarded for destruction
+            asteroidData.oGet(level).asteroidHealth = parser.ParseInt(); //Health of the asteroid
+            asteroidData.oGet(level).asteroidDamage = parser.ParseInt(); //Asteroid Damage
+            asteroidData.oGet(level).asteroidPoints = parser.ParseInt(); //Points awarded for destruction
         }
 
         private void ParseWeaponData(int weapon, final idStr weaponDataString) {
 
-            final idParser parser = new idParser();
-            final idToken token;
-            parser.LoadMemory(weaponDataString.getData(), weaponDataString.Length(), "WeaponData");
+            idParser parser = new idParser();
+            idToken token;
+            parser.LoadMemory(weaponDataString.toString(), weaponDataString.Length(), "WeaponData");
 
-            this.weaponData.oGet(weapon).speed = parser.ParseFloat();
-            this.weaponData.oGet(weapon).damage = (int) parser.ParseFloat();
-            this.weaponData.oGet(weapon).size = (int) parser.ParseFloat();
+            weaponData.oGet(weapon).speed = parser.ParseFloat();
+            weaponData.oGet(weapon).damage = (int) parser.ParseFloat();
+            weaponData.oGet(weapon).size = (int) parser.ParseFloat();
         }
 
         private void ParseAstronautData(int level, final idStr astronautDataString) {
 
-            final idParser parser = new idParser();
-            final idToken token;
-            parser.LoadMemory(astronautDataString.getData(), astronautDataString.Length(), "AstronautData");
+            idParser parser = new idParser();
+            idToken token;
+            parser.LoadMemory(astronautDataString.toString(), astronautDataString.Length(), "AstronautData");
 
-            this.astronautData.oGet(level).speedMin = parser.ParseFloat(); //Speed Min 
-            this.astronautData.oGet(level).speedMax = parser.ParseFloat(); //Speed Max
+            astronautData.oGet(level).speedMin = parser.ParseFloat(); //Speed Min 
+            astronautData.oGet(level).speedMax = parser.ParseFloat(); //Speed Max
 
-            this.astronautData.oGet(level).rotateMin = parser.ParseFloat(); //Rotate Min (rotations per second) 
-            this.astronautData.oGet(level).rotateMax = parser.ParseFloat(); //Rotate Max (rotations per second)
+            astronautData.oGet(level).rotateMin = parser.ParseFloat(); //Rotate Min (rotations per second) 
+            astronautData.oGet(level).rotateMax = parser.ParseFloat(); //Rotate Max (rotations per second)
 
-            this.astronautData.oGet(level).spawnMin = parser.ParseInt(); //Spawn Min
-            this.astronautData.oGet(level).spawnMax = parser.ParseInt(); //Spawn Max
+            astronautData.oGet(level).spawnMin = parser.ParseInt(); //Spawn Min
+            astronautData.oGet(level).spawnMax = parser.ParseInt(); //Spawn Max
 
-            this.astronautData.oGet(level).health = parser.ParseInt(); //Health of the asteroid
-            this.astronautData.oGet(level).points = parser.ParseInt(); //Asteroid Damage
-            this.astronautData.oGet(level).penalty = parser.ParseInt(); //Points awarded for destruction
+            astronautData.oGet(level).health = parser.ParseInt(); //Health of the asteroid
+            astronautData.oGet(level).points = parser.ParseInt(); //Asteroid Damage
+            astronautData.oGet(level).penalty = parser.ParseInt(); //Points awarded for destruction
         }
 
         private void ParsePowerupData(int level, final idStr powerupDataString) {
 
-            final idParser parser = new idParser();
-            final idToken token;
-            parser.LoadMemory(powerupDataString.getData(), powerupDataString.Length(), "PowerupData");
+            idParser parser = new idParser();
+            idToken token;
+            parser.LoadMemory(powerupDataString.toString(), powerupDataString.Length(), "PowerupData");
 
-            this.powerupData.oGet(level).speedMin = parser.ParseFloat(); //Speed Min 
-            this.powerupData.oGet(level).speedMax = parser.ParseFloat(); //Speed Max
+            powerupData.oGet(level).speedMin = parser.ParseFloat(); //Speed Min 
+            powerupData.oGet(level).speedMax = parser.ParseFloat(); //Speed Max
 
-            this.powerupData.oGet(level).rotateMin = parser.ParseFloat(); //Rotate Min (rotations per second) 
-            this.powerupData.oGet(level).rotateMax = parser.ParseFloat(); //Rotate Max (rotations per second)
+            powerupData.oGet(level).rotateMin = parser.ParseFloat(); //Rotate Min (rotations per second) 
+            powerupData.oGet(level).rotateMax = parser.ParseFloat(); //Rotate Max (rotations per second)
 
-            this.powerupData.oGet(level).spawnMin = parser.ParseInt(); //Spawn Min
-            this.powerupData.oGet(level).spawnMax = parser.ParseInt(); //Spawn Max
+            powerupData.oGet(level).spawnMin = parser.ParseInt(); //Spawn Min
+            powerupData.oGet(level).spawnMax = parser.ParseInt(); //Spawn Max
 
         }
 
         private void CommonInit() {
-            this.crosshair.InitCrosshairs();
+            crosshair.InitCrosshairs();
 
-            this.beginLevel.data = false;
-            this.resetGame.data = false;
-            this.continueGame.data = false;
-            this.refreshGuiData.data = false;
+            beginLevel.data = false;
+            resetGame.data = false;
+            continueGame.data = false;
+            refreshGuiData.data = false;
 
-            this.ssdTime = 0;
-            this.levelCount = 0;
-            this.weaponCount = 0;
-            this.screenBounds = new idBounds(new idVec3(-320, -240, 0), new idVec3(320, 240, 0));
+            ssdTime = 0;
+            levelCount = 0;
+            weaponCount = 0;
+            screenBounds = new idBounds(new idVec3(-320, -240, 0), new idVec3(320, 240, 0));
 
-            this.superBlasterTimeout = 0;
+            superBlasterTimeout = 0;
 
-            this.currentSound = 0;
+            currentSound = 0;
 
             //Precahce all assets that are loaded dynamically
             declManager.FindMaterial(ASTEROID_MATERIAL);
@@ -2142,9 +2115,9 @@ public class GameSSDWindow {
 
             //Reset the gamestats structure
 //            memset(gameStats, 0);
-            this.gameStats = new SSDGameStats_t();
+            gameStats = new SSDGameStats_t();
 
-            this.gameStats.health = 100;
+            gameStats.health = 100;
         }
 
         private void ResetLevelStats() {
@@ -2153,33 +2126,33 @@ public class GameSSDWindow {
 
             //Reset the level statistics structure
 //            memset(gameStats.levelStats, 0, sizeof(gameStats.levelStats));
-            this.gameStats.levelStats = new SSDLevelStats_t();
+            gameStats.levelStats = new SSDLevelStats_t();
         }
 
         private void ResetEntities() {
             //Destroy all of the entities
-            for (int i = 0; i < this.entities.Num(); i++) {
-                this.entities.oGet(i).DestroyEntity();
+            for (int i = 0; i < entities.Num(); i++) {
+                entities.oGet(i).DestroyEntity();
             }
-            this.entities.Clear();
+            entities.Clear();
         }
 
         //Game Running Methods
         private void StartGame() {
 
-            this.gameStats.gameRunning = true;
+            gameStats.gameRunning = true;
         }
 
         private void StopGame() {
 
-            this.gameStats.gameRunning = false;
+            gameStats.gameRunning = false;
         }
 
         private void GameOver() {
 
             StopGame();
 
-            this.gui.HandleNamedEvent("gameOver");
+            gui.HandleNamedEvent("gameOver");
         }
 
         //Starting the Game
@@ -2187,7 +2160,7 @@ public class GameSSDWindow {
 
             ResetLevelStats();
 
-            this.gameStats.currentLevel = level;
+            gameStats.currentLevel = level;
 
             StartGame();
         }
@@ -2196,7 +2169,7 @@ public class GameSSDWindow {
          * Continue game resets the players health
          */
         private void ContinueGame() {
-            this.gameStats.health = 100;
+            gameStats.health = 100;
 
             StartGame();
         }
@@ -2204,39 +2177,39 @@ public class GameSSDWindow {
         //Stopping the Game
         private void LevelComplete() {
 
-            this.gameStats.prebonusscore = this.gameStats.score;
+            gameStats.prebonusscore = gameStats.score;
 
             // Add the bonuses
             int accuracy;
-            if (0 == this.gameStats.levelStats.shotCount) {
+            if (0 == gameStats.levelStats.shotCount) {
                 accuracy = 0;
             } else {
-                accuracy = (int) (((float) this.gameStats.levelStats.hitCount / (float) this.gameStats.levelStats.shotCount) * 100.0f);
+                accuracy = (int) (((float) gameStats.levelStats.hitCount / (float) gameStats.levelStats.shotCount) * 100.0f);
             }
             int accuracyPoints = Max(0, accuracy - 50) * 20;
 
-            this.gui.SetStateString("player_accuracy_score", va("%d", accuracyPoints));
+            gui.SetStateString("player_accuracy_score", va("%d", accuracyPoints));
 
-            this.gameStats.score += accuracyPoints;
+            gameStats.score += accuracyPoints;
 
             int saveAccuracy;
-            final int totalAst = this.gameStats.levelStats.savedAstronauts + this.gameStats.levelStats.killedAstronauts;
+            int totalAst = gameStats.levelStats.savedAstronauts + gameStats.levelStats.killedAstronauts;
             if (0 == totalAst) {
                 saveAccuracy = 0;
             } else {
-                saveAccuracy = (int) (((float) this.gameStats.levelStats.savedAstronauts / (float) totalAst) * 100.0f);
+                saveAccuracy = (int) (((float) gameStats.levelStats.savedAstronauts / (float) totalAst) * 100.0f);
             }
             accuracyPoints = Max(0, saveAccuracy - 50) * 20;
 
-            this.gui.SetStateString("save_accuracy_score", va("%d", accuracyPoints));
+            gui.SetStateString("save_accuracy_score", va("%d", accuracyPoints));
 
-            this.gameStats.score += accuracyPoints;
+            gameStats.score += accuracyPoints;
 
             StopSuperBlaster();
 
-            this.gameStats.nextLevel++;
+            gameStats.nextLevel++;
 
-            if (this.gameStats.nextLevel >= this.levelCount) {
+            if (gameStats.nextLevel >= levelCount) {
                 //Have they beaten the game
                 GameComplete();
             } else {
@@ -2244,64 +2217,64 @@ public class GameSSDWindow {
                 //Make sure we don't go above the levelcount
                 //min(gameStats.nextLevel, levelCount-1);
                 StopGame();
-                this.gui.HandleNamedEvent("levelComplete");
+                gui.HandleNamedEvent("levelComplete");
             }
         }
 
         private void GameComplete() {
             StopGame();
-            this.gui.HandleNamedEvent("gameComplete");
+            gui.HandleNamedEvent("gameComplete");
         }
 
         private void UpdateGame() {
 
             //Check to see if and functions where called by the gui
-            if (this.beginLevel.data == true) {
-                this.beginLevel.data = false;
-                BeginLevel(this.gameStats.nextLevel);
+            if (beginLevel.data == true) {
+                beginLevel.data = false;
+                BeginLevel(gameStats.nextLevel);
             }
-            if (this.resetGame.data == true) {
-                this.resetGame.data = false;
+            if (resetGame.data == true) {
+                resetGame.data = false;
                 ResetGameStats();
             }
-            if (this.continueGame.data == true) {
-                this.continueGame.data = false;
+            if (continueGame.data == true) {
+                continueGame.data = false;
                 ContinueGame();
             }
-            if (this.refreshGuiData.data == true) {
-                this.refreshGuiData.data = false;
+            if (refreshGuiData.data == true) {
+                refreshGuiData.data = false;
                 RefreshGuiData();
             }
 
-            if (this.gameStats.gameRunning) {
+            if (gameStats.gameRunning) {
 
                 //We assume an upate every 16 milliseconds
-                this.ssdTime += 16;
+                ssdTime += 16;
 
-                if ((this.superBlasterTimeout != 0) && (this.ssdTime > this.superBlasterTimeout)) {
+                if (superBlasterTimeout != 0 && ssdTime > superBlasterTimeout) {
                     StopSuperBlaster();
                 }
 
                 //Find if we are targeting and enemy
-                final idVec2 cursor = new idVec2();
+                idVec2 cursor = new idVec2();
                 //GetCursor(cursor);
-                cursor.x = this.gui.CursorX();
-                cursor.y = this.gui.CursorY();
-                this.gameStats.levelStats.targetEnt = EntityHitTest(cursor);
+                cursor.x = gui.CursorX();
+                cursor.y = gui.CursorY();
+                gameStats.levelStats.targetEnt = EntityHitTest(cursor);
 
                 //Update from back to front
-                for (int i = this.entities.Num() - 1; i >= 0; i--) {
-                    this.entities.oGet(i).Update();
+                for (int i = entities.Num() - 1; i >= 0; i--) {
+                    entities.oGet(i).Update();
                 }
 
                 CheckForHits();
 
                 //Delete entities that need to be deleted
-                for (int i = this.entities.Num() - 1; i >= 0; i--) {
-                    if (this.entities.oGet(i).destroyed) {
-                        final SSDEntity ent = this.entities.oGet(i);
+                for (int i = entities.Num() - 1; i >= 0; i--) {
+                    if (entities.oGet(i).destroyed) {
+                        SSDEntity ent = entities.oGet(i);
                         ent.DestroyEntity();
-                        this.entities.RemoveIndex(i);
+                        entities.RemoveIndex(i);
                     }
                 }
 
@@ -2319,20 +2292,20 @@ public class GameSSDWindow {
         private void CheckForHits() {
 
             //See if the entity has gotten close enough
-            for (int i = 0; i < this.entities.Num(); i++) {
-                final SSDEntity ent = this.entities.oGet(i);
+            for (int i = 0; i < entities.Num(); i++) {
+                SSDEntity ent = entities.oGet(i);
                 if (ent.position.z <= Z_NEAR) {
 
                     if (!ent.noPlayerDamage) {
 
                         //Is the object still in the screen
-                        final idVec3 entPos = ent.position;
+                        idVec3 entPos = ent.position;
                         entPos.z = 0;
 
-                        final idBounds entBounds = new idBounds(entPos);
+                        idBounds entBounds = new idBounds(entPos);
                         entBounds.ExpandSelf(ent.hitRadius);
 
-                        if (this.screenBounds.IntersectsBounds(entBounds)) {
+                        if (screenBounds.IntersectsBounds(entBounds)) {
 
                             ent.OnStrikePlayer();
 
@@ -2354,13 +2327,13 @@ public class GameSSDWindow {
         private void ZOrderEntities() {
             //Z-Order the entities
             //Using a simple sorting method
-            for (int i = this.entities.Num() - 1; i >= 0; i--) {
+            for (int i = entities.Num() - 1; i >= 0; i--) {
                 boolean flipped = false;
                 for (int j = 0; j < i; j++) {
-                    if (this.entities.oGet(j).position.z > this.entities.oGet(j + 1).position.z) {
-                        final SSDEntity ent = this.entities.oGet(j);
-                        this.entities.oSet(j, this.entities.oGet(j + 1));
-                        this.entities.oSet(j + 1, ent);
+                    if (entities.oGet(j).position.z > entities.oGet(j + 1).position.z) {
+                        SSDEntity ent = entities.oGet(j);
+                        entities.oSet(j, entities.oGet(j + 1));
+                        entities.oSet(j + 1, ent);
                         flipped = true;
                     }
                 }
@@ -2373,71 +2346,71 @@ public class GameSSDWindow {
 
         private void SpawnAsteroid() {
 
-            final int currentTime = this.ssdTime;
+            int currentTime = ssdTime;
 
-            if (currentTime < this.gameStats.levelStats.nextAsteroidSpawnTime) {
+            if (currentTime < gameStats.levelStats.nextAsteroidSpawnTime) {
                 //Not time yet
                 return;
             }
 
             //Lets spawn it
-            final idVec3 startPosition = new idVec3();
+            idVec3 startPosition = new idVec3();
 
-            final float spawnBuffer = this.levelData.oGet(this.gameStats.currentLevel).spawnBuffer * 2.0f;
+            float spawnBuffer = levelData.oGet(gameStats.currentLevel).spawnBuffer * 2.0f;
             startPosition.x = random.RandomInt(V_WIDTH + spawnBuffer) - ((V_WIDTH / 2.0f) + spawnBuffer);
             startPosition.y = random.RandomInt(V_HEIGHT + spawnBuffer) - ((V_HEIGHT / 2.0f) + spawnBuffer);
             startPosition.z = ENTITY_START_DIST;
 
-            final float speed = random.RandomInt(this.asteroidData.oGet(this.gameStats.currentLevel).speedMax - this.asteroidData.oGet(this.gameStats.currentLevel).speedMin) + this.asteroidData.oGet(this.gameStats.currentLevel).speedMin;
-            final float size = random.RandomInt(this.asteroidData.oGet(this.gameStats.currentLevel).sizeMax - this.asteroidData.oGet(this.gameStats.currentLevel).sizeMin) + this.asteroidData.oGet(this.gameStats.currentLevel).sizeMin;
-            final float rotate = (random.RandomFloat() * (this.asteroidData.oGet(this.gameStats.currentLevel).rotateMax - this.asteroidData.oGet(this.gameStats.currentLevel).rotateMin)) + this.asteroidData.oGet(this.gameStats.currentLevel).rotateMin;
+            float speed = random.RandomInt(asteroidData.oGet(gameStats.currentLevel).speedMax - asteroidData.oGet(gameStats.currentLevel).speedMin) + asteroidData.oGet(gameStats.currentLevel).speedMin;
+            float size = random.RandomInt(asteroidData.oGet(gameStats.currentLevel).sizeMax - asteroidData.oGet(gameStats.currentLevel).sizeMin) + asteroidData.oGet(gameStats.currentLevel).sizeMin;
+            float rotate = (random.RandomFloat() * (asteroidData.oGet(gameStats.currentLevel).rotateMax - asteroidData.oGet(gameStats.currentLevel).rotateMin)) + asteroidData.oGet(gameStats.currentLevel).rotateMin;
 
-            final SSDAsteroid asteroid = SSDAsteroid.GetNewAsteroid(this, startPosition, new idVec2(size, size), speed, rotate, this.asteroidData.oGet(this.gameStats.currentLevel).asteroidHealth);
-            this.entities.Append(asteroid);
+            SSDAsteroid asteroid = SSDAsteroid.GetNewAsteroid(this, startPosition, new idVec2(size, size), speed, rotate, asteroidData.oGet(gameStats.currentLevel).asteroidHealth);
+            entities.Append(asteroid);
 
-            this.gameStats.levelStats.nextAsteroidSpawnTime = currentTime + random.RandomInt(this.asteroidData.oGet(this.gameStats.currentLevel).spawnMax - this.asteroidData.oGet(this.gameStats.currentLevel).spawnMin) + this.asteroidData.oGet(this.gameStats.currentLevel).spawnMin;
+            gameStats.levelStats.nextAsteroidSpawnTime = currentTime + random.RandomInt(asteroidData.oGet(gameStats.currentLevel).spawnMax - asteroidData.oGet(gameStats.currentLevel).spawnMin) + asteroidData.oGet(gameStats.currentLevel).spawnMin;
         }
 
         private void FireWeapon(int key) {
 
-            final idVec2 cursorWorld = GetCursorWorld();
-            final idVec2 cursor = new idVec2();
+            idVec2 cursorWorld = GetCursorWorld();
+            idVec2 cursor = new idVec2();
             //GetCursor(cursor);
-            cursor.x = this.gui.CursorX();
-            cursor.y = this.gui.CursorY();
+            cursor.x = gui.CursorX();
+            cursor.y = gui.CursorY();
 
             if (key == K_MOUSE1) {
 
-                this.gameStats.levelStats.shotCount++;
+                gameStats.levelStats.shotCount++;
 
-                if (this.gameStats.levelStats.targetEnt != null) {
+                if (gameStats.levelStats.targetEnt != null) {
                     //Aim the projectile from the bottom of the screen directly at the ent
                     //SSDProjectile* newProj = new SSDProjectile(this, idVec3(320,0,0), gameStats.levelStats.targetEnt.position, weaponData[gameStats.currentWeapon].speed, weaponData[gameStats.currentWeapon].size);
-                    final SSDProjectile newProj = SSDProjectile.GetNewProjectile(this, new idVec3(0, -180, 0), this.gameStats.levelStats.targetEnt.position, this.weaponData.oGet(this.gameStats.currentWeapon).speed, this.weaponData.oGet(this.gameStats.currentWeapon).size);
-                    this.entities.Append(newProj);
+                    SSDProjectile newProj = SSDProjectile.GetNewProjectile(this, new idVec3(0, -180, 0), gameStats.levelStats.targetEnt.position, weaponData.oGet(gameStats.currentWeapon).speed, weaponData.oGet(gameStats.currentWeapon).size);
+                    entities.Append(newProj);
                     //newProj = SSDProjectile::GetNewProjectile(this, idVec3(-320,-0,0), gameStats.levelStats.targetEnt.position, weaponData[gameStats.currentWeapon].speed, weaponData[gameStats.currentWeapon].size);
                     //entities.Append(newProj);
 
                     //We hit something
-                    this.gameStats.levelStats.hitCount++;
+                    gameStats.levelStats.hitCount++;
 
-                    this.gameStats.levelStats.targetEnt.OnHit(key);
+                    gameStats.levelStats.targetEnt.OnHit(key);
 
-                    if (this.gameStats.levelStats.targetEnt.type == SSD_ENTITY_ASTEROID) {
-                        HitAsteroid((SSDAsteroid) this.gameStats.levelStats.targetEnt, key);
-                    } else if (this.gameStats.levelStats.targetEnt.type == SSD_ENTITY_ASTRONAUT) {
-                        HitAstronaut((SSDAstronaut) this.gameStats.levelStats.targetEnt, key);
-                    } else if (this.gameStats.levelStats.targetEnt.type == SSD_ENTITY_ASTRONAUT) {
+                    if (gameStats.levelStats.targetEnt.type == SSD_ENTITY_ASTEROID) {
+                        HitAsteroid((SSDAsteroid) gameStats.levelStats.targetEnt, key);
+                    } else if (gameStats.levelStats.targetEnt.type == SSD_ENTITY_ASTRONAUT) {
+                        HitAstronaut((SSDAstronaut) gameStats.levelStats.targetEnt, key);
+                    } else if (gameStats.levelStats.targetEnt.type == SSD_ENTITY_ASTRONAUT) {
                     }
                 } else {
                     ////Aim the projectile at the cursor position all the way to the far clipping
                     //SSDProjectile* newProj = SSDProjectile::GetNewProjectile(this, idVec3(0,-180,0), idVec3(cursorWorld.x, cursorWorld.y, (Z_FAR-Z_NEAR)/2.0f), weaponData[gameStats.currentWeapon].speed, weaponData[gameStats.currentWeapon].size);
 
                     //Aim the projectile so it crosses the cursor 1/4 of screen
-                    final idVec3 vec = new idVec3(cursorWorld.x, cursorWorld.y, (Z_FAR - Z_NEAR) / 8.0f);
+                    idVec3 vec = new idVec3(cursorWorld.x, cursorWorld.y, (Z_FAR - Z_NEAR) / 8.0f);
                     vec.oMulSet(8);
-                    final SSDProjectile newProj = SSDProjectile.GetNewProjectile(this, new idVec3(0, -180, 0), vec, this.weaponData.oGet(this.gameStats.currentWeapon).speed, this.weaponData.oGet(this.gameStats.currentWeapon).size);
-                    this.entities.Append(newProj);
+                    SSDProjectile newProj = SSDProjectile.GetNewProjectile(this, new idVec3(0, -180, 0), vec, weaponData.oGet(gameStats.currentWeapon).speed, weaponData.oGet(gameStats.currentWeapon).size);
+                    entities.Append(newProj);
 
                 }
 
@@ -2456,11 +2429,11 @@ public class GameSSDWindow {
 
         private SSDEntity EntityHitTest(final idVec2 pt) {
 
-            for (int i = 0; i < this.entities.Num(); i++) {
+            for (int i = 0; i < entities.Num(); i++) {
                 //Since we ZOrder the entities every frame we can stop at the first entity we hit.
                 //ToDo: Make sure this assumption is true
-                if (this.entities.oGet(i).HitTest(pt)) {
-                    return this.entities.oGet(i);
+                if (entities.oGet(i).HitTest(pt)) {
+                    return entities.oGet(i);
                 }
             }
             return null;
@@ -2468,29 +2441,29 @@ public class GameSSDWindow {
 
         private void HitAsteroid(SSDAsteroid asteroid, int key) {
 
-            asteroid.health -= this.weaponData.oGet(this.gameStats.currentWeapon).damage;
+            asteroid.health -= weaponData.oGet(gameStats.currentWeapon).damage;
 
             if (asteroid.health <= 0) {
 
                 //The asteroid has been destroyed
-                final SSDExplosion explosion = SSDExplosion.GetNewExplosion(this, asteroid.position, asteroid.size.oMultiply(2), 300, SSDExplosion.EXPLOSION_NORMAL, asteroid);
-                this.entities.Append(explosion);
+                SSDExplosion explosion = SSDExplosion.GetNewExplosion(this, asteroid.position, asteroid.size.oMultiply(2), 300, SSDExplosion.EXPLOSION_NORMAL, asteroid);
+                entities.Append(explosion);
                 PlaySound("arcade_explode");
 
-                AddScore(asteroid, this.asteroidData.oGet(this.gameStats.currentLevel).asteroidPoints);
+                AddScore(asteroid, asteroidData.oGet(gameStats.currentLevel).asteroidPoints);
 
                 //Don't let the player hit it anymore because 
                 asteroid.noHit = true;
 
-                this.gameStats.levelStats.destroyedAsteroids++;
+                gameStats.levelStats.destroyedAsteroids++;
                 //if(gameStats.levelStats.destroyedAsteroids >= levelData[gameStats.currentLevel].needToWin) {
                 //	LevelComplete();
                 //}
 
             } else {
                 //This was a damage hit so create a real small quick explosion
-                final SSDExplosion explosion = SSDExplosion.GetNewExplosion(this, asteroid.position, asteroid.size.oDivide(2.0f), 200, SSDExplosion.EXPLOSION_NORMAL, asteroid, false, false);
-                this.entities.Append(explosion);
+                SSDExplosion explosion = SSDExplosion.GetNewExplosion(this, asteroid.position, asteroid.size.oDivide(2.0f), 200, SSDExplosion.EXPLOSION_NORMAL, asteroid, false, false);
+                entities.Append(explosion);
             }
         }
 
@@ -2499,135 +2472,135 @@ public class GameSSDWindow {
             asteroid.noPlayerDamage = true;
             asteroid.noHit = true;
 
-            AddDamage(this.asteroidData.oGet(this.gameStats.currentLevel).asteroidDamage);
+            AddDamage(asteroidData.oGet(gameStats.currentLevel).asteroidDamage);
 
-            final SSDExplosion explosion = SSDExplosion.GetNewExplosion(this, asteroid.position, asteroid.size.oMultiply(2), 300, SSDExplosion.EXPLOSION_NORMAL, asteroid);
-            this.entities.Append(explosion);
+            SSDExplosion explosion = SSDExplosion.GetNewExplosion(this, asteroid.position, asteroid.size.oMultiply(2), 300, SSDExplosion.EXPLOSION_NORMAL, asteroid);
+            entities.Append(explosion);
             PlaySound("arcade_explode");
         }
 
         private void RefreshGuiData() {
 
-            this.gui.SetStateString("nextLevel", va("%d", this.gameStats.nextLevel + 1));
-            this.gui.SetStateString("currentLevel", va("%d", this.gameStats.currentLevel + 1));
+            gui.SetStateString("nextLevel", va("%d", gameStats.nextLevel + 1));
+            gui.SetStateString("currentLevel", va("%d", gameStats.currentLevel + 1));
 
             float accuracy;
-            if (0 == this.gameStats.levelStats.shotCount) {
+            if (0 == gameStats.levelStats.shotCount) {
                 accuracy = 0;
             } else {
-                accuracy = ((float) this.gameStats.levelStats.hitCount / (float) this.gameStats.levelStats.shotCount) * 100.0f;
+                accuracy = ((float) gameStats.levelStats.hitCount / (float) gameStats.levelStats.shotCount) * 100.0f;
             }
-            this.gui.SetStateString("player_accuracy", va("%d%%", (int) accuracy));
+            gui.SetStateString("player_accuracy", va("%d%%", (int) accuracy));
 
             float saveAccuracy;
-            final int totalAst = this.gameStats.levelStats.savedAstronauts + this.gameStats.levelStats.killedAstronauts;
+            int totalAst = gameStats.levelStats.savedAstronauts + gameStats.levelStats.killedAstronauts;
 
             if (0 == totalAst) {
                 saveAccuracy = 0;
             } else {
-                saveAccuracy = ((float) this.gameStats.levelStats.savedAstronauts / (float) totalAst) * 100.0f;
+                saveAccuracy = ((float) gameStats.levelStats.savedAstronauts / (float) totalAst) * 100.0f;
             }
-            this.gui.SetStateString("save_accuracy", va("%d%%", (int) saveAccuracy));
+            gui.SetStateString("save_accuracy", va("%d%%", (int) saveAccuracy));
 
-            if (this.gameStats.levelStats.targetEnt != null) {
-                int dist = (int) (this.gameStats.levelStats.targetEnt.position.z / 100.0f);
+            if (gameStats.levelStats.targetEnt != null) {
+                int dist = (int) (gameStats.levelStats.targetEnt.position.z / 100.0f);
                 dist *= 100;
-                this.gui.SetStateString("target_info", va("%d meters", dist));
+                gui.SetStateString("target_info", va("%d meters", dist));
             } else {
-                this.gui.SetStateString("target_info", "No Target");
+                gui.SetStateString("target_info", "No Target");
             }
 
-            this.gui.SetStateString("player_health", va("%d", this.gameStats.health));
-            this.gui.SetStateString("player_score", va("%d", this.gameStats.score));
-            this.gui.SetStateString("player_prebonusscore", va("%d", this.gameStats.prebonusscore));
-            this.gui.SetStateString("level_complete", va("%d/%d", this.gameStats.levelStats.savedAstronauts, this.levelData.oGet(this.gameStats.currentLevel).needToWin));
+            gui.SetStateString("player_health", va("%d", gameStats.health));
+            gui.SetStateString("player_score", va("%d", gameStats.score));
+            gui.SetStateString("player_prebonusscore", va("%d", gameStats.prebonusscore));
+            gui.SetStateString("level_complete", va("%d/%d", gameStats.levelStats.savedAstronauts, levelData.oGet(gameStats.currentLevel).needToWin));
 
-            if (this.superBlasterTimeout != 0) {
-                final float timeRemaining = (this.superBlasterTimeout - this.ssdTime) / 1000.0f;
-                this.gui.SetStateString("super_blaster_time", va("%.2f", timeRemaining));
+            if (superBlasterTimeout != 0) {
+                float timeRemaining = (superBlasterTimeout - ssdTime) / 1000.0f;
+                gui.SetStateString("super_blaster_time", va("%.2f", timeRemaining));
             }
         }
 
         private idVec2 GetCursorWorld() {
 
-            final idVec2 cursor = new idVec2();
+            idVec2 cursor = new idVec2();
             //GetCursor(cursor);
-            cursor.x = this.gui.CursorX();
-            cursor.y = this.gui.CursorY();
-            cursor.x = cursor.x - (0.5f * V_WIDTH);
-            cursor.y = -(cursor.y - (0.5f * V_HEIGHT));
+            cursor.x = gui.CursorX();
+            cursor.y = gui.CursorY();
+            cursor.x = cursor.x - 0.5f * V_WIDTH;
+            cursor.y = -(cursor.y - 0.5f * V_HEIGHT);
             return cursor;
         }
 
         //Astronaut Methods
         private void SpawnAstronaut() {
 
-            final int currentTime = this.ssdTime;
+            int currentTime = ssdTime;
 
-            if (currentTime < this.gameStats.levelStats.nextAstronautSpawnTime) {
+            if (currentTime < gameStats.levelStats.nextAstronautSpawnTime) {
                 //Not time yet
                 return;
             }
 
             //Lets spawn it
-            final idVec3 startPosition = new idVec3();
+            idVec3 startPosition = new idVec3();
 
             startPosition.x = random.RandomInt(V_WIDTH) - (V_WIDTH / 2.0f);
             startPosition.y = random.RandomInt(V_HEIGHT) - (V_HEIGHT / 2.0f);
             startPosition.z = ENTITY_START_DIST;
 
-            final float speed = random.RandomInt(this.astronautData.oGet(this.gameStats.currentLevel).speedMax - this.astronautData.oGet(this.gameStats.currentLevel).speedMin) + this.astronautData.oGet(this.gameStats.currentLevel).speedMin;
-            final float rotate = (random.RandomFloat() * (this.astronautData.oGet(this.gameStats.currentLevel).rotateMax - this.astronautData.oGet(this.gameStats.currentLevel).rotateMin)) + this.astronautData.oGet(this.gameStats.currentLevel).rotateMin;
+            float speed = random.RandomInt(astronautData.oGet(gameStats.currentLevel).speedMax - astronautData.oGet(gameStats.currentLevel).speedMin) + astronautData.oGet(gameStats.currentLevel).speedMin;
+            float rotate = (random.RandomFloat() * (astronautData.oGet(gameStats.currentLevel).rotateMax - astronautData.oGet(gameStats.currentLevel).rotateMin)) + astronautData.oGet(gameStats.currentLevel).rotateMin;
 
-            final SSDAstronaut astronaut = SSDAstronaut.GetNewAstronaut(this, startPosition, speed, rotate, this.astronautData.oGet(this.gameStats.currentLevel).health);
-            this.entities.Append(astronaut);
+            SSDAstronaut astronaut = SSDAstronaut.GetNewAstronaut(this, startPosition, speed, rotate, astronautData.oGet(gameStats.currentLevel).health);
+            entities.Append(astronaut);
 
-            this.gameStats.levelStats.nextAstronautSpawnTime = currentTime + random.RandomInt(this.astronautData.oGet(this.gameStats.currentLevel).spawnMax - this.astronautData.oGet(this.gameStats.currentLevel).spawnMin) + this.astronautData.oGet(this.gameStats.currentLevel).spawnMin;
+            gameStats.levelStats.nextAstronautSpawnTime = currentTime + random.RandomInt(astronautData.oGet(gameStats.currentLevel).spawnMax - astronautData.oGet(gameStats.currentLevel).spawnMin) + astronautData.oGet(gameStats.currentLevel).spawnMin;
         }
 
         private void HitAstronaut(SSDAstronaut astronaut, int key) {
 
             if (key == K_MOUSE1) {
-                astronaut.health -= this.weaponData.oGet(this.gameStats.currentWeapon).damage;
+                astronaut.health -= weaponData.oGet(gameStats.currentWeapon).damage;
 
                 if (astronaut.health <= 0) {
 
-                    this.gameStats.levelStats.killedAstronauts++;
+                    gameStats.levelStats.killedAstronauts++;
 
                     //The astronaut has been destroyed
-                    final SSDExplosion explosion = SSDExplosion.GetNewExplosion(this, astronaut.position, astronaut.size.oMultiply(2), 300, SSDExplosion.EXPLOSION_NORMAL, astronaut);
-                    this.entities.Append(explosion);
+                    SSDExplosion explosion = SSDExplosion.GetNewExplosion(this, astronaut.position, astronaut.size.oMultiply(2), 300, SSDExplosion.EXPLOSION_NORMAL, astronaut);
+                    entities.Append(explosion);
                     PlaySound("arcade_explode");
 
                     //Add the penalty for killing the astronaut
-                    AddScore(astronaut, this.astronautData.oGet(this.gameStats.currentLevel).penalty);
+                    AddScore(astronaut, astronautData.oGet(gameStats.currentLevel).penalty);
 
                     //Don't let the player hit it anymore
                     astronaut.noHit = true;
                 } else {
                     //This was a damage hit so create a real small quick explosion
-                    final SSDExplosion explosion = SSDExplosion.GetNewExplosion(this, astronaut.position, astronaut.size.oDivide(2.0f), 200, SSDExplosion.EXPLOSION_NORMAL, astronaut, false, false);
-                    this.entities.Append(explosion);
+                    SSDExplosion explosion = SSDExplosion.GetNewExplosion(this, astronaut.position, astronaut.size.oDivide(2.0f), 200, SSDExplosion.EXPLOSION_NORMAL, astronaut, false, false);
+                    entities.Append(explosion);
                 }
             }
         }
 
         private void AstronautStruckPlayer(SSDAstronaut astronaut) {
 
-            this.gameStats.levelStats.savedAstronauts++;
+            gameStats.levelStats.savedAstronauts++;
 
             astronaut.noPlayerDamage = true;
             astronaut.noHit = true;
 
             //We are saving an astronaut
-            final SSDExplosion explosion = SSDExplosion.GetNewExplosion(this, astronaut.position, astronaut.size.oMultiply(2), 300, SSDExplosion.EXPLOSION_TELEPORT, astronaut);
-            this.entities.Append(explosion);
+            SSDExplosion explosion = SSDExplosion.GetNewExplosion(this, astronaut.position, astronaut.size.oMultiply(2), 300, SSDExplosion.EXPLOSION_TELEPORT, astronaut);
+            entities.Append(explosion);
             PlaySound("arcade_capture");
 
             //Give the player points for saving the astronaut
-            AddScore(astronaut, this.astronautData.oGet(this.gameStats.currentLevel).points);
+            AddScore(astronaut, astronautData.oGet(gameStats.currentLevel).points);
 
-            if (this.gameStats.levelStats.savedAstronauts >= this.levelData.oGet(this.gameStats.currentLevel).needToWin) {
+            if (gameStats.levelStats.savedAstronauts >= levelData.oGet(gameStats.currentLevel).needToWin) {
                 LevelComplete();
             }
 
@@ -2636,34 +2609,34 @@ public class GameSSDWindow {
 
         private void SpawnPowerup() {
 
-            final int currentTime = this.ssdTime;
+            int currentTime = ssdTime;
 
-            if (currentTime < this.gameStats.levelStats.nextPowerupSpawnTime) {
+            if (currentTime < gameStats.levelStats.nextPowerupSpawnTime) {
                 //Not time yet
                 return;
             }
 
-            final float speed = random.RandomInt(this.powerupData.oGet(this.gameStats.currentLevel).speedMax - this.powerupData.oGet(this.gameStats.currentLevel).speedMin) + this.powerupData.oGet(this.gameStats.currentLevel).speedMin;
-            final float rotate = (random.RandomFloat() * (this.powerupData.oGet(this.gameStats.currentLevel).rotateMax - this.powerupData.oGet(this.gameStats.currentLevel).rotateMin)) + this.powerupData.oGet(this.gameStats.currentLevel).rotateMin;
+            float speed = random.RandomInt(powerupData.oGet(gameStats.currentLevel).speedMax - powerupData.oGet(gameStats.currentLevel).speedMin) + powerupData.oGet(gameStats.currentLevel).speedMin;
+            float rotate = (random.RandomFloat() * (powerupData.oGet(gameStats.currentLevel).rotateMax - powerupData.oGet(gameStats.currentLevel).rotateMin)) + powerupData.oGet(gameStats.currentLevel).rotateMin;
 
-            final SSDPowerup powerup = SSDPowerup.GetNewPowerup(this, speed, rotate);
-            this.entities.Append(powerup);
+            SSDPowerup powerup = SSDPowerup.GetNewPowerup(this, speed, rotate);
+            entities.Append(powerup);
 
-            this.gameStats.levelStats.nextPowerupSpawnTime = currentTime + random.RandomInt(this.powerupData.oGet(this.gameStats.currentLevel).spawnMax - this.powerupData.oGet(this.gameStats.currentLevel).spawnMin) + this.powerupData.oGet(this.gameStats.currentLevel).spawnMin;
+            gameStats.levelStats.nextPowerupSpawnTime = currentTime + random.RandomInt(powerupData.oGet(gameStats.currentLevel).spawnMax - powerupData.oGet(gameStats.currentLevel).spawnMin) + powerupData.oGet(gameStats.currentLevel).spawnMin;
         }
 
         private void StartSuperBlaster() {
 
-            this.gui.HandleNamedEvent("startSuperBlaster");
-            this.gameStats.currentWeapon = 1;
-            this.superBlasterTimeout = this.ssdTime + 10000;
+            gui.HandleNamedEvent("startSuperBlaster");
+            gameStats.currentWeapon = 1;
+            superBlasterTimeout = ssdTime + 10000;
         }
 
         private void StopSuperBlaster() {
-            this.gui.HandleNamedEvent("stopSuperBlaster");
-            this.gameStats.currentWeapon = 0;
-            this.superBlasterTimeout = 0;
+            gui.HandleNamedEvent("stopSuperBlaster");
+            gameStats.currentWeapon = 0;
+            superBlasterTimeout = 0;
         }
         // void FreeSoundEmitter(bool immediate);
-    }
+    };
 }

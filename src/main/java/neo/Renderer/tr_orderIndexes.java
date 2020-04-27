@@ -3,7 +3,6 @@ package neo.Renderer;
 import static neo.framework.Common.common;
 
 import neo.idlib.Lib.idException;
-import neo.open.Nio;
 
 /**
  *
@@ -19,7 +18,7 @@ public class tr_orderIndexes {
     static final int STALL_SIZE = 8;
 
     public static int R_MeshCost(int numIndexes, int/*glIndex_t */[] indexes) {
-        final int[] inCache = new int[CACHE_SIZE];
+        int[] inCache = new int[CACHE_SIZE];
         int i, j, v;
         int c_stalls;
         int c_loads;
@@ -56,7 +55,7 @@ public class tr_orderIndexes {
 
         vertRef_s next;
         int tri;
-    }
+    };
 
     /*
      ====================
@@ -89,7 +88,7 @@ public class tr_orderIndexes {
         // save off the original indexes
         oldIndexes = new int[numIndexes];
 //	memcpy( oldIndexes, indexes, numIndexes * sizeof( *oldIndexes ) );
-        Nio.arraycopy(indexes, 0, oldIndexes, 0, numIndexes);
+        System.arraycopy(indexes, 0, oldIndexes, 0, numIndexes);
         numOldIndexes = numIndexes;
 
         // make a table to mark the triangles when they are emited
@@ -158,9 +157,9 @@ public class tr_orderIndexes {
                         }
 
                         // if this triangle also uses v2, grab it
-                        if ((oldIndexes[(tri * 3) + 0] == v2)
-                                || (oldIndexes[(tri * 3) + 1] == v2)
-                                || (oldIndexes[(tri * 3) + 2] == v2)) {
+                        if (oldIndexes[tri * 3 + 0] == v2
+                                || oldIndexes[tri * 3 + 1] == v2
+                                || oldIndexes[tri * 3 + 2] == v2) {
                             break;
                         }
                     }

@@ -16,9 +16,9 @@ public class LinkList {
 
     public static class idLinkList<type> {
 
-        private idLinkList<type> head;
-        private idLinkList<type> next;
-        private idLinkList<type> prev;
+        private idLinkList head;
+        private idLinkList next;
+        private idLinkList prev;
         private type owner;
         //
         //
@@ -33,10 +33,10 @@ public class LinkList {
          ================
          */
         public idLinkList() {
-            this.owner = null;
-            this.head = this;
-            this.next = this;
-            this.prev = this;
+            owner = null;
+            head = this;
+            next = this;
+            prev = this;
         }
         
         public idLinkList(final type owner) {
@@ -54,7 +54,7 @@ public class LinkList {
          ================
          */
         public boolean IsListEmpty() {
-            return this.head.next == this.head;
+            return head.next == head;
         }
 
         /*
@@ -65,7 +65,7 @@ public class LinkList {
          ================
          */
         public boolean InList() {
-            return this.head != this;
+            return head != this;
         }
 
         /*
@@ -80,7 +80,7 @@ public class LinkList {
             int num;
 
             num = 0;
-            for (node = this.head.next; node != this.head; node = node.next) {
+            for (node = head.next; node != head; node = node.next) {
                 num++;
             }
 
@@ -95,9 +95,9 @@ public class LinkList {
          ================
          */
         public void Clear() {
-            if (this.head == this) {
-                while (this.next != this) {
-                    this.next.Remove();
+            if (head == this) {
+                while (next != this) {
+                    next.Remove();
                 }
             } else {
                 Remove();
@@ -112,14 +112,14 @@ public class LinkList {
          then the new node is placed at the end of the list.
          ================
          */
-        public void InsertBefore(idLinkList<type> node) {
+        public void InsertBefore(idLinkList node) {
             Remove();
 
-            this.next = node;
-            this.prev = node.prev;
+            next = node;
+            prev = node.prev;
             node.prev = this;
-            this.prev.next = this;
-            this.head = node.head;
+            prev.next = this;
+            head = node.head;
         }
 
         /*
@@ -130,14 +130,14 @@ public class LinkList {
          then the new node is placed at the beginning of the list.
          ================
          */
-        public void InsertAfter(idLinkList<type> node) {
+        public void InsertAfter(idLinkList node) {
             Remove();
 
-            this.prev = node;
-            this.next = node.next;
+            prev = node;
+            next = node.next;
             node.next = this;
-            this.next.prev = this;
-            this.head = node.head;
+            next.prev = this;
+            head = node.head;
         }
 
         /*
@@ -147,7 +147,7 @@ public class LinkList {
          Adds node at the end of the list
          ================
          */
-        public void AddToEnd(idLinkList<type> node) {
+        public void AddToEnd(idLinkList node) {
             InsertBefore(node.head);
         }
 
@@ -158,7 +158,7 @@ public class LinkList {
          Adds node at the beginning of the list
          ================
          */
-        public void AddToFront(idLinkList<type> node) {
+        public void AddToFront(idLinkList node) {
             InsertAfter(node.head);
         }
 
@@ -170,12 +170,12 @@ public class LinkList {
          ================
          */
         public void Remove() {
-            this.prev.next = this.next;
-            this.next.prev = this.prev;
+            prev.next = next;
+            next.prev = prev;
 
-            this.next = this;
-            this.prev = this;
-            this.head = this;
+            next = this;
+            prev = this;
+            head = this;
         }
 
         /*
@@ -185,18 +185,11 @@ public class LinkList {
          Returns the next object in the list, or NULL if at the end.
          ================
          */
-		public type Next() {
-            if ((null == this.next) || (this.next == this.head)) {
+        public type Next() {
+            if (null == next || (next == head)) {
                 return null;
             }
-            if (this.next.owner != null) {
-                final type obj = this.next.owner;
-                return obj;
-            } else {
-            	// Done ToDo: beware missing links in linked lists(a.next.next.next.NULL.next).
-                final type obj = this.next.Next();
-                return obj;
-            }
+            return (type) next.owner;
         }
 
         /*
@@ -207,17 +200,10 @@ public class LinkList {
          ================
          */
         public type Prev() {
-            if ((null == this.prev) || (this.prev == this.head)) {
+            if (null == prev || (prev == head)) {
                 return null;
             }
-            if (this.prev.owner != null) {
-                final type obj = this.prev.owner;
-                return obj;
-            } else {
-            	// Done ToDo: beware missing links in linked lists(a.next.next.next.NULL.next).
-            	final type obj = this.prev.Prev();
-                return obj;
-            }
+            return (type) prev.owner;
         }
 //
 
@@ -229,7 +215,7 @@ public class LinkList {
          ================
          */
         public type Owner() {
-            return this.owner;
+            return owner;
         }
 
         /*
@@ -240,7 +226,7 @@ public class LinkList {
          ================
          */
         public void SetOwner(type object) {
-            this.owner = object;
+            owner = object;
         }
 //
 
@@ -252,8 +238,8 @@ public class LinkList {
          a pointer to itself.
          ================
          */
-        public idLinkList<type> ListHead() {
-            return this.head;
+        public idLinkList ListHead() {
+            return head;
         }
 
         /*
@@ -263,11 +249,11 @@ public class LinkList {
          Returns the next node in the list, or NULL if at the end.
          ================
          */
-        public idLinkList<type> NextNode() {
-            if (this.next == this.head) {
+        public idLinkList NextNode() {
+            if (next == head) {
                 return null;
             }
-            return this.next;
+            return next;
         }
 
         /*
@@ -277,11 +263,11 @@ public class LinkList {
          Returns the previous node in the list, or NULL if at the beginning.
          ================
          */
-        public idLinkList<type> PrevNode() {
-            if (this.prev == this.head) {
+        public idLinkList PrevNode() {
+            if (prev == head) {
                 return null;
             }
-            return this.prev;
+            return prev;
         }
-    }
+    };
 }

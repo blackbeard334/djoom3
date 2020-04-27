@@ -71,7 +71,7 @@ public class Physics_Player {
         PM_SPECTATOR, // flying without gravity but with collision detection
         PM_FREEZE, // stuck in place without control
         PM_NOCLIP   // flying without collision detection nor gravity
-    }
+    };
 
     public enum waterLevel_t {
 
@@ -79,7 +79,7 @@ public class Physics_Player {
         WATERLEVEL_FEET,
         WATERLEVEL_WAIST,
         WATERLEVEL_HEAD
-    }
+    };
 //
     public static final int MAXTOUCH = 32;
 //
@@ -96,12 +96,12 @@ public class Physics_Player {
         int    movementTime;
 
         public playerPState_s() {
-            this.origin = new idVec3();
-            this.velocity = new idVec3();
-            this.localOrigin = new idVec3();
-            this.pushVelocity = new idVec3();
+            origin = new idVec3();
+            velocity = new idVec3();
+            localOrigin = new idVec3();
+            pushVelocity = new idVec3();
         }
-    }
+    };
     // movement parameters
     static final float PM_STOPSPEED       = 100.0f;
     static final float PM_SWIMSCALE       = 0.5f;
@@ -160,24 +160,24 @@ public class Physics_Player {
         //
         // player input
         private usercmd_t      command;
-        private final idAngles       viewAngles;
+        private idAngles       viewAngles;
         //
         // run-time variables
         private int            framemsec;
         private float          frametime;
         private float          playerSpeed;
-        private final idVec3         viewForward;
-        private final idVec3         viewRight;
+        private idVec3         viewForward;
+        private idVec3         viewRight;
         //
         // walk movement
         private boolean        walking;
         private boolean        groundPlane;
-        private final trace_s        groundTrace;
+        private trace_s        groundTrace;
         private idMaterial     groundMaterial;
         //
         // ladder movement
         private boolean        ladder;
-        private final idVec3         ladderNormal;
+        private idVec3         ladderNormal;
         //
         // results of last evaluate
         waterLevel_t waterLevel;
@@ -186,193 +186,192 @@ public class Physics_Player {
         //
 
         public idPhysics_Player() {
-            this.debugLevel = 0;//false;
-            this.clipModel = null;
-            this.clipMask = 0;
-            this.current = new playerPState_s();//memset( &current, 0, sizeof( current ) );
-            this.saved = this.current;
-            this.walkSpeed = 0;
-            this.crouchSpeed = 0;
-            this.maxStepHeight = 0;
-            this.maxJumpHeight = 0;
-            this.command = new usercmd_t();//memset( &command, 0, sizeof( command ) );
-            this.viewAngles = new idAngles();
-            this.framemsec = 0;
-            this.frametime = 0;
-            this.playerSpeed = 0;
-            this.viewForward = new idVec3();
-            this.viewRight = new idVec3();
-            this.walking = false;
-            this.groundPlane = false;
-            this.groundTrace = new trace_s();//memset( &groundTrace, 0, sizeof( groundTrace ) );
-            this.groundMaterial = null;
-            this.ladder = false;
-            this.ladderNormal = new idVec3();
-            this.waterLevel = WATERLEVEL_NONE;
-            this.waterType = 0;
+            debugLevel = 0;//false;
+            clipModel = null;
+            clipMask = 0;
+            current = new playerPState_s();//memset( &current, 0, sizeof( current ) );
+            saved = current;
+            walkSpeed = 0;
+            crouchSpeed = 0;
+            maxStepHeight = 0;
+            maxJumpHeight = 0;
+            command = new usercmd_t();//memset( &command, 0, sizeof( command ) );
+            viewAngles = new idAngles();
+            framemsec = 0;
+            frametime = 0;
+            playerSpeed = 0;
+            viewForward = new idVec3();
+            viewRight = new idVec3();
+            walking = false;
+            groundPlane = false;
+            groundTrace = new trace_s();//memset( &groundTrace, 0, sizeof( groundTrace ) );
+            groundMaterial = null;
+            ladder = false;
+            ladderNormal = new idVec3();
+            waterLevel = WATERLEVEL_NONE;
+            waterType = 0;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
 
-            idPhysics_Player_SavePState(savefile, this.current);
-            idPhysics_Player_SavePState(savefile, this.saved);
+            idPhysics_Player_SavePState(savefile, current);
+            idPhysics_Player_SavePState(savefile, saved);
 
-            savefile.WriteFloat(this.walkSpeed);
-            savefile.WriteFloat(this.crouchSpeed);
-            savefile.WriteFloat(this.maxStepHeight);
-            savefile.WriteFloat(this.maxJumpHeight);
-            savefile.WriteInt(this.debugLevel);
+            savefile.WriteFloat(walkSpeed);
+            savefile.WriteFloat(crouchSpeed);
+            savefile.WriteFloat(maxStepHeight);
+            savefile.WriteFloat(maxJumpHeight);
+            savefile.WriteInt(debugLevel);
 
-            savefile.WriteUsercmd(this.command);
-            savefile.WriteAngles(this.viewAngles);
+            savefile.WriteUsercmd(command);
+            savefile.WriteAngles(viewAngles);
 
-            savefile.WriteInt(this.framemsec);
-            savefile.WriteFloat(this.frametime);
-            savefile.WriteFloat(this.playerSpeed);
-            savefile.WriteVec3(this.viewForward);
-            savefile.WriteVec3(this.viewRight);
+            savefile.WriteInt(framemsec);
+            savefile.WriteFloat(frametime);
+            savefile.WriteFloat(playerSpeed);
+            savefile.WriteVec3(viewForward);
+            savefile.WriteVec3(viewRight);
 
-            savefile.WriteBool(this.walking);
-            savefile.WriteBool(this.groundPlane);
-            savefile.WriteTrace(this.groundTrace);
-            savefile.WriteMaterial(this.groundMaterial);
+            savefile.WriteBool(walking);
+            savefile.WriteBool(groundPlane);
+            savefile.WriteTrace(groundTrace);
+            savefile.WriteMaterial(groundMaterial);
 
-            savefile.WriteBool(this.ladder);
-            savefile.WriteVec3(this.ladderNormal);
+            savefile.WriteBool(ladder);
+            savefile.WriteVec3(ladderNormal);
 
-            savefile.WriteInt(etoi(this.waterLevel));
-            savefile.WriteInt(this.waterType);
+            savefile.WriteInt(etoi(waterLevel));
+            savefile.WriteInt(waterType);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
 
-            idPhysics_Player_RestorePState(savefile, this.current);
-            idPhysics_Player_RestorePState(savefile, this.saved);
+            idPhysics_Player_RestorePState(savefile, current);
+            idPhysics_Player_RestorePState(savefile, saved);
 
-            this.walkSpeed = savefile.ReadFloat();
-            this.crouchSpeed = savefile.ReadFloat();
-            this.maxStepHeight = savefile.ReadFloat();
-            this.maxJumpHeight = savefile.ReadFloat();
-            this.debugLevel = savefile.ReadInt();
+            walkSpeed = savefile.ReadFloat();
+            crouchSpeed = savefile.ReadFloat();
+            maxStepHeight = savefile.ReadFloat();
+            maxJumpHeight = savefile.ReadFloat();
+            debugLevel = savefile.ReadInt();
 
-            savefile.ReadUsercmd(this.command);
-            savefile.ReadAngles(this.viewAngles);
+            savefile.ReadUsercmd(command);
+            savefile.ReadAngles(viewAngles);
 
-            this.framemsec = savefile.ReadInt();
-            this.frametime = savefile.ReadFloat();
-            this.playerSpeed = savefile.ReadFloat();
-            savefile.ReadVec3(this.viewForward);
-            savefile.ReadVec3(this.viewRight);
+            framemsec = savefile.ReadInt();
+            frametime = savefile.ReadFloat();
+            playerSpeed = savefile.ReadFloat();
+            savefile.ReadVec3(viewForward);
+            savefile.ReadVec3(viewRight);
 
-            this.walking = savefile.ReadBool();
-            this.groundPlane = savefile.ReadBool();
-            savefile.ReadTrace(this.groundTrace);
-            savefile.ReadMaterial(this.groundMaterial);
+            walking = savefile.ReadBool();
+            groundPlane = savefile.ReadBool();
+            savefile.ReadTrace(groundTrace);
+            savefile.ReadMaterial(groundMaterial);
 
-            this.ladder = savefile.ReadBool();
-            savefile.ReadVec3(this.ladderNormal);
+            ladder = savefile.ReadBool();
+            savefile.ReadVec3(ladderNormal);
 
-            this.waterLevel = waterLevel_t.values()[savefile.ReadInt()];
-            this.waterType = savefile.ReadInt();
+            waterLevel = waterLevel_t.values()[savefile.ReadInt()];
+            waterType = savefile.ReadInt();
         }
 
         // initialisation
         public void SetSpeed(final float newWalkSpeed, final float newCrouchSpeed) {
-            this.walkSpeed = newWalkSpeed;
-            this.crouchSpeed = newCrouchSpeed;
+            walkSpeed = newWalkSpeed;
+            crouchSpeed = newCrouchSpeed;
         }
 
         public void SetMaxStepHeight(final float newMaxStepHeight) {
-            this.maxStepHeight = newMaxStepHeight;
+            maxStepHeight = newMaxStepHeight;
         }
 
         public float GetMaxStepHeight() {
-            return this.maxStepHeight;
+            return maxStepHeight;
         }
 
         public void SetMaxJumpHeight(final float newMaxJumpHeight) {
-            this.maxJumpHeight = newMaxJumpHeight;
+            maxJumpHeight = newMaxJumpHeight;
         }
 
         public void SetMovementType(final pmtype_t type) {
-            this.current.movementType = etoi(type);
+            current.movementType = etoi(type);
         }
 
         public void SetPlayerInput(final usercmd_t cmd, final idAngles newViewAngles) {
-            this.command = cmd;
-            this.viewAngles.oSet(newViewAngles);// can't use cmd.angles cause of the delta_angles
+            command = cmd;
+            viewAngles.oSet(newViewAngles);// can't use cmd.angles cause of the delta_angles
         }
 
         public void SetKnockBack(final int knockBackTime) {
-            if (this.current.movementTime != 0) {
+            if (current.movementTime != 0) {
                 return;
             }
-            this.current.movementFlags |= PMF_TIME_KNOCKBACK;
-            this.current.movementTime = knockBackTime;
+            current.movementFlags |= PMF_TIME_KNOCKBACK;
+            current.movementTime = knockBackTime;
         }
 
         public void SetDebugLevel(boolean set) {
-            this.debugLevel = btoi(set);
+            debugLevel = btoi(set);
         }
 
         // feed back from last physics frame
         public waterLevel_t GetWaterLevel() {
-            return this.waterLevel;
+            return waterLevel;
         }
 
         public int GetWaterType() {
-            return this.waterType;
+            return waterType;
         }
 
         public boolean HasJumped() {
-            return ((this.current.movementFlags & PMF_JUMPED) != 0);
+            return ((current.movementFlags & PMF_JUMPED) != 0);
         }
 
         public boolean HasSteppedUp() {
-            return ((this.current.movementFlags & (PMF_STEPPED_UP | PMF_STEPPED_DOWN)) != 0);
+            return ((current.movementFlags & (PMF_STEPPED_UP | PMF_STEPPED_DOWN)) != 0);
         }
 
         public float GetStepUp() {
-            return this.current.stepUp;
+            return current.stepUp;
         }
 
         public boolean IsCrouching() {
-            return ((this.current.movementFlags & PMF_DUCKED) != 0);
+            return ((current.movementFlags & PMF_DUCKED) != 0);
         }
 
         public boolean OnLadder() {
-            return this.ladder;
+            return ladder;
         }
 
         // != GetOrigin
         public idVec3 PlayerGetOrigin() {
-            return this.current.origin;
+            return current.origin;
         }
 
         @Override
         // common physics interface
         public boolean Evaluate(int timeStepMSec, int endTimeMSec) {
-            final idVec3 masterOrigin = new idVec3();
-			idVec3 oldOrigin;
-            final idMat3 masterAxis = new idMat3();
+            idVec3 masterOrigin = new idVec3(), oldOrigin;
+            idMat3 masterAxis = new idMat3();
 
-            this.waterLevel = WATERLEVEL_NONE;
-            this.waterType = 0;
-            oldOrigin = new idVec3(this.current.origin);
+            waterLevel = WATERLEVEL_NONE;
+            waterType = 0;
+            oldOrigin = new idVec3(current.origin);
 
-            this.clipModel.Unlink();
+            clipModel.Unlink();
 
             // if bound to a master
-            if (this.masterEntity != null) {
-                this.self.GetMasterPosition(masterOrigin, masterAxis);
-                this.current.origin.oSet(masterOrigin.oPlus(this.current.localOrigin.oMultiply(masterAxis)));
-                this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.clipModel.GetAxis());
-                this.current.velocity.oSet((this.current.origin.oMinus(oldOrigin)).oDivide(timeStepMSec * 0.001f));
-                this.masterDeltaYaw = this.masterYaw;
-                this.masterYaw = masterAxis.oGet(0).ToYaw();
-                this.masterDeltaYaw = this.masterYaw - this.masterDeltaYaw;
+            if (masterEntity != null) {
+                self.GetMasterPosition(masterOrigin, masterAxis);
+                current.origin.oSet(masterOrigin.oPlus(current.localOrigin.oMultiply(masterAxis)));
+                clipModel.Link(gameLocal.clip, self, 0, current.origin, clipModel.GetAxis());
+                current.velocity.oSet((current.origin.oMinus(oldOrigin)).oDivide(timeStepMSec * 0.001f));
+                masterDeltaYaw = masterYaw;
+                masterYaw = masterAxis.oGet(0).ToYaw();
+                masterDeltaYaw = masterYaw - masterDeltaYaw;
                 return true;
             }
 
@@ -380,10 +379,10 @@ public class Physics_Player {
 
             this.MovePlayer(timeStepMSec);
 
-            this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.clipModel.GetAxis());
+            clipModel.Link(gameLocal.clip, self, 0, current.origin, clipModel.GetAxis());
 
             if (IsOutsideWorld()) {
-                gameLocal.Warning("clip model outside world bounds for entity '%s' at (%s)", this.self.name, this.current.origin.ToString(0));
+                gameLocal.Warning("clip model outside world bounds for entity '%s' at (%s)", self.name, current.origin.ToString(0));
             }
 
             return true; //( current.origin != oldOrigin );
@@ -400,18 +399,18 @@ public class Physics_Player {
 
         @Override
         public impactInfo_s GetImpactInfo(final int id, final idVec3 point) {
-            final impactInfo_s info = new impactInfo_s();
-            info.invMass = this.invMass;
+            impactInfo_s info = new impactInfo_s();
+            info.invMass = invMass;
             info.invInertiaTensor.Zero();
             info.position.Zero();
-            info.velocity.oSet(this.current.velocity);
+            info.velocity.oSet(current.velocity);
             return info;
         }
 
         @Override
         public void ApplyImpulse(final int id, final idVec3 point, final idVec3 impulse) {
-            if (this.current.movementType != etoi(PM_NOCLIP)) {
-                this.current.velocity.oPluSet(impulse.oMultiply(this.invMass));
+            if (current.movementType != etoi(PM_NOCLIP)) {
+                current.velocity.oPluSet(impulse.oMultiply(invMass));
             }
         }
 
@@ -427,72 +426,72 @@ public class Physics_Player {
 
         @Override
         public void SaveState() {
-            this.saved = this.current;
+            saved = current;
         }
 
         @Override
         public void RestoreState() {
-            this.current = this.saved;
+            current = saved;
 
-            this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.clipModel.GetAxis());
+            clipModel.Link(gameLocal.clip, self, 0, current.origin, clipModel.GetAxis());
 
             EvaluateContacts();
         }
 
         @Override
         public void SetOrigin(final idVec3 newOrigin, int id /*= -1*/) {
-            final idVec3 masterOrigin = new idVec3();
-            final idMat3 masterAxis = new idMat3();
+            idVec3 masterOrigin = new idVec3();
+            idMat3 masterAxis = new idMat3();
 
-            this.current.localOrigin.oSet(newOrigin);
-            if (this.masterEntity != null) {
-                this.self.GetMasterPosition(masterOrigin, masterAxis);
-                this.current.origin.oSet(masterOrigin.oPlus(newOrigin.oMultiply(masterAxis)));
+            current.localOrigin.oSet(newOrigin);
+            if (masterEntity != null) {
+                self.GetMasterPosition(masterOrigin, masterAxis);
+                current.origin.oSet(masterOrigin.oPlus(newOrigin.oMultiply(masterAxis)));
             } else {
-                this.current.origin.oSet(newOrigin);
+                current.origin.oSet(newOrigin);
             }
 
-            this.clipModel.Link(gameLocal.clip, this.self, 0, newOrigin, this.clipModel.GetAxis());
+            clipModel.Link(gameLocal.clip, self, 0, newOrigin, clipModel.GetAxis());
         }
 
         @Override
         public void SetAxis(final idMat3 newAxis, int id /*= -1*/) {
-            this.clipModel.Link(gameLocal.clip, this.self, 0, this.clipModel.GetOrigin(), newAxis);
+            clipModel.Link(gameLocal.clip, self, 0, clipModel.GetOrigin(), newAxis);
         }
 
         @Override
         public void Translate(final idVec3 translation, int id /*= -1*/) {
 
-            this.current.localOrigin.oPluSet(translation);
-            this.current.origin.oPluSet(translation);
+            current.localOrigin.oPluSet(translation);
+            current.origin.oPluSet(translation);
 
-            this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.clipModel.GetAxis());
+            clipModel.Link(gameLocal.clip, self, 0, current.origin, clipModel.GetAxis());
         }
 
         @Override
         public void Rotate(final idRotation rotation, int id /*= -1*/) {
-            final idVec3 masterOrigin = new idVec3();
-            final idMat3 masterAxis = new idMat3();
+            idVec3 masterOrigin = new idVec3();
+            idMat3 masterAxis = new idMat3();
 
-            this.current.origin.oMulSet(rotation);
-            if (this.masterEntity != null) {
-                this.self.GetMasterPosition(masterOrigin, masterAxis);
-                this.current.localOrigin.oSet((this.current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
+            current.origin.oMulSet(rotation);
+            if (masterEntity != null) {
+                self.GetMasterPosition(masterOrigin, masterAxis);
+                current.localOrigin.oSet((current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
             } else {
-                this.current.localOrigin.oSet(this.current.origin);
+                current.localOrigin.oSet(current.origin);
             }
 
-            this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.clipModel.GetAxis().oMultiply(rotation.ToMat3()));
+            clipModel.Link(gameLocal.clip, self, 0, current.origin, clipModel.GetAxis().oMultiply(rotation.ToMat3()));
         }
 
         @Override
         public void SetLinearVelocity(final idVec3 newLinearVelocity, int id /*= 0*/) {
-            this.current.velocity.oSet(newLinearVelocity);
+            current.velocity.oSet(newLinearVelocity);
         }
 
         @Override
         public idVec3 GetLinearVelocity(int id /*= 0*/) {
-            return new idVec3(this.current.velocity);
+            return new idVec3(current.velocity);
         }
 
         @Override
@@ -501,20 +500,20 @@ public class Physics_Player {
             float d;
 
             // velocity with which the player is pushed
-            velocity = (this.current.origin.oMinus(this.saved.origin)).oDivide(deltaTime * idMath.M_MS2SEC);
+            velocity = (current.origin.oMinus(saved.origin)).oDivide(deltaTime * idMath.M_MS2SEC);
 
             // remove any downward push velocity
-            d = velocity.oMultiply(this.gravityNormal);
+            d = velocity.oMultiply(gravityNormal);
             if (d > 0.0f) {
-                velocity.oMinSet(this.gravityNormal.oMultiply(d));
+                velocity.oMinSet(gravityNormal.oMultiply(d));
             }
 
-            this.current.pushVelocity.oPluSet(velocity);
+            current.pushVelocity.oPluSet(velocity);
         }
 
         @Override
         public idVec3 GetPushedLinearVelocity(final int id /*= 0*/) {
-            return this.current.pushVelocity;
+            return current.pushVelocity;
         }
 
         public idVec3 GetPushedLinearVelocity() {
@@ -522,7 +521,7 @@ public class Physics_Player {
         }
 
         public void ClearPushedVelocity() {
-            this.current.pushVelocity.Zero();
+            current.pushVelocity.Zero();
         }
 
         /*
@@ -534,66 +533,66 @@ public class Physics_Player {
          */
         @Override
         public void SetMaster(idEntity master, final boolean orientated /*= true*/) {
-            final idVec3 masterOrigin = new idVec3();
-            final idMat3 masterAxis = new idMat3();
+            idVec3 masterOrigin = new idVec3();
+            idMat3 masterAxis = new idMat3();
 
             if (master != null) {
-                if (null == this.masterEntity) {
+                if (null == masterEntity) {
                     // transform from world space to master space
-                    this.self.GetMasterPosition(masterOrigin, masterAxis);
-                    this.current.localOrigin.oSet((this.current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
-                    this.masterEntity = master;
-                    this.masterYaw = masterAxis.oGet(0).ToYaw();
+                    self.GetMasterPosition(masterOrigin, masterAxis);
+                    current.localOrigin.oSet((current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
+                    masterEntity = master;
+                    masterYaw = masterAxis.oGet(0).ToYaw();
                 }
                 ClearContacts();
             } else {
-                if (this.masterEntity != null) {
-                    this.masterEntity = null;
+                if (masterEntity != null) {
+                    masterEntity = null;
                 }
             }
         }
 
         @Override
         public void WriteToSnapshot(idBitMsgDelta msg) {
-            msg.WriteFloat(this.current.origin.oGet(0));
-            msg.WriteFloat(this.current.origin.oGet(1));
-            msg.WriteFloat(this.current.origin.oGet(2));
-            msg.WriteFloat(this.current.velocity.oGet(0), PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS);
-            msg.WriteFloat(this.current.velocity.oGet(1), PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS);
-            msg.WriteFloat(this.current.velocity.oGet(2), PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS);
-            msg.WriteDeltaFloat(this.current.origin.oGet(0), this.current.localOrigin.oGet(0));
-            msg.WriteDeltaFloat(this.current.origin.oGet(1), this.current.localOrigin.oGet(1));
-            msg.WriteDeltaFloat(this.current.origin.oGet(2), this.current.localOrigin.oGet(2));
-            msg.WriteDeltaFloat(0.0f, this.current.pushVelocity.oGet(0), PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS);
-            msg.WriteDeltaFloat(0.0f, this.current.pushVelocity.oGet(1), PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS);
-            msg.WriteDeltaFloat(0.0f, this.current.pushVelocity.oGet(2), PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS);
-            msg.WriteDeltaFloat(0.0f, this.current.stepUp);
-            msg.WriteBits(this.current.movementType, PLAYER_MOVEMENT_TYPE_BITS);
-            msg.WriteBits(this.current.movementFlags, PLAYER_MOVEMENT_FLAGS_BITS);
-            msg.WriteDeltaLong(0, this.current.movementTime);
+            msg.WriteFloat(current.origin.oGet(0));
+            msg.WriteFloat(current.origin.oGet(1));
+            msg.WriteFloat(current.origin.oGet(2));
+            msg.WriteFloat(current.velocity.oGet(0), PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS);
+            msg.WriteFloat(current.velocity.oGet(1), PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS);
+            msg.WriteFloat(current.velocity.oGet(2), PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS);
+            msg.WriteDeltaFloat(current.origin.oGet(0), current.localOrigin.oGet(0));
+            msg.WriteDeltaFloat(current.origin.oGet(1), current.localOrigin.oGet(1));
+            msg.WriteDeltaFloat(current.origin.oGet(2), current.localOrigin.oGet(2));
+            msg.WriteDeltaFloat(0.0f, current.pushVelocity.oGet(0), PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS);
+            msg.WriteDeltaFloat(0.0f, current.pushVelocity.oGet(1), PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS);
+            msg.WriteDeltaFloat(0.0f, current.pushVelocity.oGet(2), PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS);
+            msg.WriteDeltaFloat(0.0f, current.stepUp);
+            msg.WriteBits(current.movementType, PLAYER_MOVEMENT_TYPE_BITS);
+            msg.WriteBits(current.movementFlags, PLAYER_MOVEMENT_FLAGS_BITS);
+            msg.WriteDeltaLong(0, current.movementTime);
         }
 
         @Override
         public void ReadFromSnapshot(final idBitMsgDelta msg) {
-            this.current.origin.oSet(0, msg.ReadFloat());
-            this.current.origin.oSet(1, msg.ReadFloat());
-            this.current.origin.oSet(2, msg.ReadFloat());
-            this.current.velocity.oSet(0, msg.ReadFloat(PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS));
-            this.current.velocity.oSet(1, msg.ReadFloat(PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS));
-            this.current.velocity.oSet(2, msg.ReadFloat(PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS));
-            this.current.localOrigin.oSet(0, msg.ReadDeltaFloat(this.current.origin.oGet(0)));
-            this.current.localOrigin.oSet(1, msg.ReadDeltaFloat(this.current.origin.oGet(1)));
-            this.current.localOrigin.oSet(2, msg.ReadDeltaFloat(this.current.origin.oGet(2)));
-            this.current.pushVelocity.oSet(0, msg.ReadDeltaFloat(0.0f, PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS));
-            this.current.pushVelocity.oSet(1, msg.ReadDeltaFloat(0.0f, PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS));
-            this.current.pushVelocity.oSet(2, msg.ReadDeltaFloat(0.0f, PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS));
-            this.current.stepUp = msg.ReadDeltaFloat(0.0f);
-            this.current.movementType = msg.ReadBits(PLAYER_MOVEMENT_TYPE_BITS);
-            this.current.movementFlags = msg.ReadBits(PLAYER_MOVEMENT_FLAGS_BITS);
-            this.current.movementTime = msg.ReadDeltaLong(0);
+            current.origin.oSet(0, msg.ReadFloat());
+            current.origin.oSet(1, msg.ReadFloat());
+            current.origin.oSet(2, msg.ReadFloat());
+            current.velocity.oSet(0, msg.ReadFloat(PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS));
+            current.velocity.oSet(1, msg.ReadFloat(PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS));
+            current.velocity.oSet(2, msg.ReadFloat(PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS));
+            current.localOrigin.oSet(0, msg.ReadDeltaFloat(current.origin.oGet(0)));
+            current.localOrigin.oSet(1, msg.ReadDeltaFloat(current.origin.oGet(1)));
+            current.localOrigin.oSet(2, msg.ReadDeltaFloat(current.origin.oGet(2)));
+            current.pushVelocity.oSet(0, msg.ReadDeltaFloat(0.0f, PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS));
+            current.pushVelocity.oSet(1, msg.ReadDeltaFloat(0.0f, PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS));
+            current.pushVelocity.oSet(2, msg.ReadDeltaFloat(0.0f, PLAYER_VELOCITY_EXPONENT_BITS, PLAYER_VELOCITY_MANTISSA_BITS));
+            current.stepUp = msg.ReadDeltaFloat(0.0f);
+            current.movementType = msg.ReadBits(PLAYER_MOVEMENT_TYPE_BITS);
+            current.movementFlags = msg.ReadBits(PLAYER_MOVEMENT_FLAGS_BITS);
+            current.movementTime = msg.ReadDeltaLong(0);
 
-            if (this.clipModel != null) {
-                this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.clipModel.GetAxis());
+            if (clipModel != null) {
+                clipModel.Link(gameLocal.clip, self, 0, current.origin, clipModel.GetAxis());
             }
         }
 
@@ -619,7 +618,7 @@ public class Physics_Player {
 
             // since the crouch key doubles as downward movement, ignore downward movement when we're on the ground
             // otherwise crouch speed will be lower than specified
-            if (this.walking) {
+            if (walking) {
                 upmove = 0;
             } else {
                 upmove = cmd.upmove;
@@ -637,8 +636,8 @@ public class Physics_Player {
                 return 0.0f;
             }
 
-            total = idMath.Sqrt(((float) forwardmove * forwardmove) + (rightmove * rightmove) + (upmove * upmove));
-            scale = (this.playerSpeed * max) / (127.0f * total);
+            total = idMath.Sqrt((float) forwardmove * forwardmove + rightmove * rightmove + upmove * upmove);
+            scale = (float) playerSpeed * max / (127.0f * total);
 
             return scale;
         }
@@ -655,17 +654,17 @@ public class Physics_Player {
                 // q2 style
                 float addspeed, accelspeed, currentspeed;
 
-                currentspeed = this.current.velocity.oMultiply(wishdir);
+                currentspeed = current.velocity.oMultiply(wishdir);
                 addspeed = wishspeed - currentspeed;
                 if (addspeed <= 0) {
                     return;
                 }
-                accelspeed = accel * this.frametime * wishspeed;
+                accelspeed = accel * frametime * wishspeed;
                 if (accelspeed > addspeed) {
                     accelspeed = addspeed;
                 }
 
-                this.current.velocity.oPluSet(wishdir.oMultiply(accelspeed));
+                current.velocity.oPluSet(wishdir.oMultiply(accelspeed));
 //}else{
 //	// proper way (avoids strafe jump maxspeed bug), but feels bad
 //	idVec3		wishVelocity;
@@ -700,54 +699,52 @@ public class Physics_Player {
             int bumpcount, numbumps, numplanes;
             float d, time_left, into, totalMass;
             idVec3 dir;
-            final idVec3[] planes = new idVec3[MAX_CLIP_PLANES];
-            idVec3 end, stepEnd;
-			final idVec3 primal_velocity = new idVec3(), endVelocity = new idVec3();
-			idVec3 endClipVelocity = new idVec3(), clipVelocity = new idVec3();
-            final trace_s[] trace = {null}, stepTrace = {null}, downTrace = {null};
+            idVec3[] planes = new idVec3[MAX_CLIP_PLANES];
+            idVec3 end, stepEnd, primal_velocity = new idVec3(), endVelocity = new idVec3(), endClipVelocity = new idVec3(), clipVelocity = new idVec3();
+            trace_s[] trace = {null}, stepTrace = {null}, downTrace = {null};
             boolean nearGround, stepped, pushed;
 
             numbumps = 4;
 
-            primal_velocity.oSet(this.current.velocity);
+            primal_velocity.oSet(current.velocity);
 
             if (gravity) {
-                endVelocity.oSet(this.current.velocity.oPlus(this.gravityVector.oMultiply(this.frametime)));
-                this.current.velocity.oSet((this.current.velocity.oPlus(endVelocity)).oMultiply(0.5f));
+                endVelocity.oSet(current.velocity.oPlus(gravityVector.oMultiply(frametime)));
+                current.velocity.oSet((current.velocity.oPlus(endVelocity)).oMultiply(0.5f));
                 primal_velocity.oSet(endVelocity);
-                if (this.groundPlane) {
+                if (groundPlane) {
                     // slide along the ground plane
-                    this.current.velocity.ProjectOntoPlane(this.groundTrace.c.normal, OVERCLIP);
+                    current.velocity.ProjectOntoPlane(groundTrace.c.normal, OVERCLIP);
                 }
             } else {
-                endVelocity.oSet(this.current.velocity);
+                endVelocity.oSet(current.velocity);
             }
 
-            time_left = this.frametime;
+            time_left = frametime;
 
             // never turn against the ground plane
-            if (this.groundPlane) {
+            if (groundPlane) {
                 numplanes = 1;
-                planes[0] = this.groundTrace.c.normal;
+                planes[0] = groundTrace.c.normal;
             } else {
                 numplanes = 0;
             }
 
             // never turn against original velocity
-            planes[numplanes] = new idVec3(this.current.velocity);
+            planes[numplanes] = new idVec3(current.velocity);
             planes[numplanes].Normalize();
             numplanes++;
 
             for (bumpcount = 0; bumpcount < numbumps; bumpcount++) {
 
                 // calculate position we are trying to move to
-                end = this.current.origin.oPlus(this.current.velocity.oMultiply(time_left));
+                end = current.origin.oPlus(current.velocity.oMultiply(time_left));
 
                 // see if we can make it there
-                gameLocal.clip.Translation(trace, this.current.origin, end, this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
+                gameLocal.clip.Translation(trace, current.origin, end, clipModel, clipModel.GetAxis(), clipMask, self);
 
                 time_left -= time_left * trace[0].fraction;
-                this.current.origin.oSet(trace[0].endpos);
+                current.origin.oSet(trace[0].endpos);
 
                 // if moved the entire distance
                 if (trace[0].fraction >= 1.0f) {
@@ -759,50 +756,50 @@ public class Physics_Player {
                 // if we are allowed to step up
                 if (stepUp) {
 
-                    nearGround = this.groundPlane | this.ladder;
+                    nearGround = groundPlane | ladder;
 
                     if (!nearGround) {
                         // trace down to see if the player is near the ground
                         // step checking when near the ground allows the player to move up stairs smoothly while jumping
-                        stepEnd = this.current.origin.oPlus(this.gravityNormal.oMultiply(this.maxStepHeight));
-                        gameLocal.clip.Translation(downTrace, this.current.origin, stepEnd, this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
-                        nearGround = ((downTrace[0].fraction < 1.0f) && ((downTrace[0].c.normal.oMultiply(this.gravityNormal.oNegative())) > MIN_WALK_NORMAL));
+                        stepEnd = current.origin.oPlus(gravityNormal.oMultiply(maxStepHeight));
+                        gameLocal.clip.Translation(downTrace, current.origin, stepEnd, clipModel, clipModel.GetAxis(), clipMask, self);
+                        nearGround = (downTrace[0].fraction < 1.0f && (downTrace[0].c.normal.oMultiply(gravityNormal.oNegative())) > MIN_WALK_NORMAL);
                     }
 
                     // may only step up if near the ground or on a ladder
                     if (nearGround) {
 
                         // step up
-                        stepEnd = this.current.origin.oMinus(this.gravityNormal.oMultiply(this.maxStepHeight));
-                        gameLocal.clip.Translation(downTrace, this.current.origin, stepEnd, this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
+                        stepEnd = current.origin.oMinus(gravityNormal.oMultiply(maxStepHeight));
+                        gameLocal.clip.Translation(downTrace, current.origin, stepEnd, clipModel, clipModel.GetAxis(), clipMask, self);
 
                         // trace along velocity
-                        stepEnd = downTrace[0].endpos.oPlus(this.current.velocity.oMultiply(time_left));
-                        gameLocal.clip.Translation(stepTrace, downTrace[0].endpos, stepEnd, this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
+                        stepEnd = downTrace[0].endpos.oPlus(current.velocity.oMultiply(time_left));
+                        gameLocal.clip.Translation(stepTrace, downTrace[0].endpos, stepEnd, clipModel, clipModel.GetAxis(), clipMask, self);
 
                         // step down
-                        stepEnd = stepTrace[0].endpos.oPlus(this.gravityNormal.oMultiply(this.maxStepHeight));
-                        gameLocal.clip.Translation(downTrace, stepTrace[0].endpos, stepEnd, this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
+                        stepEnd = stepTrace[0].endpos.oPlus(gravityNormal.oMultiply(maxStepHeight));
+                        gameLocal.clip.Translation(downTrace, stepTrace[0].endpos, stepEnd, clipModel, clipModel.GetAxis(), clipMask, self);
 
-                        if ((downTrace[0].fraction >= 1.0f) || ((downTrace[0].c.normal.oMultiply(this.gravityNormal.oNegative())) > MIN_WALK_NORMAL)) {
+                        if (downTrace[0].fraction >= 1.0f || (downTrace[0].c.normal.oMultiply(gravityNormal.oNegative())) > MIN_WALK_NORMAL) {
 
                             // if moved the entire distance
                             if (stepTrace[0].fraction >= 1.0f) {
 //                                time_left = 0;
-                                this.current.stepUp -= (downTrace[0].endpos.oMinus(this.current.origin)).oMultiply(this.gravityNormal);
-                                this.current.origin.oSet(downTrace[0].endpos);
-                                this.current.movementFlags |= PMF_STEPPED_UP;
-                                this.current.velocity.oMulSet(PM_STEPSCALE);
+                                current.stepUp -= (downTrace[0].endpos.oMinus(current.origin)).oMultiply(gravityNormal);
+                                current.origin.oSet(downTrace[0].endpos);
+                                current.movementFlags |= PMF_STEPPED_UP;
+                                current.velocity.oMulSet(PM_STEPSCALE);
                                 break;
                             }
 
                             // if the move is further when stepping up
                             if (stepTrace[0].fraction > trace[0].fraction) {
                                 time_left -= time_left * stepTrace[0].fraction;
-                                this.current.stepUp -= (downTrace[0].endpos.oMinus(this.current.origin)).oMultiply(this.gravityNormal);
-                                this.current.origin.oSet(downTrace[0].endpos);
-                                this.current.movementFlags |= PMF_STEPPED_UP;
-                                this.current.velocity.oMulSet(PM_STEPSCALE);
+                                current.stepUp -= (downTrace[0].endpos.oMinus(current.origin)).oMultiply(gravityNormal);
+                                current.origin.oSet(downTrace[0].endpos);
+                                current.movementFlags |= PMF_STEPPED_UP;
+                                current.velocity.oMulSet(PM_STEPSCALE);
                                 trace[0] = stepTrace[0];
                                 stepped = true;
                             }
@@ -811,25 +808,25 @@ public class Physics_Player {
                 }
 
                 // if we can push other entities and not blocked by the world
-                if (push && (trace[0].c.entityNum != ENTITYNUM_WORLD)) {
+                if (push && trace[0].c.entityNum != ENTITYNUM_WORLD) {
 
-                    this.clipModel.SetPosition(this.current.origin, this.clipModel.GetAxis());
+                    clipModel.SetPosition(current.origin, clipModel.GetAxis());
 
                     // clip movement, only push idMoveables, don't push entities the player is standing on
                     // apply impact to pushed objects
                     pushFlags = PUSHFL_CLIP | PUSHFL_ONLYMOVEABLE | PUSHFL_NOGROUNDENTITIES | PUSHFL_APPLYIMPULSE;
 
                     // clip & push
-                    totalMass = gameLocal.push.ClipTranslationalPush(trace, this.self, pushFlags, end, end.oMinus(this.current.origin));
+                    totalMass = gameLocal.push.ClipTranslationalPush(trace, self, pushFlags, end, end.oMinus(current.origin));
 
                     if (totalMass > 0.0f) {
                         // decrease velocity based on the total mass of the objects being pushed ?
-                        this.current.velocity.oMulSet(1.0f - (idMath.ClampFloat(0.0f, 1000.0f, totalMass - 20.0f)
-                                * (1.0f / 950.0f)));
+                        current.velocity.oMulSet(1.0f - idMath.ClampFloat(0.0f, 1000.0f, totalMass - 20.0f)
+                                * (1.0f / 950.0f));
                         pushed = true;
                     }
 
-                    this.current.origin.oSet(trace[0].endpos);
+                    current.origin.oSet(trace[0].endpos);
                     time_left -= time_left * trace[0].fraction;
 
                     // if moved the entire distance
@@ -840,13 +837,13 @@ public class Physics_Player {
 
                 if (!stepped) {
                     // let the entity know about the collision
-                    this.self.Collide(trace[0], this.current.velocity);
+                    self.Collide(trace[0], current.velocity);
                 }
 
                 if (numplanes >= MAX_CLIP_PLANES) {
                     // MrElusive: I think we have some relatively high poly LWO models with a lot of slanted tris
                     // where it may hit the max clip planes
-                    this.current.velocity.oSet(getVec3_origin());
+                    current.velocity.oSet(getVec3_origin());
                     return true;
                 }
 
@@ -857,7 +854,7 @@ public class Physics_Player {
                 //
                 for (i = 0; i < numplanes; i++) {
                     if ((trace[0].c.normal.oMultiply(planes[i])) > 0.999f) {
-                        this.current.velocity.oPluSet(trace[0].c.normal);
+                        current.velocity.oPluSet(trace[0].c.normal);
                         break;
                     }
                 }
@@ -872,13 +869,13 @@ public class Physics_Player {
                 //
                 // find a plane that it enters
                 for (i = 0; i < numplanes; i++) {
-                    into = this.current.velocity.oMultiply(planes[i]);
+                    into = current.velocity.oMultiply(planes[i]);
                     if (into >= 0.1f) {
                         continue;		// move doesn't interact with the plane
                     }
 
                     // slide along the plane
-                    clipVelocity.oSet(this.current.velocity);
+                    clipVelocity.oSet(current.velocity);
                     clipVelocity.ProjectOntoPlane(planes[i], OVERCLIP);
 
                     // slide along the plane
@@ -906,7 +903,7 @@ public class Physics_Player {
                         // slide the original velocity along the crease
                         dir = planes[i].Cross(planes[j]);
                         dir.Normalize();
-                        d = dir.oMultiply(this.current.velocity);
+                        d = dir.oMultiply(current.velocity);
                         clipVelocity.oSet(dir.oMultiply(d));
 
                         dir = planes[i].Cross(planes[j]);
@@ -916,7 +913,7 @@ public class Physics_Player {
 
                         // see if there is a third plane the the new move enters
                         for (k = 0; k < numplanes; k++) {
-                            if ((k == i) || (k == j)) {
+                            if (k == i || k == j) {
                                 continue;
                             }
                             if ((clipVelocity.oMultiply(planes[k])) >= 0.1f) {
@@ -924,39 +921,39 @@ public class Physics_Player {
                             }
 
                             // stop dead at a tripple plane interaction
-                            this.current.velocity.oSet(getVec3_origin());
+                            current.velocity.oSet(getVec3_origin());
                             return true;
                         }
                     }
 
                     // if we have fixed all interactions, try another move
-                    this.current.velocity.oSet(clipVelocity);
+                    current.velocity.oSet(clipVelocity);
                     endVelocity.oSet(endClipVelocity);
                     break;
                 }
             }
 
             // step down
-            if (stepDown && this.groundPlane) {
-                stepEnd = this.current.origin.oPlus(this.gravityNormal.oMultiply(this.maxStepHeight));
-                gameLocal.clip.Translation(downTrace, this.current.origin, stepEnd, this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
-                if ((downTrace[0].fraction > 1e-4f) && (downTrace[0].fraction < 1.0f)) {
-                    this.current.stepUp -= (downTrace[0].endpos.oMinus(this.current.origin)).oMultiply(this.gravityNormal);
-                    this.current.origin.oSet(downTrace[0].endpos);
-                    this.current.movementFlags |= PMF_STEPPED_DOWN;
-                    this.current.velocity.oMulSet(PM_STEPSCALE);
+            if (stepDown && groundPlane) {
+                stepEnd = current.origin.oPlus(gravityNormal.oMultiply(maxStepHeight));
+                gameLocal.clip.Translation(downTrace, current.origin, stepEnd, clipModel, clipModel.GetAxis(), clipMask, self);
+                if (downTrace[0].fraction > 1e-4f && downTrace[0].fraction < 1.0f) {
+                    current.stepUp -= (downTrace[0].endpos.oMinus(current.origin)).oMultiply(gravityNormal);
+                    current.origin.oSet(downTrace[0].endpos);
+                    current.movementFlags |= PMF_STEPPED_DOWN;
+                    current.velocity.oMulSet(PM_STEPSCALE);
                 }
             }
 
             if (gravity) {
-                this.current.velocity.oSet(endVelocity);
+                current.velocity.oSet(endVelocity);
             }
 
             // come to a dead stop when the velocity orthogonal to the gravity flipped
-            clipVelocity = this.current.velocity.oMinus(this.gravityNormal.oMultiply(this.current.velocity.oMultiply(this.gravityNormal)));
-            endClipVelocity = endVelocity.oMinus(this.gravityNormal.oMultiply(endVelocity.oMultiply(this.gravityNormal)));
+            clipVelocity = current.velocity.oMinus(gravityNormal.oMultiply(current.velocity.oMultiply(gravityNormal)));
+            endClipVelocity = endVelocity.oMinus(gravityNormal.oMultiply(endVelocity.oMultiply(gravityNormal)));
             if (clipVelocity.oMultiply(endClipVelocity) < 0.0f) {
-                this.current.velocity.oSet(this.gravityNormal.oMultiply(this.current.velocity.oMultiply(this.gravityNormal)));
+                current.velocity.oSet(gravityNormal.oMultiply(current.velocity.oMultiply(gravityNormal)));
             }
 
             return (bumpcount == 0);
@@ -974,19 +971,19 @@ public class Physics_Player {
             float speed, newspeed, control;
             float drop;
 
-            vel = this.current.velocity;
-            if (this.walking) {
+            vel = current.velocity;
+            if (walking) {
                 // ignore slope movement, remove all velocity in gravity direction
-                vel.oPluSet(this.gravityNormal.oMultiply(vel.oMultiply(this.gravityNormal)));
+                vel.oPluSet(gravityNormal.oMultiply(vel.oMultiply(gravityNormal)));
             }
 
             speed = vel.Length();
             if (speed < 1.0f) {
                 // remove all movement orthogonal to gravity, allows for sinking underwater
-                if (abs(this.current.velocity.oMultiply(this.gravityNormal)) < 1e-5f) {
-                    this.current.velocity.Zero();
+                if (abs(current.velocity.oMultiply(gravityNormal)) < 1e-5f) {
+                    current.velocity.Zero();
                 } else {
-                    this.current.velocity.oSet(this.gravityNormal.oMultiply(this.current.velocity.oMultiply(this.gravityNormal)));
+                    current.velocity.oSet(gravityNormal.oMultiply(current.velocity.oMultiply(gravityNormal)));
                 }
                 // FIXME: still have z friction underwater?
                 return;
@@ -995,24 +992,24 @@ public class Physics_Player {
             drop = 0;
 
             // spectator friction
-            if (this.current.movementType == etoi(PM_SPECTATOR)) {
-                drop += speed * PM_FLYFRICTION * this.frametime;
+            if (current.movementType == etoi(PM_SPECTATOR)) {
+                drop += speed * PM_FLYFRICTION * frametime;
             } // apply ground friction
-            else if (this.walking && (etoi(this.waterLevel) <= etoi(WATERLEVEL_FEET))) {
+            else if (walking && etoi(waterLevel) <= etoi(WATERLEVEL_FEET)) {
                 // no friction on slick surfaces
-                if (!((this.groundMaterial != null) && ((this.groundMaterial.GetSurfaceFlags() & SURF_SLICK) != 0))) {
+                if (!(groundMaterial != null && ((groundMaterial.GetSurfaceFlags() & SURF_SLICK) != 0))) {
                     // if getting knocked back, no friction
-                    if (0 == (this.current.movementFlags & PMF_TIME_KNOCKBACK)) {
+                    if (0 == (current.movementFlags & PMF_TIME_KNOCKBACK)) {
                         control = speed < PM_STOPSPEED ? PM_STOPSPEED : speed;
-                        drop += control * PM_FRICTION * this.frametime;
+                        drop += control * PM_FRICTION * frametime;
                     }
                 }
             } // apply water friction even if just wading
-            else if (this.waterLevel.ordinal() != 0) {//TODO:how can an enum be false?//FIXED:like that you dumbass.
-                drop += speed * PM_WATERFRICTION * this.waterLevel.ordinal() * this.frametime;
+            else if (waterLevel.ordinal() != 0) {//TODO:how can an enum be false?//FIXED:like that you dumbass.
+                drop += speed * PM_WATERFRICTION * waterLevel.ordinal() * frametime;
             } // apply air friction
             else {
-                drop += speed * PM_AIRFRICTION * this.frametime;
+                drop += speed * PM_AIRFRICTION * frametime;
             }
 
             // scale the velocity
@@ -1020,7 +1017,7 @@ public class Physics_Player {
             if (newspeed < 0) {
                 newspeed = 0;
             }
-            this.current.velocity.oMulSet(newspeed / speed);
+            current.velocity.oMulSet(newspeed / speed);
         }
 
         /*
@@ -1036,12 +1033,12 @@ public class Physics_Player {
             this.SlideMove(true, true, false, false);
 
             // add gravity
-            this.current.velocity.oPluSet(this.gravityNormal.oMultiply(this.frametime));
+            current.velocity.oPluSet(gravityNormal.oMultiply(frametime));
             // if falling down
-            if (this.current.velocity.oMultiply(this.gravityNormal) > 0.0f) {
+            if (current.velocity.oMultiply(gravityNormal) > 0.0f) {
                 // cancel as soon as we are falling down again
-                this.current.movementFlags &= ~PMF_ALL_TIMES;
-                this.current.movementTime = 0;
+                current.movementFlags &= ~PMF_ALL_TIMES;
+                current.movementTime = 0;
             }
         }
 
@@ -1059,33 +1056,33 @@ public class Physics_Player {
 
             this.Friction();
 
-            scale = this.CmdScale(this.command);
+            scale = this.CmdScale(command);
 
             // user intentions
             if (0 == scale) {
-                wishvel = this.gravityNormal.oMultiply(60); // sink towards bottom
+                wishvel = gravityNormal.oMultiply(60); // sink towards bottom
             } else {
-                wishvel = (this.viewForward.oMultiply(this.command.forwardmove).oPlus(this.viewRight.oMultiply(this.command.rightmove))).oMultiply(scale);
-                wishvel.oMinSet(this.gravityNormal.oMultiply(this.command.upmove).oMultiply(scale));
+                wishvel = (viewForward.oMultiply(command.forwardmove).oPlus(viewRight.oMultiply(command.rightmove))).oMultiply(scale);
+                wishvel.oMinSet(gravityNormal.oMultiply(command.upmove).oMultiply(scale));
             }
 
             wishdir = wishvel;
             wishspeed = wishdir.Normalize();
 
-            if (wishspeed > (this.playerSpeed * PM_SWIMSCALE)) {
-                wishspeed = this.playerSpeed * PM_SWIMSCALE;
+            if (wishspeed > playerSpeed * PM_SWIMSCALE) {
+                wishspeed = playerSpeed * PM_SWIMSCALE;
             }
 
             this.Accelerate(wishdir, wishspeed, PM_WATERACCELERATE);
 
             // make sure we can go up slopes easily under water
-            if (this.groundPlane && ((this.current.velocity.oMultiply(this.groundTrace.c.normal)) < 0.0f)) {
-                vel = this.current.velocity.Length();
+            if (groundPlane && (current.velocity.oMultiply(groundTrace.c.normal)) < 0.0f) {
+                vel = current.velocity.Length();
                 // slide along the ground plane
-                this.current.velocity.ProjectOntoPlane(this.groundTrace.c.normal, OVERCLIP);
+                current.velocity.ProjectOntoPlane(groundTrace.c.normal, OVERCLIP);
 
-                this.current.velocity.Normalize();
-                this.current.velocity.oMulSet(vel);
+                current.velocity.Normalize();
+                current.velocity.oMulSet(vel);
             }
 
             this.SlideMove(false, true, false, false);
@@ -1100,13 +1097,13 @@ public class Physics_Player {
             // normal slowdown
             this.Friction();
 
-            scale = this.CmdScale(this.command);
+            scale = this.CmdScale(command);
 
             if (0 == scale) {
                 wishvel = getVec3_origin();
             } else {
-                wishvel = (this.viewForward.oMultiply(this.command.forwardmove).oPlus(this.viewRight.oMultiply(this.command.rightmove))).oMultiply(scale);
-                wishvel.oMinSet(this.gravityNormal.oMultiply(this.command.upmove).oMultiply(scale));
+                wishvel = (viewForward.oMultiply(command.forwardmove).oPlus(viewRight.oMultiply(command.rightmove))).oMultiply(scale);
+                wishvel.oMinSet(gravityNormal.oMultiply(command.upmove).oMultiply(scale));
             }
 
             wishdir = wishvel;
@@ -1125,16 +1122,16 @@ public class Physics_Player {
 
             this.Friction();
 
-            scale = this.CmdScale(this.command);
+            scale = this.CmdScale(command);
 
             // project moves down to flat plane
-            this.viewForward.oMinSet(this.gravityNormal.oMultiply(this.viewForward.oMultiply(this.gravityNormal)));
-            this.viewRight.oMinSet(this.gravityNormal.oMultiply(this.viewRight.oMultiply(this.gravityNormal)));
-            this.viewForward.Normalize();
-            this.viewRight.Normalize();
+            viewForward.oMinSet(gravityNormal.oMultiply(viewForward.oMultiply(gravityNormal)));
+            viewRight.oMinSet(gravityNormal.oMultiply(viewRight.oMultiply(gravityNormal)));
+            viewForward.Normalize();
+            viewRight.Normalize();
 
-            wishvel = (this.viewForward.oMultiply(this.command.forwardmove).oPlus(this.viewRight.oMultiply(this.command.rightmove))).oMultiply(scale);
-            wishvel.oMinSet(this.gravityNormal.oMultiply(this.command.upmove).oMultiply(scale));
+            wishvel = (viewForward.oMultiply(command.forwardmove).oPlus(viewRight.oMultiply(command.rightmove))).oMultiply(scale);
+            wishvel.oMinSet(gravityNormal.oMultiply(command.upmove).oMultiply(scale));
             wishdir = wishvel;
             wishspeed = wishdir.Normalize();
             wishspeed *= scale;
@@ -1145,8 +1142,8 @@ public class Physics_Player {
             // we may have a ground plane that is very steep, even
             // though we don't have a groundentity
             // slide along the steep plane
-            if (this.groundPlane) {
-                this.current.velocity.ProjectOntoPlane(this.groundTrace.c.normal, OVERCLIP);
+            if (groundPlane) {
+                current.velocity.ProjectOntoPlane(groundTrace.c.normal, OVERCLIP);
             }
 
             this.SlideMove(true, false, false, false);
@@ -1161,7 +1158,7 @@ public class Physics_Player {
             idVec3 oldVelocity, vel;
             float oldVel, newVel;
 
-            if ((etoi(this.waterLevel) > etoi(WATERLEVEL_WAIST)) && ((this.viewForward.oMultiply(this.groundTrace.c.normal)) > 0.0f)) {
+            if (etoi(waterLevel) > etoi(WATERLEVEL_WAIST) && (viewForward.oMultiply(groundTrace.c.normal)) > 0.0f) {
                 // begin swimming
                 this.WaterMove();
                 return;
@@ -1169,7 +1166,7 @@ public class Physics_Player {
 
             if (this.CheckJump()) {
                 // jumped away
-                if (etoi(this.waterLevel) > etoi(WATERLEVEL_FEET)) {
+                if (etoi(waterLevel) > etoi(WATERLEVEL_FEET)) {
                     this.WaterMove();
                 } else {
                     this.AirMove();
@@ -1179,37 +1176,37 @@ public class Physics_Player {
 
             this.Friction();
 
-            scale = this.CmdScale(this.command);
+            scale = this.CmdScale(command);
 
             // project moves down to flat plane
-            this.viewForward.oMinSet(this.gravityNormal.oMultiply(this.viewForward.oMultiply(this.gravityNormal)));
-            this.viewRight.oMinSet(this.gravityNormal.oMultiply(this.viewRight.oMultiply(this.gravityNormal)));
+            viewForward.oMinSet(gravityNormal.oMultiply(viewForward.oMultiply(gravityNormal)));
+            viewRight.oMinSet(gravityNormal.oMultiply(viewRight.oMultiply(gravityNormal)));
 
             // project the forward and right directions onto the ground plane
-            this.viewForward.ProjectOntoPlane(this.groundTrace.c.normal, OVERCLIP);
-            this.viewRight.ProjectOntoPlane(this.groundTrace.c.normal, OVERCLIP);
+            viewForward.ProjectOntoPlane(groundTrace.c.normal, OVERCLIP);
+            viewRight.ProjectOntoPlane(groundTrace.c.normal, OVERCLIP);
             //
-            this.viewForward.Normalize();
-            this.viewRight.Normalize();
+            viewForward.Normalize();
+            viewRight.Normalize();
 
-            wishvel = this.viewForward.oMultiply(this.command.forwardmove).oPlus(this.viewRight.oMultiply(this.command.rightmove));
+            wishvel = viewForward.oMultiply(command.forwardmove).oPlus(viewRight.oMultiply(command.rightmove));
             wishdir = wishvel;
             wishspeed = wishdir.Normalize();
             wishspeed *= scale;
 
             // clamp the speed lower if wading or walking on the bottom
-            if (this.waterLevel != null) {
+            if (waterLevel != null) {
                 float waterScale;
 
-                waterScale = this.waterLevel.ordinal() / 3.0f;
-                waterScale = 1.0f - ((1.0f - PM_SWIMSCALE) * waterScale);
-                if (wishspeed > (this.playerSpeed * waterScale)) {
-                    wishspeed = this.playerSpeed * waterScale;
+                waterScale = waterLevel.ordinal() / 3.0f;
+                waterScale = 1.0f - (1.0f - PM_SWIMSCALE) * waterScale;
+                if (wishspeed > playerSpeed * waterScale) {
+                    wishspeed = playerSpeed * waterScale;
                 }
             }
 
             // when a player gets hit, they temporarily lose full control, which allows them to be moved a bit
-            if (((this.groundMaterial != null) && ((this.groundMaterial.GetSurfaceFlags() & SURF_SLICK) != 0)) || ((this.current.movementFlags & PMF_TIME_KNOCKBACK) != 0)) {
+            if ((groundMaterial != null && ((groundMaterial.GetSurfaceFlags() & SURF_SLICK) != 0)) || ((current.movementFlags & PMF_TIME_KNOCKBACK) != 0)) {
                 accelerate = PM_AIRACCELERATE;
             } else {
                 accelerate = PM_ACCELERATE;
@@ -1217,29 +1214,29 @@ public class Physics_Player {
 
             this.Accelerate(wishdir, wishspeed, accelerate);
 
-            if (((this.groundMaterial != null) && ((this.groundMaterial.GetSurfaceFlags() & SURF_SLICK) != 0)) || ((this.current.movementFlags & PMF_TIME_KNOCKBACK) != 0)) {
-                this.current.velocity.oPluSet(this.gravityVector.oMultiply(this.frametime));
+            if ((groundMaterial != null && ((groundMaterial.GetSurfaceFlags() & SURF_SLICK) != 0)) || ((current.movementFlags & PMF_TIME_KNOCKBACK) != 0)) {
+                current.velocity.oPluSet(gravityVector.oMultiply(frametime));
             }
 
-            oldVelocity = this.current.velocity;
+            oldVelocity = current.velocity;
 
             // slide along the ground plane
-            this.current.velocity.ProjectOntoPlane(this.groundTrace.c.normal, OVERCLIP);
+            current.velocity.ProjectOntoPlane(groundTrace.c.normal, OVERCLIP);
 
             // if not clipped into the opposite direction
-            if (oldVelocity.oMultiply(this.current.velocity) > 0.0f) {
-                newVel = this.current.velocity.LengthSqr();
+            if (oldVelocity.oMultiply(current.velocity) > 0.0f) {
+                newVel = current.velocity.LengthSqr();
                 if (newVel > 1.0f) {
                     oldVel = oldVelocity.LengthSqr();
                     if (oldVel > 1.0f) {
                         // don't decrease velocity when going up or down a slope
-                        this.current.velocity.oMulSet(idMath.Sqrt(oldVel / newVel));
+                        current.velocity.oMulSet(idMath.Sqrt(oldVel / newVel));
                     }
                 }
             }
 
             // don't do anything if standing still
-            vel = this.current.velocity.oMinus(this.gravityNormal.oMultiply(this.current.velocity.oMultiply(this.gravityNormal)));
+            vel = current.velocity.oMinus(gravityNormal.oMultiply(current.velocity.oMultiply(gravityNormal)));
             if (0 == vel.LengthSqr()) {
                 return;
             }
@@ -1252,18 +1249,18 @@ public class Physics_Player {
         private void DeadMove() {
             float forward;
 
-            if (!this.walking) {
+            if (!walking) {
                 return;
             }
 
             // extra friction
-            forward = this.current.velocity.Length();
+            forward = current.velocity.Length();
             forward -= 20;
             if (forward <= 0) {
-                this.current.velocity.oSet(getVec3_origin());
+                current.velocity.oSet(getVec3_origin());
             } else {
-                this.current.velocity.Normalize();
-                this.current.velocity.oMulSet(forward);
+                current.velocity.Normalize();
+                current.velocity.oMulSet(forward);
             }
         }
 
@@ -1273,16 +1270,16 @@ public class Physics_Player {
             idVec3 wishdir;
 
             // friction
-            speed = this.current.velocity.Length();
+            speed = current.velocity.Length();
             if (speed < 20.0f) {
-                this.current.velocity.oSet(getVec3_origin());
+                current.velocity.oSet(getVec3_origin());
             } else {
-                stopspeed = this.playerSpeed * 0.3f;
+                stopspeed = playerSpeed * 0.3f;
                 if (speed < stopspeed) {
                     speed = stopspeed;
                 }
                 friction = PM_NOCLIPFRICTION;
-                drop = speed * friction * this.frametime;
+                drop = speed * friction * frametime;
 
                 // scale the velocity
                 newspeed = speed - drop;
@@ -1290,21 +1287,21 @@ public class Physics_Player {
                     newspeed = 0;
                 }
 
-                this.current.velocity.oMultiply(newspeed / speed);
+                current.velocity.oMultiply(newspeed / speed);
             }
 
             // accelerate
-            scale = this.CmdScale(this.command);
+            scale = this.CmdScale(command);
 
-            wishdir = (this.viewForward.oMultiply(this.command.forwardmove).oPlus(this.viewRight.oMultiply(this.command.rightmove))).oMultiply(scale);
-            wishdir.oMinSet(this.gravityNormal.oMultiply(this.command.upmove).oMultiply(scale));
+            wishdir = (viewForward.oMultiply(command.forwardmove).oPlus(viewRight.oMultiply(command.rightmove))).oMultiply(scale);
+            wishdir.oMinSet(gravityNormal.oMultiply(command.upmove).oMultiply(scale));
             wishspeed = wishdir.Normalize();
             wishspeed *= scale;
 
             this.Accelerate(wishdir, wishspeed, PM_ACCELERATE);
 
             // move
-            this.current.origin.oPluSet(this.current.velocity.oMultiply(this.frametime));
+            current.origin.oPluSet(current.velocity.oMultiply(frametime));
         }
 
         private void SpectatorMove() {
@@ -1313,18 +1310,18 @@ public class Physics_Player {
             idVec3 wishdir;
             float scale;
 
-            final trace_s trace;
-            final idVec3 end;
+            trace_s trace;
+            idVec3 end;
 
             // fly movement
             this.Friction();
 
-            scale = this.CmdScale(this.command);
+            scale = this.CmdScale(command);
 
             if (0 == scale) {
                 wishvel = getVec3_origin();
             } else {
-                wishvel = (this.viewForward.oMultiply(this.command.forwardmove).oPlus(this.viewRight.oMultiply(this.command.rightmove))).oMultiply(scale);
+                wishvel = (viewForward.oMultiply(command.forwardmove).oPlus(viewRight.oMultiply(command.rightmove))).oMultiply(scale);
             }
 
             wishdir = wishvel;
@@ -1336,43 +1333,42 @@ public class Physics_Player {
         }
 
         private void LadderMove() {
-            final idVec3 wishdir;
-			idVec3 wishvel, right;
+            idVec3 wishdir, wishvel, right;
             float wishspeed, scale;
             float upscale;
 
             // stick to the ladder
-            wishvel = this.ladderNormal.oMultiply(-100.0f);
-            this.current.velocity.oSet((this.gravityNormal.oMultiply(this.current.velocity.oMultiply(this.gravityNormal))).oPlus(wishvel));
+            wishvel = ladderNormal.oMultiply(-100.0f);
+            current.velocity.oSet((gravityNormal.oMultiply(current.velocity.oMultiply(gravityNormal))).oPlus(wishvel));
 
-            upscale = (this.gravityNormal.oNegative().oMultiply(this.viewForward) + 0.5f) * 2.5f;
+            upscale = (gravityNormal.oNegative().oMultiply(viewForward) + 0.5f) * 2.5f;
             if (upscale > 1.0f) {
                 upscale = 1.0f;
             } else if (upscale < -1.0f) {
                 upscale = -1.0f;
             }
 
-            scale = this.CmdScale(this.command);
-            wishvel = this.gravityNormal.oMultiply(upscale * scale * this.command.forwardmove * -0.9f);
+            scale = this.CmdScale(command);
+            wishvel = gravityNormal.oMultiply(upscale * scale * (float) command.forwardmove * -0.9f);
 
             // strafe
-            if (this.command.rightmove != 0) {
+            if (command.rightmove != 0) {
                 // right vector orthogonal to gravity
-                right = this.viewRight.oMinus(this.gravityNormal.oMultiply(this.viewRight.oMultiply(this.gravityNormal)));
+                right = viewRight.oMinus(gravityNormal.oMultiply(viewRight.oMultiply(gravityNormal)));
                 // project right vector into ladder plane
-                right = right.oMinus(this.ladderNormal.oMultiply(right.oMultiply(this.ladderNormal)));
+                right = right.oMinus(ladderNormal.oMultiply(right.oMultiply(ladderNormal)));
                 right.Normalize();
 
                 // if we are looking away from the ladder, reverse the right vector
-                if (this.ladderNormal.oMultiply(this.viewForward) > 0.0f) {
+                if (ladderNormal.oMultiply(viewForward) > 0.0f) {
                     right = right.oNegative();
                 }
-                wishvel.oPluSet(right.oMultiply(scale * this.command.rightmove * 2.0f));
+                wishvel.oPluSet(right.oMultiply(scale * (float) command.rightmove * 2.0f));
             }
 
             // up down movement
-            if (this.command.upmove != 0) {
-                wishvel.oPluSet(this.gravityNormal.oMultiply(scale * this.command.upmove * -0.5f));
+            if (command.upmove != 0) {
+                wishvel.oPluSet(gravityNormal.oMultiply(scale * (float) command.upmove * -0.5f));
             }
 
             // do strafe friction
@@ -1383,44 +1379,44 @@ public class Physics_Player {
             this.Accelerate(wishvel, wishspeed, PM_ACCELERATE);
 
             // cap the vertical velocity
-            upscale = this.current.velocity.oMultiply(this.gravityNormal.oNegative());
+            upscale = current.velocity.oMultiply(gravityNormal.oNegative());
             if (upscale < -PM_LADDERSPEED) {
-                this.current.velocity.oPluSet(this.gravityNormal.oMultiply(upscale + PM_LADDERSPEED));
+                current.velocity.oPluSet(gravityNormal.oMultiply(upscale + PM_LADDERSPEED));
             } else if (upscale > PM_LADDERSPEED) {
-                this.current.velocity.oPluSet(this.gravityNormal.oMultiply(upscale - PM_LADDERSPEED));
+                current.velocity.oPluSet(gravityNormal.oMultiply(upscale - PM_LADDERSPEED));
             }
 
-            if ((wishvel.oMultiply(this.gravityNormal)) == 0.0f) {
-                if (this.current.velocity.oMultiply(this.gravityNormal) < 0.0f) {
-                    this.current.velocity.oPluSet(this.gravityVector.oMultiply(this.frametime));
-                    if (this.current.velocity.oMultiply(this.gravityNormal) > 0.0f) {
-                        this.current.velocity.oMinSet(this.gravityNormal.oMultiply(this.current.velocity.oMultiply(this.gravityNormal)));
+            if ((wishvel.oMultiply(gravityNormal)) == 0.0f) {
+                if (current.velocity.oMultiply(gravityNormal) < 0.0f) {
+                    current.velocity.oPluSet(gravityVector.oMultiply(frametime));
+                    if (current.velocity.oMultiply(gravityNormal) > 0.0f) {
+                        current.velocity.oMinSet(gravityNormal.oMultiply(current.velocity.oMultiply(gravityNormal)));
                     }
                 } else {
-                    this.current.velocity.oMinSet(this.gravityVector.oMultiply(this.frametime));
-                    if (this.current.velocity.oMultiply(this.gravityNormal) < 0.0f) {
-                        this.current.velocity.oMinSet(this.gravityNormal.oMultiply(this.current.velocity.oMultiply(this.gravityNormal)));
+                    current.velocity.oMinSet(gravityVector.oMultiply(frametime));
+                    if (current.velocity.oMultiply(gravityNormal) < 0.0f) {
+                        current.velocity.oMinSet(gravityNormal.oMultiply(current.velocity.oMultiply(gravityNormal)));
                     }
                 }
             }
 
-            this.SlideMove(false, (this.command.forwardmove > 0), false, false);
+            this.SlideMove(false, (command.forwardmove > 0), false, false);
         }
 
         private void CorrectAllSolid(trace_s trace, int contents) {
-            if (this.debugLevel != 0) {
+            if (debugLevel != 0) {
                 gameLocal.Printf("%d:allsolid\n", c_pmove);
             }
 
             // FIXME: jitter around to find a free spot ?
             if (trace.fraction >= 1.0f) {
 //		memset( &trace, 0, sizeof( trace ) );//TODO:init
-                trace.endpos.oSet(this.current.origin);
-                trace.endAxis.oSet(this.clipModelAxis);
+                trace.endpos.oSet(current.origin);
+                trace.endAxis.oSet(clipModelAxis);
                 trace.fraction = 0.0f;
-                trace.c.dist = this.current.origin.z;
+                trace.c.dist = current.origin.z;
                 trace.c.normal.Set(0, 0, 1);
-                trace.c.point.oSet(this.current.origin);
+                trace.c.point.oSet(current.origin);
                 trace.c.entityNum = ENTITYNUM_WORLD;
                 trace.c.id = 0;
                 trace.c.type = CONTACT_TRMVERTEX;
@@ -1431,102 +1427,102 @@ public class Physics_Player {
 
         private void CheckGround() {
             int i, contents;
-            final idVec3 point;
+            idVec3 point;
             boolean hadGroundContacts;
 
             hadGroundContacts = HasGroundContacts();
 
             // set the clip model origin before getting the contacts
-            this.clipModel.SetPosition(this.current.origin, this.clipModel.GetAxis());
+            clipModel.SetPosition(current.origin, clipModel.GetAxis());
 
             EvaluateContacts();
 
             // setup a ground trace from the contacts
-            this.groundTrace.endpos.oSet(this.current.origin);
-            this.groundTrace.endAxis.oSet(this.clipModel.GetAxis());
-            if (this.contacts.Num() != 0) {
-                this.groundTrace.fraction = 0.0f;
-                this.groundTrace.c = this.contacts.oGet(0);
-                for (i = 1; i < this.contacts.Num(); i++) {
-                    this.groundTrace.c.normal.oPluSet(this.contacts.oGet(i).normal);
+            groundTrace.endpos.oSet(current.origin);
+            groundTrace.endAxis.oSet(clipModel.GetAxis());
+            if (contacts.Num() != 0) {
+                groundTrace.fraction = 0.0f;
+                groundTrace.c = contacts.oGet(0);
+                for (i = 1; i < contacts.Num(); i++) {
+                    groundTrace.c.normal.oPluSet(contacts.oGet(i).normal);
                 }
-                this.groundTrace.c.normal.Normalize();
+                groundTrace.c.normal.Normalize();
             } else {
-                this.groundTrace.fraction = 1.0f;
+                groundTrace.fraction = 1.0f;
             }
 
-            contents = gameLocal.clip.Contents(this.current.origin, this.clipModel, this.clipModel.GetAxis(), -1, this.self);
+            contents = gameLocal.clip.Contents(current.origin, clipModel, clipModel.GetAxis(), -1, self);
             if ((contents & MASK_SOLID) != 0) {
                 // do something corrective if stuck in solid
-                this.CorrectAllSolid(this.groundTrace, contents);
+                this.CorrectAllSolid(groundTrace, contents);
             }
 
             // if the trace didn't hit anything, we are in free fall
-            if (this.groundTrace.fraction == 1.0f) {
-                this.groundPlane = false;
-                this.walking = false;
-                this.groundEntityPtr = new idEntityPtr<>(null);
+            if (groundTrace.fraction == 1.0f) {
+                groundPlane = false;
+                walking = false;
+                groundEntityPtr = new idEntityPtr<>(null);
                 return;
             }
 
-            this.groundMaterial = this.groundTrace.c.material;
-            this.groundEntityPtr.oSet(gameLocal.entities[this.groundTrace.c.entityNum]);
+            groundMaterial = groundTrace.c.material;
+            groundEntityPtr.oSet(gameLocal.entities[groundTrace.c.entityNum]);
 
             // check if getting thrown off the ground
-            if (((this.current.velocity.oMultiply(this.gravityNormal.oNegative())) > 0.0f) && ((this.current.velocity.oMultiply(this.groundTrace.c.normal)) > 10.0f)) {
-                if (this.debugLevel != 0) {
+            if ((current.velocity.oMultiply(gravityNormal.oNegative())) > 0.0f && (current.velocity.oMultiply(groundTrace.c.normal)) > 10.0f) {
+                if (debugLevel != 0) {
                     gameLocal.Printf("%d:kickoff\n", c_pmove);
                 }
 
-                this.groundPlane = false;
-                this.walking = false;
+                groundPlane = false;
+                walking = false;
                 return;
             }
 
             // slopes that are too steep will not be considered onground
-            if ((this.groundTrace.c.normal.oMultiply(this.gravityNormal.oNegative())) < MIN_WALK_NORMAL) {
-                if (this.debugLevel != 0) {
+            if ((groundTrace.c.normal.oMultiply(gravityNormal.oNegative())) < MIN_WALK_NORMAL) {
+                if (debugLevel != 0) {
                     gameLocal.Printf("%d:steep\n", c_pmove);
                 }
 
                 // FIXME: if they can't slide down the slope, let them walk (sharp crevices)
                 // make sure we don't die from sliding down a steep slope
-                if (this.current.velocity.oMultiply(this.gravityNormal) > 150.0f) {
-                    this.current.velocity.oMinSet(this.gravityNormal.oMultiply(this.current.velocity.oMultiply(this.gravityNormal) - 150.0f));
+                if (current.velocity.oMultiply(gravityNormal) > 150.0f) {
+                    current.velocity.oMinSet(gravityNormal.oMultiply(current.velocity.oMultiply(gravityNormal) - 150.0f));
                 }
 
-                this.groundPlane = true;
-                this.walking = false;
+                groundPlane = true;
+                walking = false;
                 return;
             }
 
-            this.groundPlane = true;
-            this.walking = true;
+            groundPlane = true;
+            walking = true;
 
             // hitting solid ground will end a waterjump
-            if ((this.current.movementFlags & PMF_TIME_WATERJUMP) != 0) {
-                this.current.movementFlags &= ~(PMF_TIME_WATERJUMP | PMF_TIME_LAND);
-                this.current.movementTime = 0;
+            if ((current.movementFlags & PMF_TIME_WATERJUMP) != 0) {
+                current.movementFlags &= ~(PMF_TIME_WATERJUMP | PMF_TIME_LAND);
+                current.movementTime = 0;
             }
 
             // if the player didn't have ground contacts the previous frame
             if (!hadGroundContacts) {
 
                 // don't do landing time if we were just going down a slope
-                if ((this.current.velocity.oMultiply(this.gravityNormal.oNegative())) < -200.0f) {
+                if ((current.velocity.oMultiply(gravityNormal.oNegative())) < -200.0f) {
                     // don't allow another jump for a little while
-                    this.current.movementFlags |= PMF_TIME_LAND;
-                    this.current.movementTime = 250;
+                    current.movementFlags |= PMF_TIME_LAND;
+                    current.movementTime = 250;
                 }
             }
 
             // let the entity know about the collision
-            this.self.Collide(this.groundTrace, this.current.velocity);
+            self.Collide(groundTrace, current.velocity);
 
-            if (this.groundEntityPtr.GetEntity() != null) {
-                final impactInfo_s info = this.groundEntityPtr.GetEntity().GetImpactInfo(this.self, this.groundTrace.c.id, this.groundTrace.c.point);
+            if (groundEntityPtr.GetEntity() != null) {
+                impactInfo_s info = groundEntityPtr.GetEntity().GetImpactInfo(self, groundTrace.c.id, groundTrace.c.point);
                 if (info.invMass != 0.0f) {
-                    this.groundEntityPtr.GetEntity().ApplyImpulse(this.self, this.groundTrace.c.id, this.groundTrace.c.point, this.current.velocity.oDivide(info.invMass * 10.0f));
+                    groundEntityPtr.GetEntity().ApplyImpulse(self, groundTrace.c.id, groundTrace.c.point, current.velocity.oDivide(info.invMass * 10.0f));
                 }
             }
         }
@@ -1539,100 +1535,100 @@ public class Physics_Player {
          ==============
          */
         private void CheckDuck() {
-            final trace_s[] trace = {null};
+            trace_s[] trace = {null};
             idVec3 end;
             idBounds bounds;
             float maxZ;
 
-            if (this.current.movementType == etoi(PM_DEAD)) {
+            if (current.movementType == etoi(PM_DEAD)) {
                 maxZ = pm_deadheight.GetFloat();
             } else {
                 // stand up when up against a ladder
-                if ((this.command.upmove < 0) && !this.ladder) {
+                if (command.upmove < 0 && !ladder) {
                     // duck
-                    this.current.movementFlags |= PMF_DUCKED;
+                    current.movementFlags |= PMF_DUCKED;
                 } else {
                     // stand up if possible
-                    if ((this.current.movementFlags & PMF_DUCKED) != 0) {
+                    if ((current.movementFlags & PMF_DUCKED) != 0) {
                         // try to stand up
-                        end = this.current.origin.oMinus(this.gravityNormal.oMultiply(pm_normalheight.GetFloat() - pm_crouchheight.GetFloat()));
-                        gameLocal.clip.Translation(trace, this.current.origin, end, this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
+                        end = current.origin.oMinus(gravityNormal.oMultiply(pm_normalheight.GetFloat() - pm_crouchheight.GetFloat()));
+                        gameLocal.clip.Translation(trace, current.origin, end, clipModel, clipModel.GetAxis(), clipMask, self);
                         if (trace[0].fraction >= 1.0f) {
-                            this.current.movementFlags &= ~PMF_DUCKED;
+                            current.movementFlags &= ~PMF_DUCKED;
                         }
                     }
                 }
 
-                if ((this.current.movementFlags & PMF_DUCKED) != 0) {
-                    this.playerSpeed = this.crouchSpeed;
+                if ((current.movementFlags & PMF_DUCKED) != 0) {
+                    playerSpeed = crouchSpeed;
                     maxZ = pm_crouchheight.GetFloat();
                 } else {
                     maxZ = pm_normalheight.GetFloat();
                 }
             }
             // if the clipModel height should change
-            if (this.clipModel.GetBounds().oGet(1, 2) != maxZ) {
+            if (clipModel.GetBounds().oGet(1, 2) != maxZ) {
 
-                bounds = this.clipModel.GetBounds();
+                bounds = clipModel.GetBounds();
                 bounds.oSet(1, 2, maxZ);
                 if (pm_usecylinder.GetBool()) {
-                    this.clipModel.LoadModel(new idTraceModel(bounds, 8));
+                    clipModel.LoadModel(new idTraceModel(bounds, 8));
                 } else {
-                    this.clipModel.LoadModel(new idTraceModel(bounds));
+                    clipModel.LoadModel(new idTraceModel(bounds));
                 }
             }
         }
 
         private void CheckLadder() {
             idVec3 forward, start, end;
-            final trace_s[] trace = {null};
+            trace_s[] trace = {null};
             float tracedist;
 
-            if (this.current.movementTime != 0) {
+            if (current.movementTime != 0) {
                 return;
             }
 
             // if on the ground moving backwards
-            if (this.walking && (this.command.forwardmove <= 0)) {
+            if (walking && command.forwardmove <= 0) {
                 return;
             }
 
             // forward vector orthogonal to gravity
-            forward = this.viewForward.oMinus(this.gravityNormal.oMultiply(this.viewForward.oMultiply(this.gravityNormal)));
+            forward = viewForward.oMinus(gravityNormal.oMultiply(viewForward.oMultiply(gravityNormal)));
             forward.Normalize();
 
-            if (this.walking) {
+            if (walking) {
                 // don't want to get sucked towards the ladder when still walking
                 tracedist = 1.0f;
             } else {
                 tracedist = 48.0f;
             }
 
-            end = this.current.origin.oPlus(forward.oMultiply(tracedist));
-            gameLocal.clip.Translation(trace, this.current.origin, end, this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
+            end = current.origin.oPlus(forward.oMultiply(tracedist));
+            gameLocal.clip.Translation(trace, current.origin, end, clipModel, clipModel.GetAxis(), clipMask, self);
 
             // if near a surface
             if (trace[0].fraction < 1.0f) {
 
                 // if a ladder surface
-                if ((trace[0].c.material != null)
+                if (trace[0].c.material != null
                         && ((trace[0].c.material.GetSurfaceFlags() & SURF_LADDER) != 0)) {
 
                     // check a step height higher
-                    end = this.current.origin.oMinus(this.gravityNormal.oMultiply(this.maxStepHeight * 0.75f));
-                    gameLocal.clip.Translation(trace, this.current.origin, end, this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
+                    end = current.origin.oMinus(gravityNormal.oMultiply(maxStepHeight * 0.75f));
+                    gameLocal.clip.Translation(trace, current.origin, end, clipModel, clipModel.GetAxis(), clipMask, self);
                     start = trace[0].endpos;
                     end = start.oPlus(forward.oMultiply(tracedist));
-                    gameLocal.clip.Translation(trace, start, end, this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
+                    gameLocal.clip.Translation(trace, start, end, clipModel, clipModel.GetAxis(), clipMask, self);
 
                     // if also near a surface a step height higher
                     if (trace[0].fraction < 1.0f) {
 
                         // if it also is a ladder surface
-                        if ((trace[0].c.material != null)
+                        if (trace[0].c.material != null
                                 && ((trace[0].c.material.GetSurfaceFlags() & SURF_LADDER) != 0)) {
-                            this.ladder = true;
-                            this.ladderNormal.oSet(trace[0].c.normal);
+                            ladder = true;
+                            ladderNormal.oSet(trace[0].c.normal);
                         }
                     }
                 }
@@ -1642,28 +1638,28 @@ public class Physics_Player {
         private boolean CheckJump() {
             idVec3 addVelocity;
 
-            if (this.command.upmove < 10) {
+            if (command.upmove < 10) {
                 // not holding jump
                 return false;
             }
 
             // must wait for jump to be released
-            if ((this.current.movementFlags & PMF_JUMP_HELD) != 0) {
+            if ((current.movementFlags & PMF_JUMP_HELD) != 0) {
                 return false;
             }
 
             // don't jump if we can't stand up
-            if ((this.current.movementFlags & PMF_DUCKED) != 0) {
+            if ((current.movementFlags & PMF_DUCKED) != 0) {
                 return false;
             }
 
-            this.groundPlane = false;		// jumping away
-            this.walking = false;
-            this.current.movementFlags |= PMF_JUMP_HELD | PMF_JUMPED;
+            groundPlane = false;		// jumping away
+            walking = false;
+            current.movementFlags |= PMF_JUMP_HELD | PMF_JUMPED;
 
-            addVelocity = this.gravityVector.oNegative().oMultiply(2.0f * this.maxJumpHeight);
+            addVelocity = gravityVector.oNegative().oMultiply(2.0f * maxJumpHeight);
             addVelocity.oMulSet(idMath.Sqrt(addVelocity.Normalize()));
-            this.current.velocity.oPluSet(addVelocity);
+            current.velocity.oPluSet(addVelocity);
 
             return true;
         }
@@ -1673,35 +1669,35 @@ public class Physics_Player {
             int cont;
             idVec3 flatforward;
 
-            if (this.current.movementTime != 0) {
+            if (current.movementTime != 0) {
                 return false;
             }
 
             // check for water jump
-            if (this.waterLevel != WATERLEVEL_WAIST) {
+            if (waterLevel != WATERLEVEL_WAIST) {
                 return false;
             }
 
-            flatforward = this.viewForward.oMinus(this.gravityNormal.oMultiply(this.viewForward.oMultiply(this.gravityNormal)));
+            flatforward = viewForward.oMinus(gravityNormal.oMultiply(viewForward.oMultiply(gravityNormal)));
             flatforward.Normalize();
 
-            spot = this.current.origin.oPlus(flatforward.oMultiply(30.0f));
-            spot.oMinSet(this.gravityNormal.oMultiply(4.0f));
-            cont = gameLocal.clip.Contents(spot, null, getMat3_identity(), -1, this.self);
+            spot = current.origin.oPlus(flatforward.oMultiply(30.0f));
+            spot.oMinSet(gravityNormal.oMultiply(4.0f));
+            cont = gameLocal.clip.Contents(spot, null, getMat3_identity(), -1, self);
             if (0 == (cont & CONTENTS_SOLID)) {
                 return false;
             }
 
-            spot.oMinSet(this.gravityNormal.oMultiply(16.0f));
-            cont = gameLocal.clip.Contents(spot, null, getMat3_identity(), -1, this.self);
+            spot.oMinSet(gravityNormal.oMultiply(16.0f));
+            cont = gameLocal.clip.Contents(spot, null, getMat3_identity(), -1, self);
             if (cont != 0) {
                 return false;
             }
 
             // jump out of water
-            this.current.velocity.oSet(this.viewForward.oMultiply(200.0f).oMinus(this.gravityNormal.oMultiply(350.0f)));
-            this.current.movementFlags |= PMF_TIME_WATERJUMP;
-            this.current.movementTime = 2000;
+            current.velocity.oSet(viewForward.oMultiply(200.0f).oMinus(gravityNormal.oMultiply(350.0f)));
+            current.movementFlags |= PMF_TIME_WATERJUMP;
+            current.movementTime = 2000;
 
             return true;
         }
@@ -1714,31 +1710,31 @@ public class Physics_Player {
             //
             // get waterlevel, accounting for ducking
             //
-            this.waterLevel = WATERLEVEL_NONE;
-            this.waterType = 0;
+            waterLevel = WATERLEVEL_NONE;
+            waterType = 0;
 
-            bounds = this.clipModel.GetBounds();
+            bounds = clipModel.GetBounds();
 
             // check at feet level
-            point = this.current.origin.oMinus(this.gravityNormal.oMultiply(bounds.oGet(0, 2) + 1.0f));
-            contents = gameLocal.clip.Contents(point, null, getMat3_identity(), -1, this.self);
+            point = current.origin.oMinus(gravityNormal.oMultiply(bounds.oGet(0, 2) + 1.0f));
+            contents = gameLocal.clip.Contents(point, null, getMat3_identity(), -1, self);
             if ((contents & MASK_WATER) != 0) {
 
-                this.waterType = contents;
-                this.waterLevel = WATERLEVEL_FEET;
+                waterType = contents;
+                waterLevel = WATERLEVEL_FEET;
 
                 // check at waist level
-                point = this.current.origin.oMinus(this.gravityNormal.oMultiply((bounds.oGet(1, 2) - bounds.oGet(0, 2)) * 0.5f));
-                contents = gameLocal.clip.Contents(point, null, getMat3_identity(), -1, this.self);
+                point = current.origin.oMinus(gravityNormal.oMultiply((bounds.oGet(1, 2) - bounds.oGet(0, 2)) * 0.5f));
+                contents = gameLocal.clip.Contents(point, null, getMat3_identity(), -1, self);
                 if ((contents & MASK_WATER) != 0) {
 
-                    this.waterLevel = WATERLEVEL_WAIST;
+                    waterLevel = WATERLEVEL_WAIST;
 
                     // check at head level
-                    point = this.current.origin.oMinus(this.gravityNormal.oMultiply(bounds.oGet(1, 2) - 1.0f));
-                    contents = gameLocal.clip.Contents(point, null, getMat3_identity(), -1, this.self);
+                    point = current.origin.oMinus(gravityNormal.oMultiply(bounds.oGet(1, 2) - 1.0f));
+                    contents = gameLocal.clip.Contents(point, null, getMat3_identity(), -1, self);
                     if ((contents & MASK_WATER) != 0) {
-                        this.waterLevel = WATERLEVEL_HEAD;
+                        waterLevel = WATERLEVEL_HEAD;
                     }
                 }
             }
@@ -1746,12 +1742,12 @@ public class Physics_Player {
 
         private void DropTimers() {
             // drop misc timing counter
-            if (this.current.movementTime != 0) {
-                if (this.framemsec >= this.current.movementTime) {
-                    this.current.movementFlags &= ~PMF_ALL_TIMES;
-                    this.current.movementTime = 0;
+            if (current.movementTime != 0) {
+                if (framemsec >= current.movementTime) {
+                    current.movementFlags &= ~PMF_ALL_TIMES;
+                    current.movementTime = 0;
                 } else {
-                    this.current.movementTime -= this.framemsec;
+                    current.movementTime -= framemsec;
                 }
             }
         }
@@ -1762,59 +1758,59 @@ public class Physics_Player {
             // by setting a conditional breakpoint for the previous frame
             c_pmove++;
 
-            this.walking = false;
-            this.groundPlane = false;
-            this.ladder = false;
+            walking = false;
+            groundPlane = false;
+            ladder = false;
 
             // determine the time
-            this.framemsec = msec;
-            this.frametime = this.framemsec * 0.001f;
+            framemsec = msec;
+            frametime = framemsec * 0.001f;
 
             // default speed
-            this.playerSpeed = this.walkSpeed;
+            playerSpeed = walkSpeed;
 
             // remove jumped and stepped up flag
-            this.current.movementFlags &= ~(PMF_JUMPED | PMF_STEPPED_UP | PMF_STEPPED_DOWN);
-            this.current.stepUp = 0.0f;
+            current.movementFlags &= ~(PMF_JUMPED | PMF_STEPPED_UP | PMF_STEPPED_DOWN);
+            current.stepUp = 0.0f;
 
-            if (this.command.upmove < 10) {
+            if (command.upmove < 10) {
                 // not holding jump
-                this.current.movementFlags &= ~PMF_JUMP_HELD;
+                current.movementFlags &= ~PMF_JUMP_HELD;
             }
 
             // if no movement at all
-            if (this.current.movementType == etoi(PM_FREEZE)) {
+            if (current.movementType == etoi(PM_FREEZE)) {
                 return;
             }
 
             // move the player velocity into the frame of a pusher
-            this.current.velocity.oMinSet(this.current.pushVelocity);
+            current.velocity.oMinSet(current.pushVelocity);
 
             // view vectors
-            this.viewAngles.ToVectors(this.viewForward, null, null);
-            this.viewForward.oMulSet(this.clipModelAxis);
-            this.viewRight.oSet(this.gravityNormal.Cross(this.viewForward));
-            this.viewRight.Normalize();
+            viewAngles.ToVectors(viewForward, null, null);
+            viewForward.oMulSet(clipModelAxis);
+            viewRight.oSet(gravityNormal.Cross(viewForward));
+            viewRight.Normalize();
 
             // fly in spectator mode
-            if (this.current.movementType == etoi(PM_SPECTATOR)) {
+            if (current.movementType == etoi(PM_SPECTATOR)) {
                 SpectatorMove();
                 this.DropTimers();
                 return;
             }
 
             // special no clip mode
-            if (this.current.movementType == etoi(PM_NOCLIP)) {
+            if (current.movementType == etoi(PM_NOCLIP)) {
                 this.NoclipMove();
                 this.DropTimers();
                 return;
             }
 
             // no control when dead
-            if (this.current.movementType == etoi(PM_DEAD)) {
-                this.command.forwardmove = 0;
-                this.command.rightmove = 0;
-                this.command.upmove = 0;
+            if (current.movementType == etoi(PM_DEAD)) {
+                command.forwardmove = 0;
+                command.rightmove = 0;
+                command.upmove = 0;
             }
 
             // set watertype and waterlevel
@@ -1833,19 +1829,19 @@ public class Physics_Player {
             this.DropTimers();
 
             // move
-            if (this.current.movementType == etoi(PM_DEAD)) {
+            if (current.movementType == etoi(PM_DEAD)) {
                 // dead
                 this.DeadMove();
-            } else if (this.ladder) {
+            } else if (ladder) {
                 // going up or down a ladder
                 this.LadderMove();
-            } else if ((this.current.movementFlags & PMF_TIME_WATERJUMP) != 0) {
+            } else if ((current.movementFlags & PMF_TIME_WATERJUMP) != 0) {
                 // jumping out of water
                 this.WaterJumpMove();
-            } else if (etoi(this.waterLevel) > 1) {
+            } else if (etoi(waterLevel) > 1) {
                 // swimming
                 this.WaterMove();
-            } else if (this.walking) {
+            } else if (walking) {
                 // walking on ground
                 this.WalkMove();
             } else {
@@ -1858,10 +1854,10 @@ public class Physics_Player {
             this.CheckGround();
 
             // move the player velocity back into the world frame
-            this.current.velocity.oPluSet(this.current.pushVelocity);
-            this.current.pushVelocity.Zero();
+            current.velocity.oPluSet(current.pushVelocity);
+            current.pushVelocity.Zero();
         }
-    }
+    };
 
     /*
      ================

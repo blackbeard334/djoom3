@@ -24,15 +24,30 @@ import static neo.framework.KeyInput.K_F9;
 import static neo.framework.KeyInput.K_HOME;
 import static neo.framework.KeyInput.K_INS;
 import static neo.framework.KeyInput.K_KP_5;
+import static neo.framework.KeyInput.K_KP_DEL;
+import static neo.framework.KeyInput.K_KP_DOWNARROW;
+import static neo.framework.KeyInput.K_KP_END;
+import static neo.framework.KeyInput.K_KP_ENTER;
+import static neo.framework.KeyInput.K_KP_EQUALS;
+import static neo.framework.KeyInput.K_KP_HOME;
+import static neo.framework.KeyInput.K_KP_INS;
+import static neo.framework.KeyInput.K_KP_LEFTARROW;
 import static neo.framework.KeyInput.K_KP_MINUS;
+import static neo.framework.KeyInput.K_KP_NUMLOCK;
+import static neo.framework.KeyInput.K_KP_PGDN;
+import static neo.framework.KeyInput.K_KP_PGUP;
 import static neo.framework.KeyInput.K_KP_PLUS;
+import static neo.framework.KeyInput.K_KP_RIGHTARROW;
+import static neo.framework.KeyInput.K_KP_SLASH;
 import static neo.framework.KeyInput.K_KP_STAR;
+import static neo.framework.KeyInput.K_KP_UPARROW;
 import static neo.framework.KeyInput.K_LEFTARROW;
 import static neo.framework.KeyInput.K_LWIN;
 import static neo.framework.KeyInput.K_MENU;
 import static neo.framework.KeyInput.K_PAUSE;
 import static neo.framework.KeyInput.K_PGDN;
 import static neo.framework.KeyInput.K_PGUP;
+import static neo.framework.KeyInput.K_PRINT_SCR;
 import static neo.framework.KeyInput.K_RIGHTARROW;
 import static neo.framework.KeyInput.K_RIGHT_ALT;
 import static neo.framework.KeyInput.K_RWIN;
@@ -40,15 +55,18 @@ import static neo.framework.KeyInput.K_SCROLL;
 import static neo.framework.KeyInput.K_SHIFT;
 import static neo.framework.KeyInput.K_UPARROW;
 import static neo.idlib.Lib.idLib.cvarSystem;
-import static neo.open.gl.QUser.getShiftedScancode;
+import static neo.sys.sys_public.sysEventType_t.SE_CHAR;
+import static neo.sys.sys_public.sysEventType_t.SE_KEY;
 import static neo.sys.win_local.win32;
+import static neo.sys.win_main.Sys_QueEvent;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
 import java.awt.event.InputEvent;
 
+import org.lwjgl.glfw.GLFW;
+
 import neo.TempDump.TODO_Exception;
 import neo.idlib.Text.Str.idStr;
-import neo.open.gl.QUser;
-import neo.sys.win_local.Win32Vars_t;
 
 /**
  *
@@ -83,197 +101,197 @@ public class win_input {
 
 //==========================================================================
 
-static final char[] s_scantokey/*[256]*/ = {
-    //  0            1       2          3          4       5            6         7
-    //  8            9       A          B          C       D            E         F
-	0,           27,    '1',       '2',        '3',    '4',         '5',      '6',
-	'7',        '8',    '9',       '0',        '-',    '=',          K_BACKSPACE, 9, // 0
-	'q',        'w',    'e',       'r',        't',    'y',         'u',      'i',
-	'o',        'p',    '[',       ']',        K_ENTER,K_CTRL,      'a',      's',   // 1
-	'd',        'f',    'g',       'h',        'j',    'k',         'l',      ';',
-	'\'',       '`',    K_SHIFT,   '\\',       'z',    'x',         'c',      'v',   // 2
-	'b',        'n',    'm',       ',',        '.',    '/',         K_SHIFT,  K_KP_STAR,
-	K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
-	K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
-	K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
-	K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           0,        K_F11,
-	K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0,     // 6
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0,     // 7
-    // shifted
-    0,           27,    '!',       '@',        '#',    '$',         '%',      '^',
-    '&',        '*',    '(',       ')',        '_',    '+',          K_BACKSPACE, 9, // 0
-    'Q',        'W',    'E',       'R',        'T',    'Y',         'U',      'I',
-    'O',        'P',    '[',       ']',        K_ENTER,K_CTRL,      'A',      'S',   // 1
-    'D',        'F',    'G',       'H',        'J',    'K',         'L',      ';',
-    '\'',       '~',    K_SHIFT,   '\\',       'Z',    'X',         'C',      'V',   // 2
-	'B',        'B',    'M',       ',',        '.',    '/',         K_SHIFT,  K_KP_STAR,
-	K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
-	K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
-	K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
-	K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           0,        K_F11,
-	K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0,     // 6
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0      // 7
-};
+    static final char[] s_scantokey/*[256]*/ = {
+    	    //  0            1       2          3          4       5            6         7
+    	    //  8            9       A          B          C       D            E         F
+    		0,           27,    '1',       '2',        '3',    '4',         '5',      '6',
+    		'7',        '8',    '9',       '0',        '-',    '=',          K_BACKSPACE, 9, // 0
+    		'q',        'w',    'e',       'r',        't',    'y',         'u',      'i',
+    		'o',        'p',    '[',       ']',        K_ENTER,K_CTRL,      'a',      's',   // 1
+    		'd',        'f',    'g',       'h',        'j',    'k',         'l',      ';',
+    		'\'',       '`',    K_SHIFT,   '\\',       'z',    'x',         'c',      'v',   // 2
+    		'b',        'n',    'm',       ',',        '.',    '/',         K_SHIFT,  K_KP_STAR,
+    		K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
+    		K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
+    		K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
+    		K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           0,        K_F11,
+    		K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0,     // 6
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0,     // 7
+    	    // shifted
+    	    0,           27,    '!',       '@',        '#',    '$',         '%',      '^',
+    	    '&',        '*',    '(',       ')',        '_',    '+',          K_BACKSPACE, 9, // 0
+    	    'Q',        'W',    'E',       'R',        'T',    'Y',         'U',      'I',
+    	    'O',        'P',    '[',       ']',        K_ENTER,K_CTRL,      'A',      'S',   // 1
+    	    'D',        'F',    'G',       'H',        'J',    'K',         'L',      ';',
+    	    '\'',       '~',    K_SHIFT,   '\\',       'Z',    'X',         'C',      'V',   // 2
+    		'B',        'B',    'M',       ',',        '.',    '/',         K_SHIFT,  K_KP_STAR,
+    		K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
+    		K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
+    		K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
+    		K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           0,        K_F11,
+    		K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0,     // 6
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0      // 7
+    	};
 
-static final char[] s_scantokey_german/*[256]*/ = {
-    //  0            1       2          3          4       5            6         7
-    //  8            9       A          B          C       D            E         F
-	0,           27,    '1',       '2',        '3',    '4',         '5',      '6',
-	'7',        '8',    '9',       '0',        '?',    '\'',        K_BACKSPACE, 9,  // 0
-	'q',        'w',    'e',       'r',        't',    'z',         'u',      'i',
-	'o',        'p',    '=',       '+',        K_ENTER,K_CTRL,      'a',      's',   // 1
-	'd',        'f',    'g',       'h',        'j',    'k',         'l',      '[',
-	']',        '`',    K_SHIFT,   '#',        'y',    'x',         'c',      'v',   // 2
-	'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR,
-	K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
-	K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
-	K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
-	K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
-	K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0,     // 6
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0,      // 7
-    // shifted
-	0,           27,    '1',       '2',        '3',    '4',         '5',      '6',
-	'7',        '8',    '9',       '0',        '?',    '\'',        K_BACKSPACE, 9,  // 0
-	'q',        'w',    'e',       'r',        't',    'z',         'u',      'i',
-	'o',        'p',    '=',       '+',        K_ENTER,K_CTRL,      'a',      's',   // 1
-	'd',        'f',    'g',       'h',        'j',    'k',         'l',      '[',
-	']',        '`',    K_SHIFT,   '#',        'y',    'x',         'c',      'v',   // 2
-	'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR,
-	K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
-	K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
-	K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
-	K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
-	K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0,     // 6
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0      // 7
-};
+    	static final char[] s_scantokey_german/*[256]*/ = {
+    	    //  0            1       2          3          4       5            6         7
+    	    //  8            9       A          B          C       D            E         F
+    		0,           27,    '1',       '2',        '3',    '4',         '5',      '6',
+    		'7',        '8',    '9',       '0',        '?',    '\'',        K_BACKSPACE, 9,  // 0
+    		'q',        'w',    'e',       'r',        't',    'z',         'u',      'i',
+    		'o',        'p',    '=',       '+',        K_ENTER,K_CTRL,      'a',      's',   // 1
+    		'd',        'f',    'g',       'h',        'j',    'k',         'l',      '[',
+    		']',        '`',    K_SHIFT,   '#',        'y',    'x',         'c',      'v',   // 2
+    		'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR,
+    		K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
+    		K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
+    		K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
+    		K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
+    		K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0,     // 6
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0,      // 7
+    	    // shifted
+    		0,           27,    '1',       '2',        '3',    '4',         '5',      '6',
+    		'7',        '8',    '9',       '0',        '?',    '\'',        K_BACKSPACE, 9,  // 0
+    		'q',        'w',    'e',       'r',        't',    'z',         'u',      'i',
+    		'o',        'p',    '=',       '+',        K_ENTER,K_CTRL,      'a',      's',   // 1
+    		'd',        'f',    'g',       'h',        'j',    'k',         'l',      '[',
+    		']',        '`',    K_SHIFT,   '#',        'y',    'x',         'c',      'v',   // 2
+    		'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR,
+    		K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
+    		K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
+    		K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
+    		K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
+    		K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0,     // 6
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0      // 7
+    	};
 
-static final char[] s_scantokey_french/*[256]*/ = {
-    //  0            1       2          3          4       5            6         7
-    //  8            9       A          B          C       D            E         F
-	0,           27,    '1',       '2',        '3',    '4',         '5',      '6',
-	'7',        '8',    '9',       '0',        ')',    '=',         K_BACKSPACE, 9, // 0
-	'a',        'z',    'e',       'r',        't',    'y',         'u',      'i',
-	'o',        'p',    '^',       '$',        K_ENTER,K_CTRL,      'q',      's',      // 1
-	'd',        'f',    'g',       'h',        'j',    'k',         'l',      'm',
-	'Ã¹',        '`',    K_SHIFT,   '*',        'w',    'x',         'c',      'v',      // 2
-	'b',        'n',    ',',       ';',        ':',    '!',         K_SHIFT,  K_KP_STAR,
-	K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
-	K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
-	K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
-	K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
-	K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0,     // 6
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0,      // 7
-    // shifted
-	0,           27,    '&',       'Ã©',        '\"',    '\'',         '(',      '-',
-	'Ã¨',        '_',    'Ã§',       'Ã ',        'Â°',    '+',         K_BACKSPACE, 9, // 0
-	'a',        'z',    'e',       'r',        't',    'y',         'u',      'i',
-	'o',        'p',    '^',       '$',        K_ENTER,K_CTRL,      'q',      's',      // 1
-	'd',        'f',    'g',       'h',        'j',    'k',         'l',      'm',
-	'Ã¹',        0,    K_SHIFT,   '*',        'w',    'x',         'c',      'v',      // 2
-	'b',        'n',    ',',       ';',        ':',    '!',         K_SHIFT,  K_KP_STAR,
-	K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
-	K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
-	K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
-	K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
-	K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0,     // 6
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0      // 7
-};
+    	static final char[] s_scantokey_french/*[256]*/ = {
+    	    //  0            1       2          3          4       5            6         7
+    	    //  8            9       A          B          C       D            E         F
+    		0,           27,    '1',       '2',        '3',    '4',         '5',      '6',
+    		'7',        '8',    '9',       '0',        ')',    '=',         K_BACKSPACE, 9, // 0
+    		'a',        'z',    'e',       'r',        't',    'y',         'u',      'i',
+    		'o',        'p',    '^',       '$',        K_ENTER,K_CTRL,      'q',      's',      // 1
+    		'd',        'f',    'g',       'h',        'j',    'k',         'l',      'm',
+    		'ù',        '`',    K_SHIFT,   '*',        'w',    'x',         'c',      'v',      // 2
+    		'b',        'n',    ',',       ';',        ':',    '!',         K_SHIFT,  K_KP_STAR,
+    		K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
+    		K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
+    		K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
+    		K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
+    		K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0,     // 6
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0,      // 7
+    	    // shifted
+    		0,           27,    '&',       'é',        '\"',    '\'',         '(',      '-',
+    		'è',        '_',    'ç',       'à',        '°',    '+',         K_BACKSPACE, 9, // 0
+    		'a',        'z',    'e',       'r',        't',    'y',         'u',      'i',
+    		'o',        'p',    '^',       '$',        K_ENTER,K_CTRL,      'q',      's',      // 1
+    		'd',        'f',    'g',       'h',        'j',    'k',         'l',      'm',
+    		'ù',        0,    K_SHIFT,   '*',        'w',    'x',         'c',      'v',      // 2
+    		'b',        'n',    ',',       ';',        ':',    '!',         K_SHIFT,  K_KP_STAR,
+    		K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
+    		K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
+    		K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
+    		K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
+    		K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0,     // 6
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0      // 7
+    	};
 
-static final char[] s_scantokey_spanish/*[256]*/ = {
-    //  0            1       2          3          4       5            6         7
-    //  8            9       A          B          C       D            E         F
-	0,           27,    '1',       '2',        '3',    '4',         '5',      '6',
-	'7',        '8',    '9',       '0',        '\'',   'Â¡',         K_BACKSPACE, 9,  // 0
-	'q',        'w',    'e',       'r',        't',    'y',         'u',      'i',
-	'o',        'p',    '`',       '+',        K_ENTER,K_CTRL,      'a',      's',   // 1
-	'd',        'f',    'g',       'h',        'j',    'k',         'l',      'Ã±',
-	'Â´',        'Âº',    K_SHIFT,   'Ã§',        'z',    'x',         'c',      'v',   // 2
-	'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR,
-	K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
-	K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
-	K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
-	K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
-	K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0,     // 6
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0,      // 7
-    // shifted
-	0,           27,    '!',       '\"',        'Â·',    '$',         '%',      '&',
-	'/',        '(',    ')',       '=',        '?',   'Â¿',         K_BACKSPACE, 9,  // 0
-	'q',        'w',    'e',       'r',        't',    'y',         'u',      'i',
-	'o',        'p',    '^',       '*',        K_ENTER,K_CTRL,      'a',      's',   // 1
-	'd',        'f',    'g',       'h',        'j',    'k',         'l',      'Ã‘',
-	'Â¨',        'Âª',    K_SHIFT,   'Ã‡',        'z',    'x',         'c',      'v',   // 2
-	'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR,
-	K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
-	K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
-	K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
-	K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
-	K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0,     // 6
-	0,          0,      0,         0,          0,      0,           0,        0,
-	0,          0,      0,         0,          0,      0,           0,        0      // 7
-};
+    	static final char[] s_scantokey_spanish/*[256]*/ = {
+    	    //  0            1       2          3          4       5            6         7
+    	    //  8            9       A          B          C       D            E         F
+    		0,           27,    '1',       '2',        '3',    '4',         '5',      '6',
+    		'7',        '8',    '9',       '0',        '\'',   '¡',         K_BACKSPACE, 9,  // 0
+    		'q',        'w',    'e',       'r',        't',    'y',         'u',      'i',
+    		'o',        'p',    '`',       '+',        K_ENTER,K_CTRL,      'a',      's',   // 1
+    		'd',        'f',    'g',       'h',        'j',    'k',         'l',      'ñ',
+    		'´',        'º',    K_SHIFT,   'ç',        'z',    'x',         'c',      'v',   // 2
+    		'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR,
+    		K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
+    		K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
+    		K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
+    		K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
+    		K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0,     // 6
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0,      // 7
+    	    // shifted
+    		0,           27,    '!',       '\"',        '·',    '$',         '%',      '&',
+    		'/',        '(',    ')',       '=',        '?',   '¿',         K_BACKSPACE, 9,  // 0
+    		'q',        'w',    'e',       'r',        't',    'y',         'u',      'i',
+    		'o',        'p',    '^',       '*',        K_ENTER,K_CTRL,      'a',      's',   // 1
+    		'd',        'f',    'g',       'h',        'j',    'k',         'l',      'Ñ',
+    		'¨',        'ª',    K_SHIFT,   'Ç',        'z',    'x',         'c',      'v',   // 2
+    		'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR,
+    		K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
+    		K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
+    		K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
+    		K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
+    		K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0,     // 6
+    		0,          0,      0,         0,          0,      0,           0,        0,
+    		0,          0,      0,         0,          0,      0,           0,        0      // 7
+    	};
 
-static final char[] s_scantokey_italian/*[256]*/ = {
-    //  0            1       2          3          4       5            6         7
-    //  8            9       A          B          C       D            E         F
-        0,           27,    '1',       '2',        '3',    '4',         '5',      '6',
-        '7',        '8',    '9',       '0',        '\'',   'Ã¬',         K_BACKSPACE, 9,  // 0
-        'q',        'w',    'e',       'r',        't',    'y',         'u',      'i',
-        'o',        'p',    'Ã¨',       '+',        K_ENTER,K_CTRL,      'a',      's',   // 1
-        'd',        'f',    'g',       'h',        'j',    'k',         'l',      'Ã²',
-        'Ã ',        '\\',    K_SHIFT,   'Ã¹',        'z',    'x',         'c',      'v',   // 2
-        'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR,
-        K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
-        K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
-        K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
-        K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
-        K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
-        0,          0,      0,         0,          0,      0,           0,        0,
-        0,          0,      0,         0,          0,      0,           0,        0,     // 6
-        0,          0,      0,         0,          0,      0,           0,        0,
-        0,          0,      0,         0,          0,      0,           0,        0,      // 7
-    // shifted
-        0,           27,    '!',       '\"',        'Â£',    '$',         '%',      '&',
-        '/',        '(',    ')',       '=',        '?',   '^',         K_BACKSPACE, 9,  // 0
-        'q',        'w',    'e',       'r',        't',    'y',         'u',      'i',
-        'o',        'p',    'Ã©',       '*',        K_ENTER,K_CTRL,      'a',      's',   // 1
-        'd',        'f',    'g',       'h',        'j',    'k',         'l',      'Ã§',
-        'Â°',        '|',    K_SHIFT,   'Â§',        'z',    'x',         'c',      'v',   // 2
-        'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR,
-        K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
-        K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
-        K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
-        K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
-        K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
-        0,          0,      0,         0,          0,      0,           0,        0,
-        0,          0,      0,         0,          0,      0,           0,        0,     // 6
-        0,          0,      0,         0,          0,      0,           0,        0,
-        0,          0,      0,         0,          0,      0,           0,        0		 // 7
+    	static final char[] s_scantokey_italian/*[256]*/ = {
+    	    //  0            1       2          3          4       5            6         7
+    	    //  8            9       A          B          C       D            E         F
+    	        0,           27,    '1',       '2',        '3',    '4',         '5',      '6',
+    	        '7',        '8',    '9',       '0',        '\'',   'ì',         K_BACKSPACE, 9,  // 0
+    	        'q',        'w',    'e',       'r',        't',    'y',         'u',      'i',
+    	        'o',        'p',    'è',       '+',        K_ENTER,K_CTRL,      'a',      's',   // 1
+    	        'd',        'f',    'g',       'h',        'j',    'k',         'l',      'ò',
+    	        'à',        '\\',    K_SHIFT,   'ù',        'z',    'x',         'c',      'v',   // 2
+    	        'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR,
+    	        K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
+    	        K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
+    	        K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
+    	        K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
+    	        K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
+    	        0,          0,      0,         0,          0,      0,           0,        0,
+    	        0,          0,      0,         0,          0,      0,           0,        0,     // 6
+    	        0,          0,      0,         0,          0,      0,           0,        0,
+    	        0,          0,      0,         0,          0,      0,           0,        0,      // 7
+    	    // shifted
+    	        0,           27,    '!',       '\"',        '£',    '$',         '%',      '&',
+    	        '/',        '(',    ')',       '=',        '?',   '^',         K_BACKSPACE, 9,  // 0
+    	        'q',        'w',    'e',       'r',        't',    'y',         'u',      'i',
+    	        'o',        'p',    'é',       '*',        K_ENTER,K_CTRL,      'a',      's',   // 1
+    	        'd',        'f',    'g',       'h',        'j',    'k',         'l',      'ç',
+    	        '°',        '|',    K_SHIFT,   '§',        'z',    'x',         'c',      'v',   // 2
+    	        'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR,
+    	        K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
+    	        K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME,
+    	        K_UPARROW,  K_PGUP, K_KP_MINUS,K_LEFTARROW,K_KP_5, K_RIGHTARROW,K_KP_PLUS,K_END, // 4
+    	        K_DOWNARROW,K_PGDN, K_INS,     K_DEL,      0,      0,           '<',      K_F11,
+    	        K_F12,      0,      0,         K_LWIN,     K_RWIN, K_MENU,      0,        0,     // 5
+    	        0,          0,      0,         0,          0,      0,           0,        0,
+    	        0,          0,      0,         0,          0,      0,           0,        0,     // 6
+    	        0,          0,      0,         0,          0,      0,           0,        0,
+    	        0,          0,      0,         0,          0,      0,           0,        0		 // 7
 
 
-};
+    	};
 
 static char[] keyScanTable = s_scantokey;
 
@@ -326,14 +344,107 @@ static char[] keyScanTable = s_scantokey;
      */
     public static int IN_DIMapKey(final int key, final int scancode, final int mods) {
 
-        if ((key >= 260) && (scancode >= 128)) {
-            return QUser.mapKey(key);
+        if (key >= 260 && scancode >= 128) {
+            switch (key) {
+                case GLFW.GLFW_KEY_HOME:
+                    return K_HOME;
+                case GLFW.GLFW_KEY_UP:
+                    return K_UPARROW;
+                case GLFW.GLFW_KEY_PAGE_UP:
+                    return K_PGUP;
+                case GLFW.GLFW_KEY_LEFT:
+                    return K_LEFTARROW;
+                case GLFW.GLFW_KEY_RIGHT:
+                    return K_RIGHTARROW;
+                case GLFW.GLFW_KEY_END:
+                    return K_END;
+                case GLFW.GLFW_KEY_DOWN:
+                    return K_DOWNARROW;
+                case GLFW.GLFW_KEY_PAGE_DOWN:
+                    return K_PGDN;
+                case GLFW.GLFW_KEY_INSERT:
+                    return K_INS;
+                case GLFW.GLFW_KEY_DELETE:
+                    return K_DEL;
+                case GLFW.GLFW_KEY_RIGHT_ALT:
+                    return rightAltKey;
+                case GLFW.GLFW_KEY_RIGHT_CONTROL:
+                    return K_CTRL;
+                case GLFW.GLFW_KEY_KP_ENTER:
+                    return K_KP_ENTER;
+                case GLFW.GLFW_KEY_KP_EQUAL:
+                    return K_KP_EQUALS;
+                case GLFW.GLFW_KEY_PAUSE:
+                    return K_PAUSE;
+                case GLFW.GLFW_KEY_KP_DIVIDE:
+                    return K_KP_SLASH;
+                case GLFW.GLFW_KEY_LEFT_SUPER:
+                    return K_LWIN;
+                case GLFW.GLFW_KEY_RIGHT_SUPER:
+                    return K_RWIN;
+                case GLFW.GLFW_KEY_MENU:
+                    return K_MENU;
+                case GLFW.GLFW_KEY_PRINT_SCREEN:
+                    return K_PRINT_SCR;
+
+                case GLFW.GLFW_KEY_KP_7:
+                    return K_KP_HOME;
+                case GLFW.GLFW_KEY_KP_8:
+                    return K_KP_UPARROW;
+                case GLFW.GLFW_KEY_KP_9:
+                    return K_KP_PGUP;
+                case GLFW.GLFW_KEY_KP_4:
+                    return K_KP_LEFTARROW;
+                case GLFW.GLFW_KEY_KP_5:
+                    return K_KP_5;
+                case GLFW.GLFW_KEY_KP_6:
+                    return K_KP_RIGHTARROW;
+                case GLFW.GLFW_KEY_KP_1:
+                    return K_KP_END;
+                case GLFW.GLFW_KEY_KP_2:
+                    return K_KP_DOWNARROW;
+                case GLFW.GLFW_KEY_KP_3:
+                    return K_KP_PGDN;
+                case GLFW.GLFW_KEY_KP_0:
+                    return K_KP_INS;
+                case GLFW.GLFW_KEY_KP_DECIMAL:
+                    return K_KP_DEL;
+                case GLFW.GLFW_KEY_KP_SUBTRACT:
+                    return K_KP_MINUS;
+                case GLFW.GLFW_KEY_KP_ADD:
+                    return K_KP_PLUS;
+                case GLFW.GLFW_KEY_NUM_LOCK:
+                    return K_KP_NUMLOCK;
+                case GLFW.GLFW_KEY_KP_MULTIPLY:
+                    return K_KP_STAR;
+                default:
+                    return 0;
+            }
         }
-        if (scancode > 256) {
-			return 0;
-		}
+        if (scancode > 256) return 0;
 
         return keyScanTable[getShiftedScancode(key, scancode, mods)];
+    }
+
+    private static int getShiftedScancode(final int key, final int scancode, final int mods) {
+        int shiftedCode = scancode;
+        if (isShiftableKey(key)) {
+            if ((GLFW.GLFW_MOD_CAPS_LOCK & mods) != 0 && isShiftableLetter(key))
+                shiftedCode += 128;
+            if ((GLFW.GLFW_MOD_SHIFT & mods) != 0)
+                shiftedCode += 128;
+        }
+        return shiftedCode % 256;
+    }
+
+    private static boolean isShiftableKey(final int key) {
+        return key == GLFW.GLFW_KEY_APOSTROPHE || key == GLFW.GLFW_KEY_COMMA || key == GLFW.GLFW_KEY_MINUS || key == GLFW.GLFW_KEY_PERIOD || key == GLFW.GLFW_KEY_SLASH || key == GLFW.GLFW_KEY_0 || key == GLFW.GLFW_KEY_1 || key == GLFW.GLFW_KEY_2 || key == GLFW.GLFW_KEY_3 || key == GLFW.GLFW_KEY_4 || key == GLFW.GLFW_KEY_5 || key == GLFW.GLFW_KEY_6 || key == GLFW.GLFW_KEY_7 || key == GLFW.GLFW_KEY_8 || key == GLFW.GLFW_KEY_9 || key == GLFW.GLFW_KEY_SEMICOLON || key == GLFW.GLFW_KEY_EQUAL ||
+                isShiftableLetter(key)
+                || key == GLFW.GLFW_KEY_LEFT_BRACKET || key == GLFW.GLFW_KEY_BACKSLASH || key == GLFW.GLFW_KEY_RIGHT_BRACKET || key == GLFW.GLFW_KEY_GRAVE_ACCENT || key == GLFW.GLFW_KEY_WORLD_1 || key == GLFW.GLFW_KEY_WORLD_2;
+    }
+
+    private static boolean isShiftableLetter(final int key) {
+        return key >= GLFW.GLFW_KEY_A && key <= GLFW.GLFW_KEY_Z;
     }
 
     /*
@@ -496,7 +607,7 @@ static char[] keyScanTable = s_scantokey;
 
         common.Printf("\n------- Input Initialization -------\n");
 //        IN_InitDirectInput();
-        if (Win32Vars_t.in_mouse.GetBool()) {
+        if (win32.in_mouse.GetBool()) {
             IN_InitDIMouse();
             // don't grab the mouse on initialization
             Sys_GrabMouseCursor(false);
@@ -505,7 +616,7 @@ static char[] keyScanTable = s_scantokey;
         }
         IN_StartupKeyboard();
         common.Printf("------------------------------------\n");
-        Win32Vars_t.in_mouse.ClearModified();
+        win32.in_mouse.ClearModified();
     }
 
     /*
@@ -515,7 +626,7 @@ static char[] keyScanTable = s_scantokey;
      */
     public static void Sys_InitScanTable() {
 
-        final idStr lang = new idStr(cvarSystem.GetCVarString("sys_lang"));
+        idStr lang = new idStr(cvarSystem.GetCVarString("sys_lang"));
         if (lang.Length() == 0) {
             lang.oSet("english");
         }
@@ -638,7 +749,28 @@ static char[] keyScanTable = s_scantokey;
 	public static int Sys_ReturnKeyboardInputEvent(int[] ch, final int action, final int key, final int scancode, final int mods) {
 		ch[0] = IN_DIMapKey(key, scancode, mods);
 //        action[0] = Keyboard.getEventKeyState();//state = (polled_didod[ n ].dwData & 0x80) == 0x80;
-		QUser.processKeyboardInputEvents(ch[0], action, GetTickCount());
+		switch (ch[0]) {
+			case K_PRINT_SCR:
+				if (action == GLFW_RELEASE) {
+					// don't queue printscreen keys.  Since windows doesn't send us key
+					// down events for this, we handle queueing them with DirectInput
+					break;
+				}
+			case K_CTRL:
+			case K_ALT:
+			case K_RIGHT_ALT:
+				// for windows, add a keydown event for print screen here, since
+				// windows doesn't send keydown events to the WndProc for this key.
+				// ctrl and alt are handled here to get around windows sending ctrl and
+				// alt messages when the right-alt is pressed on non-US 102 keyboards.
+				Sys_QueEvent(GetTickCount(), SE_KEY, ch[0], action, 0, null);//TODO:enable this
+				break;
+			default:// nabbed from MainWndProc.
+                if (action == GLFW_RELEASE && ch[0] > 31 && ch[0] != '~' && ch[0] != '`' && ch[0] < 128)
+                    Sys_QueEvent(System.currentTimeMillis(), SE_CHAR, ch[0], action, 0, null);
+                else
+                    Sys_QueEvent(System.currentTimeMillis(), SE_KEY, ch[0], action, 0, null);
+		}
 		return ch[0];
 	}
 

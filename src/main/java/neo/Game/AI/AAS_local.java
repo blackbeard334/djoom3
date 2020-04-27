@@ -7,6 +7,7 @@ import static neo.Game.AI.AAS.PATHTYPE_BARRIERJUMP;
 import static neo.Game.AI.AAS.PATHTYPE_JUMP;
 import static neo.Game.AI.AAS.PATHTYPE_WALK;
 import static neo.Game.AI.AAS.PATHTYPE_WALKOFFLEDGE;
+import static neo.Game.AI.AAS_pathing.SUBSAMPLE_FLY_PATH;
 import static neo.Game.AI.AAS_pathing.SUBSAMPLE_WALK_PATH;
 import static neo.Game.AI.AAS_pathing.flyPathSampleDistance;
 import static neo.Game.AI.AAS_pathing.maxFlyPathDistance;
@@ -68,7 +69,6 @@ import static neo.idlib.math.Vector.getVec3_origin;
 
 import java.nio.IntBuffer;
 
-import neo.Game.Game_local.idGameLocal;
 import neo.Game.Player.idPlayer;
 import neo.Game.AI.AAS.aasGoal_s;
 import neo.Game.AI.AAS.aasObstacle_s;
@@ -125,27 +125,27 @@ public class AAS_local {
         private idRoutingCache            cacheListStart;        // start of list with cache sorted from oldest to newest
         private idRoutingCache            cacheListEnd;          // end of list with cache sorted from oldest to newest
         private int                       totalCacheMemory;      // total cache memory used
-        private final idList<idRoutingObstacle> obstacleList;          // list with obstacles
+        private idList<idRoutingObstacle> obstacleList;          // list with obstacles
         //
         //
 
         public idAASLocal() {
-            this.file = null;
-            this.obstacleList = new idList<>();
+            file = null;
+            obstacleList = new idList<>();
         }
         // virtual						~idAASLocal();
 
         @Override
         public boolean Init(final idStr mapName, /*unsigned int*/ long mapFileCRC) {
-            if ((this.file != null) && (mapName.Icmp(this.file.GetName()) == 0) && (mapFileCRC == this.file.GetCRC())) {
-                common.Printf("Keeping %s\n", this.file.GetName());
+            if (file != null && mapName.Icmp(file.GetName()) == 0 && mapFileCRC == file.GetCRC()) {
+                common.Printf("Keeping %s\n", file.GetName());
                 RemoveAllObstacles();
             } else {
                 Shutdown();
 
-                this.file = AASFileManager.LoadAAS(mapName.getData(), mapFileCRC);
-                if (NOT(this.file)) {
-                    common.DWarning("Couldn't load AAS file: '%s'", mapName.getData());
+                file = AASFileManager.LoadAAS(mapName.toString(), mapFileCRC);
+                if (NOT(file)) {
+                    common.DWarning("Couldn't load AAS file: '%s'", mapName.toString());
                     return false;
                 }
                 SetupRouting();
@@ -154,45 +154,45 @@ public class AAS_local {
         }
 
         public void Shutdown() {
-            if (this.file != null) {
+            if (file != null) {
                 ShutdownRouting();
                 RemoveAllObstacles();
-                AASFileManager.FreeAAS(this.file);
-                this.file = null;
+                AASFileManager.FreeAAS(file);
+                file = null;
             }
         }
 
         @Override
         public void Stats() {
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return;
             }
-            common.Printf("[%s]\n", this.file.GetName());
-            this.file.PrintInfo();
+            common.Printf("[%s]\n", file.GetName());
+            file.PrintInfo();
             RoutingStats();
         }
 
         @Override
         public void Test(final idVec3 origin) {
 
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return;
             }
 
             if (aas_randomPullPlayer.GetBool()) {
                 RandomPullPlayer(origin);
             }
-            if ((aas_pullPlayer.GetInteger() > 0) && (aas_pullPlayer.GetInteger() < this.file.GetNumAreas())) {
+            if ((aas_pullPlayer.GetInteger() > 0) && (aas_pullPlayer.GetInteger() < file.GetNumAreas())) {
                 ShowWalkPath(origin, aas_pullPlayer.GetInteger(), AreaCenter(aas_pullPlayer.GetInteger()));
                 PullPlayer(origin, aas_pullPlayer.GetInteger());
             }
-            if ((aas_showPath.GetInteger() > 0) && (aas_showPath.GetInteger() < this.file.GetNumAreas())) {
+            if ((aas_showPath.GetInteger() > 0) && (aas_showPath.GetInteger() < file.GetNumAreas())) {
                 ShowWalkPath(origin, aas_showPath.GetInteger(), AreaCenter(aas_showPath.GetInteger()));
             }
-            if ((aas_showFlyPath.GetInteger() > 0) && (aas_showFlyPath.GetInteger() < this.file.GetNumAreas())) {
+            if ((aas_showFlyPath.GetInteger() > 0) && (aas_showFlyPath.GetInteger() < file.GetNumAreas())) {
                 ShowFlyPath(origin, aas_showFlyPath.GetInteger(), AreaCenter(aas_showFlyPath.GetInteger()));
             }
-            if ((aas_showHideArea.GetInteger() > 0) && (aas_showHideArea.GetInteger() < this.file.GetNumAreas())) {
+            if ((aas_showHideArea.GetInteger() > 0) && (aas_showHideArea.GetInteger() < file.GetNumAreas())) {
                 ShowHideArea(origin, aas_showHideArea.GetInteger());
             }
             if (aas_showAreas.GetBool()) {
@@ -208,88 +208,88 @@ public class AAS_local {
 
         @Override
         public idAASSettings GetSettings() {
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return null;
             }
-            return this.file.GetSettings();
+            return file.GetSettings();
         }
 
         @Override
         public int PointAreaNum(final idVec3 origin) {
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return 0;
             }
-            return this.file.PointAreaNum(origin);
+            return file.PointAreaNum(origin);
         }
 
         @Override
         public int PointReachableAreaNum(final idVec3 origin, final idBounds searchBounds, final int areaFlags) {
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return 0;
             }
 
-            return this.file.PointReachableAreaNum(origin, searchBounds, areaFlags, TFL_INVALID);
+            return file.PointReachableAreaNum(origin, searchBounds, areaFlags, TFL_INVALID);
         }
 
         @Override
         public int BoundsReachableAreaNum(final idBounds bounds, final int areaFlags) {
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return 0;
             }
 
-            return this.file.BoundsReachableAreaNum(bounds, areaFlags, TFL_INVALID);
+            return file.BoundsReachableAreaNum(bounds, areaFlags, TFL_INVALID);
         }
 
         @Override
         public void PushPointIntoAreaNum(int areaNum, idVec3 origin) {
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return;
             }
-            this.file.PushPointIntoAreaNum(areaNum, origin);
+            file.PushPointIntoAreaNum(areaNum, origin);
         }
 
         @Override
         public idVec3 AreaCenter(int areaNum) {
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return getVec3_origin();
             }
-            return this.file.GetArea(areaNum).center;
+            return file.GetArea(areaNum).center;
         }
 
         @Override
         public int AreaFlags(int areaNum) {
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return 0;
             }
-            return this.file.GetArea(areaNum).flags;
+            return file.GetArea(areaNum).flags;
         }
 
         @Override
         public int AreaTravelFlags(int areaNum) {
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return 0;
             }
-            return this.file.GetArea(areaNum).travelFlags;
+            return file.GetArea(areaNum).travelFlags;
         }
 
         @Override
         public boolean Trace(aasTrace_s trace, final idVec3 start, final idVec3 end) {
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 trace.fraction
                         = trace.lastAreaNum
                         = trace.numAreas = 0;
                 return true;
             }
-            return this.file.Trace(trace, start, end);
+            return file.Trace(trace, start, end);
         }
         private static idPlane dummy;
 
         @Override
         public idPlane GetPlane(int planeNum) {
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return dummy;
             }
-            return this.file.GetPlane(planeNum);
+            return file.GetPlane(planeNum);
         }
 
         @Override
@@ -302,14 +302,14 @@ public class AAS_local {
             aasFace_s face1, face2;
             idReachability reach;
 
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return 0;
             }
 
             numEdges = 0;
 
-            areasVisited = new byte[this.file.GetNumAreas()];//	memset( areasVisited, 0, file.GetNumAreas() * sizeof( byte ) );
-            areaQueue = new int[this.file.GetNumAreas()];
+            areasVisited = new byte[file.GetNumAreas()];//	memset( areasVisited, 0, file.GetNumAreas() * sizeof( byte ) );
+            areaQueue = new int[file.GetNumAreas()];
 
             queueStart = -1;
             queueEnd = 0;
@@ -318,18 +318,18 @@ public class AAS_local {
 
             for (curArea = areaNum; queueStart < queueEnd; curArea = areaQueue[++queueStart]) {
 
-                area = this.file.GetArea(curArea);
+                area = file.GetArea(curArea);
 
                 for (i = 0; i < area.numFaces; i++) {
-                    face1Num = this.file.GetFaceIndex(area.firstFace + i);
-                    face1 = this.file.GetFace(abs(face1Num));
+                    face1Num = file.GetFaceIndex(area.firstFace + i);
+                    face1 = file.GetFace(abs(face1Num));
 
                     if (0 == (face1.flags & FACE_FLOOR)) {
                         continue;
                     }
 
                     for (j = 0; j < face1.numEdges; j++) {
-                        edge1Num = this.file.GetEdgeIndex(face1.firstEdge + j);
+                        edge1Num = file.GetEdgeIndex(face1.firstEdge + j);
                         absEdge1Num = abs(edge1Num);
 
                         // test if the edge is shared by another floor face of this area
@@ -337,15 +337,15 @@ public class AAS_local {
                             if (k == i) {
                                 continue;
                             }
-                            face2Num = this.file.GetFaceIndex(area.firstFace + k);
-                            face2 = this.file.GetFace(abs(face2Num));
+                            face2Num = file.GetFaceIndex(area.firstFace + k);
+                            face2 = file.GetFace(abs(face2Num));
 
                             if (0 == (face2.flags & FACE_FLOOR)) {
                                 continue;
                             }
 
                             for (l = 0; l < face2.numEdges; l++) {
-                                edge2Num = abs(this.file.GetEdgeIndex(face2.firstEdge + l));
+                                edge2Num = abs(file.GetEdgeIndex(face2.firstEdge + l));
                                 if (edge2Num == absEdge1Num) {
                                     break;
                                 }
@@ -392,7 +392,7 @@ public class AAS_local {
                 for (reach = area.reach; reach != null; reach = reach.next) {
                     if ((reach.travelType & travelFlags) != 0) {
                         // if the area the reachability leads to hasn't been visited yet and the area bounds touch the search bounds
-                        if ((0 == areasVisited[reach.toAreaNum]) && bounds.IntersectsBounds(this.file.GetArea(reach.toAreaNum).bounds)) {
+                        if (0 == areasVisited[reach.toAreaNum] && bounds.IntersectsBounds(file.GetArea(reach.toAreaNum).bounds)) {
                             areaQueue[queueEnd++] = reach.toAreaNum;
                             areasVisited[reach.toAreaNum] = 1;//true;
                         }
@@ -455,37 +455,37 @@ public class AAS_local {
 
         @Override
         public void GetEdgeVertexNumbers(int edgeNum, int[] verts/*[2]*/) {
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 verts[0] = verts[1] = 0;
                 return;
             }
-            final int[] v = this.file.GetEdge(abs(edgeNum)).vertexNum;
+            final int[] v = file.GetEdge(abs(edgeNum)).vertexNum;
             verts[0] = v[INTSIGNBITSET(edgeNum)];
             verts[1] = v[INTSIGNBITNOTSET(edgeNum)];
         }
 
         @Override
         public void GetEdge(int edgeNum, idVec3 start, idVec3 end) {
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 start.Zero();
                 end.Zero();
                 return;
             }
-            final int[] v = this.file.GetEdge(abs(edgeNum)).vertexNum;
-            start.oSet(this.file.GetVertex(v[INTSIGNBITSET(edgeNum)]));
-            end.oSet(this.file.GetVertex(v[INTSIGNBITNOTSET(edgeNum)]));
+            final int[] v = file.GetEdge(abs(edgeNum)).vertexNum;
+            start.oSet(file.GetVertex(v[INTSIGNBITSET(edgeNum)]));
+            end.oSet(file.GetVertex(v[INTSIGNBITNOTSET(edgeNum)]));
         }
 
         @Override
         public boolean SetAreaState(final idBounds bounds, final int areaContents, boolean disabled) {
-            final idBounds expBounds = new idBounds();
+            idBounds expBounds = new idBounds();
 
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return false;
             }
 
-            expBounds.oSet(0, bounds.oGet(0).oMinus(this.file.GetSettings().boundingBoxes[0].oGet(1)));
-            expBounds.oSet(1, bounds.oGet(1).oMinus(this.file.GetSettings().boundingBoxes[0].oGet(0)));
+            expBounds.oSet(0, bounds.oGet(0).oMinus(file.GetSettings().boundingBoxes[0].oGet(1)));
+            expBounds.oSet(1, bounds.oGet(1).oMinus(file.GetSettings().boundingBoxes[0].oGet(0)));
 
             // find all areas within or touching the bounds with the given contents and disable/enable them for routing
             return SetAreaState_r(1, expBounds, areaContents, disabled);
@@ -495,30 +495,30 @@ public class AAS_local {
         public int/*aasHandle_t*/ AddObstacle(final idBounds bounds) {
             idRoutingObstacle obstacle;
 
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return -1;
             }
 
             obstacle = new idRoutingObstacle();
-            obstacle.bounds.oSet(0, bounds.oGet(0).oMinus(this.file.GetSettings().boundingBoxes[0].oGet(1)));
-            obstacle.bounds.oSet(1, bounds.oGet(1).oMinus(this.file.GetSettings().boundingBoxes[0].oGet(0)));
+            obstacle.bounds.oSet(0, bounds.oGet(0).oMinus(file.GetSettings().boundingBoxes[0].oGet(1)));
+            obstacle.bounds.oSet(1, bounds.oGet(1).oMinus(file.GetSettings().boundingBoxes[0].oGet(0)));
             GetBoundsAreas_r(1, obstacle.bounds, obstacle.areas);
             SetObstacleState(obstacle, true);
 
-            this.obstacleList.Append(obstacle);
-            return this.obstacleList.Num() - 1;
+            obstacleList.Append(obstacle);
+            return obstacleList.Num() - 1;
         }
 
         @Override
         public void RemoveObstacle(final int/*aasHandle_t*/ handle) {
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return;
             }
-            if ((handle >= 0) && (handle < this.obstacleList.Num())) {
-                SetObstacleState(this.obstacleList.oGet(handle), false);
+            if ((handle >= 0) && (handle < obstacleList.Num())) {
+                SetObstacleState(obstacleList.oGet(handle), false);
 
 //		delete obstacleList[handle];
-                this.obstacleList.RemoveIndex(handle);
+                obstacleList.RemoveIndex(handle);
             }
         }
 
@@ -526,23 +526,23 @@ public class AAS_local {
         public void RemoveAllObstacles() {
             int i;
 
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return;
             }
 
-            for (i = 0; i < this.obstacleList.Num(); i++) {
-                SetObstacleState(this.obstacleList.oGet(i), false);
+            for (i = 0; i < obstacleList.Num(); i++) {
+                SetObstacleState(obstacleList.oGet(i), false);
 //		delete obstacleList[i];
             }
-            this.obstacleList.Clear();
+            obstacleList.Clear();
         }
 
         @Override
         public int TravelTimeToGoalArea(int areaNum, final idVec3 origin, int goalAreaNum, int travelFlags) {
-            final int[] travelTime = {0};
-            final idReachability[] reach = {null};
+            int[] travelTime = {0};
+            idReachability[] reach = {null};
 
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return 0;
             }
 
@@ -564,7 +564,7 @@ public class AAS_local {
             travelTime[0] = 0;
             reach[0] = null;
 
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return false;
             }
 
@@ -572,28 +572,28 @@ public class AAS_local {
                 return true;
             }
 
-            if ((areaNum <= 0) || (areaNum >= this.file.GetNumAreas())) {
+            if (areaNum <= 0 || areaNum >= file.GetNumAreas()) {
                 gameLocal.Printf("RouteToGoalArea: areaNum %d out of range\n", areaNum);
                 return false;
             }
-            if ((goalAreaNum <= 0) || (goalAreaNum >= this.file.GetNumAreas())) {
+            if (goalAreaNum <= 0 || goalAreaNum >= file.GetNumAreas()) {
                 gameLocal.Printf("RouteToGoalArea: goalAreaNum %d out of range\n", goalAreaNum);
                 return false;
             }
 
-            while (this.totalCacheMemory > MAX_ROUTING_CACHE_MEMORY) {
+            while (totalCacheMemory > MAX_ROUTING_CACHE_MEMORY) {
                 DeleteOldestCache();
             }
 
-            clusterNum = this.file.GetArea(areaNum).cluster;
-            goalClusterNum = this.file.GetArea(goalAreaNum).cluster;
+            clusterNum = file.GetArea(areaNum).cluster;
+            goalClusterNum = file.GetArea(goalAreaNum).cluster;
 
             // if the source area is a cluster portal, read directly from the portal cache
             if (clusterNum < 0) {
                 // if the goal area is a portal
                 if (goalClusterNum < 0) {
                     // just assume the goal area is part of the front cluster
-                    portal = this.file.GetPortal(-goalClusterNum);
+                    portal = file.GetPortal(-goalClusterNum);
                     goalClusterNum = portal.clusters[0];
                 }
                 // get the portal routing cache
@@ -608,14 +608,14 @@ public class AAS_local {
 
             // check if the goal area is a portal of the source area cluster
             if (goalClusterNum < 0) {
-                portal = this.file.GetPortal(-goalClusterNum);
-                if ((portal.clusters[0] == clusterNum) || (portal.clusters[1] == clusterNum)) {
+                portal = file.GetPortal(-goalClusterNum);
+                if (portal.clusters[0] == clusterNum || portal.clusters[1] == clusterNum) {
                     goalClusterNum = clusterNum;
                 }
             }
 
             // if both areas are in the same cluster
-            if ((clusterNum > 0) && (goalClusterNum > 0) && (clusterNum == goalClusterNum)) {
+            if (clusterNum > 0 && goalClusterNum > 0 && clusterNum == goalClusterNum) {
                 clusterCache = GetAreaRoutingCache(clusterNum, goalAreaNum, travelFlags);
                 clusterAreaNum = ClusterAreaNum(clusterNum, areaNum);
                 if (clusterCache.travelTimes[clusterAreaNum] != 0) {
@@ -628,20 +628,20 @@ public class AAS_local {
                 clusterCache = null;
             }
 
-            clusterNum = this.file.GetArea(areaNum).cluster;
-            goalClusterNum = this.file.GetArea(goalAreaNum).cluster;
+            clusterNum = file.GetArea(areaNum).cluster;
+            goalClusterNum = file.GetArea(goalAreaNum).cluster;
 
             // if the goal area is a portal
             if (goalClusterNum < 0) {
                 // just assume the goal area is part of the front cluster
-                portal = this.file.GetPortal(-goalClusterNum);
+                portal = file.GetPortal(-goalClusterNum);
                 goalClusterNum = portal.clusters[0];
             }
             // get the portal routing cache
             portalCache = GetPortalRoutingCache(goalClusterNum, goalAreaNum, travelFlags);
 
             // the cluster the area is in
-            cluster = this.file.GetCluster(clusterNum);
+            cluster = file.GetCluster(clusterNum);
             // current area inside the current cluster
             clusterAreaNum = ClusterAreaNum(clusterNum, areaNum);
             // if the area is not a reachable area
@@ -651,14 +651,14 @@ public class AAS_local {
 
             // find the portal of the source area cluster leading towards the goal area
             for (i = 0; i < cluster.numPortals; i++) {
-                portalNum = this.file.GetPortalIndex(cluster.firstPortal + i);
+                portalNum = file.GetPortalIndex(cluster.firstPortal + i);
 
                 // if the goal area isn't reachable from the portal
                 if (0 == portalCache.travelTimes[portalNum]) {
                     continue;
                 }
 
-                portal = this.file.GetPortal(portalNum);
+                portal = file.GetPortal(portalNum);
                 // get the cache of the portal area
                 areaCache = GetAreaRoutingCache(clusterNum, portal.areaNum, travelFlags);
                 // if the portal is not reachable from this area
@@ -671,7 +671,7 @@ public class AAS_local {
                 if (clusterCache != null) {
                     // if the next reachability from the portal leads back into the cluster
                     nextr = GetAreaReachability(portal.areaNum, portalCache.reachabilities[portalNum]);
-                    if ((this.file.GetArea(nextr.toAreaNum).cluster < 0) || (this.file.GetArea(nextr.toAreaNum).cluster == clusterNum)) {
+                    if (file.GetArea(nextr.toAreaNum).cluster < 0 || file.GetArea(nextr.toAreaNum).cluster == clusterNum) {
                         continue;
                     }
                 }
@@ -686,7 +686,7 @@ public class AAS_local {
                 t += portal.maxAreaTravelTime;
 
                 // if the time is better than the one already found
-                if ((0 == bestTime) || (t < bestTime)) {
+                if (0 == bestTime || t < bestTime) {
                     bestReach = r;
                     bestTime = t;
                 }
@@ -712,10 +712,10 @@ public class AAS_local {
         @Override
         public boolean WalkPathToGoal(aasPath_s path, int areaNum, final idVec3 origin, int goalAreaNum, final idVec3 goalOrigin, int travelFlags) {
             int i, curAreaNum, lastAreaIndex;
-            final int[] travelTime = {0}, endAreaNum = {0}, moveAreaNum = {0};
-            final int[] lastAreas = new int[4];
-            final idReachability[] reach = {null};
-            final idVec3 endPos = new idVec3();
+            int[] travelTime = {0}, endAreaNum = {0}, moveAreaNum = {0};
+            int[] lastAreas = new int[4];
+            idReachability[] reach = {null};
+            idVec3 endPos = new idVec3();
 
             path.type = PATHTYPE_WALK;
             path.moveGoal = origin;
@@ -723,7 +723,7 @@ public class AAS_local {
             path.secondaryGoal = origin;
             path.reachability = null;
 
-            if ((this.file == null) || (areaNum == goalAreaNum)) {
+            if (file == null || areaNum == goalAreaNum) {
                 path.moveGoal = goalOrigin;
                 return true;
             }
@@ -795,8 +795,8 @@ public class AAS_local {
 
                 curAreaNum = reach[0].toAreaNum;
 
-                if ((curAreaNum == lastAreas[0]) || (curAreaNum == lastAreas[1])
-                        || (curAreaNum == lastAreas[2]) || (curAreaNum == lastAreas[3])) {
+                if (curAreaNum == lastAreas[0] || curAreaNum == lastAreas[1]
+                        || curAreaNum == lastAreas[2] || curAreaNum == lastAreas[3]) {
                     common.Warning("idAASLocal::WalkPathToGoal: local routing minimum going from area %d to area %d", areaNum, goalAreaNum);
                     break;
                 }
@@ -840,14 +840,13 @@ public class AAS_local {
         @Override
         public boolean WalkPathValid(int areaNum, final idVec3 origin, int goalAreaNum, final idVec3 goalOrigin, int travelFlags, idVec3 endPos, int[] endAreaNum) {
             int curAreaNum, lastAreaNum, lastAreaIndex;
-            final int[] lastAreas = new int[4];
-            final idPlane pathPlane = new idPlane(), frontPlane = new idPlane(), farPlane = new idPlane();
+            int[] lastAreas = new int[4];
+            idPlane pathPlane = new idPlane(), frontPlane = new idPlane(), farPlane = new idPlane();
             idReachability reach;
             aasArea_s area;
-            final idVec3 p = new idVec3();
-			idVec3 dir;
+            idVec3 p = new idVec3(), dir;
 
-            if (this.file == null) {
+            if (file == null) {
                 endPos.oSet(goalOrigin);
                 endAreaNum[0] = 0;
                 return true;
@@ -856,7 +855,7 @@ public class AAS_local {
             lastAreas[0] = lastAreas[1] = lastAreas[2] = lastAreas[3] = areaNum;
             lastAreaIndex = 0;
 
-            pathPlane.SetNormal((goalOrigin.oMinus(origin)).Cross(this.file.GetSettings().gravityDir));
+            pathPlane.SetNormal((goalOrigin.oMinus(origin)).Cross(file.GetSettings().gravityDir));
             pathPlane.Normalize();
             pathPlane.FitThroughPoint(origin);
 
@@ -889,7 +888,7 @@ public class AAS_local {
 
                 frontPlane.SetDist(frontPlane.Normal().oMultiply(endPos));
 
-                area = this.file.GetArea(curAreaNum);
+                area = file.GetArea(curAreaNum);
 
                 for (reach = area.reach; reach != null; reach = reach.next) {
                     if (reach.travelType != TFL_WALK) {
@@ -897,18 +896,18 @@ public class AAS_local {
                     }
 
                     // if the reachability goes back to a previous area
-                    if ((reach.toAreaNum == lastAreas[0]) || (reach.toAreaNum == lastAreas[1])
-                            || (reach.toAreaNum == lastAreas[2]) || (reach.toAreaNum == lastAreas[3])) {
+                    if (reach.toAreaNum == lastAreas[0] || reach.toAreaNum == lastAreas[1]
+                            || reach.toAreaNum == lastAreas[2] || reach.toAreaNum == lastAreas[3]) {
                         continue;
                     }
 
                     // if undesired travel flags are required to travel through the area
-                    if ((this.file.GetArea(reach.toAreaNum).travelFlags & ~travelFlags) != 0) {
+                    if ((file.GetArea(reach.toAreaNum).travelFlags & ~travelFlags) != 0) {
                         continue;
                     }
 
                     // don't optimize through an area near a ledge
-                    if ((this.file.GetArea(reach.toAreaNum).flags & AREA_LEDGE) != 0) {
+                    if ((file.GetArea(reach.toAreaNum).flags & AREA_LEDGE) != 0) {
                         continue;
                     }
 
@@ -918,9 +917,9 @@ public class AAS_local {
                     }
 
                     // direction parallel to gravity
-                    dir = (this.file.GetSettings().gravityDir.oMultiply(endPos.oMultiply(this.file.GetSettings().gravityDir))).
-                            oMinus(this.file.GetSettings().gravityDir.oMultiply(p.oMultiply(this.file.GetSettings().gravityDir)));
-                    if (dir.LengthSqr() > Square(this.file.GetSettings().maxStepHeight[0])) {
+                    dir = (file.GetSettings().gravityDir.oMultiply(endPos.oMultiply(file.GetSettings().gravityDir))).
+                            oMinus(file.GetSettings().gravityDir.oMultiply(p.oMultiply(file.GetSettings().gravityDir)));
+                    if (dir.LengthSqr() > Square(file.GetSettings().maxStepHeight[0])) {
                         continue;
                     }
 
@@ -958,10 +957,10 @@ public class AAS_local {
         @Override
         public boolean FlyPathToGoal(aasPath_s path, int areaNum, final idVec3 origin, int goalAreaNum, final idVec3 goalOrigin, int travelFlags) {
             int i, curAreaNum, lastAreaIndex;
-            final int[] travelTime = {0}, endAreaNum = {0}, moveAreaNum = {0};
-            final int[] lastAreas = new int[4];
-            final idReachability[] reach = {null};
-            final idVec3 endPos = new idVec3();
+            int[] travelTime = {0}, endAreaNum = {0}, moveAreaNum = {0};
+            int[] lastAreas = new int[4];
+            idReachability[] reach = {null};
+            idVec3 endPos = new idVec3();
 
             path.type = PATHTYPE_WALK;
             path.moveGoal = origin;
@@ -969,7 +968,7 @@ public class AAS_local {
             path.secondaryGoal = origin;
             path.reachability = null;
 
-            if ((this.file == null) || (areaNum == goalAreaNum)) {
+            if (file == null || areaNum == goalAreaNum) {
                 path.moveGoal = goalOrigin;
                 return true;
             }
@@ -992,20 +991,18 @@ public class AAS_local {
                 // no need to check through the first area
                 if (areaNum != curAreaNum) {
                     if ((reach[0].start.oMinus(origin)).LengthSqr() > Square(maxFlyPathDistance)) {
-                        // There is no preprocessor in Java
-                    	//if (SUBSAMPLE_FLY_PATH != 0) {
+                        if (SUBSAMPLE_FLY_PATH != 0) {
                             path.moveGoal = SubSampleFlyPath(areaNum, origin, path.moveGoal, reach[0].start, travelFlags, moveAreaNum);
                             path.moveAreaNum = moveAreaNum[0];
-                        //}
+                        }
                         return true;
                     }
 
                     if (!this.FlyPathValid(areaNum, origin, 0, reach[0].start, travelFlags, endPos, endAreaNum)) {
-                        // There is no preprocessor in Java
-                        //if (SUBSAMPLE_FLY_PATH != 0) {
+                        if (SUBSAMPLE_FLY_PATH != 0) {
                             path.moveGoal = SubSampleFlyPath(areaNum, origin, path.moveGoal, reach[0].start, travelFlags, moveAreaNum);
                             path.moveAreaNum = moveAreaNum[0];
-                        //}
+                        }
                         return true;
                     }
                 }
@@ -1022,11 +1019,10 @@ public class AAS_local {
 
                 if (reach[0].toAreaNum == goalAreaNum) {
                     if (!this.FlyPathValid(areaNum, origin, 0, goalOrigin, travelFlags, endPos, endAreaNum)) {
-                        // There is no preprocessor in Java
-                        //if (SUBSAMPLE_FLY_PATH != 0) {
+                        if (SUBSAMPLE_FLY_PATH != 0) {
                             path.moveGoal = SubSampleFlyPath(areaNum, origin, path.moveGoal, goalOrigin, travelFlags, moveAreaNum);
                             path.moveAreaNum = moveAreaNum[0];
-                        //}
+                        }
                         return true;
                     }
                     path.moveGoal = goalOrigin;
@@ -1039,8 +1035,8 @@ public class AAS_local {
 
                 curAreaNum = reach[0].toAreaNum;
 
-                if ((curAreaNum == lastAreas[0]) || (curAreaNum == lastAreas[1])
-                        || (curAreaNum == lastAreas[2]) || (curAreaNum == lastAreas[3])) {
+                if (curAreaNum == lastAreas[0] || curAreaNum == lastAreas[1]
+                        || curAreaNum == lastAreas[2] || curAreaNum == lastAreas[3]) {
                     common.Warning("idAASLocal::FlyPathToGoal: local routing minimum going from area %d to area %d", areaNum, goalAreaNum);
                     break;
                 }
@@ -1062,15 +1058,15 @@ public class AAS_local {
          */
         @Override
         public boolean FlyPathValid(int areaNum, final idVec3 origin, int goalAreaNum, final idVec3 goalOrigin, int travelFlags, idVec3 endPos, int[] endAreaNum) {
-            final aasTrace_s trace = new aasTrace_s();
+            aasTrace_s trace = new aasTrace_s();
 
-            if (this.file == null) {
+            if (file == null) {
                 endPos = goalOrigin;
                 endAreaNum[0] = 0;
                 return true;
             }
 
-            this.file.Trace(trace, origin, goalOrigin);
+            file.Trace(trace, origin, goalOrigin);
 
             endPos = trace.endpos;
             endAreaNum[0] = trace.lastAreaNum;
@@ -1085,13 +1081,12 @@ public class AAS_local {
         @Override
         public void ShowWalkPath(final idVec3 origin, int goalAreaNum, final idVec3 goalOrigin) {
             int i, areaNum, curAreaNum;
-            final int[] travelTime = {0};
-            final idReachability[] reach = {null};
-            idVec3 org;
-			final idVec3 areaCenter = new idVec3();
-            final aasPath_s path = new aasPath_s();
+            int[] travelTime = {0};
+            idReachability[] reach = {null};
+            idVec3 org, areaCenter = new idVec3();
+            aasPath_s path = new aasPath_s();
 
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return;
             }
 
@@ -1129,13 +1124,12 @@ public class AAS_local {
         @Override
         public void ShowFlyPath(final idVec3 origin, int goalAreaNum, final idVec3 goalOrigin) {
             int i, areaNum, curAreaNum;
-            final int[] travelTime = {0};
-            final idReachability[] reach = {null};
-            idVec3 org;
-			final idVec3 areaCenter;
-            final aasPath_s path = new aasPath_s();
+            int[] travelTime = {0};
+            idReachability[] reach = {null};
+            idVec3 org, areaCenter;
+            aasPath_s path = new aasPath_s();
 
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return;
             }
 
@@ -1180,7 +1174,7 @@ public class AAS_local {
             idVec3 v1, v2, p;
             float targetDist, dist;
 
-            if ((this.file == null) || (areaNum <= 0)) {
+            if (file == null || areaNum <= 0) {
                 goal.areaNum = areaNum;
                 goal.origin = origin;
                 return false;
@@ -1195,17 +1189,17 @@ public class AAS_local {
 
             // setup obstacles
             for (k = 0; k < numObstacles; k++) {
-                obstacles[k].expAbsBounds.oSet(0, obstacles[k].absBounds.oGet(0).oMinus(this.file.GetSettings().boundingBoxes[0].oGet(1)));
-                obstacles[k].expAbsBounds.oSet(1, obstacles[k].absBounds.oGet(1).oMinus(this.file.GetSettings().boundingBoxes[0].oGet(0)));
+                obstacles[k].expAbsBounds.oSet(0, obstacles[k].absBounds.oGet(0).oMinus(file.GetSettings().boundingBoxes[0].oGet(1)));
+                obstacles[k].expAbsBounds.oSet(1, obstacles[k].absBounds.oGet(1).oMinus(file.GetSettings().boundingBoxes[0].oGet(0)));
             }
 
             badTravelFlags = ~travelFlags;
-            SIMDProcessor.Memset(this.goalAreaTravelTimes, 0, this.file.GetNumAreas() /*sizeof(unsigned short )*/);
+            SIMDProcessor.Memset(goalAreaTravelTimes, 0, file.GetNumAreas() /*sizeof(unsigned short )*/);
 
             targetDist = (target.oMinus(origin)).Length();
 
             // initialize first update
-            curUpdate = this.areaUpdate[areaNum];
+            curUpdate = areaUpdate[areaNum];
             curUpdate.areaNum = areaNum;
             curUpdate.tmpTravelTime = 0;
             curUpdate.start = origin;
@@ -1231,11 +1225,11 @@ public class AAS_local {
                 curUpdate.isInList = false;
 
                 // if we already found a closer location
-                if ((bestTravelTime != 0) && (curUpdate.tmpTravelTime >= bestTravelTime)) {
+                if (bestTravelTime != 0 && curUpdate.tmpTravelTime >= bestTravelTime) {
                     continue;
                 }
 
-                for (i = 0, reach = this.file.GetArea(curUpdate.areaNum).reach; reach != null; reach = reach.next, i++) {
+                for (i = 0, reach = file.GetArea(curUpdate.areaNum).reach; reach != null; reach = reach.next, i++) {
 
                     // if the reachability uses an undesired travel type
                     if ((reach.travelType & badTravelFlags) != 0) {
@@ -1244,7 +1238,7 @@ public class AAS_local {
 
                     // next area the reversed reachability leads to
                     nextAreaNum = reach.toAreaNum;
-                    nextArea = this.file.GetArea(nextAreaNum);
+                    nextArea = file.GetArea(nextAreaNum);
 
                     // if traveling through the next area requires an undesired travel flag
                     if ((nextArea.travelFlags & badTravelFlags) != 0) {
@@ -1263,8 +1257,8 @@ public class AAS_local {
 
                     // get the point on the path closest to the target
                     for (j = 0; j < 3; j++) {
-                        if (((p.oGet(j) > (curUpdate.start.oGet(j) + 0.1f)) && (p.oGet(j) > (reach.end.oGet(j) + 0.1f)))
-                                || ((p.oGet(j) < (curUpdate.start.oGet(j) - 0.1f)) && (p.oGet(j) < (reach.end.oGet(j) - 0.1f)))) {
+                        if ((p.oGet(j) > curUpdate.start.oGet(j) + 0.1f && p.oGet(j) > reach.end.oGet(j) + 0.1f)
+                                || (p.oGet(j) < curUpdate.start.oGet(j) - 0.1f && p.oGet(j) < reach.end.oGet(j) - 0.1f)) {
                             break;
                         }
                     }
@@ -1280,12 +1274,12 @@ public class AAS_local {
                     }
 
                     // if we already found a closer location
-                    if ((bestTravelTime != 0) && (t >= bestTravelTime)) {
+                    if (bestTravelTime != 0 && t >= bestTravelTime) {
                         continue;
                     }
 
                     // if this is not the best path towards the next area
-                    if ((this.goalAreaTravelTimes[nextAreaNum] != 0) && (t >= this.goalAreaTravelTimes[nextAreaNum])) {
+                    if (goalAreaTravelTimes[nextAreaNum] != 0 && t >= goalAreaTravelTimes[nextAreaNum]) {
                         continue;
                     }
 
@@ -1300,8 +1294,8 @@ public class AAS_local {
                         continue;
                     }
 
-                    this.goalAreaTravelTimes[nextAreaNum] = t;
-                    nextUpdate = this.areaUpdate[nextAreaNum];
+                    goalAreaTravelTimes[nextAreaNum] = t;
+                    nextUpdate = areaUpdate[nextAreaNum];
                     nextUpdate.areaNum = nextAreaNum;
                     nextUpdate.tmpTravelTime = t;
                     nextUpdate.start = reach.end;
@@ -1309,7 +1303,7 @@ public class AAS_local {
                     // if we are not allowed to fly
                     if ((badTravelFlags & TFL_FLY) != 0) {
                         // avoid areas near ledges
-                        if ((this.file.GetArea(nextAreaNum).flags & AREA_LEDGE) != 0) {
+                        if ((file.GetArea(nextAreaNum).flags & AREA_LEDGE) != 0) {
                             nextUpdate.tmpTravelTime += LEDGE_TRAVELTIME_PANALTY;
                         }
                     }
@@ -1332,7 +1326,7 @@ public class AAS_local {
                         // add travel time through the area
                         t += AreaTravelTime(reach.toAreaNum, reach.end, nextArea.center);
 
-                        if ((0 == bestTravelTime) || (t < bestTravelTime)) {
+                        if (0 == bestTravelTime || t < bestTravelTime) {
                             // if the area is not visible to the target
                             if (callback.TestArea(this, reach.toAreaNum)) {
                                 bestTravelTime = t;
@@ -1369,9 +1363,9 @@ public class AAS_local {
 
             dist = (end.oMinus(start)).Length();
 
-            if ((this.file.GetArea(areaNum).travelFlags & TFL_CROUCH) != 0) {
+            if ((file.GetArea(areaNum).travelFlags & TFL_CROUCH) != 0) {
                 dist *= 100.0f / 100.0f;
-            } else if ((this.file.GetArea(areaNum).travelFlags & TFL_WATER) != 0) {
+            } else if ((file.GetArea(areaNum).travelFlags & TFL_WATER) != 0) {
                 dist *= 100.0f / 150.0f;
             } else {
                 dist *= 100.0f / 300.0f;
@@ -1388,45 +1382,45 @@ public class AAS_local {
             idReachability reach, rev_reach;
 
             // get total memory for all area travel times
-            this.numAreaTravelTimes = 0;
-            for (n = 0; n < this.file.GetNumAreas(); n++) {
+            numAreaTravelTimes = 0;
+            for (n = 0; n < file.GetNumAreas(); n++) {
 
-                if (NOT(this.file.GetArea(n).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY))) {
+                if (NOT(file.GetArea(n).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY))) {
                     continue;
                 }
 
                 numReach = 0;
-                for (reach = this.file.GetArea(n).reach; reach != null; reach = reach.next) {
+                for (reach = file.GetArea(n).reach; reach != null; reach = reach.next) {
                     numReach++;
                 }
 
                 numRevReach = 0;
-                for (rev_reach = this.file.GetArea(n).rev_reach; rev_reach != null; rev_reach = rev_reach.rev_next) {
+                for (rev_reach = file.GetArea(n).rev_reach; rev_reach != null; rev_reach = rev_reach.rev_next) {
                     numRevReach++;
                 }
-                this.numAreaTravelTimes += numReach * numRevReach;
+                numAreaTravelTimes += numReach * numRevReach;
             }
 
-            this.areaTravelTimes = new int[this.numAreaTravelTimes];// Mem_Alloc(numAreaTravelTimes /* sizeof(unsigned short )*/);
+            areaTravelTimes = new int[numAreaTravelTimes];// Mem_Alloc(numAreaTravelTimes /* sizeof(unsigned short )*/);
             bytePtr = 0;//(byte *) areaTravelTimes;
 
-            for (n = 0; n < this.file.GetNumAreas(); n++) {
+            for (n = 0; n < file.GetNumAreas(); n++) {
 
-                if (NOT(this.file.GetArea(n).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY))) {
+                if (NOT(file.GetArea(n).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY))) {
                     continue;
                 }
 
                 // for each reachability that starts in this area calculate the travel time
                 // towards all the reachabilities that lead towards this area
-                for (maxt = i = 0, reach = this.file.GetArea(n).reach; reach != null; reach = reach.next, i++) {
+                for (maxt = i = 0, reach = file.GetArea(n).reach; reach != null; reach = reach.next, i++) {
                     assert (i < MAX_REACH_PER_AREA);
                     if (i >= MAX_REACH_PER_AREA) {
-                        idGameLocal.Error("i >= MAX_REACH_PER_AREA");
+                        gameLocal.Error("i >= MAX_REACH_PER_AREA");
                     }
                     reach.number = (byte) i;
                     reach.disableCount = 0;
-                    reach.areaTravelTimes = ((IntBuffer) IntBuffer.wrap(this.areaTravelTimes).position(bytePtr)).slice();
-                    for (j = 0, rev_reach = this.file.GetArea(n).rev_reach; rev_reach != null; rev_reach = rev_reach.rev_next, j++) {
+                    reach.areaTravelTimes = ((IntBuffer) IntBuffer.wrap(areaTravelTimes).position(bytePtr)).slice();
+                    for (j = 0, rev_reach = file.GetArea(n).rev_reach; rev_reach != null; rev_reach = rev_reach.rev_next, j++) {
                         t = AreaTravelTime(n, reach.start, rev_reach.end);
                         reach.areaTravelTimes.put(j, t);
                         if (t > maxt) {
@@ -1437,9 +1431,9 @@ public class AAS_local {
                 }
 
                 // if this area is a portal
-                if (this.file.GetArea(n).cluster < 0) {
+                if (file.GetArea(n).cluster < 0) {
                     // set the maximum travel time through this portal
-                    this.file.SetPortalMaxTravelTime(-this.file.GetArea(n).cluster, maxt);
+                    file.SetPortalMaxTravelTime(-file.GetArea(n).cluster, maxt);
                 }
             }
 
@@ -1448,19 +1442,19 @@ public class AAS_local {
 
         private void DeleteAreaTravelTimes() {
 //            Mem_Free(areaTravelTimes);
-            this.areaTravelTimes = null;
-            this.numAreaTravelTimes = 0;
+            areaTravelTimes = null;
+            numAreaTravelTimes = 0;
         }
 
         private void SetupRoutingCache() {
             int i;
-            final int bytePtr;
+            int bytePtr;
 
-            this.areaCacheIndexSize = 0;
-            for (i = 0; i < this.file.GetNumClusters(); i++) {
-                this.areaCacheIndexSize += this.file.GetCluster(i).numReachableAreas;
+            areaCacheIndexSize = 0;
+            for (i = 0; i < file.GetNumClusters(); i++) {
+                areaCacheIndexSize += file.GetCluster(i).numReachableAreas;
             }
-            this.areaCacheIndex = new idRoutingCache[this.file.GetNumClusters()][this.areaCacheIndexSize];// Mem_ClearedAlloc(file.GetNumClusters() /* sizeof( idRoutingCache ** )*/ + areaCacheIndexSize /* sizeof( idRoutingCache *)*/);
+            areaCacheIndex = new idRoutingCache[file.GetNumClusters()][areaCacheIndexSize];// Mem_ClearedAlloc(file.GetNumClusters() /* sizeof( idRoutingCache ** )*/ + areaCacheIndexSize /* sizeof( idRoutingCache *)*/);
 //	bytePtr = ((byte *)areaCacheIndex) + file.GetNumClusters() * sizeof( idRoutingCache ** );
 //            bytePtr = file.GetNumClusters();
 //            for (i = 0; i < file.GetNumClusters(); i++) {
@@ -1468,25 +1462,25 @@ public class AAS_local {
 //                bytePtr += file.GetCluster(i).numReachableAreas /* sizeof( idRoutingCache * )*/;
 //            }
 
-            this.portalCacheIndexSize = this.file.GetNumAreas();
-            this.portalCacheIndex = new idRoutingCache[this.portalCacheIndexSize];// Mem_ClearedAlloc(portalCacheIndexSize /* sizeof( idRoutingCache * )*/);
+            portalCacheIndexSize = file.GetNumAreas();
+            portalCacheIndex = new idRoutingCache[portalCacheIndexSize];// Mem_ClearedAlloc(portalCacheIndexSize /* sizeof( idRoutingCache * )*/);
 
-            this.areaUpdate = new idRoutingUpdate[this.file.GetNumAreas()];// Mem_ClearedAlloc(file.GetNumAreas() /* sizeof( idRoutingUpdate )*/);
-            this.portalUpdate = new idRoutingUpdate[this.file.GetNumPortals() + 1];// Mem_ClearedAlloc((file.GetNumPortals() + 1) /* sizeof( idRoutingUpdate )*/);
+            areaUpdate = new idRoutingUpdate[file.GetNumAreas()];// Mem_ClearedAlloc(file.GetNumAreas() /* sizeof( idRoutingUpdate )*/);
+            portalUpdate = new idRoutingUpdate[file.GetNumPortals() + 1];// Mem_ClearedAlloc((file.GetNumPortals() + 1) /* sizeof( idRoutingUpdate )*/);
 
-            this.goalAreaTravelTimes = new int[this.file.GetNumAreas()];// Mem_ClearedAlloc(file.GetNumAreas() /* sizeof( unsigned short )*/);
+            goalAreaTravelTimes = new int[file.GetNumAreas()];// Mem_ClearedAlloc(file.GetNumAreas() /* sizeof( unsigned short )*/);
 
-            this.cacheListStart = this.cacheListEnd = null;
-            this.totalCacheMemory = 0;
+            cacheListStart = cacheListEnd = null;
+            totalCacheMemory = 0;
         }
 
         private void DeleteClusterCache(int clusterNum) {
             int i;
             idRoutingCache cache;
 
-            for (i = 0; i < this.file.GetCluster(clusterNum).numReachableAreas; i++) {
-                for (cache = this.areaCacheIndex[clusterNum][i]; cache != null; cache = this.areaCacheIndex[clusterNum][i]) {
-                    this.areaCacheIndex[clusterNum][i] = cache.next;
+            for (i = 0; i < file.GetCluster(clusterNum).numReachableAreas; i++) {
+                for (cache = areaCacheIndex[clusterNum][i]; cache != null; cache = areaCacheIndex[clusterNum][i]) {
+                    areaCacheIndex[clusterNum][i] = cache.next;
                     UnlinkCache(cache);
 //			delete cache;
                 }
@@ -1497,9 +1491,9 @@ public class AAS_local {
             int i;
             idRoutingCache cache;
 
-            for (i = 0; i < this.file.GetNumAreas(); i++) {
-                for (cache = this.portalCacheIndex[i]; cache != null; cache = this.portalCacheIndex[i]) {
-                    this.portalCacheIndex[i] = cache.next;
+            for (i = 0; i < file.GetNumAreas(); i++) {
+                for (cache = portalCacheIndex[i]; cache != null; cache = portalCacheIndex[i]) {
+                    portalCacheIndex[i] = cache.next;
                     UnlinkCache(cache);
 //			delete cache;
                 }
@@ -1509,27 +1503,27 @@ public class AAS_local {
         private void ShutdownRoutingCache() {
             int i;
 
-            for (i = 0; i < this.file.GetNumClusters(); i++) {
+            for (i = 0; i < file.GetNumClusters(); i++) {
                 DeleteClusterCache(i);
             }
 
             DeletePortalCache();
 
 //            Mem_Free(areaCacheIndex);
-            this.areaCacheIndex = null;
-            this.areaCacheIndexSize = 0;
+            areaCacheIndex = null;
+            areaCacheIndexSize = 0;
 //            Mem_Free(portalCacheIndex);
-            this.portalCacheIndex = null;
-            this.portalCacheIndexSize = 0;
+            portalCacheIndex = null;
+            portalCacheIndexSize = 0;
 //            Mem_Free(areaUpdate);
-            this.areaUpdate = null;
+            areaUpdate = null;
 //            Mem_Free(portalUpdate);
-            this.portalUpdate = null;
+            portalUpdate = null;
 //            Mem_Free(goalAreaTravelTimes);
-            this.goalAreaTravelTimes = null;
+            goalAreaTravelTimes = null;
 
-            this.cacheListStart = this.cacheListEnd = null;
-            this.totalCacheMemory = 0;
+            cacheListStart = cacheListEnd = null;
+            totalCacheMemory = 0;
         }
 
         private void RoutingStats() {
@@ -1539,7 +1533,7 @@ public class AAS_local {
 
             numAreaCache = numPortalCache = 0;
             totalAreaCacheMemory = totalPortalCacheMemory = 0;
-            for (cache = this.cacheListStart; cache != null; cache = cache.time_next) {
+            for (cache = cacheListStart; cache != null; cache = cache.time_next) {
                 if (cache.type == CACHETYPE_AREA) {
                     numAreaCache++;
 //			totalAreaCacheMemory += sizeof( idRoutingCache ) + cache.size * (sizeof( unsigned short ) + sizeof( byte ));
@@ -1553,10 +1547,10 @@ public class AAS_local {
 
             gameLocal.Printf("%6d area cache (%d KB)\n", numAreaCache, totalAreaCacheMemory >> 10);
             gameLocal.Printf("%6d portal cache (%d KB)\n", numPortalCache, totalPortalCacheMemory >> 10);
-            gameLocal.Printf("%6d total cache (%d KB)\n", numAreaCache + numPortalCache, this.totalCacheMemory >> 10);
-            gameLocal.Printf("%6d area travel times (%d KB)\n", this.numAreaTravelTimes, (this.numAreaTravelTimes /* sizeof( unsigned short )*/) >> 10);
-            gameLocal.Printf("%6d area cache entries (%d KB)\n", this.areaCacheIndexSize, (this.areaCacheIndexSize /* sizeof( idRoutingCache * )*/) >> 10);
-            gameLocal.Printf("%6d portal cache entries (%d KB)\n", this.portalCacheIndexSize, (this.portalCacheIndexSize /* sizeof( idRoutingCache * )*/) >> 10);
+            gameLocal.Printf("%6d total cache (%d KB)\n", numAreaCache + numPortalCache, totalCacheMemory >> 10);
+            gameLocal.Printf("%6d area travel times (%d KB)\n", numAreaTravelTimes, (numAreaTravelTimes /* sizeof( unsigned short )*/) >> 10);
+            gameLocal.Printf("%6d area cache entries (%d KB)\n", areaCacheIndexSize, (areaCacheIndexSize /* sizeof( idRoutingCache * )*/) >> 10);
+            gameLocal.Printf("%6d portal cache entries (%d KB)\n", portalCacheIndexSize, (portalCacheIndexSize /* sizeof( idRoutingCache * )*/) >> 10);
         }
 
         /*
@@ -1569,38 +1563,38 @@ public class AAS_local {
         private void LinkCache(idRoutingCache cache) {
 
             // if the cache is already linked
-            if ((cache.time_next != null) || (cache.time_prev != null) || (this.cacheListStart == cache)) {
+            if (cache.time_next != null || cache.time_prev != null || cacheListStart == cache) {
                 UnlinkCache(cache);
             }
 
-            this.totalCacheMemory += cache.Size();
+            totalCacheMemory += cache.Size();
 
             // add cache to the end of the list
             cache.time_next = null;
-            cache.time_prev = this.cacheListEnd;
-            if (this.cacheListEnd != null) {
-                this.cacheListEnd.time_next = cache;
+            cache.time_prev = cacheListEnd;
+            if (cacheListEnd != null) {
+                cacheListEnd.time_next = cache;
             }
-            this.cacheListEnd = cache;
-            if (null == this.cacheListStart) {
-                this.cacheListStart = cache;
+            cacheListEnd = cache;
+            if (null == cacheListStart) {
+                cacheListStart = cache;
             }
         }
 
         private void UnlinkCache(idRoutingCache cache) {
 
-            this.totalCacheMemory -= cache.Size();
+            totalCacheMemory -= cache.Size();
 
             // unlink the cache
             if (cache.time_next != null) {
                 cache.time_next.time_prev = cache.time_prev;
             } else {
-                this.cacheListEnd = cache.time_prev;
+                cacheListEnd = cache.time_prev;
             }
             if (cache.time_prev != null) {
                 cache.time_prev.time_next = cache.time_next;
             } else {
-                this.cacheListStart = cache.time_next;
+                cacheListStart = cache.time_next;
             }
             cache.time_next = cache.time_prev = null;
         }
@@ -1608,10 +1602,10 @@ public class AAS_local {
         private void DeleteOldestCache() {
             idRoutingCache cache;
 
-            assert (this.cacheListStart != null);
+            assert (cacheListStart != null);
 
             // unlink the oldest cache
-            cache = this.cacheListStart;
+            cache = cacheListStart;
             UnlinkCache(cache);
 
             // unlink the oldest cache from the area or portal cache index
@@ -1621,9 +1615,9 @@ public class AAS_local {
             if (cache.prev != null) {
                 cache.prev.next = cache.next;
             } else if (cache.type == CACHETYPE_AREA) {
-                this.areaCacheIndex[cache.cluster][ClusterAreaNum(cache.cluster, cache.areaNum)] = cache.next;
+                areaCacheIndex[cache.cluster][ClusterAreaNum(cache.cluster, cache.areaNum)] = cache.next;
             } else if (cache.type == CACHETYPE_PORTAL) {
-                this.portalCacheIndex[cache.areaNum] = cache.next;
+                portalCacheIndex[cache.areaNum] = cache.next;
             }
 
 //	delete cache;
@@ -1632,7 +1626,7 @@ public class AAS_local {
         private idReachability GetAreaReachability(int areaNum, int reachabilityNum) {
             idReachability reach;
 
-            for (reach = this.file.GetArea(areaNum).reach; reach != null; reach = reach.next) {
+            for (reach = file.GetArea(areaNum).reach; reach != null; reach = reach.next) {
                 if (--reachabilityNum < 0) {
                     return reach;
                 }
@@ -1643,25 +1637,25 @@ public class AAS_local {
         private int ClusterAreaNum(int clusterNum, int areaNum) {
             int side, areaCluster;
 
-            areaCluster = this.file.GetArea(areaNum).cluster;
+            areaCluster = file.GetArea(areaNum).cluster;
             if (areaCluster > 0) {
-                return this.file.GetArea(areaNum).clusterAreaNum;
+                return file.GetArea(areaNum).clusterAreaNum;
             } else {
-                side = (this.file.GetPortal(-areaCluster).clusters[0] != clusterNum) ? 1 : 0;
-                return this.file.GetPortal(-areaCluster).clusterAreaNum[side];
+                side = (file.GetPortal(-areaCluster).clusters[0] != clusterNum) ? 1 : 0;
+                return file.GetPortal(-areaCluster).clusterAreaNum[side];
             }
         }
 
         private void UpdateAreaRoutingCache(idRoutingCache areaCache) {
             int i, nextAreaNum, cluster, badTravelFlags, clusterAreaNum, numReachableAreas;
             int t;
-            final int[] startAreaTravelTimes = new int[MAX_REACH_PER_AREA];
+            int[] startAreaTravelTimes = new int[MAX_REACH_PER_AREA];
             idRoutingUpdate updateListStart, updateListEnd, curUpdate, nextUpdate;
             idReachability reach;
             aasArea_s nextArea;
 
             // number of reachability areas within this cluster
-            numReachableAreas = this.file.GetCluster(areaCache.cluster).numReachableAreas;
+            numReachableAreas = file.GetCluster(areaCache.cluster).numReachableAreas;
 
             // number of the start area within the cluster
             clusterAreaNum = ClusterAreaNum(areaCache.cluster, areaCache.areaNum);
@@ -1673,7 +1667,7 @@ public class AAS_local {
             badTravelFlags = ~areaCache.travelFlags;
 
             // initialize first update
-            curUpdate = this.areaUpdate[clusterAreaNum] = new idRoutingUpdate();
+            curUpdate = areaUpdate[clusterAreaNum] = new idRoutingUpdate();
             curUpdate.areaNum = areaCache.areaNum;
             curUpdate.areaTravelTimes = IntBuffer.wrap(startAreaTravelTimes);
             curUpdate.tmpTravelTime = areaCache.startTravelTime;
@@ -1695,7 +1689,7 @@ public class AAS_local {
 
                 curUpdate.isInList = false;
 
-                for (i = 0, reach = this.file.GetArea(curUpdate.areaNum).rev_reach; reach != null; reach = reach.rev_next, i++) {
+                for (i = 0, reach = file.GetArea(curUpdate.areaNum).rev_reach; reach != null; reach = reach.rev_next, i++) {
 
                     // if the reachability uses an undesired travel type
                     if ((reach.travelType & badTravelFlags) != 0) {
@@ -1704,7 +1698,7 @@ public class AAS_local {
 
                     // next area the reversed reachability leads to
                     nextAreaNum = reach.fromAreaNum;
-                    nextArea = this.file.GetArea(nextAreaNum);
+                    nextArea = file.GetArea(nextAreaNum);
 
                     // if traveling through the next area requires an undesired travel flag
                     if ((nextArea.travelFlags & badTravelFlags) != 0) {
@@ -1714,7 +1708,7 @@ public class AAS_local {
                     // get the cluster number of the area
                     cluster = nextArea.cluster;
                     // don't leave the cluster, however do flood into cluster portals
-                    if ((cluster > 0) && (cluster != areaCache.cluster)) {
+                    if (cluster > 0 && cluster != areaCache.cluster) {
                         continue;
                     }
 
@@ -1730,11 +1724,11 @@ public class AAS_local {
                     // plus the travel time of the reachability towards the next area
                     t = curUpdate.tmpTravelTime + curUpdate.areaTravelTimes.get(i) + reach.travelTime;
 
-                    if ((0 == areaCache.travelTimes[clusterAreaNum]) || (t < areaCache.travelTimes[clusterAreaNum])) {
+                    if (0 == areaCache.travelTimes[clusterAreaNum] || t < areaCache.travelTimes[clusterAreaNum]) {
 
                         areaCache.travelTimes[clusterAreaNum] = t;
                         areaCache.reachabilities[clusterAreaNum] = reach.number; // reversed reachability used to get into this area
-                        nextUpdate = this.areaUpdate[clusterAreaNum] = (this.areaUpdate[clusterAreaNum] == null ? new idRoutingUpdate() : this.areaUpdate[clusterAreaNum]);
+                        nextUpdate = areaUpdate[clusterAreaNum] = (areaUpdate[clusterAreaNum] == null ? new idRoutingUpdate() : areaUpdate[clusterAreaNum]);
                         nextUpdate.areaNum = nextAreaNum;
                         nextUpdate.tmpTravelTime = t;
                         nextUpdate.areaTravelTimes = reach.areaTravelTimes;
@@ -1742,7 +1736,7 @@ public class AAS_local {
                         // if we are not allowed to fly
                         if ((badTravelFlags & TFL_FLY) != 0) {
                             // avoid areas near ledges
-                            if ((this.file.GetArea(nextAreaNum).flags & AREA_LEDGE) != 0) {
+                            if ((file.GetArea(nextAreaNum).flags & AREA_LEDGE) != 0) {
                                 nextUpdate.tmpTravelTime += LEDGE_TRAVELTIME_PANALTY;
                             }
                         }
@@ -1770,7 +1764,7 @@ public class AAS_local {
             // number of the area in the cluster
             clusterAreaNum = ClusterAreaNum(clusterNum, areaNum);
             // pointer to the cache for the area in the cluster
-            clusterCache = this.areaCacheIndex[clusterNum][clusterAreaNum];
+            clusterCache = areaCacheIndex[clusterNum][clusterAreaNum];
             // check if cache without undesired travel flags already exists
             for (cache = clusterCache; cache != null; cache = cache.next) {
                 if (cache.travelFlags == travelFlags) {
@@ -1779,7 +1773,7 @@ public class AAS_local {
             }
             // if no cache found
             if (null == cache) {
-                cache = new idRoutingCache(this.file.GetCluster(clusterNum).numReachableAreas);
+                cache = new idRoutingCache(file.GetCluster(clusterNum).numReachableAreas);
                 cache.type = CACHETYPE_AREA;
                 cache.cluster = clusterNum;
                 cache.areaNum = areaNum;
@@ -1790,7 +1784,7 @@ public class AAS_local {
                 if (clusterCache != null) {
                     clusterCache.prev = cache;
                 }
-                this.areaCacheIndex[clusterNum][clusterAreaNum] = cache;
+                areaCacheIndex[clusterNum][clusterAreaNum] = cache;
                 UpdateAreaRoutingCache(cache);
             }
             LinkCache(cache);
@@ -1805,7 +1799,7 @@ public class AAS_local {
             idRoutingCache cache;
             idRoutingUpdate updateListStart, updateListEnd, curUpdate, nextUpdate;
 
-            curUpdate = this.portalUpdate[this.file.GetNumPortals()] = new idRoutingUpdate();
+            curUpdate = portalUpdate[file.GetNumPortals()] = new idRoutingUpdate();
             curUpdate.cluster = portalCache.cluster;
             curUpdate.areaNum = portalCache.areaNum;
             curUpdate.tmpTravelTime = portalCache.startTravelTime;
@@ -1830,14 +1824,14 @@ public class AAS_local {
                 // current update is removed from the list
                 curUpdate.isInList = false;
 
-                cluster = this.file.GetCluster(curUpdate.cluster);
+                cluster = file.GetCluster(curUpdate.cluster);
                 cache = GetAreaRoutingCache(curUpdate.cluster, curUpdate.areaNum, portalCache.travelFlags);
 
                 // take all portals of the cluster
                 for (i = 0; i < cluster.numPortals; i++) {
-                    portalNum = this.file.GetPortalIndex(cluster.firstPortal + i);
+                    portalNum = file.GetPortalIndex(cluster.firstPortal + i);
                     assert (portalNum < portalCache.size);
-                    portal = this.file.GetPortal(portalNum);
+                    portal = file.GetPortal(portalNum);
 
                     clusterAreaNum = ClusterAreaNum(curUpdate.cluster, portal.areaNum);
                     if (clusterAreaNum >= cluster.numReachableAreas) {
@@ -1850,11 +1844,11 @@ public class AAS_local {
                     }
                     t += curUpdate.tmpTravelTime;
 
-                    if ((0 == portalCache.travelTimes[portalNum]) || (t < portalCache.travelTimes[portalNum])) {
+                    if (0 == portalCache.travelTimes[portalNum] || t < portalCache.travelTimes[portalNum]) {
 
                         portalCache.travelTimes[portalNum] = t;
                         portalCache.reachabilities[portalNum] = cache.reachabilities[clusterAreaNum];
-                        nextUpdate = this.portalUpdate[portalNum] = (this.portalUpdate[portalNum] == null ? new idRoutingUpdate() : this.portalUpdate[portalNum]);
+                        nextUpdate = portalUpdate[portalNum] = (portalUpdate[portalNum] == null ? new idRoutingUpdate() : portalUpdate[portalNum]);
                         if (portal.clusters[0] == curUpdate.cluster) {
                             nextUpdate.cluster = portal.clusters[1];
                         } else {
@@ -1885,25 +1879,25 @@ public class AAS_local {
             idRoutingCache cache;
 
             // check if cache without undesired travel flags already exists
-            for (cache = this.portalCacheIndex[areaNum]; cache != null; cache = cache.next) {
+            for (cache = portalCacheIndex[areaNum]; cache != null; cache = cache.next) {
                 if (cache.travelFlags == travelFlags) {
                     break;
                 }
             }
             // if no cache found
             if (null == cache) {
-                cache = new idRoutingCache(this.file.GetNumPortals());
+                cache = new idRoutingCache(file.GetNumPortals());
                 cache.type = CACHETYPE_PORTAL;
                 cache.cluster = clusterNum;
                 cache.areaNum = areaNum;
                 cache.startTravelTime = 1;
                 cache.travelFlags = travelFlags;
                 cache.prev = null;
-                cache.next = this.portalCacheIndex[areaNum];
-                if (this.portalCacheIndex[areaNum] != null) {
-                    this.portalCacheIndex[areaNum].prev = cache;
+                cache.next = portalCacheIndex[areaNum];
+                if (portalCacheIndex[areaNum] != null) {
+                    portalCacheIndex[areaNum].prev = cache;
                 }
-                this.portalCacheIndex[areaNum] = cache;
+                portalCacheIndex[areaNum] = cache;
                 UpdatePortalRoutingCache(cache);
             }
             LinkCache(cache);
@@ -1913,38 +1907,38 @@ public class AAS_local {
         private void RemoveRoutingCacheUsingArea(int areaNum) {
             int clusterNum;
 
-            clusterNum = this.file.GetArea(areaNum).cluster;
+            clusterNum = file.GetArea(areaNum).cluster;
             if (clusterNum > 0) {
                 // remove all the cache in the cluster the area is in
                 DeleteClusterCache(clusterNum);
             } else {
                 // if this is a portal remove all cache in both the front and back cluster
-                DeleteClusterCache(this.file.GetPortal(-clusterNum).clusters[0]);
-                DeleteClusterCache(this.file.GetPortal(-clusterNum).clusters[1]);
+                DeleteClusterCache(file.GetPortal(-clusterNum).clusters[0]);
+                DeleteClusterCache(file.GetPortal(-clusterNum).clusters[1]);
             }
             DeletePortalCache();
         }
 
         private void DisableArea(int areaNum) {
-            assert ((areaNum > 0) && (areaNum < this.file.GetNumAreas()));
+            assert (areaNum > 0 && areaNum < file.GetNumAreas());
 
-            if ((this.file.GetArea(areaNum).travelFlags & TFL_INVALID) != 0) {
+            if ((file.GetArea(areaNum).travelFlags & TFL_INVALID) != 0) {
                 return;
             }
 
-            this.file.SetAreaTravelFlag(areaNum, TFL_INVALID);
+            file.SetAreaTravelFlag(areaNum, TFL_INVALID);
 
             RemoveRoutingCacheUsingArea(areaNum);
         }
 
         private void EnableArea(int areaNum) {
-            assert ((areaNum > 0) && (areaNum < this.file.GetNumAreas()));
+            assert (areaNum > 0 && areaNum < file.GetNumAreas());
 
-            if (0 == (this.file.GetArea(areaNum).travelFlags & TFL_INVALID)) {
+            if (0 == (file.GetArea(areaNum).travelFlags & TFL_INVALID)) {
                 return;
             }
 
-            this.file.RemoveAreaTravelFlag(areaNum, TFL_INVALID);
+            file.RemoveAreaTravelFlag(areaNum, TFL_INVALID);
 
             RemoveRoutingCacheUsingArea(areaNum);
         }
@@ -1957,7 +1951,7 @@ public class AAS_local {
             while (nodeNum != 0) {
                 if (nodeNum < 0) {
                     // if this area is a cluster portal
-                    if ((this.file.GetArea(-nodeNum).contents & areaContents) != 0) {
+                    if ((file.GetArea(-nodeNum).contents & areaContents) != 0) {
                         if (disabled) {
                             DisableArea(-nodeNum);
                         } else {
@@ -1967,8 +1961,8 @@ public class AAS_local {
                     }
                     break;
                 }
-                node = this.file.GetNode(nodeNum);
-                res = bounds.PlaneSide(this.file.GetPlane(node.planeNum));
+                node = file.GetNode(nodeNum);
+                res = bounds.PlaneSide(file.GetPlane(node.planeNum));
                 if (res == PLANESIDE_BACK) {
                     nodeNum = node.children[1];
                 } else if (res == PLANESIDE_FRONT) {
@@ -1991,8 +1985,8 @@ public class AAS_local {
                     areas.Append(-nodeNum);
                     break;
                 }
-                node = this.file.GetNode(nodeNum);
-                res = bounds.PlaneSide(this.file.GetPlane(node.planeNum));
+                node = file.GetNode(nodeNum);
+                res = bounds.PlaneSide(file.GetPlane(node.planeNum));
                 if (res == PLANESIDE_BACK) {
                     nodeNum = node.children[1];
                 } else if (res == PLANESIDE_FRONT) {
@@ -2014,7 +2008,7 @@ public class AAS_local {
 
                 RemoveRoutingCacheUsingArea(obstacle.areas.oGet(i));
 
-                area = this.file.GetArea(obstacle.areas.oGet(i));
+                area = file.GetArea(obstacle.areas.oGet(i));
 
                 for (rev_reach = area.rev_reach; rev_reach != null; rev_reach = rev_reach.rev_next) {
 
@@ -2065,9 +2059,9 @@ public class AAS_local {
             idVec3 v1, v2;
             float d1, d2;
 
-            edge = this.file.GetEdge(edgeNum);
-            v1 = this.file.GetVertex(edge.vertexNum[0]);
-            v2 = this.file.GetVertex(edge.vertexNum[1]);
+            edge = file.GetEdge(edgeNum);
+            v1 = file.GetVertex(edge.vertexNum[0]);
+            v2 = file.GetVertex(edge.vertexNum[1]);
             d1 = v1.oMultiply(plane.Normal()) - plane.Dist();
             d2 = v2.oMultiply(plane.Normal()) - plane.Dist();
 
@@ -2091,7 +2085,7 @@ public class AAS_local {
             int i, j, faceNum, edgeNum;
             aasArea_s area;
             aasFace_s face;
-            final idVec3 split = new idVec3();
+            idVec3 split = new idVec3();
             float dist, bestDist;
 
             if (closest) {
@@ -2100,25 +2094,25 @@ public class AAS_local {
                 bestDist = -0.1f;
             }
 
-            area = this.file.GetArea(areaNum);
+            area = file.GetArea(areaNum);
 
             for (i = 0; i < area.numFaces; i++) {
-                faceNum = this.file.GetFaceIndex(area.firstFace + i);
-                face = this.file.GetFace(abs(faceNum));
+                faceNum = file.GetFaceIndex(area.firstFace + i);
+                face = file.GetFace(abs(faceNum));
 
                 if (0 == (face.flags & FACE_FLOOR)) {
                     continue;
                 }
 
                 for (j = 0; j < face.numEdges; j++) {
-                    edgeNum = this.file.GetEdgeIndex(face.firstEdge + j);
+                    edgeNum = file.GetEdgeIndex(face.firstEdge + j);
 
                     if (!EdgeSplitPoint(split, abs(edgeNum), pathPlane)) {
                         continue;
                     }
                     dist = frontPlane.Distance(split);
                     if (closest) {
-                        if ((dist >= -0.1f) && (dist < bestDist)) {
+                        if (dist >= -0.1f && dist < bestDist) {
                             bestDist = dist;
                             bestSplit.oSet(split);
                         }
@@ -2140,9 +2134,8 @@ public class AAS_local {
 
         private idVec3 SubSampleWalkPath(int areaNum, final idVec3 origin, final idVec3 start, final idVec3 end, int travelFlags, int[] endAreaNum) {
             int i, numSamples;
-            final int[] curAreaNum = {0};
-            idVec3 dir, point, nextPoint;
-			final idVec3 endPos = new idVec3();
+            int[] curAreaNum = {0};
+            idVec3 dir, point, nextPoint, endPos = new idVec3();
 
             dir = end.oMinus(start);
             numSamples = (int) (dir.Length() / walkPathSampleDistance) + 1;
@@ -2164,9 +2157,8 @@ public class AAS_local {
 
         private idVec3 SubSampleFlyPath(int areaNum, final idVec3 origin, final idVec3 start, final idVec3 end, int travelFlags, int[] endAreaNum) {
             int i, numSamples;
-            final int[] curAreaNum = {0};
-            idVec3 dir, point, nextPoint;
-			final idVec3 endPos = new idVec3();
+            int[] curAreaNum = {0};
+            idVec3 dir, point, nextPoint, endPos = new idVec3();
 
             dir = end.oMinus(start);
             numSamples = (int) (dir.Length() / flyPathSampleDistance) + 1;
@@ -2188,12 +2180,12 @@ public class AAS_local {
 
         // debug
         private idBounds DefaultSearchBounds() {
-            return this.file.GetSettings().boundingBoxes[0];
+            return file.GetSettings().boundingBoxes[0];
         }
 
         private void DrawCone(final idVec3 origin, final idVec3 dir, float radius, final idVec4 color) {
             int i;
-            final idMat3 axis = new idMat3();
+            idMat3 axis = new idMat3();
             idVec3 center, top, p, lastp;
 
             axis.oSet(2, dir);
@@ -2217,16 +2209,16 @@ public class AAS_local {
             aasArea_s area;
             idReachability reach;
 
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return;
             }
 
-            area = this.file.GetArea(areaNum);
+            area = file.GetArea(areaNum);
             numFaces = area.numFaces;
             firstFace = area.firstFace;
 
             for (i = 0; i < numFaces; i++) {
-                DrawFace(abs(this.file.GetFaceIndex(firstFace + i)), this.file.GetFaceIndex(firstFace + i) < 0);
+                DrawFace(abs(file.GetFaceIndex(firstFace + i)), file.GetFaceIndex(firstFace + i) < 0);
             }
 
             for (reach = area.reach; reach != null; reach = reach.next) {
@@ -2239,26 +2231,26 @@ public class AAS_local {
             aasFace_s face;
             idVec3 mid, end;
 
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return;
             }
 
-            face = this.file.GetFace(faceNum);
+            face = file.GetFace(faceNum);
             numEdges = face.numEdges;
             firstEdge = face.firstEdge;
 
             mid = getVec3_origin();
             for (i = 0; i < numEdges; i++) {
-                DrawEdge(abs(this.file.GetEdgeIndex(firstEdge + i)), (face.flags & FACE_FLOOR) != 0);
-                j = this.file.GetEdgeIndex(firstEdge + i);
-                mid.oPluSet(this.file.GetVertex(this.file.GetEdge(abs(j)).vertexNum[(j < 0) ? 1 : 0]));
+                DrawEdge(abs(file.GetEdgeIndex(firstEdge + i)), (face.flags & FACE_FLOOR) != 0);
+                j = file.GetEdgeIndex(firstEdge + i);
+                mid.oPluSet(file.GetVertex(file.GetEdge(abs(j)).vertexNum[(j < 0) ? 1 : 0]));
             }
 
             mid.oDivSet(numEdges);
             if (side) {
-                end = mid.oMinus(this.file.GetPlane(this.file.GetFace(faceNum).planeNum).Normal().oMultiply(5.0f));
+                end = mid.oMinus(file.GetPlane(file.GetFace(faceNum).planeNum).Normal().oMultiply(5.0f));
             } else {
-                end = mid.oPlus(this.file.GetPlane(this.file.GetFace(faceNum).planeNum).Normal().oMultiply(5.0f));
+                end = mid.oPlus(file.GetPlane(file.GetFace(faceNum).planeNum).Normal().oMultiply(5.0f));
             }
             gameRenderWorld.DebugArrow(colorGreen, mid, end, 1);
         }
@@ -2267,20 +2259,20 @@ public class AAS_local {
             aasEdge_s edge;
             idVec4 color;
 
-            if (NOT(this.file)) {
+            if (NOT(file)) {
                 return;
             }
 
-            edge = this.file.GetEdge(edgeNum);
+            edge = file.GetEdge(edgeNum);
             color = colorRed;
             if (arrow) {
-                gameRenderWorld.DebugArrow(color, this.file.GetVertex(edge.vertexNum[0]), this.file.GetVertex(edge.vertexNum[1]), 1);
+                gameRenderWorld.DebugArrow(color, file.GetVertex(edge.vertexNum[0]), file.GetVertex(edge.vertexNum[1]), 1);
             } else {
-                gameRenderWorld.DebugLine(color, this.file.GetVertex(edge.vertexNum[0]), this.file.GetVertex(edge.vertexNum[1]));
+                gameRenderWorld.DebugLine(color, file.GetVertex(edge.vertexNum[0]), file.GetVertex(edge.vertexNum[1]));
             }
 
             if (gameLocal.GetLocalPlayer() != null) {
-                gameRenderWorld.DrawText(va("%d", edgeNum), (this.file.GetVertex(edge.vertexNum[0]).oPlus(this.file.GetVertex(edge.vertexNum[1]))).
+                gameRenderWorld.DrawText(va("%d", edgeNum), (file.GetVertex(edge.vertexNum[0]).oPlus(file.GetVertex(edge.vertexNum[1]))).
                         oMultiply(0.5f).oPlus(new idVec3(0, 0, 4)), 0.1f, colorRed, gameLocal.GetLocalPlayer().viewAxis);
             }
         }
@@ -2308,8 +2300,8 @@ public class AAS_local {
             PushPointIntoAreaNum(areaNum, org);
 
             if (aas_goalArea.GetInteger() != 0) {
-                final int[] travelTime = {0};
-                final idReachability[] reach = {null};
+                int[] travelTime = {0};
+                idReachability[] reach = {null};
 
                 RouteToGoalArea(areaNum, org, aas_goalArea.GetInteger(), TFL_WALK | TFL_AIR, travelTime, reach);
                 gameLocal.Printf("\rtt = %4d", travelTime[0]);
@@ -2320,7 +2312,7 @@ public class AAS_local {
             }
 
             if (areaNum != lastAreaNum) {
-                area = this.file.GetArea(areaNum);
+                area = file.GetArea(areaNum);
                 gameLocal.Printf("area %d: ", areaNum);
                 if ((area.flags & AREA_LEDGE) != 0) {
                     gameLocal.Printf("AREA_LEDGE ");
@@ -2342,7 +2334,7 @@ public class AAS_local {
             }
 
             if (!org.equals(origin)) {
-                final idBounds bnds = this.file.GetSettings().boundingBoxes[ 0];
+                idBounds bnds = file.GetSettings().boundingBoxes[ 0];
                 bnds.oGet(1).z = bnds.oGet(0).z;
                 gameRenderWorld.DebugBounds(colorYellow, bnds, org);
             }
@@ -2352,8 +2344,8 @@ public class AAS_local {
 
         private void ShowWallEdges(final idVec3 origin) {
             int i, areaNum, numEdges;
-            final int[] edges = new int[1024];
-            final idVec3 start = new idVec3(), end = new idVec3();
+            int[] edges = new int[1024];
+            idVec3 start = new idVec3(), end = new idVec3();
             idPlayer player;
 
             player = gameLocal.GetLocalPlayer();
@@ -2373,8 +2365,8 @@ public class AAS_local {
         private void ShowHideArea(final idVec3 origin, int targetAreaNum) {
             int areaNum, numObstacles;
             idVec3 target;
-            final aasGoal_s goal = new aasGoal_s();
-            final aasObstacle_s[] obstacles = new aasObstacle_s[10];
+            aasGoal_s goal = new aasGoal_s();
+            aasObstacle_s[] obstacles = new aasObstacle_s[10];
 
             areaNum = PointReachableAreaNum(origin, DefaultSearchBounds(), (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY));
             target = AreaCenter(targetAreaNum);
@@ -2385,7 +2377,7 @@ public class AAS_local {
 
             DrawCone(target, new idVec3(0, 0, 1), 16.0f, colorYellow);
 
-            final idAASFindCover findCover = new idAASFindCover(target);
+            idAASFindCover findCover = new idAASFindCover(target);
             if (FindNearestGoal(goal, areaNum, origin, target, TFL_WALK | TFL_AIR, obstacles, numObstacles, findCover)) {
                 DrawArea(goal.areaNum);
                 ShowWalkPath(origin, goal.areaNum, goal.origin);
@@ -2397,7 +2389,7 @@ public class AAS_local {
             int areaNum;
             idVec3 areaCenter, dir, vel;
             idAngles delta;
-            final aasPath_s path = new aasPath_s();
+            aasPath_s path = new aasPath_s();
             idPlayer player;
 
             player = gameLocal.GetLocalPlayer();
@@ -2405,7 +2397,7 @@ public class AAS_local {
                 return true;
             }
 
-            final idPhysics physics = player.GetPhysics();
+            idPhysics physics = player.GetPhysics();
             if (null == physics) {
                 return true;
             }
@@ -2443,11 +2435,11 @@ public class AAS_local {
 
             if (!PullPlayer(origin, aas_pullPlayer.GetInteger())) {
 
-                rnd = (int) (gameLocal.random.RandomFloat() * this.file.GetNumAreas());
+                rnd = (int) (gameLocal.random.RandomFloat() * file.GetNumAreas());
 
-                for (i = 0; i < this.file.GetNumAreas(); i++) {
-                    n = (rnd + i) % this.file.GetNumAreas();
-                    if ((this.file.GetArea(n).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY)) != 0) {
+                for (i = 0; i < file.GetNumAreas(); i++) {
+                    n = (rnd + i) % file.GetNumAreas();
+                    if ((file.GetArea(n).flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY)) != 0) {
                         aas_pullPlayer.SetInteger(n);
                     }
                 }
@@ -2466,5 +2458,5 @@ public class AAS_local {
             gameRenderWorld.DebugArrow(colorGreen, origin, target, 1);
         }
 
-    }
+    };
 }

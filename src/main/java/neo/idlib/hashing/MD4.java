@@ -28,7 +28,7 @@ public class MD4 {
     }
 
     public static String MD4_BlockChecksum(final int[] data, int length) {
-        final ByteBuffer buffer = ByteBuffer.allocate(data.length * 4);
+        ByteBuffer buffer = ByteBuffer.allocate(data.length * 4);
         buffer.asIntBuffer().put(data);
 
         return BlockChecksum(buffer, length, MD4);
@@ -57,18 +57,17 @@ public class MD4 {
 
         try {
             final int currentPosition = data.position();
-            // The type sun.security.provider.MD4 is not accessible in JDK 11, replaced with neo.open.MD4
-            final MessageDigest messageDigest = MD4 ? neo.open.MD4.getInstance() : MessageDigest.getInstance("MD5");
+            MessageDigest messageDigest = MD4 ? neo.open.MD4.getInstance() : MessageDigest.getInstance("MD5");
 
             messageDigest.update(data);
 
             data.position(currentPosition);
 
-            final ByteBuffer digest = ByteBuffer.wrap(messageDigest.digest());
+            ByteBuffer digest = ByteBuffer.wrap(messageDigest.digest());
             digest.order(ByteOrder.LITTLE_ENDIAN);
             hash = digest.getInt() ^ digest.getInt() ^ digest.getInt() ^ digest.getInt();
 
-        } catch (final NoSuchAlgorithmException ex) {
+        } catch (NoSuchAlgorithmException ex) {
             throw new idException(ex);
         }
 

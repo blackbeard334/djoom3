@@ -71,7 +71,7 @@ public class Model_md3 {
         float radius;
 //	char		name[16];
         String name;
-    }
+    };
 
     static class md3Tag_s {
 //	char		name[MAX_MD3PATH];	// tag name
@@ -79,7 +79,7 @@ public class Model_md3 {
         String name;	// tag name
         idVec3 origin;
         idVec3[] axis = new idVec3[3];
-    }
+    };
 
     /*
      ** md3Surface_t
@@ -120,38 +120,34 @@ public class Model_md3 {
         //
 
         int ofsEnd;				// next surface follows
-    }
+    };
 
     static class md3Shader_t {
 //	char				name[MAX_MD3PATH];
 
         String name;
         idMaterial shader;			// for in-game use
-    }
+    };
 
     static class md3Triangle_t {
 
         int[] indexes = new int[3];
-    }
+    };
 
     static class md3St_t {
 
         float[] st = new float[2];
-    }
+    };
 
     static class md3XyzNormal_t {
 
         short[] xyz = new short[3];
         short normal;
-    }
+    };
 
     static class md3Header_s implements SERiAL {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		int ident;
+        int ident;
         int version;
 //
 //	char		name[MAX_MD3PATH];	// model name
@@ -190,7 +186,7 @@ public class Model_md3 {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     static int LL(int x) {
         return LittleLong(x);
@@ -205,11 +201,7 @@ public class Model_md3 {
      */
     static class idRenderModelMD3 extends idRenderModelStatic {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private int index;		// model = tr.models[model->index]
+        private int index;		// model = tr.models[model->index]
         private int dataSize;		// just for listing purposes
         private md3Header_s md3;	// only if type == MOD_MESH
         private int numLods;
@@ -227,14 +219,14 @@ public class Model_md3 {
             md3St_t st;
             md3XyzNormal_t xyz;
             md3Tag_s tag;
-            final ByteBuffer[] buffer = {null};
+            ByteBuffer[] buffer = {null};
             int version;
             int size;
 
-            this.name.oSet(fileName);
+            name.oSet(fileName);
 
             size = fileSystem.ReadFile(fileName, buffer, null);
-            if ((0 == size) || (size < 0)) {
+            if (0 == size || size < 0) {
                 return;
             }
 
@@ -250,25 +242,25 @@ public class Model_md3 {
             }
 
             size = LittleLong(pinmodel.ofsEnd);
-            this.dataSize += size;
+            dataSize += size;
 //            md3 = new md3Header_s[size];// Mem_Alloc(size);
 
 //            memcpy(md3, buffer, LittleLong(pinmodel.ofsEnd));
 //            for (int h = 0; h < size; h++) {
-            this.md3 = new md3Header_s();
-            this.md3.Read(buffer[0]);
+            md3 = new md3Header_s();
+            md3.Read(buffer[0]);
 
-            this.md3.ident = LL(this.md3.ident);
-            this.md3.version = LL(this.md3.version);
-            this.md3.numFrames = LL(this.md3.numFrames);
-            this.md3.numTags = LL(this.md3.numTags);
-            this.md3.numSurfaces = LL(this.md3.numSurfaces);
-            this.md3.ofsFrames = LL(this.md3.ofsFrames);
-            this.md3.ofsTags = LL(this.md3.ofsTags);
-            this.md3.ofsSurfaces = LL(this.md3.ofsSurfaces);
-            this.md3.ofsEnd = LL(this.md3.ofsEnd);
+            md3.ident = LL(md3.ident);
+            md3.version = LL(md3.version);
+            md3.numFrames = LL(md3.numFrames);
+            md3.numTags = LL(md3.numTags);
+            md3.numSurfaces = LL(md3.numSurfaces);
+            md3.ofsFrames = LL(md3.ofsFrames);
+            md3.ofsTags = LL(md3.ofsTags);
+            md3.ofsSurfaces = LL(md3.ofsSurfaces);
+            md3.ofsEnd = LL(md3.ofsEnd);
 
-            if (this.md3.numFrames < 1) {
+            if (md3.numFrames < 1) {
                 common.Warning("InitFromFile: %s has no frames", fileName);
                 fileSystem.FreeFile(buffer);
                 return;
@@ -276,8 +268,8 @@ public class Model_md3 {
 
             // swap all the frames
 //            frame = (md3Frame_s) ((byte[]) md3[md3.ofsFrames]);
-            this.md3.frames = new md3Frame_s[this.md3.numFrames];
-            for (i = 0; i < this.md3.numFrames; i++) {
+            md3.frames = new md3Frame_s[md3.numFrames];
+            for (i = 0; i < md3.numFrames; i++) {
                 frame = new md3Frame_s();
                 frame.radius = LittleFloat(frame.radius);
                 for (j = 0; j < 3; j++) {
@@ -285,13 +277,13 @@ public class Model_md3 {
                     frame.bounds[1].oSet(j, LittleFloat(frame.bounds[1].oGet(j)));
                     frame.localOrigin.oSet(j, LittleFloat(frame.localOrigin.oGet(j)));
                 }
-                this.md3.frames[i] = frame;
+                md3.frames[i] = frame;
             }
 
             // swap all the tags
 //                tag = (md3Tag_s) ((byte[]) md3[md3.ofsTags]);
-            this.md3.tags = new md3Tag_s[this.md3.numTags * this.md3.numFrames];
-            for (i = 0; i < (this.md3.numTags * this.md3.numFrames); i++) {
+            md3.tags = new md3Tag_s[md3.numTags * md3.numFrames];
+            for (i = 0; i < md3.numTags * md3.numFrames; i++) {
                 tag = new md3Tag_s();
                 for (j = 0; j < 3; j++) {
                     tag.origin.oSet(j, LittleFloat(tag.origin.oGet(j)));
@@ -299,13 +291,13 @@ public class Model_md3 {
                     tag.axis[1].oSet(j, LittleFloat(tag.axis[1].oGet(j)));
                     tag.axis[2].oSet(j, LittleFloat(tag.axis[2].oGet(j)));
                 }
-                this.md3.tags[i] = tag;
+                md3.tags[i] = tag;
             }
 
             // swap all the surfaces
 //                surf = (md3Surface_s) ((byte[]) md3[md3.ofsSurfaces]);
-            this.md3.surfaces = new md3Surface_s[this.md3.numSurfaces];
-            for (i = 0; i < this.md3.numSurfaces; i++) {
+            md3.surfaces = new md3Surface_s[md3.numSurfaces];
+            for (i = 0; i < md3.numSurfaces; i++) {
 
                 surf = new md3Surface_s();
 
@@ -325,7 +317,7 @@ public class Model_md3 {
                     common.Error("InitFromFile: %s has more than %d verts on a surface (%d)",
                             fileName, SHADER_MAX_VERTEXES, surf.numVerts);
                 }
-                if ((surf.numTriangles * 3) > SHADER_MAX_INDEXES) {
+                if (surf.numTriangles * 3 > SHADER_MAX_INDEXES) {
                     common.Error("InitFromFile: %s has more than %d triangles on a surface (%d)",
                             fileName, SHADER_MAX_INDEXES / 3, surf.numTriangles);
                 }
@@ -343,7 +335,7 @@ public class Model_md3 {
                 // strip off a trailing _1 or _2
                 // this is a crutch for q3data being a mess
                 j = surf.name.length();
-                if ((j > 2) && (surf.name.charAt(j - 2) == '_')) {
+                if (j > 2 && surf.name.charAt(j - 2) == '_') {
                     surf.name = surf.name.substring(0, j - 2);
                 }
 
@@ -386,7 +378,7 @@ public class Model_md3 {
                 // swap all the XyzNormals
 //                    xyz = (md3XyzNormal_t) ((byte[]) surf + surf.ofsXyzNormals);
                 surf.normals = new md3XyzNormal_t[surf.numVerts * surf.numFrames];
-                for (j = 0; j < (surf.numVerts * surf.numFrames); j++) {
+                for (j = 0; j < surf.numVerts * surf.numFrames; j++) {
                     xyz = new md3XyzNormal_t();
 
                     xyz.xyz[0] = LittleShort(xyz.xyz[0]);
@@ -401,7 +393,7 @@ public class Model_md3 {
                 // find the next surface
 //                    surf = (md3Surface_t) ((byte[]) surf[surf.ofsEnd]);//TODO: make sure the offsets are mapped correctly with the serialization
 //                    
-                this.md3.surfaces[i] = surf;
+                md3.surfaces[i] = surf;
             }
 //            }
 
@@ -434,49 +426,49 @@ public class Model_md3 {
             staticModel.bounds.Clear();
 
 //            surface = (md3Surface_t) ((byte[]) md3[ md3.ofsSurfaces]);
-            surface = this.md3.surfaces[0];
+            surface = md3.surfaces[0];
 
             // TODO: these need set by an entity
             frame = (int) ent.shaderParms[SHADERPARM_MD3_FRAME];			// probably want to keep frames < 1000 or so
             oldframe = (int) ent.shaderParms[SHADERPARM_MD3_LASTFRAME];
             backlerp = ent.shaderParms[SHADERPARM_MD3_BACKLERP];
 
-            for (i = 0; i < this.md3.numSurfaces; /*i++*/) {
+            for (i = 0; i < md3.numSurfaces; /*i++*/) {
 
-                final srfTriangles_s tri = R_AllocStaticTriSurf();
+                srfTriangles_s tri = R_AllocStaticTriSurf();
                 R_AllocStaticTriSurfVerts(tri, surface.numVerts);
                 R_AllocStaticTriSurfIndexes(tri, surface.numTriangles * 3);
                 tri.bounds.Clear();
 
-                final modelSurface_s surf = new modelSurface_s();
+                modelSurface_s surf = new modelSurface_s();
 
                 surf.geometry = tri;
 
 //                md3Shader_t shaders = (md3Shader_t) ((byte[]) surface[surface.ofsShaders]);
-                final md3Shader_t shaders = surface.shaders[0];
+                md3Shader_t shaders = surface.shaders[0];
                 surf.shader = shaders.shader;
 
                 LerpMeshVertexes(tri, surface, backlerp, frame, oldframe);
 
                 indexes = surface.numTriangles * 3;
                 j = 0;
-                for (final md3Triangle_t triangle : surface.triangles) {
+                for (md3Triangle_t triangle : surface.triangles) {
 //                triangles = (int[]) ((byte[]) surface + surface.ofsTriangles);
                     for (/*j = 0*/; j < indexes; j++) {
-                        tri.getIndexes().getValues().put(j, triangle.indexes[j]);
+                        tri.indexes[j] = triangle.indexes[j];
                     }
-                    tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() + indexes);
+                    tri.numIndexes += indexes;
                 }
 
                 numVerts = surface.numVerts;
                 j = 0;
-                for (final md3St_t texCoords : surface.verts) {
+                for (md3St_t texCoords : surface.verts) {
 //                texCoords = (float[]) ((byte[]) surface + surface.ofsSt);
 
                     for (/*j = 0*/; j < numVerts; j++) {
-                        final idDrawVert stri = tri.verts[j];
-                        stri.st.oSet(0, texCoords.st[(j * 2) + 0]);
-                        stri.st.oSet(1, texCoords.st[(j * 2) + 1]);
+                        idDrawVert stri = tri.verts[j];
+                        stri.st.oSet(0, texCoords.st[j * 2 + 0]);
+                        stri.st.oSet(1, texCoords.st[j * 2 + 1]);
                     }
                 }
 
@@ -487,7 +479,7 @@ public class Model_md3 {
                 staticModel.bounds.AddPoint(surf.geometry.bounds.oGet(1));
 
                 // find the next surface
-                surface = this.md3.surfaces[++i];
+                surface = md3.surfaces[++i];
             }
 
             return staticModel;
@@ -495,11 +487,11 @@ public class Model_md3 {
 
         @Override
         public idBounds Bounds(renderEntity_s ent) {
-            final idBounds ret = new idBounds();
+            idBounds ret = new idBounds();
 
             ret.Clear();
 
-            if ((null == ent) || (null == this.md3)) {
+            if (null == ent || null == md3) {
                 // just give it the editor bounds
                 ret.AddPoint(new idVec3(-10, -10, -10));
                 ret.AddPoint(new idVec3(10, 10, 10));
@@ -507,7 +499,7 @@ public class Model_md3 {
             }
 
 //            md3Frame_s frame = (md3Frame_t) ((byte[]) md3 + md3.ofsFrames);
-            final md3Frame_s frame = this.md3.frames[0];
+            md3Frame_s frame = md3.frames[0];
 
             ret.AddPoint(frame.bounds[0]);
             ret.AddPoint(frame.bounds[1]);
@@ -533,7 +525,7 @@ public class Model_md3 {
                 //
                 for (vertNum = 0; vertNum < numVerts; newXyz = surf.normals[++frame], vertNum++) {
 
-                    final idDrawVert outvert = tri.verts[tri.numVerts];
+                    idDrawVert outvert = tri.verts[tri.numVerts];
 
                     outvert.xyz.x = newXyz.xyz[0] * newXyzScale;
                     outvert.xyz.y = newXyz.xyz[1] * newXyzScale;
@@ -552,16 +544,16 @@ public class Model_md3 {
 
                 for (vertNum = 0; vertNum < numVerts; vertNum++, oldXyz = surf.normals[++oldframe], newXyz = surf.normals[++frame]) {
 
-                    final idDrawVert outvert = tri.verts[tri.numVerts];
+                    idDrawVert outvert = tri.verts[tri.numVerts];
 
                     // interpolate the xyz
-                    outvert.xyz.x = (oldXyz.xyz[0] * oldXyzScale) + (newXyz.xyz[0] * newXyzScale);
-                    outvert.xyz.y = (oldXyz.xyz[1] * oldXyzScale) + (newXyz.xyz[1] * newXyzScale);
-                    outvert.xyz.z = (oldXyz.xyz[2] * oldXyzScale) + (newXyz.xyz[2] * newXyzScale);
+                    outvert.xyz.x = oldXyz.xyz[0] * oldXyzScale + newXyz.xyz[0] * newXyzScale;
+                    outvert.xyz.y = oldXyz.xyz[1] * oldXyzScale + newXyz.xyz[1] * newXyzScale;
+                    outvert.xyz.z = oldXyz.xyz[2] * oldXyzScale + newXyz.xyz[2] * newXyzScale;
 
                     tri.numVerts++;
                 }
             }
         }
-    }
+    };
 }

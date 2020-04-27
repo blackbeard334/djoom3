@@ -64,7 +64,7 @@ public class PlayerView {
         int finishTime;
         int startFadeTime;
         float driftAmount;
-    }
+    };
     public static final int MAX_SCREEN_BLOBS    = 8;
     public static final int IMPULSE_DELAY       = 150;
 
@@ -73,59 +73,59 @@ public class PlayerView {
         private final screenBlob_t[] screenBlobs = new screenBlob_t[MAX_SCREEN_BLOBS];
         //
         private int          dvFinishTime;      // double vision will be stopped at this time
-        private final idMaterial   dvMaterial;        // material to take the double vision screen shot
+        private idMaterial   dvMaterial;        // material to take the double vision screen shot
         //
         private int          kickFinishTime;    // view kick will be stopped at this time
-        private final idAngles     kickAngles;
+        private idAngles     kickAngles;
         //
         private boolean      bfgVision;
         //
-        private final idMaterial   tunnelMaterial;    // health tunnel vision
-        private final idMaterial   armorMaterial;     // armor damage view effect
-        private final idMaterial   berserkMaterial;   // berserk effect
-        private final idMaterial   irGogglesMaterial; // ir effect
-        private final idMaterial   bloodSprayMaterial;// blood spray
-        private final idMaterial   bfgMaterial;       // when targeted with BFG
-        private final idMaterial   lagoMaterial;      // lagometer drawing
+        private idMaterial   tunnelMaterial;    // health tunnel vision
+        private idMaterial   armorMaterial;     // armor damage view effect
+        private idMaterial   berserkMaterial;   // berserk effect
+        private idMaterial   irGogglesMaterial; // ir effect
+        private idMaterial   bloodSprayMaterial;// blood spray
+        private idMaterial   bfgMaterial;       // when targeted with BFG
+        private idMaterial   lagoMaterial;      // lagometer drawing
         private float        lastDamageTime;    // accentuate the tunnel effect for a while
         //
-        private final idVec4       fadeColor;         // fade color
-        private final idVec4       fadeToColor;       // color to fade to
-        private final idVec4       fadeFromColor;     // color to fade from
+        private idVec4       fadeColor;         // fade color
+        private idVec4       fadeToColor;       // color to fade to
+        private idVec4       fadeFromColor;     // color to fade from
         private float        fadeRate;          // fade rate
         private int          fadeTime;          // fade time
         //
-        private final idAngles     shakeAng;          // from the sound sources
+        private idAngles     shakeAng;          // from the sound sources
         //
         private idPlayer     player;
-        private final renderView_s view;
+        private renderView_s view;
         //
         //
 
         public idPlayerView() {
 //	memset( screenBlobs, 0, sizeof( screenBlobs ) );
 //	memset( &view, 0, sizeof( view ) );
-            this.view = new renderView_s();
-            this.player = null;
-            this.dvMaterial = declManager.FindMaterial("_scratch");
-            this.tunnelMaterial = declManager.FindMaterial("textures/decals/tunnel");
-            this.armorMaterial = declManager.FindMaterial("armorViewEffect");
-            this.berserkMaterial = declManager.FindMaterial("textures/decals/berserk");
-            this.irGogglesMaterial = declManager.FindMaterial("textures/decals/irblend");
-            this.bloodSprayMaterial = declManager.FindMaterial("textures/decals/bloodspray");
-            this.bfgMaterial = declManager.FindMaterial("textures/decals/bfgvision");
-            this.lagoMaterial = declManager.FindMaterial(LAGO_MATERIAL, false);
-            this.bfgVision = false;
-            this.dvFinishTime = 0;
-            this.kickFinishTime = 0;
-            this.kickAngles = new idAngles();
-            this.lastDamageTime = 0f;
-            this.fadeTime = 0;
-            this.fadeRate = 0;
-            this.fadeFromColor = new idVec4();
-            this.fadeToColor = new idVec4();
-            this.fadeColor = new idVec4();
-            this.shakeAng = new idAngles();
+            view = new renderView_s();
+            player = null;
+            dvMaterial = declManager.FindMaterial("_scratch");
+            tunnelMaterial = declManager.FindMaterial("textures/decals/tunnel");
+            armorMaterial = declManager.FindMaterial("armorViewEffect");
+            berserkMaterial = declManager.FindMaterial("textures/decals/berserk");
+            irGogglesMaterial = declManager.FindMaterial("textures/decals/irblend");
+            bloodSprayMaterial = declManager.FindMaterial("textures/decals/bloodspray");
+            bfgMaterial = declManager.FindMaterial("textures/decals/bfgvision");
+            lagoMaterial = declManager.FindMaterial(LAGO_MATERIAL, false);
+            bfgVision = false;
+            dvFinishTime = 0;
+            kickFinishTime = 0;
+            kickAngles = new idAngles();
+            lastDamageTime = 0f;
+            fadeTime = 0;
+            fadeRate = 0;
+            fadeFromColor = new idVec4();
+            fadeToColor = new idVec4();
+            fadeColor = new idVec4();
+            shakeAng = new idAngles();
 
             ClearEffects();
         }
@@ -134,8 +134,8 @@ public class PlayerView {
             int i;
             screenBlob_t blob;
 
-            blob = this.screenBlobs[0];
-            for (i = 0; i < MAX_SCREEN_BLOBS; blob = this.screenBlobs[++i]) {
+            blob = screenBlobs[0];
+            for (i = 0; i < MAX_SCREEN_BLOBS; blob = screenBlobs[++i]) {
                 savefile.WriteMaterial(blob.material);
                 savefile.WriteFloat(blob.x);
                 savefile.WriteFloat(blob.y);
@@ -150,30 +150,30 @@ public class PlayerView {
                 savefile.WriteFloat(blob.driftAmount);
             }
 
-            savefile.WriteInt(this.dvFinishTime);
-            savefile.WriteMaterial(this.dvMaterial);
-            savefile.WriteInt(this.kickFinishTime);
-            savefile.WriteAngles(this.kickAngles);
-            savefile.WriteBool(this.bfgVision);
+            savefile.WriteInt(dvFinishTime);
+            savefile.WriteMaterial(dvMaterial);
+            savefile.WriteInt(kickFinishTime);
+            savefile.WriteAngles(kickAngles);
+            savefile.WriteBool(bfgVision);
 
-            savefile.WriteMaterial(this.tunnelMaterial);
-            savefile.WriteMaterial(this.armorMaterial);
-            savefile.WriteMaterial(this.berserkMaterial);
-            savefile.WriteMaterial(this.irGogglesMaterial);
-            savefile.WriteMaterial(this.bloodSprayMaterial);
-            savefile.WriteMaterial(this.bfgMaterial);
-            savefile.WriteFloat(this.lastDamageTime);
+            savefile.WriteMaterial(tunnelMaterial);
+            savefile.WriteMaterial(armorMaterial);
+            savefile.WriteMaterial(berserkMaterial);
+            savefile.WriteMaterial(irGogglesMaterial);
+            savefile.WriteMaterial(bloodSprayMaterial);
+            savefile.WriteMaterial(bfgMaterial);
+            savefile.WriteFloat(lastDamageTime);
 
-            savefile.WriteVec4(this.fadeColor);
-            savefile.WriteVec4(this.fadeToColor);
-            savefile.WriteVec4(this.fadeFromColor);
-            savefile.WriteFloat(this.fadeRate);
-            savefile.WriteInt(this.fadeTime);
+            savefile.WriteVec4(fadeColor);
+            savefile.WriteVec4(fadeToColor);
+            savefile.WriteVec4(fadeFromColor);
+            savefile.WriteFloat(fadeRate);
+            savefile.WriteInt(fadeTime);
 
-            savefile.WriteAngles(this.shakeAng);
+            savefile.WriteAngles(shakeAng);
 
-            savefile.WriteObject(this.player);
-            savefile.WriteRenderView(this.view);
+            savefile.WriteObject(player);
+            savefile.WriteRenderView(view);
         }
 
         public void Restore(idRestoreGame savefile) {
@@ -181,7 +181,7 @@ public class PlayerView {
             screenBlob_t blob;
 
 //            blob = screenBlobs[ 0];
-            for (blob = this.screenBlobs[i = 0]; i < MAX_SCREEN_BLOBS; blob = this.screenBlobs[++i]) {
+            for (blob = screenBlobs[i = 0]; i < MAX_SCREEN_BLOBS; blob = screenBlobs[++i]) {
                 savefile.ReadMaterial(blob.material);
                 blob.x = savefile.ReadFloat();
                 blob.y = savefile.ReadFloat();
@@ -196,49 +196,49 @@ public class PlayerView {
                 blob.driftAmount = savefile.ReadFloat();
             }
 
-            this.dvFinishTime = savefile.ReadInt();
-            savefile.ReadMaterial(this.dvMaterial);
-            this.kickFinishTime = savefile.ReadInt();
-            savefile.ReadAngles(this.kickAngles);
-            this.bfgVision = savefile.ReadBool();
+            dvFinishTime = savefile.ReadInt();
+            savefile.ReadMaterial(dvMaterial);
+            kickFinishTime = savefile.ReadInt();
+            savefile.ReadAngles(kickAngles);
+            bfgVision = savefile.ReadBool();
 
-            savefile.ReadMaterial(this.tunnelMaterial);
-            savefile.ReadMaterial(this.armorMaterial);
-            savefile.ReadMaterial(this.berserkMaterial);
-            savefile.ReadMaterial(this.irGogglesMaterial);
-            savefile.ReadMaterial(this.bloodSprayMaterial);
-            savefile.ReadMaterial(this.bfgMaterial);
-            this.lastDamageTime = savefile.ReadFloat();
+            savefile.ReadMaterial(tunnelMaterial);
+            savefile.ReadMaterial(armorMaterial);
+            savefile.ReadMaterial(berserkMaterial);
+            savefile.ReadMaterial(irGogglesMaterial);
+            savefile.ReadMaterial(bloodSprayMaterial);
+            savefile.ReadMaterial(bfgMaterial);
+            lastDamageTime = savefile.ReadFloat();
 
-            savefile.ReadVec4(this.fadeColor);
-            savefile.ReadVec4(this.fadeToColor);
-            savefile.ReadVec4(this.fadeFromColor);
-            this.fadeRate = savefile.ReadFloat();
-            this.fadeTime = savefile.ReadInt();
+            savefile.ReadVec4(fadeColor);
+            savefile.ReadVec4(fadeToColor);
+            savefile.ReadVec4(fadeFromColor);
+            fadeRate = savefile.ReadFloat();
+            fadeTime = savefile.ReadInt();
 
-            savefile.ReadAngles(this.shakeAng);
+            savefile.ReadAngles(shakeAng);
 
-            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/player);
-            savefile.ReadRenderView(this.view);
+            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/player);
+            savefile.ReadRenderView(view);
         }
 
         public void SetPlayerEntity(idPlayer playerEnt) {
-            this.player = playerEnt;
+            player = playerEnt;
         }
 
         public void ClearEffects() {
-            this.lastDamageTime = MS2SEC(gameLocal.time - 99999);
+            lastDamageTime = MS2SEC(gameLocal.time - 99999);
 
-            this.dvFinishTime = (gameLocal.time - 99999);
-            this.kickFinishTime = (gameLocal.time - 99999);
+            dvFinishTime = (gameLocal.time - 99999);
+            kickFinishTime = (gameLocal.time - 99999);
 
             for (int i = 0; i < MAX_SCREEN_BLOBS; i++) {
-                this.screenBlobs[i] = new screenBlob_t();
-                this.screenBlobs[i].finishTime = gameLocal.time;
+                screenBlobs[i] = new screenBlob_t();
+                screenBlobs[i].finishTime = gameLocal.time;
             }
 
-            this.fadeTime = 0;
-            this.bfgVision = false;
+            fadeTime = 0;
+            bfgVision = false;
         }
 
         /*
@@ -253,56 +253,56 @@ public class PlayerView {
             //
             // double vision effect
             //
-            if ((this.lastDamageTime > 0.0f) && ((SEC2MS(this.lastDamageTime) + IMPULSE_DELAY) > gameLocal.time)) {
+            if (lastDamageTime > 0.0f && SEC2MS(lastDamageTime) + IMPULSE_DELAY > gameLocal.time) {
                 // keep shotgun from obliterating the view
                 return;
             }
 
-            final float dvTime = damageDef.GetFloat("dv_time");
+            float dvTime = damageDef.GetFloat("dv_time");
             if (dvTime != 0) {
-                if (this.dvFinishTime < gameLocal.time) {
-                    this.dvFinishTime = gameLocal.time;
+                if (dvFinishTime < gameLocal.time) {
+                    dvFinishTime = gameLocal.time;
                 }
-                this.dvFinishTime += g_dvTime.GetFloat() * dvTime;
+                dvFinishTime += g_dvTime.GetFloat() * dvTime;
                 // don't let it add up too much in god mode
-                if (this.dvFinishTime > (gameLocal.time + 5000)) {
-                    this.dvFinishTime = gameLocal.time + 5000;
+                if (dvFinishTime > gameLocal.time + 5000) {
+                    dvFinishTime = gameLocal.time + 5000;
                 }
             }
 
             //
             // head angle kick
             //
-            final float kickTime = damageDef.GetFloat("kick_time");
+            float kickTime = damageDef.GetFloat("kick_time");
             if (kickTime != 0) {
-                this.kickFinishTime = (int) (gameLocal.time + (g_kickTime.GetFloat() * kickTime));
+                kickFinishTime = (int) (gameLocal.time + g_kickTime.GetFloat() * kickTime);
 
                 // forward / back kick will pitch view
-                this.kickAngles.oSet(0, localKickDir.oGet(0));
+                kickAngles.oSet(0, localKickDir.oGet(0));
 
                 // side kick will yaw view
-                this.kickAngles.oSet(1, localKickDir.oGet(1) * 0.5f);
+                kickAngles.oSet(1, localKickDir.oGet(1) * 0.5f);
 
                 // up / down kick will pitch view
-                this.kickAngles.oPluSet(0, localKickDir.oGet(2));
+                kickAngles.oPluSet(0, localKickDir.oGet(2));
 
                 // roll will come from  side
-                this.kickAngles.oSet(2, localKickDir.oGet(1));
+                kickAngles.oSet(2, localKickDir.oGet(1));
 
-                final float kickAmplitude = damageDef.GetFloat("kick_amplitude");
+                float kickAmplitude = damageDef.GetFloat("kick_amplitude");
                 if (kickAmplitude != 0) {
-                    this.kickAngles.oMulSet(kickAmplitude);
+                    kickAngles.oMulSet(kickAmplitude);
                 }
             }
 
             //
             // screen blob
             //
-            final float blobTime = damageDef.GetFloat("blob_time");
+            float blobTime = damageDef.GetFloat("blob_time");
             if (blobTime != 0) {
-                final screenBlob_t blob = GetScreenBlob();
+                screenBlob_t blob = GetScreenBlob();
                 blob.startFadeTime = gameLocal.time;
-                blob.finishTime = (int) (gameLocal.time + (blobTime * g_blobTime.GetFloat()));
+                blob.finishTime = (int) (gameLocal.time + blobTime * g_blobTime.GetFloat());
 
                 final String materialName = damageDef.GetString("mtr_blob");
                 blob.material = declManager.FindMaterial(materialName);
@@ -311,7 +311,7 @@ public class PlayerView {
                 blob.y = damageDef.GetFloat("blob_y");
                 blob.y += (gameLocal.random.RandomInt() & 63) - 32;
 
-                final float scale = (256 + ((gameLocal.random.RandomInt() & 63) - 32)) / 256.0f;
+                float scale = (256 + ((gameLocal.random.RandomInt() & 63) - 32)) / 256.0f;
                 blob.w = damageDef.GetFloat("blob_width") * g_blobSize.GetFloat() * scale;
                 blob.h = damageDef.GetFloat("blob_height") * g_blobSize.GetFloat() * scale;
                 blob.s1 = 0;
@@ -323,7 +323,7 @@ public class PlayerView {
             //
             // save lastDamageTime for tunnel vision accentuation
             //
-            this.lastDamageTime = MS2SEC(gameLocal.time);
+            lastDamageTime = MS2SEC(gameLocal.time);
 
         }
 
@@ -339,12 +339,12 @@ public class PlayerView {
 
             recoilTime = weaponDef.GetInt("recoilTime");
             // don't shorten a damage kick in progress
-            if ((recoilTime != 0) && (this.kickFinishTime < gameLocal.time)) {
-                final idAngles angles = new idAngles();
+            if (recoilTime != 0 && kickFinishTime < gameLocal.time) {
+                idAngles angles = new idAngles();
                 weaponDef.GetAngles("recoilAngles", "5 0 0", angles);
-                this.kickAngles.oSet(angles);
-                final int finish = (int) (gameLocal.time + (g_kickTime.GetFloat() * recoilTime));
-                this.kickFinishTime = finish;
+                kickAngles.oSet(angles);
+                int finish = (int) (gameLocal.time + g_kickTime.GetFloat() * recoilTime);
+                kickFinishTime = finish;
             }
 
         }
@@ -361,10 +361,10 @@ public class PlayerView {
 
             ang.Zero();
 
-            if (gameLocal.time < this.kickFinishTime) {
-                final float offset = this.kickFinishTime - gameLocal.time;
+            if (gameLocal.time < kickFinishTime) {
+                float offset = kickFinishTime - gameLocal.time;
 
-                ang = this.kickAngles.oMultiply(offset * offset * g_kickAmplitude.GetFloat());
+                ang = kickAngles.oMultiply(offset * offset * g_kickAmplitude.GetFloat());
 
                 for (int i = 0; i < 3; i++) {
                     if (ang.oGet(i) > 70.0f) {
@@ -378,37 +378,37 @@ public class PlayerView {
         }
 
         public idMat3 ShakeAxis() {			// returns the current shake angle
-            return this.shakeAng.ToMat3();
+            return shakeAng.ToMat3();
         }
 
         public void CalculateShake() {
 //            idVec3 origin, matrix;
 
-            final float shakeVolume = gameSoundWorld.CurrentShakeAmplitudeForPosition(gameLocal.time, this.player.firstPersonViewOrigin);
+            float shakeVolume = gameSoundWorld.CurrentShakeAmplitudeForPosition(gameLocal.time, player.firstPersonViewOrigin);
             //
             // shakeVolume should somehow be molded into an angle here
             // it should be thought of as being in the range 0.0 . 1.0, although
             // since CurrentShakeAmplitudeForPosition() returns all the shake sounds
             // the player can hear, it can go over 1.0 too.
             //
-            this.shakeAng.oSet(0, gameLocal.random.CRandomFloat() * shakeVolume);
-            this.shakeAng.oSet(1, gameLocal.random.CRandomFloat() * shakeVolume);
-            this.shakeAng.oSet(2, gameLocal.random.CRandomFloat() * shakeVolume);
+            shakeAng.oSet(0, gameLocal.random.CRandomFloat() * shakeVolume);
+            shakeAng.oSet(1, gameLocal.random.CRandomFloat() * shakeVolume);
+            shakeAng.oSet(2, gameLocal.random.CRandomFloat() * shakeVolume);
         }
 
         // this may involve rendering to a texture and displaying
         // that with a warp model or in double vision mode
         public void RenderPlayerView(idUserInterface hud) {
-            final renderView_s view = this.player.GetRenderView();
+            final renderView_s view = player.GetRenderView();
 
             if (g_skipViewEffects.GetBool()) {
                 SingleView(hud, view);
             } else {
-                if ((this.player.GetInfluenceMaterial() != null) || (this.player.GetInfluenceEntity() != null)) {
+                if (player.GetInfluenceMaterial() != null || player.GetInfluenceEntity() != null) {
                     InfluenceVision(hud, view);
-                } else if (gameLocal.time < this.dvFinishTime) {
-                    DoubleVision(hud, view, this.dvFinishTime - gameLocal.time);
-                } else if (this.player.PowerUpActive(BERSERK)) {
+                } else if (gameLocal.time < dvFinishTime) {
+                    DoubleVision(hud, view, dvFinishTime - gameLocal.time);
+                } else if (player.PowerUpActive(BERSERK)) {
                     BerserkVision(hud, view);
                 } else {
                     SingleView(hud, view);
@@ -416,9 +416,9 @@ public class PlayerView {
                 ScreenFade();
             }
 
-            if (net_clientLagOMeter.GetBool() && (this.lagoMaterial != null) && gameLocal.isClient) {
+            if (net_clientLagOMeter.GetBool() && lagoMaterial != null && gameLocal.isClient) {
                 renderSystem.SetColor4(1.0f, 1.0f, 1.0f, 1.0f);
-                renderSystem.DrawStretchPic(10.0f, 380.0f, 64.0f, 64.0f, 0.0f, 0.0f, 1.0f, 1.0f, this.lagoMaterial);
+                renderSystem.DrawStretchPic(10.0f, 380.0f, 64.0f, 64.0f, 0.0f, 0.0f, 1.0f, 1.0f, lagoMaterial);
             }
         }
 
@@ -432,25 +432,25 @@ public class PlayerView {
          */
         public void Fade(idVec4 color, int time) {
 
-            if (0 == this.fadeTime) {
-                this.fadeFromColor.Set(0.0f, 0.0f, 0.0f, 1.0f - color.oGet(3));
+            if (0 == fadeTime) {
+                fadeFromColor.Set(0.0f, 0.0f, 0.0f, 1.0f - color.oGet(3));
             } else {
-                this.fadeFromColor.oSet(this.fadeColor);
+                fadeFromColor.oSet(fadeColor);
             }
-            this.fadeToColor.oSet(color);
+            fadeToColor.oSet(color);
 
             if (time <= 0) {
-                this.fadeRate = 0;
+                fadeRate = 0;
                 time = 0;
-                this.fadeColor.oSet(this.fadeToColor);
+                fadeColor.oSet(fadeToColor);
             } else {
-                this.fadeRate = 1.0f / time;
+                fadeRate = 1.0f / (float) time;
             }
 
-            if ((gameLocal.realClientTime == 0) && (time == 0)) {
-                this.fadeTime = 1;
+            if (gameLocal.realClientTime == 0 && time == 0) {
+                fadeTime = 1;
             } else {
-                this.fadeTime = gameLocal.realClientTime + time;
+                fadeTime = gameLocal.realClientTime + time;
             }
         }
 
@@ -463,7 +463,7 @@ public class PlayerView {
          */
         public void Flash(idVec4 color, int time) {
             Fade(new idVec4(0, 0, 0, 0), time);
-            this.fadeFromColor.oSet(colorWhite);
+            fadeFromColor.oSet(colorWhite);
         }
 
         /*
@@ -515,7 +515,7 @@ public class PlayerView {
 
         // temp for view testing
         public void EnableBFGVision(boolean b) {
-            this.bfgVision = b;
+            bfgVision = b;
         }
 
         private void SingleView(idUserInterface hud, final renderView_s view) {
@@ -526,30 +526,30 @@ public class PlayerView {
             }
 
             // place the sound origin for the player
-            gameSoundWorld.PlaceListener(view.vieworg, view.viewaxis, this.player.entityNumber + 1, gameLocal.time, new idStr(hud != null ? hud.State().GetString("location") : "Undefined"));
+            gameSoundWorld.PlaceListener(view.vieworg, view.viewaxis, player.entityNumber + 1, gameLocal.time, new idStr(hud != null ? hud.State().GetString("location") : "Undefined"));
 
             // if the objective system is up, don't do normal drawing
-            if (this.player.objectiveSystemOpen) {
-                this.player.objectiveSystem.Redraw(gameLocal.time);
+            if (player.objectiveSystemOpen) {
+                player.objectiveSystem.Redraw(gameLocal.time);
                 return;
             }
 
             // hack the shake in at the very last moment, so it can't cause any consistency problems
-            final renderView_s hackedView = new renderView_s(view);
+            renderView_s hackedView = new renderView_s(view);
             hackedView.viewaxis = hackedView.viewaxis.oMultiply(ShakeAxis());
 //            hackedView.viewaxis = idMat3.getMat3_identity();//HACKME::10
 //            hackedView.viewaxis = new idMat3(-1.0f, -3.8941437E-7f, -0.0f, 3.8941437E-7f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
             gameRenderWorld.RenderScene(hackedView);
 
-            if (this.player.spectating) {
+            if (player.spectating) {
                 return;
             }
 
             // draw screen blobs
             if (!pm_thirdPerson.GetBool() && !g_skipViewEffects.GetBool()) {
                 for (int i = 0; i < MAX_SCREEN_BLOBS; i++) {
-                    final screenBlob_t blob = this.screenBlobs[i];
+                    screenBlob_t blob = screenBlobs[i];
                     if (blob.finishTime <= gameLocal.time) {
                         continue;
                     }
@@ -565,14 +565,14 @@ public class PlayerView {
                         renderSystem.DrawStretchPic(blob.x, blob.y, blob.w, blob.h, blob.s1, blob.t1, blob.s2, blob.t2, blob.material);
                     }
                 }
-                this.player.DrawHUD(hud);
+                player.DrawHUD(hud);
 
                 // armor impulse feedback
-                final float armorPulse = (gameLocal.time - this.player.lastArmorPulse) / 250.0f;
+                float armorPulse = (gameLocal.time - player.lastArmorPulse) / 250.0f;
 
-                if ((armorPulse > 0.0f) && (armorPulse < 1.0f)) {
+                if (armorPulse > 0.0f && armorPulse < 1.0f) {
                     renderSystem.SetColor4(1, 1, 1, 1.0f - armorPulse);
-                    renderSystem.DrawStretchPic(0, 0, 640, 480, 0, 0, 1, 1, this.armorMaterial);
+                    renderSystem.DrawStretchPic(0, 0, 640, 480, 0, 0, 1, 1, armorMaterial);
                 }
 
                 // tunnel vision
@@ -580,7 +580,7 @@ public class PlayerView {
                 if (g_testHealthVision.GetFloat() != 0.0f) {
                     health = g_testHealthVision.GetFloat();
                 } else {
-                    health = this.player.health;
+                    health = player.health;
                 }
                 float alpha = health / 100.0f;
                 if (alpha < 0.0f) {
@@ -591,23 +591,23 @@ public class PlayerView {
                 }
 
                 if (alpha < 1.0f) {
-                    renderSystem.SetColor4((this.player.health <= 0.0f) ? MS2SEC(gameLocal.time) : this.lastDamageTime, 1.0f, 1.0f, (this.player.health <= 0.0f) ? 0.0f : alpha);
-                    renderSystem.DrawStretchPic(0.0f, 0.0f, 640.0f, 480.0f, 0.0f, 0.0f, 1.0f, 1.0f, this.tunnelMaterial);
+                    renderSystem.SetColor4((player.health <= 0.0f) ? MS2SEC(gameLocal.time) : lastDamageTime, 1.0f, 1.0f, (player.health <= 0.0f) ? 0.0f : alpha);
+                    renderSystem.DrawStretchPic(0.0f, 0.0f, 640.0f, 480.0f, 0.0f, 0.0f, 1.0f, 1.0f, tunnelMaterial);
                 }
 
-                if (this.player.PowerUpActive(BERSERK)) {
-                    final int berserkTime = this.player.inventory.powerupEndTime[ BERSERK] - gameLocal.time;
+                if (player.PowerUpActive(BERSERK)) {
+                    int berserkTime = player.inventory.powerupEndTime[ BERSERK] - gameLocal.time;
                     if (berserkTime > 0) {
                         // start fading if within 10 seconds of going away
                         alpha = (berserkTime < 10000) ? (float) berserkTime / 10000 : 1.0f;
                         renderSystem.SetColor4(1.0f, 1.0f, 1.0f, alpha);
-                        renderSystem.DrawStretchPic(0.0f, 0.0f, 640.0f, 480.0f, 0.0f, 0.0f, 1.0f, 1.0f, this.berserkMaterial);
+                        renderSystem.DrawStretchPic(0.0f, 0.0f, 640.0f, 480.0f, 0.0f, 0.0f, 1.0f, 1.0f, berserkMaterial);
                     }
                 }
 
-                if (this.bfgVision) {
+                if (bfgVision) {
                     renderSystem.SetColor4(1.0f, 1.0f, 1.0f, 1.0f);
-                    renderSystem.DrawStretchPic(0.0f, 0.0f, 640.0f, 480.0f, 0.0f, 0.0f, 1.0f, 1.0f, this.bfgMaterial);
+                    renderSystem.DrawStretchPic(0.0f, 0.0f, 640.0f, 480.0f, 0.0f, 0.0f, 1.0f, 1.0f, bfgMaterial);
                 }
 
             }
@@ -646,16 +646,16 @@ public class PlayerView {
             renderSystem.UnCrop();
 
             // carry red tint if in berserk mode
-            final idVec4 color = new idVec4(1, 1, 1, 1);
-            if (gameLocal.time < this.player.inventory.powerupEndTime[ BERSERK]) {
+            idVec4 color = new idVec4(1, 1, 1, 1);
+            if (gameLocal.time < player.inventory.powerupEndTime[ BERSERK]) {
                 color.y = 0;
                 color.z = 0;
             }
 
             renderSystem.SetColor4(color.x, color.y, color.z, 1.0f);
-            renderSystem.DrawStretchPic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, shift, 1, 1, 0, this.dvMaterial);
+            renderSystem.DrawStretchPic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, shift, 1, 1, 0, dvMaterial);
             renderSystem.SetColor4(color.x, color.y, color.z, 0.5f);
-            renderSystem.DrawStretchPic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 1, 1 - shift, 0, this.dvMaterial);
+            renderSystem.DrawStretchPic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 1, 1 - shift, 0, dvMaterial);
         }
 
         private void BerserkVision(idUserInterface hud, final renderView_s view) {
@@ -664,30 +664,30 @@ public class PlayerView {
             renderSystem.CaptureRenderToImage("_scratch");
             renderSystem.UnCrop();
             renderSystem.SetColor4(1.0f, 1.0f, 1.0f, 1.0f);
-            renderSystem.DrawStretchPic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 1, 1, 0, this.dvMaterial);
+            renderSystem.DrawStretchPic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 1, 1, 0, dvMaterial);
         }
 
         private void InfluenceVision(idUserInterface hud, final renderView_s view) {
 
             float distance;
             float pct = 1.0f;
-            if (this.player.GetInfluenceEntity() != null) {
-                distance = (this.player.GetInfluenceEntity().GetPhysics().GetOrigin().oMinus(this.player.GetPhysics().GetOrigin())).Length();
-                if ((this.player.GetInfluenceRadius() != 0.0f) && (distance < this.player.GetInfluenceRadius())) {
+            if (player.GetInfluenceEntity() != null) {
+                distance = (player.GetInfluenceEntity().GetPhysics().GetOrigin().oMinus(player.GetPhysics().GetOrigin())).Length();
+                if (player.GetInfluenceRadius() != 0.0f && distance < player.GetInfluenceRadius()) {
 //			pct = distance / player.GetInfluenceRadius();//TODO:wtf?
                     pct = 1.0f - idMath.ClampFloat(0.0f, 1.0f, pct);
                 }
             }
-            if (this.player.GetInfluenceMaterial() != null) {
+            if (player.GetInfluenceMaterial() != null) {
                 SingleView(hud, view);
                 renderSystem.CaptureRenderToImage("_currentRender");
                 renderSystem.SetColor4(1.0f, 1.0f, 1.0f, pct);
-                renderSystem.DrawStretchPic(0.0f, 0.0f, 640.0f, 480.0f, 0.0f, 0.0f, 1.0f, 1.0f, this.player.GetInfluenceMaterial());
-            } else if (this.player.GetInfluenceEntity() == null) {
+                renderSystem.DrawStretchPic(0.0f, 0.0f, 640.0f, 480.0f, 0.0f, 0.0f, 1.0f, 1.0f, player.GetInfluenceMaterial());
+            } else if (player.GetInfluenceEntity() == null) {
                 SingleView(hud, view);
 //		return;
             } else {
-                final int offset = (int) (25 + sin(gameLocal.time));
+                int offset = (int) (25 + sin(gameLocal.time));
                 DoubleVision(hud, view, (int) (pct * offset));
             }
         }
@@ -696,38 +696,38 @@ public class PlayerView {
             int msec;
             float t;
 
-            if (0 == this.fadeTime) {
+            if (0 == fadeTime) {
                 return;
             }
 
-            msec = this.fadeTime - gameLocal.realClientTime;
+            msec = fadeTime - gameLocal.realClientTime;
 
             if (msec <= 0) {
-                this.fadeColor.oSet(this.fadeToColor);
-                if (this.fadeColor.oGet(3) == 0.0f) {
-                    this.fadeTime = 0;
+                fadeColor.oSet(fadeToColor);
+                if (fadeColor.oGet(3) == 0.0f) {
+                    fadeTime = 0;
                 }
             } else {
-                t = msec * this.fadeRate;
-                this.fadeColor.oSet(this.fadeFromColor.oMultiply(t).oPlus(this.fadeToColor.oMultiply(1.0f - t)));
+                t = (float) msec * fadeRate;
+                fadeColor.oSet(fadeFromColor.oMultiply(t).oPlus(fadeToColor.oMultiply(1.0f - t)));
             }
 
-            if (this.fadeColor.oGet(3) != 0.0f) {
-                renderSystem.SetColor4(this.fadeColor.oGet(0), this.fadeColor.oGet(1), this.fadeColor.oGet(2), this.fadeColor.oGet(3));
+            if (fadeColor.oGet(3) != 0.0f) {
+                renderSystem.SetColor4(fadeColor.oGet(0), fadeColor.oGet(1), fadeColor.oGet(2), fadeColor.oGet(3));
                 renderSystem.DrawStretchPic(0, 0, 640, 480, 0, 0, 1, 1, declManager.FindMaterial("_white"));
             }
         }
 
         private screenBlob_t GetScreenBlob() {
-            screenBlob_t oldest = this.screenBlobs[0];
+            screenBlob_t oldest = screenBlobs[0];
 
             for (int i = 1; i < MAX_SCREEN_BLOBS; i++) {
-                if (this.screenBlobs[i].finishTime < oldest.finishTime) {
-                    oldest = this.screenBlobs[i];
+                if (screenBlobs[i].finishTime < oldest.finishTime) {
+                    oldest = screenBlobs[i];
                 }
             }
             return oldest;
         }
 
-    }
+    };
 }

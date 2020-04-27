@@ -52,7 +52,7 @@ public class DeclFX {
         FX_ATTACHENTITY,
         FX_LAUNCH,
         FX_SHOCKWAVE
-    }
+    };
 
     //
     // single fx structure
@@ -94,7 +94,7 @@ public class DeclFX {
         public boolean noshadows;
         public boolean particleTrackVelocity;
         public boolean trackOrigin;
-    }
+    };
 
     //
     // grouped fx structures
@@ -121,7 +121,7 @@ public class DeclFX {
 
         @Override
         public boolean Parse(String text, int textLength) throws Lib.idException {
-            final idLexer src = new idLexer();
+            idLexer src = new idLexer();
 
             src.LoadMemory(text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(DECL_LEXER_FLAGS);
@@ -129,7 +129,7 @@ public class DeclFX {
 
             // scan through, identifying each individual parameter
             while (true) {
-                final idToken token = new idToken();
+                idToken token = new idToken();
 
                 if (!src.ReadToken(token)) {
                     break;
@@ -141,14 +141,14 @@ public class DeclFX {
 
                 if (0 == token.Icmp("bindto")) {
                     src.ReadToken(token);
-                    this.joint = token;
+                    joint = token;
                     continue;
                 }
 
                 if (0 == token.Icmp("{")) {
-                    final idFXSingleAction action = new idFXSingleAction();
+                    idFXSingleAction action = new idFXSingleAction();
                     ParseSingleFXAction(src, action);
-                    this.events.Append(action);
+                    events.Append(action);
                     continue;
                 }
             }
@@ -162,7 +162,7 @@ public class DeclFX {
 
         @Override
         public void FreeData() {
-            this.events.Clear();
+            events.Clear();
         }
 
         @Override
@@ -174,34 +174,34 @@ public class DeclFX {
             for (int i = 0; i < list.events.Num(); i++) {
                 switch (list.events.oGet(i).type) {
                     case FX_LIGHT:
-                        common.Printf("FX_LIGHT %s\n", list.events.oGet(i).data.getData());
+                        common.Printf("FX_LIGHT %s\n", list.events.oGet(i).data.toString());
                         break;
                     case FX_PARTICLE:
-                        common.Printf("FX_PARTICLE %s\n", list.events.oGet(i).data.getData());
+                        common.Printf("FX_PARTICLE %s\n", list.events.oGet(i).data.toString());
                         break;
                     case FX_MODEL:
-                        common.Printf("FX_MODEL %s\n", list.events.oGet(i).data.getData());
+                        common.Printf("FX_MODEL %s\n", list.events.oGet(i).data.toString());
                         break;
                     case FX_SOUND:
-                        common.Printf("FX_SOUND %s\n", list.events.oGet(i).data.getData());
+                        common.Printf("FX_SOUND %s\n", list.events.oGet(i).data.toString());
                         break;
                     case FX_DECAL:
-                        common.Printf("FX_DECAL %s\n", list.events.oGet(i).data.getData());
+                        common.Printf("FX_DECAL %s\n", list.events.oGet(i).data.toString());
                         break;
                     case FX_SHAKE:
-                        common.Printf("FX_SHAKE %s\n", list.events.oGet(i).data.getData());
+                        common.Printf("FX_SHAKE %s\n", list.events.oGet(i).data.toString());
                         break;
                     case FX_ATTACHLIGHT:
-                        common.Printf("FX_ATTACHLIGHT %s\n", list.events.oGet(i).data.getData());
+                        common.Printf("FX_ATTACHLIGHT %s\n", list.events.oGet(i).data.toString());
                         break;
                     case FX_ATTACHENTITY:
-                        common.Printf("FX_ATTACHENTITY %s\n", list.events.oGet(i).data.getData());
+                        common.Printf("FX_ATTACHENTITY %s\n", list.events.oGet(i).data.toString());
                         break;
                     case FX_LAUNCH:
-                        common.Printf("FX_LAUNCH %s\n", list.events.oGet(i).data.getData());
+                        common.Printf("FX_LAUNCH %s\n", list.events.oGet(i).data.toString());
                         break;
                     case FX_SHOCKWAVE:
-                        common.Printf("FX_SHOCKWAVE %s\n", list.events.oGet(i).data.getData());
+                        common.Printf("FX_SHOCKWAVE %s\n", list.events.oGet(i).data.toString());
                         break;
                 }
             }
@@ -209,16 +209,16 @@ public class DeclFX {
 
         @Override
         public void List() throws idException {
-            common.Printf("%s, %d stages\n", GetName(), this.events.Num());
+            common.Printf("%s, %d stages\n", GetName(), events.Num());
         }
 //
 //
-        public idList<idFXSingleAction> events = new idList<idFXSingleAction>();
+        public idList<idFXSingleAction> events = new idList<>();
         public idStr joint = new idStr();
 //
 
         private void ParseSingleFXAction(idLexer src, idFXSingleAction FXAction) throws Lib.idException {
-            final idToken token = new idToken();
+            idToken token = new idToken();
 
             FXAction.type = null;
             FXAction.sibling = -1;
@@ -353,7 +353,7 @@ public class DeclFX {
                 }
 
                 if (0 == token.Icmp("axis")) {
-                    final idVec3 v = new idVec3();
+                    idVec3 v = new idVec3();
                     v.x = src.ParseFloat();
                     src.ExpectTokenString(",");
                     v.y = src.ParseFloat();
@@ -366,7 +366,7 @@ public class DeclFX {
                 }
 
                 if (0 == token.Icmp("angle")) {
-                    final idAngles a = new idAngles();
+                    idAngles a = new idAngles();
                     a.oSet(0, src.ParseFloat());
                     src.ExpectTokenString(",");
                     a.oSet(1, src.ParseFloat());
@@ -380,11 +380,11 @@ public class DeclFX {
                 if (0 == token.Icmp("uselight")) {
                     src.ReadToken(token);
                     FXAction.data.oSet(token);
-                    for (int i = 0; i < this.events.Num(); i++) {
-                        if (this.events.oGet(i).name.Icmp(FXAction.data.getData()) == 0) {
+                    for (int i = 0; i < events.Num(); i++) {
+                        if (events.oGet(i).name.Icmp(FXAction.data.toString()) == 0) {
                             FXAction.sibling = i;
-                            FXAction.lightColor.oSet(this.events.oGet(i).lightColor);
-                            FXAction.lightRadius = this.events.oGet(i).lightRadius;
+                            FXAction.lightColor.oSet(events.oGet(i).lightColor);
+                            FXAction.lightRadius = events.oGet(i).lightRadius;
                         }
                     }
                     FXAction.type = FX_LIGHT;
@@ -427,8 +427,8 @@ public class DeclFX {
                 if (0 == token.Icmp("useModel")) {
                     src.ReadToken(token);
                     FXAction.data.oSet(token);
-                    for (int i = 0; i < this.events.Num(); i++) {
-                        if (this.events.oGet(i).name.Icmp(FXAction.data) == 0) {
+                    for (int i = 0; i < events.Num(); i++) {
+                        if (events.oGet(i).name.Icmp(FXAction.data) == 0) {
                             FXAction.sibling = i;
                         }
                     }
@@ -463,7 +463,7 @@ public class DeclFX {
                     FXAction.type = FX_MODEL;
 
                     // precache it
-                    renderModelManager.FindModel(FXAction.data.getData());
+                    renderModelManager.FindModel(FXAction.data.toString());
                     continue;
                 }
 
@@ -473,7 +473,7 @@ public class DeclFX {
                     FXAction.type = FX_PARTICLE;
 
                     // precache it
-                    renderModelManager.FindModel(FXAction.data.getData());
+                    renderModelManager.FindModel(FXAction.data.toString());
                     continue;
                 }
 
@@ -525,5 +525,5 @@ public class DeclFX {
         public void oSet(idDeclFX idDeclFX) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
-    }
+    };
 }

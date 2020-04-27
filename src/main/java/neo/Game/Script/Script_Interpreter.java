@@ -51,7 +51,6 @@ import neo.Game.Script.Script_Thread.idThread;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
-import neo.open.Nio;
 
 /**
  *
@@ -66,7 +65,7 @@ public class Script_Interpreter {
         int        s;
         function_t f;
         int        stackbase;
-    }
+    };
 
     public static class idInterpreter {
 
@@ -97,9 +96,9 @@ public class Script_Interpreter {
         //
 
         public idInterpreter() {
-            this.localstackUsed = 0;
-            this.terminateOnExit = true;
-            this.debug = false;
+            localstackUsed = 0;
+            terminateOnExit = true;
+            debug = false;
 //            memset(localstack, 0, sizeof(localstack));
 //            memset(callStack, 0, sizeof(callStack));
             Reset();
@@ -107,44 +106,44 @@ public class Script_Interpreter {
 
         private void PopParms(int numParms) {
             // pop our parms off the stack
-            if (this.localstackUsed < numParms) {
+            if (localstackUsed < numParms) {
                 Error("locals stack underflow\n");
             }
 
-            this.localstackUsed -= numParms;
+            localstackUsed -= numParms;
         }
 
         private void PushString(final String string) {
 //            System.out.println("+++ " + string);
-            if ((this.localstackUsed + MAX_STRING_LEN) > LOCALSTACK_SIZE) {
+            if (localstackUsed + MAX_STRING_LEN > LOCALSTACK_SIZE) {
                 Error("PushString: locals stack overflow\n");
             }
 //            idStr.Copynz(localstack[localstackUsed], string, MAX_STRING_LEN);
             final String str = string + '\0';
             final int length = Math.min(str.length(), MAX_STRING_LEN);
-            Nio.arraycopy(str.getBytes(), 0, this.localstack, this.localstackUsed, length);
-            this.localstackUsed += MAX_STRING_LEN;
+            System.arraycopy(str.getBytes(), 0, localstack, localstackUsed, length);
+            localstackUsed += MAX_STRING_LEN;
         }
 
         private void Push(int value) {
-            if (this.localstackUsed == 36) {
-                final int a = 0;
+            if (localstackUsed == 36) {
+                int a = 0;
             }
-            if ((this.localstackUsed + Integer.BYTES) > LOCALSTACK_SIZE) {
+            if (localstackUsed + Integer.BYTES > LOCALSTACK_SIZE) {
                 Error("Push: locals stack overflow\n");
             }
-            this.localstack[this.localstackUsed + 0] = (byte) (value >>> 0);
-            this.localstack[this.localstackUsed + 1] = (byte) (value >>> 8);
-            this.localstack[this.localstackUsed + 2] = (byte) (value >>> 16);
-            this.localstack[this.localstackUsed + 3] = (byte) (value >>> 24);
-            this.localstackUsed += Integer.BYTES;
+            localstack[localstackUsed + 0] = (byte) (value >>> 0);
+            localstack[localstackUsed + 1] = (byte) (value >>> 8);
+            localstack[localstackUsed + 2] = (byte) (value >>> 16);
+            localstack[localstackUsed + 3] = (byte) (value >>> 24);
+            localstackUsed += Integer.BYTES;
         }
 
         static char[] text = new char[32];
 
         private String FloatToString(float value) {
 
-            if (value == (int) value) {
+            if (value == (float) (int) value) {
                 text = String.format("%d", (int) value).toCharArray();
             } else {
                 text = String.format("%f", value).toCharArray();
@@ -157,9 +156,9 @@ public class Script_Interpreter {
 //                idStr.Append(localstack[localstackBase + def.value.stackOffset], MAX_STRING_LEN, from);
                 final String str = from + '\0';
                 final int length = Math.min(str.length(), MAX_STRING_LEN);
-                final int offset = this.localstackBase + def.value.getStackOffset();
-                final int appendOffset = strLen(this.localstack, offset);
-                Nio.arraycopy(str.getBytes(), 0, this.localstack, appendOffset, length);
+                final int offset = localstackBase + def.value.getStackOffset();
+                final int appendOffset = strLen(localstack, offset);
+                System.arraycopy(str.getBytes(), 0, localstack, appendOffset, length);
             } else {
                 def.value.stringPtr = idStr.Append(def.value.stringPtr, MAX_STRING_LEN, from);
             }
@@ -170,7 +169,7 @@ public class Script_Interpreter {
 //                idStr.Copynz(localstack[localstackBase + def.value.stackOffset], from, MAX_STRING_LEN);
                 final String str = from + '\0';
                 final int length = Math.min(str.length(), MAX_STRING_LEN);
-                Nio.arraycopy(str.getBytes(), 0, this.localstack, this.localstackBase + def.value.getStackOffset(), length);
+                System.arraycopy(str.getBytes(), 0, localstack, localstackBase + def.value.getStackOffset(), length);
             } else {
                 def.value.stringPtr = from;//idStr.Copynz(def.value.stringPtr, from, MAX_STRING_LEN);
             }
@@ -178,7 +177,7 @@ public class Script_Interpreter {
 
         private String GetString(idVarDef def) {
             if (def.initialized == stackVariable) {
-                return btos(this.localstack, this.localstackBase + def.value.getStackOffset());
+                return btos(localstack, localstackBase + def.value.getStackOffset());
             } else {
                 return def.value.stringPtr;
             }
@@ -186,8 +185,8 @@ public class Script_Interpreter {
 
         private varEval_s GetVariable(idVarDef def) {
             if (def.initialized == stackVariable) {
-                final varEval_s val = new varEval_s();
-                val.setIntPtr(this.localstack, this.localstackBase + def.value.getStackOffset());// = ( int * )&localstack[ localstackBase + def->value.stackOffset ];
+                varEval_s val = new varEval_s();
+                val.setIntPtr(localstack, localstackBase + def.value.getStackOffset());// = ( int * )&localstack[ localstackBase + def->value.stackOffset ];
                 return val;
             } else {
                 return def.value;
@@ -222,7 +221,7 @@ public class Script_Interpreter {
             assert (entnum <= MAX_GENTITIES);
             if ((entnum > 0) && (entnum <= MAX_GENTITIES)) {
                 ent = gameLocal.entities[entnum - 1];
-                if ((ent != null) && (ent.scriptObject.data != null)) {
+                if (ent != null && ent.scriptObject.data != null) {
                     return ent.scriptObject;
                 }
             }
@@ -232,14 +231,14 @@ public class Script_Interpreter {
         private void NextInstruction(int position) {
             // Before we execute an instruction, we increment instructionPointer,
             // therefore we need to compensate for that here.
-            this.instructionPointer = position - 1;
+            instructionPointer = position - 1;
         }
 
         private void LeaveFunction(idVarDef returnDef) {
             prstack_s stack;
             varEval_s ret;
 
-            if (this.callStackDepth <= 0) {
+            if (callStackDepth <= 0) {
                 Error("prog stack underflow");
             }
 
@@ -262,41 +261,41 @@ public class Script_Interpreter {
             }
 
             // remove locals from the stack
-            PopParms(this.currentFunction.locals);
-            assert (this.localstackUsed == this.localstackBase);
+            PopParms(currentFunction.locals);
+            assert (localstackUsed == localstackBase);
 
-            if (this.debug) {
-                final statement_s line = gameLocal.program.GetStatement(this.instructionPointer);
-                gameLocal.Printf("%d: %s(%d): exit %s", gameLocal.time, gameLocal.program.GetFilename(line.file), line.linenumber, this.currentFunction.Name());
-                if (this.callStackDepth > 1) {
-                    gameLocal.Printf(" return to %s(line %d)\n", this.callStack[this.callStackDepth - 1].f.Name(), gameLocal.program.GetStatement(this.callStack[this.callStackDepth - 1].s).linenumber);
+            if (debug) {
+                statement_s line = gameLocal.program.GetStatement(instructionPointer);
+                gameLocal.Printf("%d: %s(%d): exit %s", gameLocal.time, gameLocal.program.GetFilename(line.file), line.linenumber, currentFunction.Name());
+                if (callStackDepth > 1) {
+                    gameLocal.Printf(" return to %s(line %d)\n", callStack[callStackDepth - 1].f.Name(), gameLocal.program.GetStatement(callStack[callStackDepth - 1].s).linenumber);
                 } else {
                     gameLocal.Printf(" done\n");
                 }
             }
 
             // up stack
-            this.callStackDepth--;
-            stack = this.callStack[this.callStackDepth];
-            this.currentFunction = stack.f;
-            this.localstackBase = stack.stackbase;
+            callStackDepth--;
+            stack = callStack[callStackDepth];
+            currentFunction = stack.f;
+            localstackBase = stack.stackbase;
             NextInstruction(stack.s);
 
-            if (0 == this.callStackDepth) {
+            if (0 == callStackDepth) {
                 // all done
-                this.doneProcessing = true;
-                this.threadDying = true;
-                this.currentFunction = null;
+                doneProcessing = true;
+                threadDying = true;
+                currentFunction = null;
             }
         }
 
         private void CallEvent(final function_t func, int argsize) {
             int i;
             int j;
-            final varEval_s var = new varEval_s();
+            varEval_s var = new varEval_s();
             int pos;
             int start;
-            final idEventArg[] data = new idEventArg[D_EVENT_MAXARGS];
+            idEventArg[] data = new idEventArg[D_EVENT_MAXARGS];
             idEventDef evdef;
             char[] format;
 
@@ -307,14 +306,14 @@ public class Script_Interpreter {
             assert (func.eventdef != null);
             evdef = func.eventdef;
 
-            start = this.localstackUsed - argsize;
-            var.setIntPtr(this.localstack, start);
-            this.eventEntity = GetEntity(var.getEntityNumberPtr());
+            start = localstackUsed - argsize;
+            var.setIntPtr(localstack, start);
+            eventEntity = GetEntity(var.getEntityNumberPtr());
 
-            if ((null == this.eventEntity) || !this.eventEntity.RespondsTo(evdef)) {
-                if ((this.eventEntity != null) && developer.GetBool()) {
+            if (null == eventEntity || !eventEntity.RespondsTo(evdef)) {
+                if (eventEntity != null && developer.GetBool()) {
                     // give a warning in developer mode
-                    Warning("Function '%s' not supported on entity '%s'", evdef.GetName(), this.eventEntity.name.getData());
+                    Warning("Function '%s' not supported on entity '%s'", evdef.GetName(), eventEntity.name.toString());
                 }
                 // always return a safe value when an object doesn't exist
                 switch (evdef.GetReturnType()) {
@@ -346,45 +345,45 @@ public class Script_Interpreter {
                 }
 
                 PopParms(argsize);
-                this.eventEntity = null;
+                eventEntity = null;
                 return;
             }
 
             format = evdef.GetArgFormat().toCharArray();
-            for (j = 0, i = 0, pos = type_object.Size(); (pos < argsize) || ((i < format.length) && (format[i] != 0)); i++) {
+            for (j = 0, i = 0, pos = type_object.Size(); (pos < argsize) || (i < format.length && format[i] != 0); i++) {
                 switch (format[i]) {
                     case D_EVENT_INTEGER:
-                        var.setIntPtr(this.localstack, (start + pos));
+                        var.setIntPtr(localstack, (start + pos));
                         data[i]= idEventArg.toArg((int) var.getFloatPtr());
                         break;
 
                     case D_EVENT_FLOAT:
-                        var.setIntPtr(this.localstack, (start + pos));
+                        var.setIntPtr(localstack, (start + pos));
                         data[i]= idEventArg.toArg(var.getFloatPtr());
                         break;
 
                     case D_EVENT_VECTOR:
-                        var.setIntPtr(this.localstack, (start + pos));
+                        var.setIntPtr(localstack, (start + pos));
                         data[i]= idEventArg.toArg(var.getVectorPtr());
                         break;
 
                     case D_EVENT_STRING:
-                        data[i]= idEventArg.toArg(btos(this.localstack, start + pos));//( *( const char ** )&data[ i ] ) = ( char * )&localstack[ start + pos ];
+                        data[i]= idEventArg.toArg(btos(localstack, start + pos));//( *( const char ** )&data[ i ] ) = ( char * )&localstack[ start + pos ];
                         break;
 
                     case D_EVENT_ENTITY:
-                        var.setIntPtr(this.localstack, (start + pos));
+                        var.setIntPtr(localstack, (start + pos));
                         data[i] = idEventArg.toArg(GetEntity(var.getEntityNumberPtr()));
                         if (null == data[i]) {
                             Warning("Entity not found for event '%s'. Terminating thread.", evdef.GetName());
-                            this.threadDying = true;
+                            threadDying = true;
                             PopParms(argsize);
                             return;
                         }
                         break;
 
                     case D_EVENT_ENTITY_NULL:
-                        var.setIntPtr(this.localstack, (start + pos));
+                        var.setIntPtr(localstack, (start + pos));
                         data[i] = idEventArg.toArg(GetEntity(var.getEntityNumberPtr()));
                         break;
 
@@ -400,27 +399,27 @@ public class Script_Interpreter {
                 pos += func.parmSize.oGet(j++);
             }
 
-            this.popParms = argsize;
-            this.eventEntity.ProcessEventArgPtr(evdef, data);
+            popParms = argsize;
+            eventEntity.ProcessEventArgPtr(evdef, data);
 
-            if (null == this.multiFrameEvent) {
-                if (this.popParms != 0) {
-                    PopParms(this.popParms);
+            if (null == multiFrameEvent) {
+                if (popParms != 0) {
+                    PopParms(popParms);
                 }
-                this.eventEntity = null;
+                eventEntity = null;
             } else {
-                this.doneProcessing = true;
+                doneProcessing = true;
             }
-            this.popParms = 0;
+            popParms = 0;
         }
 
         private void CallSysEvent(final function_t func, int argsize) {
             int i;
             int j;
-            final varEval_s source = new varEval_s();
+            varEval_s source = new varEval_s();
             int pos;
             int start;
-            final idEventArg[] data = new idEventArg[D_EVENT_MAXARGS];
+            idEventArg[] data = new idEventArg[D_EVENT_MAXARGS];
             final idEventDef evdef;
             final String format;
 
@@ -431,44 +430,44 @@ public class Script_Interpreter {
             assert (func.eventdef != null);
             evdef = func.eventdef;
 
-            start = this.localstackUsed - argsize;
+            start = localstackUsed - argsize;
 
             format = evdef.GetArgFormat();
             for (j = 0, i = 0, pos = 0; (pos < argsize) || (i < format.length()); i++) {
                 switch (format.charAt(i)) {
                     case D_EVENT_INTEGER:
-                        source.setIntPtr(this.localstack, (start + pos));
+                        source.setIntPtr(localstack, (start + pos));
                         data[i] = idEventArg.toArg((int)source.getFloatPtr());
                         break;
 
                     case D_EVENT_FLOAT:
-                        source.setIntPtr(this.localstack, (start + pos));
+                        source.setIntPtr(localstack, (start + pos));
                         data[i] = idEventArg.toArg(source.getFloatPtr());
                         break;
 
                     case D_EVENT_VECTOR:
-                        source.setIntPtr(this.localstack, (start + pos));
+                        source.setIntPtr(localstack, (start + pos));
                         data[i] = idEventArg.toArg(source.getVectorPtr());
                         break;
 
                     case D_EVENT_STRING:
-                        data[i] = idEventArg.toArg(btos(this.localstack, start + pos));
+                        data[i] = idEventArg.toArg(btos(localstack, start + pos));
 //                        data[i] = idEventArg.toArg(btos(localstack, start + pos, argsize));
                         break;
 
                     case D_EVENT_ENTITY:
-                        source.setIntPtr(this.localstack, (start + pos));
+                        source.setIntPtr(localstack, (start + pos));
                         data[i] = idEventArg.toArg(GetEntity(source.getEntityNumberPtr()));
                         if (null == data[i]) {
                             Warning("Entity not found for event '%s'. Terminating thread.", evdef.GetName());
-                            this.threadDying = true;
+                            threadDying = true;
                             PopParms(argsize);
                             return;
                         }
                         break;
 
                     case D_EVENT_ENTITY_NULL:
-                        source.setIntPtr(this.localstack, (start + pos));
+                        source.setIntPtr(localstack, (start + pos));
                         data[i] = idEventArg.toArg(GetEntity(source.getEntityNumberPtr()));
                         break;
 
@@ -485,112 +484,112 @@ public class Script_Interpreter {
             }
 
 //            throw new TODO_Exception();
-            this.popParms = argsize;
-            this.thread.ProcessEventArgPtr(evdef, data);
-            if (this.popParms != 0) {
-                PopParms(this.popParms);
+            popParms = argsize;
+            thread.ProcessEventArgPtr(evdef, data);
+            if (popParms != 0) {
+                PopParms(popParms);
             }
-            this.popParms = 0;
+            popParms = 0;
         }
 
         // save games
         public void Save(idSaveGame savefile) {				// archives object for save game file
             int i;
 
-            savefile.WriteInt(this.callStackDepth);
-            for (i = 0; i < this.callStackDepth; i++) {
-                savefile.WriteInt(this.callStack[i].s);
-                if (this.callStack[i].f != null) {
-                    savefile.WriteInt(gameLocal.program.GetFunctionIndex(this.callStack[i].f));
+            savefile.WriteInt(callStackDepth);
+            for (i = 0; i < callStackDepth; i++) {
+                savefile.WriteInt(callStack[i].s);
+                if (callStack[i].f != null) {
+                    savefile.WriteInt(gameLocal.program.GetFunctionIndex(callStack[i].f));
                 } else {
                     savefile.WriteInt(-1);
                 }
-                savefile.WriteInt(this.callStack[i].stackbase);
+                savefile.WriteInt(callStack[i].stackbase);
             }
-            savefile.WriteInt(this.maxStackDepth);
+            savefile.WriteInt(maxStackDepth);
 
-            savefile.WriteInt(this.localstackUsed);
-            savefile.Write(ByteBuffer.wrap(this.localstack), this.localstackUsed);
+            savefile.WriteInt(localstackUsed);
+            savefile.Write(ByteBuffer.wrap(localstack), localstackUsed);
 
-            savefile.WriteInt(this.localstackBase);
-            savefile.WriteInt(this.maxLocalstackUsed);
+            savefile.WriteInt(localstackBase);
+            savefile.WriteInt(maxLocalstackUsed);
 
-            if (this.currentFunction != null) {
-                savefile.WriteInt(gameLocal.program.GetFunctionIndex(this.currentFunction));
+            if (currentFunction != null) {
+                savefile.WriteInt(gameLocal.program.GetFunctionIndex(currentFunction));
             } else {
                 savefile.WriteInt(-1);
             }
-            savefile.WriteInt(this.instructionPointer);
+            savefile.WriteInt(instructionPointer);
 
-            savefile.WriteInt(this.popParms);
+            savefile.WriteInt(popParms);
 
-            if (this.multiFrameEvent != null) {
-                savefile.WriteString(this.multiFrameEvent.GetName());
+            if (multiFrameEvent != null) {
+                savefile.WriteString(multiFrameEvent.GetName());
             } else {
                 savefile.WriteString("");
             }
-            savefile.WriteObject(this.eventEntity);
+            savefile.WriteObject(eventEntity);
 
-            savefile.WriteObject(this.thread);
+            savefile.WriteObject(thread);
 
-            savefile.WriteBool(this.doneProcessing);
-            savefile.WriteBool(this.threadDying);
-            savefile.WriteBool(this.terminateOnExit);
-            savefile.WriteBool(this.debug);
+            savefile.WriteBool(doneProcessing);
+            savefile.WriteBool(threadDying);
+            savefile.WriteBool(terminateOnExit);
+            savefile.WriteBool(debug);
         }
 
         public void Restore(idRestoreGame savefile) {				// unarchives object from save game file
             int i;
-            final idStr funcname = new idStr();
-            final int[] func_index = {0};
+            idStr funcname = new idStr();
+            int[] func_index = {0};
 
-            this.callStackDepth = savefile.ReadInt();
-            for (i = 0; i < this.callStackDepth; i++) {
-                this.callStack[i].s = savefile.ReadInt();
+            callStackDepth = savefile.ReadInt();
+            for (i = 0; i < callStackDepth; i++) {
+                callStack[i].s = savefile.ReadInt();
 
                 savefile.ReadInt(func_index);
                 if (func_index[0] >= 0) {
-                    this.callStack[i].f = gameLocal.program.GetFunction(func_index[0]);
+                    callStack[i].f = gameLocal.program.GetFunction(func_index[0]);
                 } else {
-                    this.callStack[i].f = null;
+                    callStack[i].f = null;
                 }
 
-                this.callStack[i].stackbase = savefile.ReadInt();
+                callStack[i].stackbase = savefile.ReadInt();
             }
-            this.maxStackDepth = savefile.ReadInt();
+            maxStackDepth = savefile.ReadInt();
 
-            this.localstackUsed = savefile.ReadInt();
-            savefile.Read(ByteBuffer.wrap(this.localstack), this.localstackUsed);
+            localstackUsed = savefile.ReadInt();
+            savefile.Read(ByteBuffer.wrap(localstack), localstackUsed);
 
-            this.localstackBase = savefile.ReadInt();
-            this.maxLocalstackUsed = savefile.ReadInt();
+            localstackBase = savefile.ReadInt();
+            maxLocalstackUsed = savefile.ReadInt();
 
             savefile.ReadInt(func_index);
             if (func_index[0] >= 0) {
-                this.currentFunction = gameLocal.program.GetFunction(func_index[0]);
+                currentFunction = gameLocal.program.GetFunction(func_index[0]);
             } else {
-                this.currentFunction = null;
+                currentFunction = null;
             }
-            this.instructionPointer = savefile.ReadInt();
+            instructionPointer = savefile.ReadInt();
 
-            this.popParms = savefile.ReadInt();
+            popParms = savefile.ReadInt();
 
             savefile.ReadString(funcname);
             if (funcname.Length() != 0) {
-                this.multiFrameEvent = idEventDef.FindEvent(funcname.getData());
+                multiFrameEvent = idEventDef.FindEvent(funcname.toString());
             }
 
-            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/eventEntity);
-            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/thread);
+            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/eventEntity);
+            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/thread);
 
-            this.doneProcessing = savefile.ReadBool();
-            this.threadDying = savefile.ReadBool();
-            this.terminateOnExit = savefile.ReadBool();
-            this.debug = savefile.ReadBool();
+            doneProcessing = savefile.ReadBool();
+            threadDying = savefile.ReadBool();
+            terminateOnExit = savefile.ReadBool();
+            debug = savefile.ReadBool();
         }
 
         public void SetThread(idThread pThread) {
-            this.thread = pThread;
+            thread = pThread;
         }
 
         public void StackTrace() {
@@ -598,24 +597,24 @@ public class Script_Interpreter {
             int i;
             int top;
 
-            if (this.callStackDepth == 0) {
+            if (callStackDepth == 0) {
                 gameLocal.Printf("<NO STACK>\n");
                 return;
             }
 
-            top = this.callStackDepth;
+            top = callStackDepth;
             if (top >= MAX_STACK_DEPTH) {
                 top = MAX_STACK_DEPTH - 1;
             }
 
-            if (NOT(this.currentFunction)) {
+            if (NOT(currentFunction)) {
                 gameLocal.Printf("<NO FUNCTION>\n");
             } else {
-                gameLocal.Printf("%12s : %s\n", gameLocal.program.GetFilename(this.currentFunction.filenum), this.currentFunction.Name());
+                gameLocal.Printf("%12s : %s\n", gameLocal.program.GetFilename(currentFunction.filenum), currentFunction.Name());
             }
 
             for (i = top; i >= 0; i--) {
-                f = this.callStack[i].f;
+                f = callStack[i].f;
                 if (NOT(f)) {
                     gameLocal.Printf("<NO FUNCTION>\n");
                 } else {
@@ -625,17 +624,17 @@ public class Script_Interpreter {
         }
 
         public int CurrentLine() {
-            if (this.instructionPointer < 0) {
+            if (instructionPointer < 0) {
                 return 0;
             }
-            return gameLocal.program.GetLineNumberForStatement(this.instructionPointer);
+            return gameLocal.program.GetLineNumberForStatement(instructionPointer);
         }
 
         public String CurrentFile() {
-            if (this.instructionPointer < 0) {
+            if (instructionPointer < 0) {
                 return "";
             }
-            return gameLocal.program.GetFilenameForStatement(this.instructionPointer);
+            return gameLocal.program.GetFilenameForStatement(instructionPointer);
         }
 
         /*
@@ -646,14 +645,14 @@ public class Script_Interpreter {
          ============
          */
         public void Error(String fmt, Object... objects) {// id_attribute((format(printf,2,3)));
-            final String text = String.format(fmt, objects);
+            String text = String.format(fmt, objects);
             StackTrace();
 
-            if ((this.instructionPointer >= 0) && (this.instructionPointer < gameLocal.program.NumStatements())) {
-                final statement_s line = gameLocal.program.GetStatement(this.instructionPointer);
-                common.Error("%s(%d): Thread '%s': %s\n", gameLocal.program.GetFilename(line.file), line.linenumber, this.thread.GetThreadName(), text);
+            if ((instructionPointer >= 0) && (instructionPointer < gameLocal.program.NumStatements())) {
+                statement_s line = gameLocal.program.GetStatement(instructionPointer);
+                common.Error("%s(%d): Thread '%s': %s\n", gameLocal.program.GetFilename(line.file), line.linenumber, thread.GetThreadName(), text);
             } else {
-                common.Error("Thread '%s': %s\n", this.thread.GetThreadName(), text);
+                common.Error("Thread '%s': %s\n", thread.GetThreadName(), text);
             }
         }
 
@@ -665,13 +664,13 @@ public class Script_Interpreter {
          ============
          */
         public void Warning(String fmt, Object... objects) {// id_attribute((format(printf,2,3)));
-            final String text = String.format(fmt, objects);
+            String text = String.format(fmt, objects);
 
-            if ((this.instructionPointer >= 0) && (this.instructionPointer < gameLocal.program.NumStatements())) {
-                final statement_s line = gameLocal.program.GetStatement(this.instructionPointer);
-                common.Warning("%s(%d): Thread '%s': %s", gameLocal.program.GetFilename(line.file), line.linenumber, this.thread.GetThreadName(), text);
+            if ((instructionPointer >= 0) && (instructionPointer < gameLocal.program.NumStatements())) {
+                statement_s line = gameLocal.program.GetStatement(instructionPointer);
+                common.Warning("%s(%d): Thread '%s': %s", gameLocal.program.GetFilename(line.file), line.linenumber, thread.GetThreadName(), text);
             } else {
-                common.Warning("Thread '%s' : %s", this.thread.GetThreadName(), text);
+                common.Warning("Thread '%s' : %s", thread.GetThreadName(), text);
             }
         }
 
@@ -679,22 +678,22 @@ public class Script_Interpreter {
             function_t f;
             int i;
 
-            gameLocal.Printf(" Stack depth: %d bytes, %d max\n", this.localstackUsed, this.maxLocalstackUsed);
-            gameLocal.Printf("  Call depth: %d, %d max\n", this.callStackDepth, this.maxStackDepth);
+            gameLocal.Printf(" Stack depth: %d bytes, %d max\n", localstackUsed, maxLocalstackUsed);
+            gameLocal.Printf("  Call depth: %d, %d max\n", callStackDepth, maxStackDepth);
             gameLocal.Printf("  Call Stack: ");
 
-            if (this.callStackDepth == 0) {
+            if (callStackDepth == 0) {
                 gameLocal.Printf("<NO STACK>\n");
             } else {
-                if (NOT(this.currentFunction)) {
+                if (NOT(currentFunction)) {
                     gameLocal.Printf("<NO FUNCTION>\n");
                 } else {
-                    gameLocal.Printf("%12s : %s\n", gameLocal.program.GetFilename(this.currentFunction.filenum), this.currentFunction.Name());
+                    gameLocal.Printf("%12s : %s\n", gameLocal.program.GetFilename(currentFunction.filenum), currentFunction.Name());
                 }
 
-                for (i = this.callStackDepth; i > 0; i--) {
+                for (i = callStackDepth; i > 0; i--) {
                     gameLocal.Printf("              ");
-                    f = this.callStack[i].f;
+                    f = callStack[i].f;
                     if (NOT(f)) {
                         gameLocal.Printf("<NO FUNCTION>\n");
                     } else {
@@ -705,30 +704,30 @@ public class Script_Interpreter {
         }
 
         public boolean BeginMultiFrameEvent(idEntity ent, final idEventDef event) {
-            if (!this.eventEntity.equals(ent)) {
+            if (!eventEntity.equals(ent)) {
                 Error("idInterpreter::BeginMultiFrameEvent called with wrong entity");
             }
-            if (this.multiFrameEvent != null) {
-                if (!this.multiFrameEvent.equals(event)) {
+            if (multiFrameEvent != null) {
+                if (!multiFrameEvent.equals(event)) {
                     Error("idInterpreter::BeginMultiFrameEvent called with wrong event");
                 }
                 return false;
             }
 
-            this.multiFrameEvent = event;
+            multiFrameEvent = event;
             return true;
         }
 
         public void EndMultiFrameEvent(idEntity ent, final idEventDef event) {
-            if (!this.multiFrameEvent.equals(event)) {
+            if (!multiFrameEvent.equals(event)) {
                 Error("idInterpreter::EndMultiFrameEvent called with wrong event");
             }
 
-            this.multiFrameEvent = null;
+            multiFrameEvent = null;
         }
 
         public boolean MultiFrameEventInProgress() {
-            return this.multiFrameEvent != null;
+            return multiFrameEvent != null;
         }
 
         /*
@@ -742,15 +741,15 @@ public class Script_Interpreter {
             Reset();
 
 //	memcpy( localstack, &source.localstack[ source.localstackUsed - args ], args );
-            Nio.arraycopy(source.localstack, source.localstackUsed - args, this.localstack, 0, args);
+            System.arraycopy(source.localstack, source.localstackUsed - args, localstack, 0, args);
 
-            this.localstackUsed = args;
-            this.localstackBase = 0;
+            localstackUsed = args;
+            localstackBase = 0;
 
-            this.maxLocalstackUsed = this.localstackUsed;
+            maxLocalstackUsed = localstackUsed;
             EnterFunction(func, false);
 
-            this.thread.SetThreadName(this.currentFunction.Name());
+            thread.SetThreadName(currentFunction.Name());
         }
 
         /*
@@ -769,40 +768,40 @@ public class Script_Interpreter {
             if (clearStack) {
                 Reset();
             }
-            if (this.popParms != 0) {
-                PopParms(this.popParms);
-                this.popParms = 0;
+            if (popParms != 0) {
+                PopParms(popParms);
+                popParms = 0;
             }
 
-            if (this.callStackDepth >= MAX_STACK_DEPTH) {
+            if (callStackDepth >= MAX_STACK_DEPTH) {
                 Error("call stack overflow");
             }
 
-            stack = this.callStack[this.callStackDepth] = new prstack_s();
+            stack = callStack[callStackDepth] = new prstack_s();
 
-            stack.s = this.instructionPointer + 1;	// point to the next instruction to execute
-            stack.f = this.currentFunction;
-            stack.stackbase = this.localstackBase;
+            stack.s = instructionPointer + 1;	// point to the next instruction to execute
+            stack.f = currentFunction;
+            stack.stackbase = localstackBase;
 
-            this.callStackDepth++;
-            if (this.callStackDepth > this.maxStackDepth) {
-                this.maxStackDepth = this.callStackDepth;
+            callStackDepth++;
+            if (callStackDepth > maxStackDepth) {
+                maxStackDepth = callStackDepth;
             }
 
             if (NOT(func)) {
                 Error("NULL function");
             }
 
-            if (this.debug) {
-                if (this.currentFunction != null) {
-                    gameLocal.Printf("%d: call '%s' from '%s'(line %d)%s\n", gameLocal.time, func.Name(), this.currentFunction.Name(),
-                            gameLocal.program.GetStatement(this.instructionPointer).linenumber, clearStack ? " clear stack" : "");
+            if (debug) {
+                if (currentFunction != null) {
+                    gameLocal.Printf("%d: call '%s' from '%s'(line %d)%s\n", gameLocal.time, func.Name(), currentFunction.Name(),
+                            gameLocal.program.GetStatement(instructionPointer).linenumber, clearStack ? " clear stack" : "");
                 } else {
                     gameLocal.Printf("%d: call '%s'%s\n", gameLocal.time, func.Name(), clearStack ? " clear stack" : "");
                 }
             }
 
-            this.currentFunction = func;
+            currentFunction = func;
             assert (NOT(func.eventdef));
             NextInstruction(func.firstStatement);
 
@@ -811,19 +810,19 @@ public class Script_Interpreter {
             c = func.locals - func.parmTotal;
             assert (c >= 0);
 
-            if ((this.localstackUsed + c) > LOCALSTACK_SIZE) {
+            if (localstackUsed + c > LOCALSTACK_SIZE) {
                 Error("EnterFuncton: locals stack overflow\n");
             }
 
             // initialize local stack variables to zero
             //	memset( &localstack[ localstackUsed ], 0, c );
-            Arrays.fill(this.localstack, this.localstackUsed, this.localstackUsed + c, (byte) 0);
+            Arrays.fill(localstack, localstackUsed, localstackUsed + c, (byte) 0);
 
-            this.localstackUsed += c;
-            this.localstackBase = this.localstackUsed - func.locals;
+            localstackUsed += c;
+            localstackBase = localstackUsed - func.locals;
 
-            if (this.localstackUsed > this.maxLocalstackUsed) {
-                this.maxLocalstackUsed = this.localstackUsed;
+            if (localstackUsed > maxLocalstackUsed) {
+                maxLocalstackUsed = localstackUsed;
             }
         }
 
@@ -840,9 +839,9 @@ public class Script_Interpreter {
             if (clearStack) {
                 Reset();
             }
-            if (this.popParms != 0) {
-                PopParms(this.popParms);
-                this.popParms = 0;
+            if (popParms != 0) {
+                PopParms(popParms);
+                popParms = 0;
             }
             Push(self.entityNumber + 1);
             EnterFunction(func, false);
@@ -862,27 +861,27 @@ public class Script_Interpreter {
             function_t func;
 //            System.out.println(instructionPointer);
 
-            if (this.threadDying || NOT(this.currentFunction)) {
+            if (threadDying || NOT(currentFunction)) {
                 return true;
             }
 
-            if (this.multiFrameEvent != null) {
+            if (multiFrameEvent != null) {
                 // move to previous instruction and call it again
-                this.instructionPointer--;
+                instructionPointer--;
             }
 
             runaway = 5000000;
 
-            this.doneProcessing = false;
-            while (!this.doneProcessing && !this.threadDying) {
-                this.instructionPointer++;
+            doneProcessing = false;
+            while (!doneProcessing && !threadDying) {
+                instructionPointer++;
 
                 if (0 == --runaway) {
                     Error("runaway loop error");
                 }
 
                 // next statement
-                st = gameLocal.program.GetStatement(this.instructionPointer);
+                st = gameLocal.program.GetStatement(instructionPointer);
 
                 switch (st.op) {
                     case OP_RETURN:
@@ -945,19 +944,19 @@ public class Script_Interpreter {
                     case OP_IFNOT:
                         var_a = GetVariable(st.a);
                         if (var_a.getIntPtr() == 0) {
-                            NextInstruction(this.instructionPointer + st.b.value.getJumpOffset());
+                            NextInstruction(instructionPointer + st.b.value.getJumpOffset());
                         }
                         break;
 
                     case OP_IF:
                         var_a = GetVariable(st.a);
                         if (var_a.getIntPtr() != 0) {
-                            NextInstruction(this.instructionPointer + st.b.value.getJumpOffset());
+                            NextInstruction(instructionPointer + st.b.value.getJumpOffset());
                         }
                         break;
 
                     case OP_GOTO:
-                        NextInstruction(this.instructionPointer + st.a.value.getJumpOffset());
+                        NextInstruction(instructionPointer + st.a.value.getJumpOffset());
                         break;
 
                     case OP_ADD_F:
@@ -1476,7 +1475,7 @@ public class Script_Interpreter {
 
                     case OP_STOREP_F:
                         var_b = GetEvalVariable(st.b);
-                        if ((var_b != null) && (var_b.evalPtr != null)) {
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             var_b.evalPtr.setFloatPtr(var_a.getFloatPtr());
                         }
@@ -1484,7 +1483,7 @@ public class Script_Interpreter {
 
                     case OP_STOREP_ENT:
                         var_b = GetEvalVariable(st.b);
-                        if ((var_b != null) && (var_b.evalPtr != null)) {
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             var_b.evalPtr.setEntityNumberPtr(var_a.getEntityNumberPtr());
                         }
@@ -1493,7 +1492,7 @@ public class Script_Interpreter {
                     case OP_STOREP_FLD:
                     case OP_STOREP_BOOL:
                         var_b = GetEvalVariable(st.b);
-                        if ((var_b != null) && (var_b.evalPtr != null)) {
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             var_b.evalPtr.setIntPtr(var_a.getIntPtr());
                         }
@@ -1501,14 +1500,14 @@ public class Script_Interpreter {
                         
                     case OP_STOREP_S:
                         var_b = GetEvalVariable(st.b);
-                        if ((var_b != null) && (var_b.evalPtr != null)) {
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_b.evalPtr.setString(GetString(st.a));//idStr.Copynz(var_b.evalPtr.stringPtr, GetString(st.a), MAX_STRING_LEN);
                         }
                         break;
 
                     case OP_STOREP_V:
                         var_b = GetEvalVariable(st.b);
-                        if ((var_b != null) && (var_b.evalPtr != null)) {
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             var_b.evalPtr.setVectorPtr(var_a.getVectorPtr());
                         }
@@ -1516,7 +1515,7 @@ public class Script_Interpreter {
 
                     case OP_STOREP_FTOS:
                         var_b = GetEvalVariable(st.b);
-                        if ((var_b != null) && (var_b.evalPtr != null)) {
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             var_b.evalPtr.setString(FloatToString(var_a.getFloatPtr()));//idStr.Copynz(var_b.evalPtr.stringPtr, FloatToString(var_a.floatPtr.oGet()), MAX_STRING_LEN);
                         }
@@ -1524,7 +1523,7 @@ public class Script_Interpreter {
 
                     case OP_STOREP_BTOS:
                         var_b = GetEvalVariable(st.b);
-                        if ((var_b != null) && (var_b.evalPtr != null)) {
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             if (var_a.getFloatPtr() != 0.0f) {
                                 var_b.evalPtr.setString("true");//idStr.Copynz(var_b.evalPtr.stringPtr, "true", MAX_STRING_LEN);
@@ -1536,7 +1535,7 @@ public class Script_Interpreter {
 
                     case OP_STOREP_VTOS:
                         var_b = GetEvalVariable(st.b);
-                        if ((var_b != null) && (var_b.evalPtr != null)) {
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             var_b.evalPtr.setString(var_a.getVectorPtr().ToString());//idStr.Copynz(var_b.evalPtr.stringPtr, var_a.vectorPtr[0].ToString(), MAX_STRING_LEN);
                         }
@@ -1544,7 +1543,7 @@ public class Script_Interpreter {
 
                     case OP_STOREP_FTOBOOL:
                         var_b = GetEvalVariable(st.b);
-                        if ((var_b != null) && (var_b.evalPtr != null)) {
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             if (var_a.getFloatPtr() != 0.0f) {
                                 var_b.evalPtr.setIntPtr(1);
@@ -1556,7 +1555,7 @@ public class Script_Interpreter {
 
                     case OP_STOREP_BOOLTOF:
                         var_b = GetEvalVariable(st.b);
-                        if ((var_b != null) && (var_b.evalPtr != null)) {
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             var_b.setFloatPtr(Float.intBitsToFloat(var_a.getIntPtr()));
                         }
@@ -1564,7 +1563,7 @@ public class Script_Interpreter {
 
                     case OP_STOREP_OBJ:
                         var_b = GetEvalVariable(st.b);
-                        if ((var_b != null) && (var_b.evalPtr != null)) {
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             var_b.evalPtr.setEntityNumberPtr(var_a.getEntityNumberPtr());
                         }
@@ -1572,7 +1571,7 @@ public class Script_Interpreter {
 
                     case OP_STOREP_OBJENT:
                         var_b = GetEvalVariable(st.b);
-                        if ((var_b != null) && (var_b.evalPtr != null)) {
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             obj = GetScriptObject(var_a.getEntityNumberPtr());
                             if (NOT(obj)) {
@@ -1598,7 +1597,7 @@ public class Script_Interpreter {
                             obj.offset = st.b.value.getPtrOffset();
                             var_c.setEvalPtr(var_a.getEntityNumberPtr());
                         } else {
-                            var_c.setEvalPtr(NULL_ENTITY);
+                            var_c.setEvalPtr(NULL_ENTITY);;
                         }
                         break;
 
@@ -1743,26 +1742,26 @@ public class Script_Interpreter {
             }
             var = var_a = var_b = var_c = null;
 
-            return this.threadDying;
+            return threadDying;
         }
 
         public void Reset() {
-            this.callStackDepth = 0;
-            this.localstackUsed = 0;
-            this.localstackBase = 0;
+            callStackDepth = 0;
+            localstackUsed = 0;
+            localstackBase = 0;
 
-            this.maxLocalstackUsed = 0;
-            this.maxStackDepth = 0;
+            maxLocalstackUsed = 0;
+            maxStackDepth = 0;
 
-            this.popParms = 0;
-            this.multiFrameEvent = null;
-            this.eventEntity = null;
+            popParms = 0;
+            multiFrameEvent = null;
+            eventEntity = null;
 
-            this.currentFunction = null;
+            currentFunction = null;
             NextInstruction(0);
 
-            this.threadDying = false;
-            this.doneProcessing = true;
+            threadDying = false;
+            doneProcessing = true;
         }
 
         /*
@@ -1778,7 +1777,7 @@ public class Script_Interpreter {
         public boolean GetRegisterValue(final String name, idStr out, int scopeDepth) {
             varEval_s reg;
             idVarDef d;
-            final String[] funcObject = {null};//new char[1024];
+            String[] funcObject = {null};//new char[1024];
             String funcName;
             idVarDef scope;
             idTypeDef field;
@@ -1789,13 +1788,13 @@ public class Script_Interpreter {
             out.Empty();
 
             if (scopeDepth == -1) {
-                scopeDepth = this.callStackDepth;
+                scopeDepth = callStackDepth;
             }
 
-            if (scopeDepth == this.callStackDepth) {
-                func = this.currentFunction;
+            if (scopeDepth == callStackDepth) {
+                func = currentFunction;
             } else {
-                func = this.callStack[scopeDepth].f;
+                func = callStack[scopeDepth].f;
             }
             if (NOT(func)) {
                 return false;
@@ -1872,7 +1871,7 @@ public class Script_Interpreter {
 
                     field = scope.TypeDef().GetParmType(reg.getPtrOffset()).FieldType();
                     obj = new idScriptObject();
-                    obj.Read(ByteBuffer.wrap(Arrays.copyOf(this.localstack, this.callStack[this.callStackDepth].stackbase)));//TODO: check this range
+                    obj.Read(ByteBuffer.wrap(Arrays.copyOf(localstack, callStack[callStackDepth].stackbase)));//TODO: check this range
                     if (NOT(field) || NOT(obj)) {
                         return false;
                     }
@@ -1908,19 +1907,19 @@ public class Script_Interpreter {
         }
 
         public int GetCallstackDepth() {
-            return this.callStackDepth;
+            return callStackDepth;
         }
 
         public prstack_s GetCallstack() {
-            return this.callStack[0];
+            return callStack[0];
         }
 
         public function_t GetCurrentFunction() {
-            return this.currentFunction;
+            return currentFunction;
         }
 
         public idThread GetThread() {
-            return this.thread;
+            return thread;
         }
-    }
+    };
 }

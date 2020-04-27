@@ -5,7 +5,6 @@ import java.util.Arrays;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
-import neo.open.Nio;
 
 /**
  *  Plücker
@@ -20,14 +19,14 @@ public class Pluecker {
      ===============================================================================
      */
     public static class idPluecker {
-        private final float[] p = new float[6];
+        private float[] p = new float[6];
         
 
         public idPluecker() {
         }
 
         public idPluecker(final float[] a) {
-            Nio.arraycopy(a, 0, this.p, 0, 6);//memcpy( p, a, 6 * sizeof( float ) );
+            System.arraycopy(a, 0, p, 0, 6);//memcpy( p, a, 6 * sizeof( float ) );
         }
 
         public idPluecker(final idVec3 start, final idVec3 end) {
@@ -35,25 +34,25 @@ public class Pluecker {
         }
 
         public idPluecker(final float a1, final float a2, final float a3, final float a4, final float a5, final float a6) {
-            this.p[0] = a1;
-            this.p[1] = a2;
-            this.p[2] = a3;
-            this.p[3] = a4;
-            this.p[4] = a5;
-            this.p[5] = a6;
+            p[0] = a1;
+            p[1] = a2;
+            p[2] = a3;
+            p[3] = a4;
+            p[4] = a5;
+            p[5] = a6;
         }
 
         //public	float			operator[]( final int index ) final;
         public float oGet(final int index) {
-            return this.p[index];
+            return p[index];
         }
 
         public idPluecker oNegative() {// flips the direction
-            return new idPluecker(-this.p[0], -this.p[1], -this.p[2], -this.p[3], -this.p[4], -this.p[5]);
+            return new idPluecker(-p[0], -p[1], -p[2], -p[3], -p[4], -p[5]);
         }
 
         public idPluecker oMultiply(final float a) {
-            return new idPluecker(this.p[0] * a, this.p[1] * a, this.p[2] * a, this.p[3] * a, this.p[4] * a, this.p[5] * a);
+            return new idPluecker(p[0] * a, p[1] * a, p[2] * a, p[3] * a, p[4] * a, p[5] * a);
         }
 
         public idPluecker oDivide(final float a) {
@@ -61,28 +60,28 @@ public class Pluecker {
 
             assert (a != 0.0f);
             inva = 1.0f / a;
-            return new idPluecker(this.p[0] * inva, this.p[1] * inva, this.p[2] * inva, this.p[3] * inva, this.p[4] * inva, this.p[5] * inva);
+            return new idPluecker(p[0] * inva, p[1] * inva, p[2] * inva, p[3] * inva, p[4] * inva, p[5] * inva);
         }
 
         public float oMultiply(final idPluecker a) {// permuted inner product
-            return (this.p[0] * a.p[4]) + (this.p[1] * a.p[5]) + (this.p[2] * a.p[3]) + (this.p[4] * a.p[0]) + (this.p[5] * a.p[1]) + (this.p[3] * a.p[2]);
+            return p[0] * a.p[4] + p[1] * a.p[5] + p[2] * a.p[3] + p[4] * a.p[0] + p[5] * a.p[1] + p[3] * a.p[2];
         }
 
         public idPluecker oMinus(final idPluecker a) {
-            return new idPluecker(this.p[0] - a.oGet(0), this.p[1] - a.oGet(1), this.p[2] - a.oGet(2), this.p[3] - a.oGet(3), this.p[4] - a.oGet(4), this.p[5] - a.oGet(5));
+            return new idPluecker(p[0] - a.oGet(0), p[1] - a.oGet(1), p[2] - a.oGet(2), p[3] - a.oGet(3), p[4] - a.oGet(4), p[5] - a.oGet(5));
         }
 
         public idPluecker oPlus(final idPluecker a) {
-            return new idPluecker(this.p[0] + a.oGet(0), this.p[1] + a.oGet(1), this.p[2] + a.oGet(2), this.p[3] + a.oGet(3), this.p[4] + a.oGet(4), this.p[5] + a.oGet(5));
+            return new idPluecker(p[0] + a.oGet(0), p[1] + a.oGet(1), p[2] + a.oGet(2), p[3] + a.oGet(3), p[4] + a.oGet(4), p[5] + a.oGet(5));
         }
 
         public idPluecker oMulSet(final float a) {
-            this.p[0] *= a;
-            this.p[1] *= a;
-            this.p[2] *= a;
-            this.p[3] *= a;
-            this.p[4] *= a;
-            this.p[5] *= a;
+            p[0] *= a;
+            p[1] *= a;
+            p[2] *= a;
+            p[3] *= a;
+            p[4] *= a;
+            p[5] *= a;
             return this;
         }
 
@@ -91,62 +90,62 @@ public class Pluecker {
 
             assert (a != 0.0f);
             inva = 1.0f / a;
-            this.p[0] *= inva;
-            this.p[1] *= inva;
-            this.p[2] *= inva;
-            this.p[3] *= inva;
-            this.p[4] *= inva;
-            this.p[5] *= inva;
+            p[0] *= inva;
+            p[1] *= inva;
+            p[2] *= inva;
+            p[3] *= inva;
+            p[4] *= inva;
+            p[5] *= inva;
             return this;
         }
 
         public idPluecker oPluSet(final idPluecker a) {
-            this.p[0] += a.oGet(0);
-            this.p[1] += a.oGet(1);
-            this.p[2] += a.oGet(2);
-            this.p[3] += a.oGet(3);
-            this.p[4] += a.oGet(4);
-            this.p[5] += a.oGet(5);
+            p[0] += a.oGet(0);
+            p[1] += a.oGet(1);
+            p[2] += a.oGet(2);
+            p[3] += a.oGet(3);
+            p[4] += a.oGet(4);
+            p[5] += a.oGet(5);
             return this;
         }
 
         public idPluecker oMinSet(final idPluecker a) {
-            this.p[0] -= a.oGet(0);
-            this.p[1] -= a.oGet(1);
-            this.p[2] -= a.oGet(2);
-            this.p[3] -= a.oGet(3);
-            this.p[4] -= a.oGet(4);
-            this.p[5] -= a.oGet(5);
+            p[0] -= a.oGet(0);
+            p[1] -= a.oGet(1);
+            p[2] -= a.oGet(2);
+            p[3] -= a.oGet(3);
+            p[4] -= a.oGet(4);
+            p[5] -= a.oGet(5);
             return this;
         }
 
         public boolean Compare(final idPluecker a) {// exact compare, no epsilon
-            return ((this.p[0] == a.p[0]) && (this.p[1] == a.p[1]) && (this.p[2] == a.p[2])
-                    && (this.p[3] == a.p[3]) && (this.p[4] == a.p[4]) && (this.p[5] == a.p[5]));
+            return ((p[0] == a.p[0]) && (p[1] == a.p[1]) && (p[2] == a.p[2])
+                    && (p[3] == a.p[3]) && (p[4] == a.p[4]) && (p[5] == a.p[5]));
         }
 
         public boolean Compare(final idPluecker a, final float epsilon) {// compare with epsilon
-            if (idMath.Fabs(this.p[0] - a.p[0]) > epsilon) {
+            if (idMath.Fabs(p[0] - a.p[0]) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(this.p[1] - a.p[1]) > epsilon) {
+            if (idMath.Fabs(p[1] - a.p[1]) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(this.p[2] - a.p[2]) > epsilon) {
+            if (idMath.Fabs(p[2] - a.p[2]) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(this.p[3] - a.p[3]) > epsilon) {
+            if (idMath.Fabs(p[3] - a.p[3]) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(this.p[4] - a.p[4]) > epsilon) {
+            if (idMath.Fabs(p[4] - a.p[4]) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(this.p[5] - a.p[5]) > epsilon) {
+            if (idMath.Fabs(p[5] - a.p[5]) > epsilon) {
                 return false;
             }
 
@@ -158,7 +157,7 @@ public class Pluecker {
         @Override
         public int hashCode() {
             int hash = 5;
-            hash = (83 * hash) + Arrays.hashCode(this.p);
+            hash = 83 * hash + Arrays.hashCode(this.p);
             return hash;
         }
 
@@ -178,43 +177,43 @@ public class Pluecker {
         }
 
         public void Set(final idPluecker a) {
-            this.p[0] = a.p[0];
-            this.p[1] = a.p[1];
-            this.p[2] = a.p[2];
-            this.p[3] = a.p[3];
-            this.p[4] = a.p[4];
-            this.p[5] = a.p[5];
+            p[0] = a.p[0];
+            p[1] = a.p[1];
+            p[2] = a.p[2];
+            p[3] = a.p[3];
+            p[4] = a.p[4];
+            p[5] = a.p[5];
         }
 
         public void Set(final float a1, final float a2, final float a3, final float a4, final float a5, final float a6) {
-            this.p[0] = a1;
-            this.p[1] = a2;
-            this.p[2] = a3;
-            this.p[3] = a4;
-            this.p[4] = a5;
-            this.p[5] = a6;
+            p[0] = a1;
+            p[1] = a2;
+            p[2] = a3;
+            p[3] = a4;
+            p[4] = a5;
+            p[5] = a6;
         }
 
         public void Zero() {
-            this.p[0] = this.p[1] = this.p[2] = this.p[3] = this.p[4] = this.p[5] = 0.0f;
+            p[0] = p[1] = p[2] = p[3] = p[4] = p[5] = 0.0f;
         }
 
         public void FromLine(final idVec3 start, final idVec3 end) {// pluecker from line{
-            this.p[0] = (start.oGet(0) * end.oGet(1)) - (end.oGet(0) * start.oGet(1));
-            this.p[1] = (start.oGet(0) * end.oGet(2)) - (end.oGet(0) * start.oGet(2));
-            this.p[2] = start.oGet(0) - end.oGet(0);
-            this.p[3] = (start.oGet(1) * end.oGet(2)) - (end.oGet(1) * start.oGet(2));
-            this.p[4] = start.oGet(2) - end.oGet(2);
-            this.p[5] = end.oGet(1) - start.oGet(1);
+            p[0] = start.oGet(0) * end.oGet(1) - end.oGet(0) * start.oGet(1);
+            p[1] = start.oGet(0) * end.oGet(2) - end.oGet(0) * start.oGet(2);
+            p[2] = start.oGet(0) - end.oGet(0);
+            p[3] = start.oGet(1) * end.oGet(2) - end.oGet(1) * start.oGet(2);
+            p[4] = start.oGet(2) - end.oGet(2);
+            p[5] = end.oGet(1) - start.oGet(1);
         }
 
         public void FromRay(final idVec3 start, final idVec3 dir) {// pluecker from ray
-            this.p[0] = (start.oGet(0) * dir.oGet(1)) - (dir.oGet(0) * start.oGet(1));
-            this.p[1] = (start.oGet(0) * dir.oGet(2)) - (dir.oGet(0) * start.oGet(2));
-            this.p[2] = -dir.oGet(0);
-            this.p[3] = (start.oGet(1) * dir.oGet(2)) - (dir.oGet(1) * start.oGet(2));
-            this.p[4] = -dir.oGet(2);
-            this.p[5] = dir.oGet(1);
+            p[0] = start.oGet(0) * dir.oGet(1) - dir.oGet(0) * start.oGet(1);
+            p[1] = start.oGet(0) * dir.oGet(2) - dir.oGet(0) * start.oGet(2);
+            p[2] = -dir.oGet(0);
+            p[3] = start.oGet(1) * dir.oGet(2) - dir.oGet(1) * start.oGet(2);
+            p[4] = -dir.oGet(2);
+            p[5] = dir.oGet(1);
         }
 
         /*
@@ -226,29 +225,29 @@ public class Pluecker {
          */
         public boolean FromPlanes(final idPlane p1, final idPlane p2) {// pluecker from intersection of planes
 
-            this.p[0] = -((p1.oGet(2) * -p2.oGet(3)) - (p2.oGet(2) * -p1.oGet(3)));
-            this.p[1] = -((p2.oGet(1) * -p1.oGet(3)) - (p1.oGet(1) * -p2.oGet(3)));
-            this.p[2] = (p1.oGet(1) * p2.oGet(2)) - (p2.oGet(1) * p1.oGet(2));
+            p[0] = -(p1.oGet(2) * -p2.oGet(3) - p2.oGet(2) * -p1.oGet(3));
+            p[1] = -(p2.oGet(1) * -p1.oGet(3) - p1.oGet(1) * -p2.oGet(3));
+            p[2] = p1.oGet(1) * p2.oGet(2) - p2.oGet(1) * p1.oGet(2);
 
-            this.p[3] = -((p1.oGet(0) * -p2.oGet(3)) - (p2.oGet(0) * -p1.oGet(3)));
-            this.p[4] = (p1.oGet(0) * p2.oGet(1)) - (p2.oGet(0) * p1.oGet(1));
-            this.p[5] = (p1.oGet(0) * p2.oGet(2)) - (p2.oGet(0) * p1.oGet(2));
+            p[3] = -(p1.oGet(0) * -p2.oGet(3) - p2.oGet(0) * -p1.oGet(3));
+            p[4] = p1.oGet(0) * p2.oGet(1) - p2.oGet(0) * p1.oGet(1);
+            p[5] = p1.oGet(0) * p2.oGet(2) - p2.oGet(0) * p1.oGet(2);
 
-            return ((this.p[2] != 0.0f) || (this.p[5] != 0.0f) || (this.p[4] != 0.0f));
+            return (p[2] != 0.0f || p[5] != 0.0f || p[4] != 0.0f);
         }
 
         // pluecker to line
         public boolean ToLine(idVec3 start, idVec3 end) {
-            final idVec3 dir1 = new idVec3(), dir2 = new idVec3();
+            idVec3 dir1 = new idVec3(), dir2 = new idVec3();
             float d;
 
-            dir1.oSet(0, this.p[3]);
-            dir1.oSet(1, -this.p[1]);
-            dir1.oSet(2, this.p[0]);
+            dir1.oSet(0, p[3]);
+            dir1.oSet(1, -p[1]);
+            dir1.oSet(2, p[0]);
 
-            dir2.oSet(0, -this.p[2]);
-            dir2.oSet(1, this.p[5]);
-            dir2.oSet(2, -this.p[4]);
+            dir2.oSet(0, -p[2]);
+            dir2.oSet(1, p[5]);
+            dir2.oSet(2, -p[4]);
 
             d = dir2.oMultiply(dir2);
             if (d == 0.0f) {
@@ -262,16 +261,16 @@ public class Pluecker {
 
         // pluecker to ray
         public boolean ToRay(idVec3 start, idVec3 dir) {
-            final idVec3 dir1 = new idVec3();
+            idVec3 dir1 = new idVec3();
             float d;
 
-            dir1.oSet(0, this.p[3]);
-            dir1.oSet(1, -this.p[1]);
-            dir1.oSet(2, this.p[0]);
+            dir1.oSet(0, p[3]);
+            dir1.oSet(1, -p[1]);
+            dir1.oSet(2, p[0]);
 
-            dir.oSet(0, -this.p[2]);
-            dir.oSet(1, this.p[5]);
-            dir.oSet(2, -this.p[4]);
+            dir.oSet(0, -p[2]);
+            dir.oSet(1, p[5]);
+            dir.oSet(2, -p[4]);
 
             d = dir.oMultiply(dir);
             if (d == 0.0f) {
@@ -283,13 +282,13 @@ public class Pluecker {
         }
 
         public void ToDir(idVec3 dir) {// pluecker to direction{
-            dir.oSet(0, -this.p[2]);
-            dir.oSet(1, this.p[5]);
-            dir.oSet(2, -this.p[4]);
+            dir.oSet(0, -p[2]);
+            dir.oSet(1, p[5]);
+            dir.oSet(2, -p[4]);
         }
 
         public float PermutedInnerProduct(final idPluecker a) {// pluecker permuted inner product
-            return (this.p[0] * a.p[4]) + (this.p[1] * a.p[5]) + (this.p[2] * a.p[3]) + (this.p[4] * a.p[0]) + (this.p[5] * a.p[1]) + (this.p[3] * a.p[2]);
+            return p[0] * a.p[4] + p[1] * a.p[5] + p[2] * a.p[3] + p[4] * a.p[0] + p[5] * a.p[1] + p[3] * a.p[2];
         }
 
         /*
@@ -302,27 +301,27 @@ public class Pluecker {
          */
         public float Distance3DSqr(final idPluecker a) {// pluecker line distance{
             float d, s;
-            final idVec3 dir = new idVec3();
+            idVec3 dir = new idVec3();
 
-            dir.oSet(0, (-a.p[5] * this.p[4]) - (a.p[4] * -this.p[5]));
-            dir.oSet(1, (a.p[4] * this.p[2]) - (a.p[2] * this.p[4]));
-            dir.oSet(2, (a.p[2] * -this.p[5]) - (-a.p[5] * this.p[2]));
-            if ((dir.oGet(0) == 0.0f) && (dir.oGet(1) == 0.0f) && (dir.oGet(2) == 0.0f)) {
+            dir.oSet(0, -a.p[5] * p[4] - a.p[4] * -p[5]);
+            dir.oSet(1, a.p[4] * p[2] - a.p[2] * p[4]);
+            dir.oSet(2, a.p[2] * -p[5] - -a.p[5] * p[2]);
+            if (dir.oGet(0) == 0.0f && dir.oGet(1) == 0.0f && dir.oGet(2) == 0.0f) {
                 return -1.0f;    // FIXME: implement for parallel lines
             }
-            d = (a.p[4] * ((this.p[2] * dir.oGet(1)) - (-this.p[5] * dir.oGet(0))))
-                    + (a.p[5] * ((this.p[2] * dir.oGet(2)) - (this.p[4] * dir.oGet(0))))
-                    + (a.p[2] * ((-this.p[5] * dir.oGet(2)) - (this.p[4] * dir.oGet(1))));
+            d = a.p[4] * (p[2] * dir.oGet(1) - -p[5] * dir.oGet(0))
+                    + a.p[5] * (p[2] * dir.oGet(2) - p[4] * dir.oGet(0))
+                    + a.p[2] * (-p[5] * dir.oGet(2) - p[4] * dir.oGet(1));
             s = PermutedInnerProduct(a) / d;
             return (dir.oMultiply(dir)) * (s * s);
         }
 
         public float Length() {// pluecker length
-            return idMath.Sqrt((this.p[5] * this.p[5]) + (this.p[4] * this.p[4]) + (this.p[2] * this.p[2]));
+            return idMath.Sqrt(p[5] * p[5] + p[4] * p[4] + p[2] * p[2]);
         }
 
         public float LengthSqr() {// pluecker squared length
-            return ((this.p[5] * this.p[5]) + (this.p[4] * this.p[4]) + (this.p[2] * this.p[2]));
+            return (p[5] * p[5] + p[4] * p[4] + p[2] * p[2]);
         }
 
         public idPluecker Normalize() {// pluecker normalize
@@ -333,7 +332,7 @@ public class Pluecker {
                 return this; // pluecker coordinate does not represent a line
             }
             d = idMath.InvSqrt(d);
-            return new idPluecker(this.p[0] * d, this.p[1] * d, this.p[2] * d, this.p[3] * d, this.p[4] * d, this.p[5] * d);
+            return new idPluecker(p[0] * d, p[1] * d, p[2] * d, p[3] * d, p[4] * d, p[5] * d);
         }
 
         public float NormalizeSelf() {// pluecker normalize 
@@ -344,12 +343,12 @@ public class Pluecker {
                 return l; // pluecker coordinate does not represent a line
             }
             d = idMath.InvSqrt(l);
-            this.p[0] *= d;
-            this.p[1] *= d;
-            this.p[2] *= d;
-            this.p[3] *= d;
-            this.p[4] *= d;
-            this.p[5] *= d;
+            p[0] *= d;
+            p[1] *= d;
+            p[2] *= d;
+            p[3] *= d;
+            p[4] *= d;
+            p[5] *= d;
             return d * l;
         }
 
@@ -360,5 +359,5 @@ public class Pluecker {
 //public	final float *	ToFloatPtr( void ) final;
 //public	float *			ToFloatPtr( void );
 //public	final char *	ToString( int precision = 2 ) final;
-    }
+    };
 }

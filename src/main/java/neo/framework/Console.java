@@ -127,7 +127,7 @@ public class Console {
         public abstract void Draw(boolean forceFullScreen);
 
         public abstract void Print(final String text);
-    }
+    };
     /**
      *
      *
@@ -197,18 +197,18 @@ public class Console {
         public void Init() throws idException {
             int i;
 
-            this.keyCatching = false;
+            keyCatching = false;
 
-            this.lastKeyEvent = -1;
-            this.nextKeyEvent = CONSOLE_FIRSTREPEAT;
+            lastKeyEvent = -1;
+            nextKeyEvent = CONSOLE_FIRSTREPEAT;
 
-            this.consoleField = new idEditField();//.Clear();
+            consoleField = new idEditField();//.Clear();
 
-            this.consoleField.SetWidthInChars(LINE_WIDTH);
+            consoleField.SetWidthInChars(LINE_WIDTH);
 
             for (i = 0; i < COMMAND_HISTORY; i++) {
-                this.historyEditLines[i] = new idEditField();//.Clear();
-                this.historyEditLines[i].SetWidthInChars(LINE_WIDTH);
+                historyEditLines[i] = new idEditField();//.Clear();
+                historyEditLines[i].SetWidthInChars(LINE_WIDTH);
             }
 
             cmdSystem.AddCommand("clear", Con_Clear_f.getInstance(), CMD_FL_SYSTEM, "clears the console");
@@ -231,19 +231,19 @@ public class Console {
          */
         @Override
         public void LoadGraphics() throws idException {
-            this.charSetShader = declManager.FindMaterial("textures/bigchars");
-            this.whiteShader = declManager.FindMaterial("_white");
-            this.consoleShader = declManager.FindMaterial("console");
+            charSetShader = declManager.FindMaterial("textures/bigchars");
+            whiteShader = declManager.FindMaterial("_white");
+            consoleShader = declManager.FindMaterial("console");
         }
 
         @Override
         public boolean ProcessEvent(sysEvent_s event, boolean forceAccept) throws idException {
             boolean consoleKey;
-            consoleKey = (event.evType == SE_KEY) && ((event.evValue == Sys_GetConsoleKey(false)) || (event.evValue == Sys_GetConsoleKey(true)));
+            consoleKey = event.evType == SE_KEY && (event.evValue == Sys_GetConsoleKey(false) || event.evValue == Sys_GetConsoleKey(true));
 
             if (ID_CONSOLE_LOCK) {
                 // If the console's not already down, and we have it turned off, check for ctrl+alt
-                if (!this.keyCatching && !com_allowConsole.GetBool()) {
+                if (!keyCatching && !com_allowConsole.GetBool()) {
                     if (!idKeyInput.IsDown(K_CTRL) || !idKeyInput.IsDown(K_ALT)) {
                         consoleKey = false;
                     }
@@ -257,16 +257,16 @@ public class Console {
                     return true;
                 }
 
-                this.consoleField.ClearAutoComplete();
+                consoleField.ClearAutoComplete();
 
                 // a down event will toggle the destination lines
-                if (this.keyCatching) {
+                if (keyCatching) {
                     Close();
                     Sys_GrabMouseCursor(true);
                     cvarSystem.SetCVarBool("ui_chat", false);
                 } else {
-                    this.consoleField.Clear();
-                    this.keyCatching = true;
+                    consoleField.Clear();
+                    keyCatching = true;
                     if (idKeyInput.IsDown(K_SHIFT)) {
                         // if the shift key is down, don't open the console as much
                         SetDisplayFraction(0.2f);
@@ -279,15 +279,15 @@ public class Console {
             }
 
             // if we aren't key catching, dump all the other events
-            if (!forceAccept && !this.keyCatching) {
+            if (!forceAccept && !keyCatching) {
                 return false;
             }
 
             // handle key and character events
             if (event.evType == SE_CHAR) {
                 // never send the console key as a character
-                if ((event.evValue != Sys_GetConsoleKey(false)) && (event.evValue != Sys_GetConsoleKey(true))) {
-                    this.consoleField.CharEvent(event.evValue);
+                if (event.evValue != Sys_GetConsoleKey(false) && event.evValue != Sys_GetConsoleKey(true)) {
+                    consoleField.CharEvent(event.evValue);
                 }
                 return true;
             }
@@ -308,7 +308,7 @@ public class Console {
 
         @Override
         public boolean Active() {
-            return this.keyCatching;
+            return keyCatching;
         }
 
         @Override
@@ -316,15 +316,15 @@ public class Console {
             int i;
 
             for (i = 0; i < NUM_CON_TIMES; i++) {
-                this.times[i] = 0;
+                times[i] = 0;
             }
         }
 
         @Override
         public void Close() {
-            this.keyCatching = false;
+            keyCatching = false;
             SetDisplayFraction(0);
-            this.displayFrac = 0;	// don't scroll to that point, go immediately
+            displayFrac = 0;	// don't scroll to that point, go immediately
             ClearNotifyLines();
         }
 
@@ -352,8 +352,8 @@ public class Console {
 
             color = idStr.ColorIndex(C_COLOR_CYAN);
 
-            while ((txt_p < txt.length())
-                    && ((c = txt.charAt(txt_p)) != 0)) {
+            while (txt_p < txt.length()
+                    && (c = txt.charAt(txt_p)) != 0) {
                 if (idStr.IsColor(txt.substring(txt_p))) {
                     final char colorChar = txt.charAt(txt_p + 1);
                     if (colorChar == C_COLOR_DEFAULT) {
@@ -365,20 +365,20 @@ public class Console {
                     continue;
                 }
 
-                y = this.current % TOTAL_LINES;
+                y = current % TOTAL_LINES;
 
                 // if we are about to print a new word, check to see
                 // if we should wrap to the new line
-                if ((c > ' ') && ((this.x == 0) || (this.text[((y * LINE_WIDTH) + this.x) - 1] <= ' '))) {
+                if (c > ' ' && (x == 0 || text[y * LINE_WIDTH + x - 1] <= ' ')) {
                     // count word length
-                    for (l = 0; (l < LINE_WIDTH) && (l < txt.length()); l++) {
+                    for (l = 0; l < LINE_WIDTH && l < txt.length(); l++) {
                         if (txt.charAt(l) <= ' ') {
                             break;
                         }
                     }
 
                     // word wrap
-                    if ((l != LINE_WIDTH) && ((this.x + l) >= LINE_WIDTH)) {
+                    if (l != LINE_WIDTH && (x + l >= LINE_WIDTH)) {
                         Linefeed();
                     }
                 }
@@ -391,31 +391,31 @@ public class Console {
                         break;
                     case '\t':
                         do {
-                            this.text[(y * LINE_WIDTH) + this.x] = (short) ((color << 8) | ' ');
-                            this.x++;
-                            if (this.x >= LINE_WIDTH) {
+                            text[y * LINE_WIDTH + x] = (short) ((color << 8) | ' ');
+                            x++;
+                            if (x >= LINE_WIDTH) {
                                 Linefeed();
-                                this.x = 0;
+                                x = 0;
                             }
-                        } while ((this.x & 3) != 0);
+                        } while ((x & 3) != 0);
                         break;
                     case '\r':
-                        this.x = 0;
+                        x = 0;
                         break;
                     default:	// display character and advance
-                        this.text[(y * LINE_WIDTH) + this.x] = (short) ((color << 8) | c);
-                        this.x++;
-                        if (this.x >= LINE_WIDTH) {
+                        text[y * LINE_WIDTH + x] = (short) ((color << 8) | c);
+                        x++;
+                        if (x >= LINE_WIDTH) {
                             Linefeed();
-                            this.x = 0;
+                            x = 0;
                         }
                         break;
                 }
             }
 
             // mark time for transparent overlay
-            if (this.current >= 0) {
-                this.times[this.current % NUM_CON_TIMES] = com_frameTime;
+            if (current >= 0) {
+                times[current % NUM_CON_TIMES] = com_frameTime;
             }
         }
 
@@ -430,7 +430,7 @@ public class Console {
         public void Draw(boolean forceFullScreen) {
             float y = 0.0f;
 
-            if (NOT(this.charSetShader)) {
+            if (NOT(charSetShader)) {
                 return;
             }
 
@@ -439,7 +439,7 @@ public class Console {
                 // we want the console closed when we go back to a session state
                 Close();
                 // we are however catching keyboard input
-                this.keyCatching = true;
+                keyCatching = true;
             }
 
             Scroll();
@@ -448,8 +448,8 @@ public class Console {
 
             if (forceFullScreen) {
                 DrawSolidConsole(1.0f);
-            } else if (this.displayFrac != 0.0f) {
-                DrawSolidConsole(this.displayFrac);
+            } else if (displayFrac != 0.0f) {
+                DrawSolidConsole(displayFrac);
             } else {
                 // only draw the notify lines if the developer cvar is set,
                 // or we are a debug build
@@ -486,7 +486,7 @@ public class Console {
             int l, x, i;
             int line;
             idFile f;
-            final char[] buffer = new char[LINE_WIDTH + 3];
+            char[] buffer = new char[LINE_WIDTH + 3];
 
             f = fileSystem.OpenFileWrite(fileName);
             if (null == f) {
@@ -495,14 +495,14 @@ public class Console {
             }
 
             // skip empty lines
-            l = (this.current - TOTAL_LINES) + 1;
+            l = current - TOTAL_LINES + 1;
             if (l < 0) {
                 l = 0;
             }
-            for (; l <= this.current; l++) {
+            for (; l <= current; l++) {
                 line = (l % TOTAL_LINES) * LINE_WIDTH;
                 for (x = 0; x < LINE_WIDTH; x++) {
-                    if ((this.text[line + x] & 0xff) > ' ') {
+                    if ((text[line + x] & 0xff) > ' ') {
                         break;
                     }
                 }
@@ -512,10 +512,10 @@ public class Console {
             }
 
             // write the remaining lines
-            for (; l <= this.current; l++) {
+            for (; l <= current; l++) {
                 line = (l % TOTAL_LINES) * LINE_WIDTH;
                 for (i = 0; i < LINE_WIDTH; i++) {
-                    buffer[i] = (char) (this.text[line + i] & 0xff);
+                    buffer[i] = (char) (text[line + i] & 0xff);
                 }
                 for (x = LINE_WIDTH - 1; x >= 0; x--) {
                     if (buffer[x] <= ' ') {
@@ -537,7 +537,7 @@ public class Console {
             int i;
 
             for (i = 0; i < CON_TEXTSIZE; i++) {
-                this.text[i] = (short) ((idStr.ColorIndex(C_COLOR_CYAN) << 8) | ' ');
+                text[i] = (short) ((idStr.ColorIndex(C_COLOR_CYAN) << 8) | ' ');
             }
 
             Bottom();		// go to end
@@ -557,20 +557,20 @@ public class Console {
         private void KeyDownEvent(int key) throws idException {
 
             // Execute F key bindings
-            if ((key >= K_F1) && (key <= K_F12)) {
+            if (key >= K_F1 && key <= K_F12) {
                 idKeyInput.ExecKeyBinding(key);
                 return;
             }
 
             // ctrl-L clears screen
-            if ((key == 'l') && idKeyInput.IsDown(K_CTRL)) {
+            if (key == 'l' && idKeyInput.IsDown(K_CTRL)) {
                 Clear();
                 return;
             }
 
             // enter finishes the line
-            if ((key == K_ENTER) || (key == K_KP_ENTER)) {
-                final String buffer = ctos(this.consoleField.GetBuffer());
+            if (key == K_ENTER || key == K_KP_ENTER) {
+                final String buffer = ctos(consoleField.GetBuffer());
 
                 common.Printf("]%s\n", buffer);
 
@@ -578,12 +578,12 @@ public class Console {
                 cmdSystem.BufferCommandText(CMD_EXEC_APPEND, "\n");
 
                 // copy line to history buffer
-                this.historyEditLines[this.nextHistoryLine % COMMAND_HISTORY] = this.consoleField;
-                this.nextHistoryLine++;
-                this.historyLine = this.nextHistoryLine;
+                historyEditLines[nextHistoryLine % COMMAND_HISTORY] = consoleField;
+                nextHistoryLine++;
+                historyLine = nextHistoryLine;
 
-                this.consoleField = new idEditField();
-                this.consoleField.SetWidthInChars(LINE_WIDTH);
+                consoleField = new idEditField();
+                consoleField.SetWidthInChars(LINE_WIDTH);
 
                 session.UpdateScreen();// force an update, because the command
                 // may take some time
@@ -592,42 +592,42 @@ public class Console {
 
             // command completion
             if (key == K_TAB) {
-                this.consoleField.AutoComplete();
+                consoleField.AutoComplete();
                 return;
             }
 
             // command history (ctrl-p ctrl-n for unix style)
             if ((key == K_UPARROW)
                     || ((Character.toLowerCase(key) == 'p') && idKeyInput.IsDown(K_CTRL))) {
-                if (((this.nextHistoryLine - this.historyLine) < COMMAND_HISTORY) && (this.historyLine > 0)) {
-                    this.historyLine--;
+                if (nextHistoryLine - historyLine < COMMAND_HISTORY && historyLine > 0) {
+                    historyLine--;
                 }
-                this.consoleField = this.historyEditLines[this.historyLine % COMMAND_HISTORY];
+                consoleField = historyEditLines[historyLine % COMMAND_HISTORY];
                 return;
             }
 
             if ((key == K_DOWNARROW)
                     || ((Character.toLowerCase(key) == 'n') && idKeyInput.IsDown(K_CTRL))) {
-                if (this.historyLine == this.nextHistoryLine) {
+                if (historyLine == nextHistoryLine) {
                     return;
                 }
-                this.historyLine++;
-                this.consoleField = this.historyEditLines[this.historyLine % COMMAND_HISTORY];
+                historyLine++;
+                consoleField = historyEditLines[historyLine % COMMAND_HISTORY];
                 return;
             }
 
             // console scrolling
             if (key == K_PGUP) {
                 PageUp();
-                this.lastKeyEvent = eventLoop.Milliseconds();
-                this.nextKeyEvent = CONSOLE_FIRSTREPEAT;
+                lastKeyEvent = eventLoop.Milliseconds();
+                nextKeyEvent = CONSOLE_FIRSTREPEAT;
                 return;
             }
 
             if (key == K_PGDN) {
                 PageDown();
-                this.lastKeyEvent = eventLoop.Milliseconds();
-                this.nextKeyEvent = CONSOLE_FIRSTREPEAT;
+                lastKeyEvent = eventLoop.Milliseconds();
+                nextKeyEvent = CONSOLE_FIRSTREPEAT;
                 return;
             }
 
@@ -642,19 +642,19 @@ public class Console {
             }
 
             // ctrl-home = top of console
-            if ((key == K_HOME) && idKeyInput.IsDown(K_CTRL)) {
+            if (key == K_HOME && idKeyInput.IsDown(K_CTRL)) {
                 Top();
                 return;
             }
 
             // ctrl-end = bottom of console
-            if ((key == K_END) && idKeyInput.IsDown(K_CTRL)) {
+            if (key == K_END && idKeyInput.IsDown(K_CTRL)) {
                 Bottom();
                 return;
             }
 
             // pass to the normal editline routine
-            this.consoleField.KeyDownEvent(key);
+            consoleField.KeyDownEvent(key);
         }
 
 //
@@ -662,41 +662,41 @@ public class Console {
             int i;
 
             // mark time for transparent overlay
-            if (this.current >= 0) {
-                this.times[this.current % NUM_CON_TIMES] = com_frameTime;
+            if (current >= 0) {
+                times[current % NUM_CON_TIMES] = com_frameTime;
             }
 
-            this.x = 0;
-            if (this.display == this.current) {
-                this.display++;
+            x = 0;
+            if (display == current) {
+                display++;
             }
-            this.current++;
+            current++;
             for (i = 0; i < LINE_WIDTH; i++) {
-                this.text[((this.current % TOTAL_LINES) * LINE_WIDTH) + i] = (short) ((idStr.ColorIndex(C_COLOR_CYAN) << 8) | ' ');
+                text[(current % TOTAL_LINES) * LINE_WIDTH + i] = (short) ((idStr.ColorIndex(C_COLOR_CYAN) << 8) | ' ');
             }
         }
 //
 
         private void PageUp() {
-            this.display -= 2;
-            if ((this.current - this.display) >= TOTAL_LINES) {
-                this.display = (this.current - TOTAL_LINES) + 1;
+            display -= 2;
+            if (current - display >= TOTAL_LINES) {
+                display = current - TOTAL_LINES + 1;
             }
         }
 
         private void PageDown() {
-            this.display += 2;
-            if (this.display > this.current) {
-                this.display = this.current;
+            display += 2;
+            if (display > current) {
+                display = current;
             }
         }
 
         private void Top() {
-            this.display = 0;
+            display = 0;
         }
 
         private void Bottom() {
-            this.display = this.current;
+            display = current;
         }
 //
 
@@ -710,16 +710,16 @@ public class Console {
         private void DrawInput() {
             int y, autoCompleteLength;
 
-            y = this.vislines - (SMALLCHAR_HEIGHT * 2);
+            y = vislines - (SMALLCHAR_HEIGHT * 2);
 
-            if (this.consoleField.GetAutoCompleteLength() != 0) {
-                autoCompleteLength = strLen(this.consoleField.GetBuffer()) - this.consoleField.GetAutoCompleteLength();
+            if (consoleField.GetAutoCompleteLength() != 0) {
+                autoCompleteLength = strLen(consoleField.GetBuffer()) - consoleField.GetAutoCompleteLength();
 
                 if (autoCompleteLength > 0) {
                     renderSystem.SetColor4(.8f, .2f, .2f, .45f);
 
-                    renderSystem.DrawStretchPic((2 * SMALLCHAR_WIDTH) + (this.consoleField.GetAutoCompleteLength() * SMALLCHAR_WIDTH),
-                            y + 2, autoCompleteLength * SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT - 2, 0, 0, 0, 0, this.whiteShader);
+                    renderSystem.DrawStretchPic(2 * SMALLCHAR_WIDTH + consoleField.GetAutoCompleteLength() * SMALLCHAR_WIDTH,
+                            y + 2, autoCompleteLength * SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT - 2, 0, 0, 0, 0, whiteShader);
 
                 }
             }
@@ -728,7 +728,7 @@ public class Console {
 
             renderSystem.DrawSmallChar(1 * SMALLCHAR_WIDTH, y, ']', localConsole.charSetShader);
 
-            this.consoleField.Draw(2 * SMALLCHAR_WIDTH, y, SCREEN_WIDTH - (3 * SMALLCHAR_WIDTH), true, this.charSetShader);
+            consoleField.Draw(2 * SMALLCHAR_WIDTH, y, SCREEN_WIDTH - 3 * SMALLCHAR_WIDTH, true, charSetShader);
         }
 
         /*
@@ -754,30 +754,30 @@ public class Console {
             renderSystem.SetColor(idStr.ColorForIndex(currentColor));
 
             v = 0;
-            for (i = (this.current - NUM_CON_TIMES) + 1; i <= this.current; i++) {
+            for (i = current - NUM_CON_TIMES + 1; i <= current; i++) {
                 if (i < 0) {
                     continue;
                 }
-                time = this.times[i % NUM_CON_TIMES];
+                time = times[i % NUM_CON_TIMES];
                 if (time == 0) {
                     continue;
                 }
                 time = com_frameTime - time;
-                if (time > (con_notifyTime.GetFloat() * 1000)) {
+                if (time > con_notifyTime.GetFloat() * 1000) {
                     continue;
                 }
                 text_p = (i % TOTAL_LINES) * LINE_WIDTH;
 //		text_p = text + (i % TOTAL_LINES)*LINE_WIDTH;
 
                 for (x = 0; x < LINE_WIDTH; x++) {
-                    if ((this.text[text_p + x] & 0xff) == ' ') {
+                    if ((text[text_p + x] & 0xff) == ' ') {
                         continue;
                     }
-                    if (idStr.ColorIndex(this.text[text_p + x] >> 8) != currentColor) {
-                        currentColor = idStr.ColorIndex(this.text[text_p + x] >> 8);
+                    if (idStr.ColorIndex(text[text_p + x] >> 8) != currentColor) {
+                        currentColor = idStr.ColorIndex(text[text_p + x] >> 8);
                         renderSystem.SetColor(idStr.ColorForIndex(currentColor));
                     }
-                    renderSystem.DrawSmallChar((x + 1) * SMALLCHAR_WIDTH, v, this.text[text_p + x] & 0xff, localConsole.charSetShader);
+                    renderSystem.DrawSmallChar((x + 1) * SMALLCHAR_WIDTH, v, text[text_p + x] & 0xff, localConsole.charSetShader);
                 }
 
                 v += SMALLCHAR_HEIGHT;
@@ -812,37 +812,37 @@ public class Console {
             }
 
             // draw the background
-            y = (frac * SCREEN_HEIGHT) - 2;
+            y = frac * SCREEN_HEIGHT - 2;
             if (y < 1.0f) {
                 y = 0.0f;
             } else {
-                renderSystem.DrawStretchPic(0, 0, SCREEN_WIDTH, y, 0, 1.0f - this.displayFrac, 1, 1, this.consoleShader);
+                renderSystem.DrawStretchPic(0, 0, SCREEN_WIDTH, y, 0, 1.0f - displayFrac, 1, 1, consoleShader);
             }
 
             renderSystem.SetColor(colorCyan);
-            renderSystem.DrawStretchPic(0, y, SCREEN_WIDTH, 2, 0, 0, 0, 0, this.whiteShader);
+            renderSystem.DrawStretchPic(0, y, SCREEN_WIDTH, 2, 0, 0, 0, 0, whiteShader);
             renderSystem.SetColor(colorWhite);
 
             // draw the version number
             renderSystem.SetColor(idStr.ColorForIndex(C_COLOR_CYAN));
 
-            final char[] version = va("%s.%d", ENGINE_VERSION, BUILD_NUMBER).toCharArray();
+            char[] version = va("%s.%d", ENGINE_VERSION, BUILD_NUMBER).toCharArray();
             i = version.length;
 
             for (x = 0; x < i; x++) {
-                renderSystem.DrawSmallChar(SCREEN_WIDTH - ((i - x) * SMALLCHAR_WIDTH),
-                        (lines - (SMALLCHAR_HEIGHT + (SMALLCHAR_HEIGHT / 2))), version[x], localConsole.charSetShader);
+                renderSystem.DrawSmallChar(SCREEN_WIDTH - (i - x) * SMALLCHAR_WIDTH,
+                        (lines - (SMALLCHAR_HEIGHT + SMALLCHAR_HEIGHT / 2)), version[x], localConsole.charSetShader);
 
             }
 
             // draw the text
-            this.vislines = lines;
+            vislines = lines;
             rows = (lines - SMALLCHAR_WIDTH) / SMALLCHAR_WIDTH;		// rows of text to draw
 
             y = lines - (SMALLCHAR_HEIGHT * 3);
 
             // draw from the bottom up
-            if (this.display != this.current) {
+            if (display != current) {
                 // draw arrows to show the buffer is backscrolled
                 renderSystem.SetColor(idStr.ColorForIndex(C_COLOR_CYAN));
                 for (x = 0; x < LINE_WIDTH; x += 4) {
@@ -852,7 +852,7 @@ public class Console {
                 rows--;
             }
 
-            row = this.display;
+            row = display;
 
             if (x == 0) {
                 row--;
@@ -865,7 +865,7 @@ public class Console {
                 if (row < 0) {
                     break;
                 }
-                if ((this.current - row) >= TOTAL_LINES) {
+                if (current - row >= TOTAL_LINES) {
                     // past scrollback wrap point
                     continue;
                 }
@@ -873,15 +873,15 @@ public class Console {
                 text_p = (row % TOTAL_LINES) * LINE_WIDTH;
 
                 for (x = 0; x < LINE_WIDTH; x++) {
-                    if ((this.text[text_p + x] & 0xff) == ' ') {
+                    if ((text[text_p + x] & 0xff) == ' ') {
                         continue;
                     }
 
-                    if (idStr.ColorIndex(this.text[text_p + x] >> 8) != currentColor) {
-                        currentColor = idStr.ColorIndex(this.text[text_p + x] >> 8);
+                    if (idStr.ColorIndex(text[text_p + x] >> 8) != currentColor) {
+                        currentColor = idStr.ColorIndex(text[text_p + x] >> 8);
                         renderSystem.SetColor(idStr.ColorForIndex(currentColor));
                     }
-                    renderSystem.DrawSmallChar((x + 1) * SMALLCHAR_WIDTH, idMath.FtoiFast(y), this.text[text_p + x] & 0xff, localConsole.charSetShader);
+                    renderSystem.DrawSmallChar((x + 1) * SMALLCHAR_WIDTH, idMath.FtoiFast(y), text[text_p + x] & 0xff, localConsole.charSetShader);
                 }
             }
 
@@ -899,19 +899,19 @@ public class Console {
          ==============
          */
         private void Scroll() {
-            if ((this.lastKeyEvent == -1) || ((this.lastKeyEvent + 200) > eventLoop.Milliseconds())) {
+            if (lastKeyEvent == -1 || (lastKeyEvent + 200) > eventLoop.Milliseconds()) {
                 return;
             }
             // console scrolling
             if (idKeyInput.IsDown(K_PGUP)) {
                 PageUp();
-                this.nextKeyEvent = CONSOLE_REPEAT;
+                nextKeyEvent = CONSOLE_REPEAT;
                 return;
             }
 
             if (idKeyInput.IsDown(K_PGDN)) {
                 PageDown();
-                this.nextKeyEvent = CONSOLE_REPEAT;
+                nextKeyEvent = CONSOLE_REPEAT;
 //                return;
             }
         }
@@ -924,8 +924,8 @@ public class Console {
          ==============
          */
         private void SetDisplayFraction(float frac) {
-            this.finalFrac = frac;
-            this.fracTime = com_frameTime;
+            finalFrac = frac;
+            fracTime = com_frameTime;
         }
 
 
@@ -938,28 +938,28 @@ public class Console {
          */
         private void UpdateDisplayFraction() {
             if (con_speed.GetFloat() <= 0.1f) {
-                this.fracTime = com_frameTime;
-                this.displayFrac = this.finalFrac;
+                fracTime = com_frameTime;
+                displayFrac = finalFrac;
                 return;
             }
 
             // scroll towards the destination height
-            if (this.finalFrac < this.displayFrac) {
-                this.displayFrac -= con_speed.GetFloat() * (com_frameTime - this.fracTime) * 0.001f;
-                if (this.finalFrac > this.displayFrac) {
-                    this.displayFrac = this.finalFrac;
+            if (finalFrac < displayFrac) {
+                displayFrac -= con_speed.GetFloat() * (com_frameTime - fracTime) * 0.001f;
+                if (finalFrac > displayFrac) {
+                    displayFrac = finalFrac;
                 }
-                this.fracTime = com_frameTime;
-            } else if (this.finalFrac > this.displayFrac) {
-                this.displayFrac += con_speed.GetFloat() * (com_frameTime - this.fracTime) * 0.001f;
-                if (this.finalFrac < this.displayFrac) {
-                    this.displayFrac = this.finalFrac;
+                fracTime = com_frameTime;
+            } else if (finalFrac > displayFrac) {
+                displayFrac += con_speed.GetFloat() * (com_frameTime - fracTime) * 0.001f;
+                if (finalFrac < displayFrac) {
+                    displayFrac = finalFrac;
                 }
-                this.fracTime = com_frameTime;
+                fracTime = com_frameTime;
             }
         }
 
-    }
+    };
 
 
     /*
@@ -976,7 +976,7 @@ public class Console {
      ==================
      */
     static void SCR_DrawTextLeftAlign(float[] y, final String fmt, Object... text) {
-        final String[] string = {null};//new char[MAX_STRING_CHARS];
+        String[] string = {null};//new char[MAX_STRING_CHARS];
 //	va_list argptr;
 //	va_start( argptr, text );
         idStr.vsnPrintf(string, MAX_STRING_CHARS, fmt, text);
@@ -991,12 +991,12 @@ public class Console {
      ==================
      */
     static void SCR_DrawTextRightAlign(float[] y, final String fmt, Object... text) {
-        final String[] string = {null};//new char[MAX_STRING_CHARS];
+        String[] string = {null};//new char[MAX_STRING_CHARS];
 //	va_list argptr;
 //	va_start( argptr, text );
-        final int i = idStr.vsnPrintf(string, MAX_STRING_CHARS, fmt, text);
+        int i = idStr.vsnPrintf(string, MAX_STRING_CHARS, fmt, text);
 //	va_end( argptr );
-        renderSystem.DrawSmallStringExt(635 - (i * SMALLCHAR_WIDTH), (int) (y[0] + 2), string[0].toCharArray(), colorWhite, true, localConsole.charSetShader);
+        renderSystem.DrawSmallStringExt(635 - i * SMALLCHAR_WIDTH, (int) (y[0] + 2), string[0].toCharArray(), colorWhite, true, localConsole.charSetShader);
         y[0] += SMALLCHAR_HEIGHT + 4;
     }
     /*
@@ -1033,7 +1033,7 @@ public class Console {
             if (0 == total) {
                 total = 1;
             }
-            fps = (10000 * FPS_FRAMES) / total;
+            fps = 10000 * FPS_FRAMES / total;
             fps = (fps + 5) / 10;
 
             s = va("%dfps", fps);
@@ -1051,8 +1051,8 @@ public class Console {
      ==================
      */
     static float SCR_DrawMemoryUsage(float y) {
-        final memoryStats_t[] allocs = new memoryStats_t[1], frees = new memoryStats_t[1];
-        final float[] yy = {y};
+        memoryStats_t[] allocs = new memoryStats_t[1], frees = new memoryStats_t[1];
+        float[] yy = {y};
 
 //        Mem_GetStats(allocs);
 //        SCR_DrawTextRightAlign(yy, "total allocated memory: %4d, %4dkB", allocs[0].num, allocs[0].totalSize >> 10);
@@ -1072,7 +1072,7 @@ public class Console {
     static float SCR_DrawAsyncStats(float y) {
         int i, outgoingRate, incomingRate;
         float outgoingCompression, incomingCompression;
-        final float[] yy = {y};
+        float[] yy = {y};
 
         if (idAsyncNetwork.server.IsActive()) {
 
@@ -1087,14 +1087,14 @@ public class Console {
                 outgoingCompression = idAsyncNetwork.server.GetClientOutgoingCompression(i);
                 incomingCompression = idAsyncNetwork.server.GetClientIncomingCompression(i);
 
-                if ((outgoingRate != -1) && (incomingRate != -1)) {
+                if (outgoingRate != -1 && incomingRate != -1) {
                     SCR_DrawTextRightAlign(yy, "client %d: out rate = %d B/s (% -2.1f%%), in rate = %d B/s (% -2.1f%%)", i, outgoingRate, outgoingCompression, incomingRate, incomingCompression);
                 }
             }
 
-            final idStr msg = new idStr();
+            idStr msg = new idStr();
             idAsyncNetwork.server.GetAsyncStatsAvgMsg(msg);
-            SCR_DrawTextRightAlign(yy, msg.getData());
+            SCR_DrawTextRightAlign(yy, msg.toString());
 
         } else if (idAsyncNetwork.client.IsActive()) {
 
@@ -1103,7 +1103,7 @@ public class Console {
             outgoingCompression = idAsyncNetwork.client.GetOutgoingCompression();
             incomingCompression = idAsyncNetwork.client.GetIncomingCompression();
 
-            if ((outgoingRate != -1) && (incomingRate != -1)) {
+            if (outgoingRate != -1 && incomingRate != -1) {
                 SCR_DrawTextRightAlign(yy, "out rate = %d B/s (% -2.1f%%), in rate = %d B/s (% -2.1f%%)", outgoingRate, outgoingCompression, incomingRate, incomingCompression);
             }
 
@@ -1123,25 +1123,25 @@ public class Console {
      */
     static float SCR_DrawSoundDecoders(float y) {
         int index, numActiveDecoders;
-        final soundDecoderInfo_t decoderInfo = new soundDecoderInfo_t();
-        final float[] yy = {y};
+        soundDecoderInfo_t decoderInfo = new soundDecoderInfo_t();
+        float[] yy = {y};
 
         index = -1;
         numActiveDecoders = 0;
         while ((index = soundSystem.GetSoundDecoderInfo(index, decoderInfo)) != -1) {
-            final int localTime = decoderInfo.current44kHzTime - decoderInfo.start44kHzTime;
-            final int sampleTime = decoderInfo.num44kHzSamples / decoderInfo.numChannels;
+            int localTime = decoderInfo.current44kHzTime - decoderInfo.start44kHzTime;
+            int sampleTime = decoderInfo.num44kHzSamples / decoderInfo.numChannels;
             int percent;
             if (localTime > sampleTime) {
                 if (decoderInfo.looping) {
-                    percent = ((localTime % sampleTime) * 100) / sampleTime;
+                    percent = (localTime % sampleTime) * 100 / sampleTime;
                 } else {
                     percent = 100;
                 }
             } else {
-                percent = (localTime * 100) / sampleTime;
+                percent = localTime * 100 / sampleTime;
             }
-            SCR_DrawTextLeftAlign(yy, "%3d: %3d%% (%1.2f) %s: %s (%dkB)", numActiveDecoders, percent, decoderInfo.lastVolume, decoderInfo.format.getData(), decoderInfo.name.getData(), decoderInfo.numBytes >> 10);
+            SCR_DrawTextLeftAlign(yy, "%3d: %3d%% (%1.2f) %s: %s (%dkB)", numActiveDecoders, percent, decoderInfo.lastVolume, decoderInfo.format.toString(), decoderInfo.name.toString(), decoderInfo.numBytes >> 10);
             numActiveDecoders++;
         }
         return yy[0];
@@ -1193,7 +1193,7 @@ public class Console {
                 return;
             }
 
-            final String fileName = new idStr(args.Argv(1)).DefaultFileExtension(".txt").getData();
+            String fileName = new idStr(args.Argv(1)).DefaultFileExtension(".txt").toString();
 
             common.Printf("Dumped console text to %s.\n", fileName);
 

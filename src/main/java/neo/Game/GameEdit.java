@@ -76,13 +76,9 @@ public class GameEdit {
      */
     public static class idCursor3D extends idEntity {
 
-/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		//    public 	CLASS_PROTOTYPE( idCursor3D );
+//    public 	CLASS_PROTOTYPE( idCursor3D );
         public idCursor3D() {
-            this.draggedPosition.Zero();
+            draggedPosition.Zero();
         }
         //~idCursor3D( void );
 
@@ -93,7 +89,7 @@ public class GameEdit {
         @Override
         public void Present() {
             // don't present to the renderer if the entity hasn't changed
-            if (0 == (this.thinkFlags & TH_UPDATEVISUALS)) {
+            if (0 == (thinkFlags & TH_UPDATEVISUALS)) {
                 return;
             }
             BecomeInactive(TH_UPDATEVISUALS);
@@ -101,13 +97,13 @@ public class GameEdit {
             final idVec3 origin = GetPhysics().GetOrigin();
             final idMat3 axis = GetPhysics().GetAxis();
             gameRenderWorld.DebugArrow(colorYellow, origin.oPlus(axis.oGet(1).oMultiply(-5.0f).oPlus(axis.oGet(2).oMultiply(5.0f))), origin, 2);
-            gameRenderWorld.DebugArrow(colorRed, origin, this.draggedPosition, 2);
+            gameRenderWorld.DebugArrow(colorRed, origin, draggedPosition, 2);
         }
 
         @Override
         public void Think() {
-            if ((this.thinkFlags & TH_THINK) != 0) {
-                this.drag.Evaluate(gameLocal.time);
+            if ((thinkFlags & TH_THINK) != 0) {
+                drag.Evaluate(gameLocal.time);
             }
             Present();
         }
@@ -115,7 +111,7 @@ public class GameEdit {
 //        
         public idForce_Drag drag;
         public idVec3 draggedPosition;
-    }
+    };
 
     /*
      ===============================================================================
@@ -131,8 +127,8 @@ public class GameEdit {
         private idEntityPtr<idEntity> dragEnt;          // entity being dragged
         private int/*jointHandle_t*/  joint;            // joint being dragged
         private int                   id;               // id of body being dragged
-        private final idVec3                localEntityPoint; // dragged point in entity space
-        private final idVec3                localPlayerPoint; // dragged point in player space
+        private idVec3                localEntityPoint; // dragged point in entity space
+        private idVec3                localPlayerPoint; // dragged point in player space
         private idStr                 bodyName;         // name of the body being dragged
         private idCursor3D            cursor;           // cursor entity
         private idEntityPtr<idEntity> selected;         // last dragged entity
@@ -140,39 +136,37 @@ public class GameEdit {
         //
 
         public idDragEntity() {
-            this.cursor = null;
-            this.localEntityPoint = new idVec3();
-            this.localPlayerPoint = new idVec3();
-            this.bodyName = new idStr();
+            cursor = null;
+            localEntityPoint = new idVec3();
+            localPlayerPoint = new idVec3();
+            bodyName = new idStr();
             Clear();
         }
         // ~idDragEntity( void );
 
         public void Clear() {
-            this.dragEnt = null;
-            this.joint = INVALID_JOINT;
-            this.id = 0;
-            this.localEntityPoint.Zero();
-            this.localPlayerPoint.Zero();
-            this.bodyName.Clear();
-            this.selected = null;
+            dragEnt = null;
+            joint = INVALID_JOINT;
+            id = 0;
+            localEntityPoint.Zero();
+            localPlayerPoint.Zero();
+            bodyName.Clear();
+            selected = null;
         }
 
         public void Update(idPlayer player) {
-            final idVec3 viewPoint = new idVec3();
-			idVec3 origin;
-            final idMat3 viewAxis = new idMat3();
-			idMat3 axis = new idMat3();
-            final trace_s[] trace = {null};
+            idVec3 viewPoint = new idVec3(), origin;
+            idMat3 viewAxis = new idMat3(), axis = new idMat3();
+            trace_s[] trace = {null};
             idEntity newEnt;
-            final idAngles angles;
+            idAngles angles;
             int/*jointHandle_t*/ newJoint = 0;
             idStr newBodyName = new idStr();
 
             player.GetViewPos(viewPoint, viewAxis);
 
             // if no entity selected for dragging
-            if (NOT(this.dragEnt.GetEntity())) {
+            if (NOT(dragEnt.GetEntity())) {
 
                 if ((player.usercmd.buttons & BUTTON_ATTACK) != 0) {
 
@@ -192,7 +186,7 @@ public class GameEdit {
                             }
 
                             if (newEnt.IsType(idAFEntity_Base.class) && ((idAFEntity_Base) newEnt).IsActiveAF()) {
-                                final idAFEntity_Base af = (idAFEntity_Base) newEnt;
+                                idAFEntity_Base af = (idAFEntity_Base) newEnt;
 
                                 // joint being dragged
                                 newJoint = CLIPMODEL_ID_TO_JOINT_HANDLE(trace[0].c.id);
@@ -217,30 +211,30 @@ public class GameEdit {
                             }
                         }
                         if (newEnt != null) {
-                            this.dragEnt.oSet(newEnt);
-                            this.selected.oSet(newEnt);
-                            this.joint = newJoint;
-                            this.id = trace[0].c.id;
-                            this.bodyName = newBodyName;
+                            dragEnt.oSet(newEnt);
+                            selected.oSet(newEnt);
+                            joint = newJoint;
+                            id = trace[0].c.id;
+                            bodyName = newBodyName;
 
-                            if (null == this.cursor) {
-                                this.cursor = (idCursor3D) gameLocal.SpawnEntityType(idCursor3D.class);
+                            if (null == cursor) {
+                                cursor = (idCursor3D) gameLocal.SpawnEntityType(idCursor3D.class);
                             }
 
-                            final idPhysics phys = this.dragEnt.GetEntity().GetPhysics();
-                            this.localPlayerPoint.oSet((trace[0].c.point.oMinus(viewPoint)).oMultiply(viewAxis.Transpose()));
-                            origin = phys.GetOrigin(this.id);
-                            axis = phys.GetAxis(this.id);
-                            this.localEntityPoint.oSet((trace[0].c.point.oMinus(origin)).oMultiply(axis.Transpose()));
+                            idPhysics phys = dragEnt.GetEntity().GetPhysics();
+                            localPlayerPoint.oSet((trace[0].c.point.oMinus(viewPoint)).oMultiply(viewAxis.Transpose()));
+                            origin = phys.GetOrigin(id);
+                            axis = phys.GetAxis(id);
+                            localEntityPoint.oSet((trace[0].c.point.oMinus(origin)).oMultiply(axis.Transpose()));
 
-                            this.cursor.drag.Init(g_dragDamping.GetFloat());
-                            this.cursor.drag.SetPhysics(phys, this.id, this.localEntityPoint);
-                            this.cursor.Show();
+                            cursor.drag.Init(g_dragDamping.GetFloat());
+                            cursor.drag.SetPhysics(phys, id, localEntityPoint);
+                            cursor.Show();
 
                             if (phys.IsType(idPhysics_AF.class)
                                     || phys.IsType(idPhysics_RigidBody.class)
                                     || phys.IsType(idPhysics_Monster.class)) {
-                                this.cursor.BecomeActive(TH_THINK);
+                                cursor.BecomeActive(TH_THINK);
                             }
                         }
                     }
@@ -248,7 +242,7 @@ public class GameEdit {
             }
 
             // if there is an entity selected for dragging
-            final idEntity drag = this.dragEnt.GetEntity();
+            idEntity drag = dragEnt.GetEntity();
             if (drag != null) {
 
                 if (0 == (player.usercmd.buttons & BUTTON_ATTACK)) {
@@ -256,28 +250,28 @@ public class GameEdit {
                     return;
                 }
 
-                this.cursor.SetOrigin(viewPoint.oPlus(this.localPlayerPoint.oMultiply(viewAxis)));
-                this.cursor.SetAxis(viewAxis);
+                cursor.SetOrigin(viewPoint.oPlus(localPlayerPoint.oMultiply(viewAxis)));
+                cursor.SetAxis(viewAxis);
 
-                this.cursor.drag.SetDragPosition(this.cursor.GetPhysics().GetOrigin());
+                cursor.drag.SetDragPosition(cursor.GetPhysics().GetOrigin());
 
-                final renderEntity_s renderEntity = drag.GetRenderEntity();
-                final idAnimator dragAnimator = drag.GetAnimator();
+                renderEntity_s renderEntity = drag.GetRenderEntity();
+                idAnimator dragAnimator = drag.GetAnimator();
 
-                if ((this.joint != INVALID_JOINT) && (renderEntity != null) && (dragAnimator != null)) {
-                    dragAnimator.GetJointTransform(this.joint, gameLocal.time, this.cursor.draggedPosition, axis);
-                    this.cursor.draggedPosition = renderEntity.origin.oPlus(this.cursor.draggedPosition.oMultiply(renderEntity.axis));
-                    gameRenderWorld.DrawText(va("%s\n%s\n%s, %s", drag.GetName(), drag.GetType().getName(), dragAnimator.GetJointName(this.joint), this.bodyName), this.cursor.GetPhysics().GetOrigin(), 0.1f, colorWhite, viewAxis, 1);
+                if (joint != INVALID_JOINT && renderEntity != null && dragAnimator != null) {
+                    dragAnimator.GetJointTransform(joint, gameLocal.time, cursor.draggedPosition, axis);
+                    cursor.draggedPosition = renderEntity.origin.oPlus(cursor.draggedPosition.oMultiply(renderEntity.axis));
+                    gameRenderWorld.DrawText(va("%s\n%s\n%s, %s", drag.GetName(), drag.GetType().getName(), dragAnimator.GetJointName(joint), bodyName), cursor.GetPhysics().GetOrigin(), 0.1f, colorWhite, viewAxis, 1);
                 } else {
-                    this.cursor.draggedPosition = this.cursor.GetPhysics().GetOrigin();
-                    gameRenderWorld.DrawText(va("%s\n%s\n%s", drag.GetName(), drag.GetType().getName(), this.bodyName), this.cursor.GetPhysics().GetOrigin(), 0.1f, colorWhite, viewAxis, 1);
+                    cursor.draggedPosition = cursor.GetPhysics().GetOrigin();
+                    gameRenderWorld.DrawText(va("%s\n%s\n%s", drag.GetName(), drag.GetType().getName(), bodyName), cursor.GetPhysics().GetOrigin(), 0.1f, colorWhite, viewAxis, 1);
                 }
             }
 
             // if there is a selected entity
-            if ((this.selected.GetEntity() != null) && g_dragShowSelection.GetBool()) {
+            if (selected.GetEntity() != null && g_dragShowSelection.GetBool()) {
                 // draw the bbox of the selected entity
-                final renderEntity_s renderEntity = this.selected.GetEntity().GetRenderEntity();
+                renderEntity_s renderEntity = selected.GetEntity().GetRenderEntity();
                 if (renderEntity != null) {
                     gameRenderWorld.DebugBox(colorYellow, new idBox(renderEntity.bounds, renderEntity.origin, renderEntity.axis));
                 }
@@ -285,37 +279,36 @@ public class GameEdit {
         }
 
         public void SetSelected(idEntity ent) {
-            this.selected.oSet(ent);
+            selected.oSet(ent);
             StopDrag();
         }
 
         public idEntity GetSelected() {
-            return this.selected.GetEntity();
+            return selected.GetEntity();
         }
 
         public void DeleteSelected() {
 //	delete selected.GetEntity();
-            this.selected = null;
+            selected = null;
             StopDrag();
         }
 
         public void BindSelected() {
             int num, largestNum;
-            final idLexer lexer = new idLexer();
-            final idToken type = new idToken(), bodyName = new idToken();
-            final idStr key = new idStr();
-			idStr bindBodyName;
+            idLexer lexer = new idLexer();
+            idToken type = new idToken(), bodyName = new idToken();
+            idStr key = new idStr(), bindBodyName;
             String value;
             idKeyValue kv;
             idAFEntity_Base af;
 
-            af = (idAFEntity_Base) this.dragEnt.GetEntity();
+            af = (idAFEntity_Base) dragEnt.GetEntity();
 
-            if ((null == af) || !af.IsType(idAFEntity_Base.class) || !af.IsActiveAF()) {
+            if (null == af || !af.IsType(idAFEntity_Base.class) || !af.IsActiveAF()) {
                 return;
             }
 
-            bindBodyName = af.GetAFPhysics().GetBody(this.id).GetName();
+            bindBodyName = af.GetAFPhysics().GetBody(id).GetName();
             largestNum = 1;
 
             // parse all the bind constraints
@@ -345,7 +338,7 @@ public class GameEdit {
             }
 
             key.oSet(String.format("bindConstraint bind%d", largestNum));
-            value = String.format("ballAndSocket %s %s", bindBodyName.getData(), af.GetAnimator().GetJointName(this.joint));
+            value = String.format("ballAndSocket %s %s", bindBodyName.toString(), af.GetAnimator().GetJointName(joint));
 
             af.spawnArgs.Set(key, value);
             af.spawnArgs.Set("bind", "worldspawn");
@@ -356,9 +349,9 @@ public class GameEdit {
             idKeyValue kv;
             idAFEntity_Base af;
 
-            af = (idAFEntity_Base) this.selected.GetEntity();
+            af = (idAFEntity_Base) selected.GetEntity();
 
-            if ((null == af) || !af.IsType(idAFEntity_Base.class) || !af.IsActiveAF()) {
+            if (null == af || !af.IsType(idAFEntity_Base.class) || !af.IsActiveAF()) {
                 return;
             }
 
@@ -366,10 +359,10 @@ public class GameEdit {
             af.Unbind();
 
             // delete all the bind constraints
-            kv = this.selected.GetEntity().spawnArgs.MatchPrefix("bindConstraint ", null);
+            kv = selected.GetEntity().spawnArgs.MatchPrefix("bindConstraint ", null);
             while (kv != null) {
-                this.selected.GetEntity().spawnArgs.Delete(kv.GetKey());
-                kv = this.selected.GetEntity().spawnArgs.MatchPrefix("bindConstraint ", null);
+                selected.GetEntity().spawnArgs.Delete(kv.GetKey());
+                kv = selected.GetEntity().spawnArgs.MatchPrefix("bindConstraint ", null);
             }
 
             // delete any bind information
@@ -379,13 +372,13 @@ public class GameEdit {
         }
 
         private void StopDrag() {
-            this.dragEnt = null;
-            if (this.cursor != null) {
-                this.cursor.BecomeInactive(TH_THINK);
+            dragEnt = null;
+            if (cursor != null) {
+                cursor.BecomeInactive(TH_THINK);
             }
         }
 
-    }
+    };
 
     /*
      ===============================================================================
@@ -396,42 +389,42 @@ public class GameEdit {
      */
     public static class selectedTypeInfo_s {
 
-        Class<?>/*idTypeInfo*/ typeInfo;
+        Class/*idTypeInfo*/ typeInfo;
         idStr textKey;
-    }
+    };
 
     public static class idEditEntities {
 
         private int nextSelectTime;
-        private final idList<selectedTypeInfo_s> selectableEntityClasses;
-        private final idList<idEntity> selectedEntities;
+        private idList<selectedTypeInfo_s> selectableEntityClasses;
+        private idList<idEntity> selectedEntities;
         //
         //
 
         public idEditEntities() {
-            this.selectableEntityClasses = new idList<>();
-            this.selectedEntities = new idList<>();
-            this.nextSelectTime = 0;
+            selectableEntityClasses = new idList<>();
+            selectedEntities = new idList<>();
+            nextSelectTime = 0;
         }
 
         public boolean SelectEntity(final idVec3 origin, final idVec3 dir, final idEntity skip) {
             idVec3 end;
             idEntity ent;
 
-            if ((0 == g_editEntityMode.GetInteger()) || (this.selectableEntityClasses.Num() == 0)) {
+            if (0 == g_editEntityMode.GetInteger() || selectableEntityClasses.Num() == 0) {
                 return false;
             }
 
-            if (gameLocal.time < this.nextSelectTime) {
+            if (gameLocal.time < nextSelectTime) {
                 return true;
             }
-            this.nextSelectTime = gameLocal.time + 300;
+            nextSelectTime = gameLocal.time + 300;
 
             end = origin.oPlus(dir.oMultiply(4096.0f));
 
             ent = null;
-            for (int i = 0; i < this.selectableEntityClasses.Num(); i++) {
-                ent = gameLocal.FindTraceEntity(origin, end, this.selectableEntityClasses.oGet(i).typeInfo, skip);
+            for (int i = 0; i < selectableEntityClasses.Num(); i++) {
+                ent = gameLocal.FindTraceEntity(origin, end, selectableEntityClasses.oGet(i).typeInfo, skip);
                 if (ent != null) {
                     break;
                 }
@@ -450,23 +443,23 @@ public class GameEdit {
 
         public void AddSelectedEntity(idEntity ent) {
             ent.fl.selected = true;
-            this.selectedEntities.AddUnique(ent);
+            selectedEntities.AddUnique(ent);
         }
 
         public void RemoveSelectedEntity(idEntity ent) {
-            if (this.selectedEntities.Find(ent) != Integer.valueOf(0)) {
-                this.selectedEntities.Remove(ent);
+            if (selectedEntities.Find(ent) != Integer.valueOf(0)) {
+                selectedEntities.Remove(ent);
             }
         }
 
         public void ClearSelectedEntities() {
             int i, count;
 
-            count = this.selectedEntities.Num();
+            count = selectedEntities.Num();
             for (i = 0; i < count; i++) {
-                this.selectedEntities.oGet(i).fl.selected = false;
+                selectedEntities.oGet(i).fl.selected = false;
             }
-            this.selectedEntities.Clear();
+            selectedEntities.Clear();
         }
 
         public void DisplayEntities() {
@@ -476,55 +469,55 @@ public class GameEdit {
                 return;
             }
 
-            this.selectableEntityClasses.Clear();
-            final selectedTypeInfo_s sit = new selectedTypeInfo_s();
+            selectableEntityClasses.Clear();
+            selectedTypeInfo_s sit = new selectedTypeInfo_s();
 
             switch (g_editEntityMode.GetInteger()) {
                 case 1:
                     sit.typeInfo = idLight.class;
                     sit.textKey.oSet("texture");
-                    this.selectableEntityClasses.Append(sit);
+                    selectableEntityClasses.Append(sit);
                     break;
                 case 2:
                     sit.typeInfo = idSound.class;
                     sit.textKey.oSet("s_shader");
-                    this.selectableEntityClasses.Append(sit);
+                    selectableEntityClasses.Append(sit);
                     sit.typeInfo = idLight.class;
                     sit.textKey.oSet("texture");
-                    this.selectableEntityClasses.Append(sit);
+                    selectableEntityClasses.Append(sit);
                     break;
                 case 3:
                     sit.typeInfo = idAFEntity_Base.class;
                     sit.textKey.oSet("articulatedFigure");
-                    this.selectableEntityClasses.Append(sit);
+                    selectableEntityClasses.Append(sit);
                     break;
                 case 4:
                     sit.typeInfo = idFuncEmitter.class;
                     sit.textKey.oSet("model");
-                    this.selectableEntityClasses.Append(sit);
+                    selectableEntityClasses.Append(sit);
                     break;
                 case 5:
                     sit.typeInfo = idAI.class;
                     sit.textKey.oSet("name");
-                    this.selectableEntityClasses.Append(sit);
+                    selectableEntityClasses.Append(sit);
                     break;
                 case 6:
                     sit.typeInfo = idEntity.class;
                     sit.textKey.oSet("name");
-                    this.selectableEntityClasses.Append(sit);
+                    selectableEntityClasses.Append(sit);
                     break;
                 case 7:
                     sit.typeInfo = idEntity.class;
                     sit.textKey.oSet("model");
-                    this.selectableEntityClasses.Append(sit);
+                    selectableEntityClasses.Append(sit);
                     break;
                 default:
                     return;
             }
 
-            final idBounds viewBounds = new idBounds(gameLocal.GetLocalPlayer().GetPhysics().GetOrigin());
-            final idBounds viewTextBounds = new idBounds(gameLocal.GetLocalPlayer().GetPhysics().GetOrigin());
-            final idMat3 axis = gameLocal.GetLocalPlayer().viewAngles.ToMat3();
+            idBounds viewBounds = new idBounds(gameLocal.GetLocalPlayer().GetPhysics().GetOrigin());
+            idBounds viewTextBounds = new idBounds(gameLocal.GetLocalPlayer().GetPhysics().GetOrigin());
+            idMat3 axis = gameLocal.GetLocalPlayer().viewAngles.ToMat3();
 
             viewBounds.ExpandSelf(512);
             viewTextBounds.ExpandSelf(128);
@@ -533,7 +526,7 @@ public class GameEdit {
 
             for (ent = gameLocal.spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
 
-                final idVec4 color = new idVec4();
+                idVec4 color = new idVec4();
 
                 textKey = new idStr("");
                 if (!EntityIsSelectable(ent, color, textKey)) {
@@ -549,8 +542,8 @@ public class GameEdit {
                     if (ent.fl.selected) {
                         drawArrows = true;
                     }
-                    final idSoundShader ss = declManager.FindSound(ent.spawnArgs.GetString(textKey.getData()));
-                    if (ss.HasDefaultSound() || (ss.base.GetState() == DS_DEFAULTED)) {
+                    final idSoundShader ss = declManager.FindSound(ent.spawnArgs.GetString(textKey.toString()));
+                    if (ss.HasDefaultSound() || ss.base.GetState() == DS_DEFAULTED) {
                         color.Set(1.0f, 0.0f, 1.0f, 1.0f);
                     }
                 } else if (ent.GetType() == idFuncEmitter.class) {
@@ -565,7 +558,7 @@ public class GameEdit {
 
                 gameRenderWorld.DebugBounds(color, new idBounds(ent.GetPhysics().GetOrigin()).Expand(8));
                 if (drawArrows) {
-                    final idVec3 start = ent.GetPhysics().GetOrigin();
+                    idVec3 start = ent.GetPhysics().GetOrigin();
                     idVec3 end = start.oPlus(new idVec3(1, 0, 0).oMultiply(20.0f));
                     gameRenderWorld.DebugArrow(colorWhite, start, end, 2);
                     gameRenderWorld.DrawText("x+", end.oPlus(new idVec3(4, 0, 0)), 0.15f, colorWhite, axis);
@@ -587,7 +580,7 @@ public class GameEdit {
                 }
 
                 if (textKey.Length() != 0) {
-                    final String text = ent.spawnArgs.GetString(textKey.getData());
+                    final String text = ent.spawnArgs.GetString(textKey.toString());
                     if (viewTextBounds.ContainsPoint(ent.GetPhysics().GetOrigin())) {
                         gameRenderWorld.DrawText(text, ent.GetPhysics().GetOrigin().oPlus(new idVec3(0, 0, 12)), 0.25f, colorWhite, axis, 1);
                     }
@@ -596,10 +589,10 @@ public class GameEdit {
         }
 
         public boolean EntityIsSelectable(idEntity ent, idVec4 color/* = NULL*/, idStr text /*= NULL*/) {
-            for (int i = 0; i < this.selectableEntityClasses.Num(); i++) {
-                if (ent.GetType() == this.selectableEntityClasses.oGet(i).typeInfo) {
+            for (int i = 0; i < selectableEntityClasses.Num(); i++) {
+                if (ent.GetType() == selectableEntityClasses.oGet(i).typeInfo) {
                     if (text != null) {
-                        text.oSet(this.selectableEntityClasses.oGet(i).textKey);
+                        text.oSet(selectableEntityClasses.oGet(i).textKey);
                     }
                     if (color != null) {
                         if (ent.fl.selected) {
@@ -630,7 +623,7 @@ public class GameEdit {
         public boolean EntityIsSelectable(idEntity ent) {
             return EntityIsSelectable(ent, null);
         }
-    }
+    };
 
     private static int sscanf(idStr key, String pattern) {
         int a = -1;
@@ -638,12 +631,11 @@ public class GameEdit {
 
         pattern = pattern.replaceAll("%d", "\\d+");
 
-        Scanner scanner = new Scanner(key.getData());
+        Scanner scanner = new Scanner(key.toString());
 
         result = scanner.findInLine(Pattern.compile(pattern));
         if (isNotNullOrEmpty(result)) {
-        	scanner.close();
-        	scanner = new Scanner(result);
+            scanner = new Scanner(result);
             scanner.findInLine("bind");
             a = scanner.nextInt();
         }

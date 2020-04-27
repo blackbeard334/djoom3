@@ -78,8 +78,8 @@ public class leakfile {
                 next = node.occupied;
                 for (p = node.portals; p != null; p = p.next[/*!s*/1 ^ s]) {
                     s = (p.nodes[0].equals(node)) ? 1 : 0;
-                    if ((p.nodes[s].occupied != 0)
-                            && (p.nodes[s].occupied < next)) {
+                    if (p.nodes[s].occupied != 0
+                            && p.nodes[s].occupied < next) {
                         nextportal = p;
                         nextnode = p.nodes[s];
                         next = nextnode.occupied;
@@ -99,7 +99,7 @@ public class leakfile {
             common.Printf("%5d point linefile\n", count + 1);
 
 //             fclose(linefile);
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             Logger.getLogger(leakfile.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

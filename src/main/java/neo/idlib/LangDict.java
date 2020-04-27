@@ -36,29 +36,29 @@ public class LangDict {
 
         public idStr key;
         public idStr value;
-    }
+    };
 
     public static class idLangDict {
 
         public idList<idLangKeyValue> args = new idList<>();
-        private final idHashIndex hash = new idHashIndex();
+        private idHashIndex hash = new idHashIndex();
         //
         private int baseID;
         //
         //
 
         public idLangDict() {
-            this.args.SetGranularity(256);
-            this.hash.SetGranularity(256);
-            this.hash.Clear(4096, 8192);
-            this.baseID = 0;
+            args.SetGranularity(256);
+            hash.SetGranularity(256);
+            hash.Clear(4096, 8192);
+            baseID = 0;
         }
 //public							~idLangDict( void );
 //
 
         public void Clear() {
-            this.args.Clear();
-            this.hash.Clear();
+            args.Clear();
+            hash.Clear();
         }
 
         public boolean Load(final String fileName) throws idException {
@@ -71,10 +71,10 @@ public class LangDict {
                 Clear();
             }
 
-            final ByteBuffer[] buffer = {null};
-            final idLexer src = new idLexer(LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
+            ByteBuffer[] buffer = {null};
+            idLexer src = new idLexer(LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
 
-            final int len = idLib.fileSystem.ReadFile(fileName, buffer);
+            int len = idLib.fileSystem.ReadFile(fileName, buffer);
             if (len <= 0) {
                 // let whoever called us deal with the failure (so sys_lang can be reset)
                 return false;
@@ -94,37 +94,37 @@ public class LangDict {
                     if (tok2.equals("}")) {
                         break;
                     }
-                    final idLangKeyValue kv = new idLangKeyValue();
+                    idLangKeyValue kv = new idLangKeyValue();
                     kv.key = tok;
                     kv.value = tok2;
                     assert (kv.key.Cmpn(STRTABLE_ID, STRTABLE_ID_LENGTH) == 0);
 //                    if (tok.equals("#str_07184")) {
 //                        tok2.oSet("006");
 //                    }
-                    this.hash.Add(GetHashKey(kv.key), this.args.Append(kv));
+                    hash.Add(GetHashKey(kv.key), args.Append(kv));
                 }
             }
-            idLib.common.Printf("%d strings read from %s\n", this.args.Num(), fileName);
+            idLib.common.Printf("%d strings read from %s\n", args.Num(), fileName);
             idLib.fileSystem.FreeFile(buffer);
 
             return true;
         }
 
         public void Save(String fileName) {
-            final idFile outFile = idLib.fileSystem.OpenFileWrite(fileName);
+            idFile outFile = idLib.fileSystem.OpenFileWrite(fileName);
             outFile.WriteFloatString("// string table\n// english\n//\n\n{\n");
-            for (int j = 0; j < this.args.Num(); j++) {
-                outFile.WriteFloatString("\t\"%s\"\t\"", this.args.oGet(j).key);
-                final int l = this.args.oGet(j).value.Length();
-                final char slash = '\\';
-                final char tab = 't';
-                final char nl = 'n';
+            for (int j = 0; j < args.Num(); j++) {
+                outFile.WriteFloatString("\t\"%s\"\t\"", args.oGet(j).key);
+                int l = args.oGet(j).value.Length();
+                char slash = '\\';
+                char tab = 't';
+                char nl = 'n';
                 for (int k = 0; k < l; k++) {
-                    final char ch = this.args.oGet(j).value.getData().charAt(k);
+                    char ch = args.oGet(j).value.toString().charAt(k);
                     if (ch == '\t') {
                         outFile.WriteChar(slash);
                         outFile.WriteChar(tab);
-                    } else if ((ch == '\n') || (ch == '\r')) {
+                    } else if (ch == '\n' || ch == '\r') {
                         outFile.WriteChar(slash);
                         outFile.WriteChar(nl);
                     } else {
@@ -143,33 +143,33 @@ public class LangDict {
                 return str;
             }
 
-            int c = this.args.Num();
+            int c = args.Num();
             for (int j = 0; j < c; j++) {
-                if (idStr.Cmp(this.args.oGet(j).value.getData(), str) == 0) {
-                    return this.args.oGet(j).key.getData();
+                if (idStr.Cmp(args.oGet(j).value.toString(), str) == 0) {
+                    return args.oGet(j).key.toString();
                 }
             }
 
-            final int id = GetNextId();
-            final idLangKeyValue kv = new idLangKeyValue();
+            int id = GetNextId();
+            idLangKeyValue kv = new idLangKeyValue();
             // _D3XP
             kv.key = new idStr(Str.va("#str_%08i", id));
             // kv.key = va( "#str_%05i", id );
             kv.value = new idStr(str);
-            c = this.args.Append(kv);
+            c = args.Append(kv);
             assert (kv.key.Cmpn(STRTABLE_ID, STRTABLE_ID_LENGTH) == 0);
-            this.hash.Add(GetHashKey(kv.key), c);
-            return this.args.oGet(c).key.getData();
+            hash.Add(GetHashKey(kv.key), c);
+            return args.oGet(c).key.toString();
         }
 
         private static int DBG_GetString = 1;
         public String GetString(final String str) throws idException {
             if ("#str_07184".equals(str)) {
 //                System.out.printf("GetString#%d\n", DBG_GetString);
-//                return (DBG_GetString++) + NeoFixStrings.BNLAAAAAAAAAAA;
+//                return (DBG_GetString++) + "bnlaaaaaaaaaaa";
             }
 
-            if ((str == null) || str.isEmpty()) {
+            if (str == null || str.isEmpty()) {
                 return "";
             }            
 
@@ -177,10 +177,10 @@ public class LangDict {
                 return str;
             }
 
-            final int hashKey = GetHashKey(str);
-            for (int i = this.hash.First(hashKey); i != -1; i = this.hash.Next(i)) {
-                if (this.args.oGet(i).key.Cmp(str) == 0) {
-                    return this.args.oGet(i).value.getData();
+            int hashKey = GetHashKey(str);
+            for (int i = hash.First(hashKey); i != -1; i = hash.Next(i)) {
+                if (args.oGet(i).key.Cmp(str) == 0) {
+                    return args.oGet(i).value.toString();
                 }
             }
 
@@ -189,28 +189,28 @@ public class LangDict {
         }
 
         public String GetString(final idStr str) throws idException {
-            return GetString(str.getData());
+            return GetString(str.toString());
         }
 
         // adds the value and key as passed (doesn't generate a "#str_xxxxx" key or ensure the key/value pair is unique)
         public void AddKeyVal(final String key, final String val) {
-            final idLangKeyValue kv = new idLangKeyValue();
+            idLangKeyValue kv = new idLangKeyValue();
             kv.key = new idStr(key);
             kv.value = new idStr(val);
             assert (kv.key.Cmpn(STRTABLE_ID, STRTABLE_ID_LENGTH) == 0);
-            this.hash.Add(GetHashKey(kv.key), this.args.Append(kv));
+            hash.Add(GetHashKey(kv.key), args.Append(kv));
         }
 
         public int GetNumKeyVals() {
-            return this.args.Num();
+            return args.Num();
         }
 
         public idLangKeyValue GetKeyVal(int i) {
-            return this.args.oGet(i);
+            return args.oGet(i);
         }
 
         public void SetBaseID(int id) {
-            this.baseID = id;
+            baseID = id;
         }
 
         private boolean ExcludeString(final String str) {
@@ -218,7 +218,7 @@ public class LangDict {
                 return true;
             }
 
-            final int c = str.length();
+            int c = str.length();
             if (c <= 1) {
                 return true;
             }
@@ -246,10 +246,10 @@ public class LangDict {
         }
 
         private int GetNextId() {
-            final int c = this.args.Num();
+            int c = args.Num();
 
             //Let and external user supply the base id for this dictionary
-            int id = this.baseID;
+            int id = baseID;
 
             if (c == 0) {
                 return id;
@@ -257,9 +257,9 @@ public class LangDict {
 
             idStr work;
             for (int j = 0; j < c; j++) {
-                work = this.args.oGet(j).key;
+                work = args.oGet(j).key;
                 work.StripLeading(STRTABLE_ID);
-                final int test = Integer.parseInt(work.getData());
+                int test = Integer.parseInt(work.toString());
                 if (test > id) {
                     id = test;
                 }
@@ -268,7 +268,7 @@ public class LangDict {
         }
 
         private int GetHashKey(final idStr str) {
-            return GetHashKey(str.getData());
+            return GetHashKey(str.toString());
         }
 
         private int GetHashKey(final String str) {
@@ -280,10 +280,10 @@ public class LangDict {
                 c = str.charAt(i);
                 assert (Character.isDigit(c));
 
-                hashKey = ((hashKey * 10) + c) - '0';
+                hashKey = hashKey * 10 + c - '0';
             }
             return hashKey;
         }
 
-    }
+    };
 }

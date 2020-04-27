@@ -13,7 +13,6 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import neo.Game.Game_local.idGameLocal;
 import neo.Renderer.Model.modelSurface_s;
 import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.RenderWorld.deferredEntityCallback_t;
@@ -61,13 +60,13 @@ public class SmokeParticles {
         idRandom random;
         idVec3 origin;
         idMat3 axis;
-    }
+    };
 
     public static class activeSmokeStage_t {
 
         idParticleStage stage;
         singleSmoke_t smokes;
-    }
+    };
     public static final String smokeParticle_SnapshotName = "_SmokeParticle_Snapshot_";
 
     public static class idSmokeParticles {
@@ -78,9 +77,9 @@ public class SmokeParticles {
         private int            renderEntityHandle;        // handle to static renderer model
         //
         private static final int             MAX_SMOKE_PARTICLES = 10000;
-        private final              singleSmoke_t[] smokes;
+        private              singleSmoke_t[] smokes;
         //
-        private final idList<activeSmokeStage_t> activeStages;
+        private idList<activeSmokeStage_t> activeStages;
         private singleSmoke_t              freeSmokes;
         private int                        numActiveSmokes;
         private int                        currentParticleTime;    // don't need to recalculate if == view time
@@ -88,71 +87,71 @@ public class SmokeParticles {
         //
 
         public idSmokeParticles() {
-            this.initialized = false;
-            this.renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
-            this.renderEntityHandle = -1;
-            this.smokes = Stream.generate(singleSmoke_t::new).limit(MAX_SMOKE_PARTICLES).toArray(singleSmoke_t[]::new);
-            this.activeStages = new idList<>();
-            this.freeSmokes = null;
-            this.numActiveSmokes = 0;
-            this.currentParticleTime = -1;
+            initialized = false;
+            renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
+            renderEntityHandle = -1;
+            smokes = Stream.generate(singleSmoke_t::new).limit(MAX_SMOKE_PARTICLES).toArray(singleSmoke_t[]::new);
+            activeStages = new idList<>();
+            freeSmokes = null;
+            numActiveSmokes = 0;
+            currentParticleTime = -1;
         }
 
         // creats an entity covering the entire world that will call back each rendering
         public void Init() {
-            if (this.initialized) {
+            if (initialized) {
                 Shutdown();
             }
 
             // set up the free list
-            for (int i = 0; i < (MAX_SMOKE_PARTICLES - 1); i++) {
-                this.smokes[i].next = this.smokes[i + 1];
+            for (int i = 0; i < MAX_SMOKE_PARTICLES - 1; i++) {
+                smokes[i].next = smokes[i + 1];
             }
-            this.smokes[MAX_SMOKE_PARTICLES - 1].next = null;
-            this.freeSmokes = this.smokes[0];
-            this.numActiveSmokes = 0;
+            smokes[MAX_SMOKE_PARTICLES - 1].next = null;
+            freeSmokes = smokes[0];
+            numActiveSmokes = 0;
 
-            this.activeStages.Clear();
+            activeStages.Clear();
 
-            this.renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
+            renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
 
-            this.renderEntity.bounds.Clear();
-            this.renderEntity.axis.oSet(getMat3_identity());
-            this.renderEntity.shaderParms[ SHADERPARM_RED] = 1;
-            this.renderEntity.shaderParms[ SHADERPARM_GREEN] = 1;
-            this.renderEntity.shaderParms[ SHADERPARM_BLUE] = 1;
-            this.renderEntity.shaderParms[3] = 1;
+            renderEntity.bounds.Clear();
+            renderEntity.axis.oSet(getMat3_identity());
+            renderEntity.shaderParms[ SHADERPARM_RED] = 1;
+            renderEntity.shaderParms[ SHADERPARM_GREEN] = 1;
+            renderEntity.shaderParms[ SHADERPARM_BLUE] = 1;
+            renderEntity.shaderParms[3] = 1;
 
-            this.renderEntity.hModel = renderModelManager.AllocModel();
-            this.renderEntity.hModel.InitEmpty(smokeParticle_SnapshotName);
+            renderEntity.hModel = renderModelManager.AllocModel();
+            renderEntity.hModel.InitEmpty(smokeParticle_SnapshotName);
 
             // we certainly don't want particle shadows
-            this.renderEntity.noShadow = true;//1;
+            renderEntity.noShadow = true;//1;
 
             // huge bounds, so it will be present in every world area
-            this.renderEntity.bounds.AddPoint(new idVec3(-100000, -100000, -100000));
-            this.renderEntity.bounds.AddPoint(new idVec3(100000, 100000, 100000));
+            renderEntity.bounds.AddPoint(new idVec3(-100000, -100000, -100000));
+            renderEntity.bounds.AddPoint(new idVec3(100000, 100000, 100000));
 
-            this.renderEntity.callback = idSmokeParticles.ModelCallback.getInstance();
+            renderEntity.callback = idSmokeParticles.ModelCallback.getInstance();
             // add to renderer list
-            this.renderEntityHandle = gameRenderWorld.AddEntityDef(this.renderEntity);
+            renderEntityHandle = gameRenderWorld.AddEntityDef(renderEntity);
 
-            this.currentParticleTime = -1;
+            currentParticleTime = -1;
 
-            this.initialized = true;
+            initialized = true;
         }
 
         public void Shutdown() {
             // make sure the render entity is freed before the model is freed
-            if (this.renderEntityHandle != -1) {
-                gameRenderWorld.FreeEntityDef(this.renderEntityHandle);
-                this.renderEntityHandle = -1;
+            if (renderEntityHandle != -1) {
+                gameRenderWorld.FreeEntityDef(renderEntityHandle);
+                renderEntityHandle = -1;
             }
-            if (this.renderEntity.hModel != null) {
-                renderModelManager.FreeModel(this.renderEntity.hModel);
-                this.renderEntity.hModel = null;
+            if (renderEntity.hModel != null) {
+                renderModelManager.FreeModel(renderEntity.hModel);
+                renderEntity.hModel = null;
             }
-            this.initialized = false;
+            initialized = false;
         }
 
         /*
@@ -179,12 +178,12 @@ public class SmokeParticles {
                 return false;
             }
 
-            assert ((gameLocal.time == 0) || (systemStartTime <= gameLocal.time));
+            assert (gameLocal.time == 0 || systemStartTime <= gameLocal.time);
             if (systemStartTime > gameLocal.time) {
                 return false;
             }
 
-            final idRandom steppingRandom = new idRandom((int) (0xffff * diversity));
+            idRandom steppingRandom = new idRandom((int) (0xffff * diversity));
 
             // for each stage in the smoke that is still emitting particles, emit a new singleSmoke_t
             for (int stageNum = 0; stageNum < smoke.stages.Num(); stageNum++) {
@@ -204,8 +203,8 @@ public class SmokeParticles {
 
                 // see how many particles we should emit this tic
                 // FIXME: 			smoke.privateStartTime += stage.timeOffset;
-                final int finalParticleTime = (int) (stage.cycleMsec * stage.spawnBunching);
-                final int deltaMsec = gameLocal.time - systemStartTime;
+                int finalParticleTime = (int) (stage.cycleMsec * stage.spawnBunching);
+                int deltaMsec = gameLocal.time - systemStartTime;
 
                 int nowCount = 0, prevCount;
                 if (finalParticleTime == 0) {
@@ -232,7 +231,7 @@ public class SmokeParticles {
                     continue;
                 }
 
-                if (nowCount < (stage.totalParticles - 1)) {
+                if (nowCount < stage.totalParticles - 1) {
                     // the system will need to emit particles next frame as well
                     continues = true;
                 }
@@ -240,37 +239,37 @@ public class SmokeParticles {
                 // find an activeSmokeStage that matches this
                 activeSmokeStage_t active = new activeSmokeStage_t();
                 int i;
-                for (i = 0; i < this.activeStages.Num(); i++) {
-                    active = this.activeStages.oGet(i);
+                for (i = 0; i < activeStages.Num(); i++) {
+                    active = activeStages.oGet(i);
                     if (active.stage == stage) {
                         break;
                     }
                 }
-                if (i == this.activeStages.Num()) {
+                if (i == activeStages.Num()) {
                     // add a new one
-                    final activeSmokeStage_t newActive = new activeSmokeStage_t();
+                    activeSmokeStage_t newActive = new activeSmokeStage_t();
 
                     newActive.smokes = null;
                     newActive.stage = stage;
-                    i = this.activeStages.Append(newActive);
-                    active = this.activeStages.oGet(i);
+                    i = activeStages.Append(newActive);
+                    active = activeStages.oGet(i);
                 }
 
                 // add all the required particles
                 for (prevCount++; prevCount <= nowCount; prevCount++) {
-                    if (null == this.freeSmokes) {
-                        gameLocal.Printf("idSmokeParticles::EmitSmoke: no free smokes with %d active stages\n", this.activeStages.Num());
+                    if (null == freeSmokes) {
+                        gameLocal.Printf("idSmokeParticles::EmitSmoke: no free smokes with %d active stages\n", activeStages.Num());
                         return true;
                     }
-                    final singleSmoke_t newSmoke = this.freeSmokes;
-                    this.freeSmokes = this.freeSmokes.next;
-                    this.numActiveSmokes++;
+                    singleSmoke_t newSmoke = freeSmokes;
+                    freeSmokes = freeSmokes.next;
+                    numActiveSmokes++;
 
                     newSmoke.index = prevCount;
                     newSmoke.axis = axis;
                     newSmoke.origin = origin;
                     newSmoke.random = steppingRandom;
-                    newSmoke.privateStartTime = systemStartTime + ((prevCount * finalParticleTime) / stage.totalParticles);
+                    newSmoke.privateStartTime = systemStartTime + prevCount * finalParticleTime / stage.totalParticles;
                     newSmoke.next = active.smokes;
                     active.smokes = newSmoke;
 
@@ -283,16 +282,16 @@ public class SmokeParticles {
 
         // free old smokes
         public void FreeSmokes() {
-            for (int activeStageNum = 0; activeStageNum < this.activeStages.Num(); activeStageNum++) {
+            for (int activeStageNum = 0; activeStageNum < activeStages.Num(); activeStageNum++) {
                 singleSmoke_t smoke, next, last;
 
-                final activeSmokeStage_t active = this.activeStages.oGet(activeStageNum);
+                activeSmokeStage_t active = activeStages.oGet(activeStageNum);
                 final idParticleStage stage = active.stage;
 
                 for (last = null, smoke = active.smokes; smoke != null; smoke = next) {
                     next = smoke.next;
 
-                    final float frac = (gameLocal.time - smoke.privateStartTime) / (stage.particleLife * 1000);
+                    float frac = (float) (gameLocal.time - smoke.privateStartTime) / (stage.particleLife * 1000);
                     if (frac >= 1.0f) {
                         // remove the particle from the stage list
                         if (last != null) {
@@ -301,9 +300,9 @@ public class SmokeParticles {
                             active.smokes = smoke.next;
                         }
                         // put the particle on the free list
-                        smoke.next = this.freeSmokes;
-                        this.freeSmokes = smoke;
-                        this.numActiveSmokes--;
+                        smoke.next = freeSmokes;
+                        freeSmokes = smoke;
+                        numActiveSmokes--;
                         continue;
                     }
 
@@ -312,7 +311,7 @@ public class SmokeParticles {
 
                 if (null == active.smokes) {
                     // remove this from the activeStages list
-                    this.activeStages.RemoveIndex(activeStageNum);
+                    activeStages.RemoveIndex(activeStageNum);
                     activeStageNum--;
                 }
             }
@@ -330,20 +329,20 @@ public class SmokeParticles {
             }
 
             // don't regenerate it if it is current
-            if ((renderView.time == this.currentParticleTime) && !renderView.forceUpdate) {
+            if (renderView.time == currentParticleTime && !renderView.forceUpdate) {
                 return false;
             }
-            this.currentParticleTime = renderView.time;
+            currentParticleTime = renderView.time;
 
-            final particleGen_t g = new particleGen_t();
+            particleGen_t g = new particleGen_t();
 
             g.renderEnt = renderEntity;
             g.renderView = renderView;
 
-            for (int activeStageNum = 0; activeStageNum < this.activeStages.Num(); activeStageNum++) {
+            for (int activeStageNum = 0; activeStageNum < activeStages.Num(); activeStageNum++) {
                 singleSmoke_t smoke, next, last;
 
-                final activeSmokeStage_t active = this.activeStages.oGet(activeStageNum);
+                activeSmokeStage_t active = activeStages.oGet(activeStageNum);
                 final idParticleStage stage = active.stage;
 
                 if (null == stage.material) {
@@ -355,9 +354,9 @@ public class SmokeParticles {
                 for (smoke = active.smokes; smoke != null; smoke = smoke.next) {
                     count++;
                 }
-                final int quads = count * stage.NumQuadsPerParticle();
-                final srfTriangles_s tri = renderEntity.hModel.AllocSurfaceTriangles(quads * 4, quads * 6);
-                tri.getIndexes().setNumValues(quads * 6);
+                int quads = count * stage.NumQuadsPerParticle();
+                srfTriangles_s tri = renderEntity.hModel.AllocSurfaceTriangles(quads * 4, quads * 6);
+                tri.numIndexes = quads * 6;
                 tri.numVerts = quads * 4;
 
                 // just always draw the particles
@@ -372,7 +371,7 @@ public class SmokeParticles {
                 for (last = null, smoke = active.smokes; smoke != null; smoke = next) {
                     next = smoke.next;
 
-                    g.frac = (gameLocal.time - smoke.privateStartTime) / (stage.particleLife * 1000);
+                    g.frac = (float) (gameLocal.time - smoke.privateStartTime) / (stage.particleLife * 1000);
                     if (g.frac >= 1.0f) {
                         // remove the particle from the stage list
                         if (last != null) {
@@ -381,9 +380,9 @@ public class SmokeParticles {
                             active.smokes = smoke.next;
                         }
                         // put the particle on the free list
-                        smoke.next = this.freeSmokes;
-                        this.freeSmokes = smoke;
-                        this.numActiveSmokes--;
+                        smoke.next = freeSmokes;
+                        freeSmokes = smoke;
+                        numActiveSmokes--;
                         continue;
                     }
 
@@ -400,8 +399,8 @@ public class SmokeParticles {
 
                     last = smoke;
                 }
-                if (tri.numVerts > (quads * 4)) {
-                    idGameLocal.Error("idSmokeParticles::UpdateRenderEntity: miscounted verts");
+                if (tri.numVerts > quads * 4) {
+                    gameLocal.Error("idSmokeParticles::UpdateRenderEntity: miscounted verts");
                 }
 
                 if (tri.numVerts == 0) {
@@ -411,24 +410,24 @@ public class SmokeParticles {
 
                     if (null == active.smokes) {
                         // remove this from the activeStages list
-                        this.activeStages.RemoveIndex(activeStageNum);
+                        activeStages.RemoveIndex(activeStageNum);
                         activeStageNum--;
                     }
                 } else {
                     // build the index list
                     int indexes = 0;
                     for (int i = 0; i < tri.numVerts; i += 4) {
-                        tri.getIndexes().getValues().put(indexes + 0, i);
-                        tri.getIndexes().getValues().put(indexes + 1, i + 2);
-                        tri.getIndexes().getValues().put(indexes + 2, i + 3);
-                        tri.getIndexes().getValues().put(indexes + 3, i);
-                        tri.getIndexes().getValues().put(indexes + 4, i + 3);
-                        tri.getIndexes().getValues().put(indexes + 5, i + 1);
+                        tri.indexes[indexes + 0] = i;
+                        tri.indexes[indexes + 1] = i + 2;
+                        tri.indexes[indexes + 2] = i + 3;
+                        tri.indexes[indexes + 3] = i;
+                        tri.indexes[indexes + 4] = i + 3;
+                        tri.indexes[indexes + 5] = i + 1;
                         indexes += 6;
                     }
-                    tri.getIndexes().setNumValues(indexes);
+                    tri.numIndexes = indexes;
 
-                    final modelSurface_s surf = new modelSurface_s();
+                    modelSurface_s surf = new modelSurface_s();
                     surf.geometry = tri;
                     surf.shader = stage.material;
                     surf.id = 0;
@@ -441,11 +440,7 @@ public class SmokeParticles {
 
         private static class ModelCallback extends deferredEntityCallback_t {
 
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-			public static final deferredEntityCallback_t instance = new ModelCallback();
+            public static final deferredEntityCallback_t instance = new ModelCallback();
 
             private ModelCallback() {
             }
@@ -478,6 +473,6 @@ public class SmokeParticles {
             public ByteBuffer Write() {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
-        }
-    }
+        };
+    };
 }

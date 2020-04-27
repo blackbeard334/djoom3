@@ -126,7 +126,7 @@ public class NetworkSystem {
             }
             return 0.0f;
         }
-    }
+    };
 
     public static void setNetworkSystem(idNetworkSystem networkSystem) {
         NetworkSystem.networkSystem = NetworkSystem.networkSystemLocal = networkSystem;

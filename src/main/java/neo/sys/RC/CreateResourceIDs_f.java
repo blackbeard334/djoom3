@@ -44,17 +44,17 @@ public class CreateResourceIDs_f extends cmdFunction_t {
 //		path.BackSlashesToSlashes();
 //	}
 //
-//	common->Printf( "%s\n", path.getData() );
+//	common->Printf( "%s\n", path.c_str() );
 //	Sys_ListFiles( path, "_resource.h", resourceFiles );
 //
 //	for ( i = 0; i < resourceFiles.Num(); i++ ) {
 //
 //		fileName = path + "/" + resourceFiles[i];
 //
-//		common->Printf( "creating IDs for %s...\n", fileName.getData() );
+//		common->Printf( "creating IDs for %s...\n", fileName.c_str() );
 //
 //		if ( !src.LoadFile( fileName, true ) ) {
-//			common->Warning( "couldn't load %s", fileName.getData() );
+//			common->Warning( "couldn't load %s", fileName.c_str() );
 //			continue;
 //		}
 //
@@ -109,7 +109,7 @@ public class CreateResourceIDs_f extends cmdFunction_t {
 //
 //		f = fileSystem->OpenExplicitFileWrite( fileName );
 //		if ( !f ) {
-//			common->Warning( "couldn't write %s", fileName.getData() );
+//			common->Warning( "couldn't write %s", fileName.c_str() );
 //			continue;
 //		}
 //
@@ -119,25 +119,25 @@ public class CreateResourceIDs_f extends cmdFunction_t {
 //								"//\n\n" );
 //
 //		for ( j = 0; j < dialogs.Num(); j++ ) {
-//			f->WriteFloatString( "#define %-40s %d\n", dialogs[j].getData(), curResource++ );
+//			f->WriteFloatString( "#define %-40s %d\n", dialogs[j].c_str(), curResource++ );
 //		}
 //		for ( j = 0; j < resources.Num(); j++ ) {
-//			f->WriteFloatString( "#define %-40s %d\n", resources[j].getData(), curResource++ );
+//			f->WriteFloatString( "#define %-40s %d\n", resources[j].c_str(), curResource++ );
 //		}
 //		for ( j = 0; j < bitmaps.Num(); j++ ) {
-//			f->WriteFloatString( "#define %-40s %d\n", bitmaps[j].getData(), curResource++ );
+//			f->WriteFloatString( "#define %-40s %d\n", bitmaps[j].c_str(), curResource++ );
 //		}
 //		for ( j = 0; j < icons.Num(); j++ ) {
-//			f->WriteFloatString( "#define %-40s %d\n", icons[j].getData(), curResource++ );
+//			f->WriteFloatString( "#define %-40s %d\n", icons[j].c_str(), curResource++ );
 //		}
 //		for ( j = 0; j < strings.Num(); j++ ) {
-//			f->WriteFloatString( "#define %-40s %d\n", strings[j].getData(), curResource++ );
+//			f->WriteFloatString( "#define %-40s %d\n", strings[j].c_str(), curResource++ );
 //		}
 //
 //		f->WriteFloatString( "\n" );
 //
 //		for ( j = 0; j < controls.Num(); j++ ) {
-//			f->WriteFloatString( "#define %-40s %d\n", controls[j].getData(), curControl++ );
+//			f->WriteFloatString( "#define %-40s %d\n", controls[j].c_str(), curControl++ );
 //		}
 //
 //		f->WriteFloatString( "\n" );
@@ -146,15 +146,15 @@ public class CreateResourceIDs_f extends cmdFunction_t {
 //
 //			// NOTE: special hack for Radiant
 //			if ( commands[j].Cmp( "ID_ENTITY_START" ) == 0 ) {
-//				f->WriteFloatString( "#define %-40s %d\n", commands[j].getData(), 40000 );
+//				f->WriteFloatString( "#define %-40s %d\n", commands[j].c_str(), 40000 );
 //				continue;
 //			}
 //			if ( commands[j].Cmp( "ID_ENTITY_END" ) == 0 ) {
-//				f->WriteFloatString( "#define %-40s %d\n", commands[j].getData(), 45000 );
+//				f->WriteFloatString( "#define %-40s %d\n", commands[j].c_str(), 45000 );
 //				continue;
 //			}
 //
-//			f->WriteFloatString( "#define %-40s %d\n", commands[j].getData(), curCommand++ );
+//			f->WriteFloatString( "#define %-40s %d\n", commands[j].c_str(), curCommand++ );
 //		}
 //
 //

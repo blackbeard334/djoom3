@@ -1,9 +1,11 @@
 package neo.Renderer;
 
-import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 
 import java.nio.ByteBuffer;
 import java.util.stream.Stream;
+
+import org.lwjgl.BufferUtils;
 
 import neo.TempDump.SERiAL;
 import neo.Renderer.Material.idMaterial;
@@ -20,8 +22,6 @@ import neo.idlib.geometry.JointTransform.idJointQuat;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.open.NeoIntBuffer;
-import neo.open.Nio;
 
 /**
  *
@@ -69,14 +69,14 @@ public class Model {
                     limit(length).
                     toArray(silEdge_t[]::new);
         }
-    }
+    };
 
     // this is used for calculating unsmoothed normals and tangents for deformed models
     public static class dominantTri_s {
 
         public int/*glIndex_t*/ v2, v3;
         public final float[] normalizationScale = new float[3];
-    }
+    };
 
     static class lightingCache_s {
         static final int BYTES = idVec3.BYTES;
@@ -89,15 +89,15 @@ public class Model {
         }
 
         public static ByteBuffer toByteBuffer(lightingCache_s[] cache) {
-            final ByteBuffer data = Nio.newByteBuffer(lightingCache_s.BYTES * cache.length);
+            ByteBuffer data = BufferUtils.createByteBuffer(lightingCache_s.BYTES * cache.length);
 
-            for (final lightingCache_s c : cache) {
+            for (lightingCache_s c : cache) {
                 data.put(c.localLightVector.Write());
             }
 
             return (ByteBuffer) data.flip();
         }
-    }
+    };
 
     public static class shadowCache_s {
 
@@ -106,7 +106,7 @@ public class Model {
         public idVec4 xyz;			// we use homogenous coordinate tricks
 
         public shadowCache_s() {
-            this.xyz = new idVec4();
+            xyz = new idVec4();
         }
 
         shadowCache_s(ByteBuffer Position) {
@@ -114,15 +114,15 @@ public class Model {
         }
 
         public static ByteBuffer toByteBuffer(shadowCache_s[] cache) {
-            final ByteBuffer data = Nio.newByteBuffer(shadowCache_s.BYTES * cache.length);
+            ByteBuffer data = BufferUtils.createByteBuffer(shadowCache_s.BYTES * cache.length);
 
-            for (final shadowCache_s c : cache) {
+            for (shadowCache_s c : cache) {
                 data.put(c.xyz.Write());
             }
 
             return (ByteBuffer) data.flip();
         }
-    }
+    };
     static final int SHADOW_CAP_INFINITE = 64;
 
     // our only drawing geometry type
@@ -142,9 +142,8 @@ public class Model {
         public int                 numVerts;    // number of vertices
         public idDrawVert[]        verts;       // vertices, allocated with special allocator
 
-        //public int                 numIndexes;  // for shadows, this has both front and rear end caps and silhouette planes
-        //public int /*glIndex_t*/[] indexes;     // indexes, allocated with special allocator
-        private NeoIntBuffer         indexes;     // for shadows, this has both front and rear end caps and silhouette planes
+        public int                 numIndexes;  // for shadows, this has both front and rear end caps and silhouette planes
+        public int /*glIndex_t*/[] indexes;     // indexes, allocated with special allocator
 
         public int/*glIndex_t*/[]  silIndexes;  // indexes changed to be the first vertex with same XYZ, ignoring normal and texcoords
 
@@ -196,7 +195,8 @@ public class Model {
             this.deformedSurface = false;
             this.numVerts = 0;
             this.verts = null;
-            this.indexes = new NeoIntBuffer();
+            this.numIndexes = 0;
+            this.indexes = null;
             this.silIndexes = null;
             this.numMirroredVerts = 0;
             this.mirroredVerts = null;
@@ -217,15 +217,10 @@ public class Model {
             this.lightingCache = null;
             this.shadowCache = null;
         }
-
-		public NeoIntBuffer getIndexes() {
-			return this.indexes;
-		}
-
-    }
+    };
 
     static class idTriList extends idList<srfTriangles_s> {
-    }
+    };
 
     public static class modelSurface_s{
 
@@ -237,16 +232,16 @@ public class Model {
         public final   int DBG_count   = DBG_counter++;
         
         public modelSurface_s(){
-            final int a = 1;
+            int a = 1;
         }
-    }
+    };
 
     public enum dynamicModel_t {
 
         DM_STATIC, // never creates a dynamic model
         DM_CACHED, // once created, stays constant until the entity is updated (animating characters)
         DM_CONTINUOUS	// must be recreated for every single view (time dependent things like particles)
-    }
+    };
     //typedef enum {
     public static final int INVALID_JOINT = -1;
     //} jointHandle_t;
@@ -257,18 +252,14 @@ public class Model {
         public idMD5Joint parent;
 
         public idMD5Joint() {
-            this.parent = null;
+            parent = null;
         }
-    }
+    };
 
     // the init methods may be called again on an already created model when
     // a reloadModels is issued
     public static abstract class idRenderModel implements SERiAL {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private static int DBG_counter = 0;
+        private static int DBG_counter = 0;
         protected final int DBG_count = DBG_counter++;
 
         // public abstract						~idRenderModel() {};
@@ -416,5 +407,5 @@ public class Model {
         public abstract void WriteToDemoFile(idDemoFile f);
 
         public abstract void oSet(idRenderModel FindModel);
-    }
+    };
 }

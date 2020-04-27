@@ -27,37 +27,37 @@ public class Stack {
 //
 
         public void Add(type element) {//push
-            if (this.top >= this.stack.length) {//reached top of stack
+            if (top >= stack.length) {//reached top of stack
                 expand();
             }
 
-            this.stack[this.top++] = element;
+            stack[top++] = element;
         }
 
         public type Get() {//pop
-            if (this.top < 0) {//reached bottom
+            if (top < 0) {//reached bottom
                 return null;
             }
 
-            if (((this.stack.length - STACK_BLOCK_SIZE) > 0) && (this.top < (this.stack.length - STACK_BLOCK_SIZE))) {//reached block threshold
+            if (stack.length - STACK_BLOCK_SIZE > 0 && top < stack.length - STACK_BLOCK_SIZE) {//reached block threshold
                 shrink();
             }
 
-            return this.stack[this.top--];
+            return stack[top--];
         }
 
         private void expand() {
-            final type[] temp = this.stack;
-            this.stack = (type[]) new Object[this.stack.length + STACK_BLOCK_SIZE];
+            final type[] temp = stack;
+            stack = (type[]) new Object[stack.length + STACK_BLOCK_SIZE];
 
-            System.arraycopy(temp, 0, this.stack, 0, temp.length);
+            System.arraycopy(temp, 0, stack, 0, temp.length);
         }
 
         private void shrink() {
-            final type[] temp = this.stack;
-            this.stack = (type[]) new Object[this.stack.length - STACK_BLOCK_SIZE];
+            final type[] temp = stack;
+            stack = (type[]) new Object[stack.length - STACK_BLOCK_SIZE];
 
-            System.arraycopy(temp, 0, this.stack, 0, this.stack.length);
+            System.arraycopy(temp, 0, stack, 0, stack.length);
         }
-    }
+    };
 }

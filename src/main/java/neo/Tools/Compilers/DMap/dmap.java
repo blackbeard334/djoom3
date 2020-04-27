@@ -72,13 +72,13 @@ public class dmap {
         // only one of these will be non-NULL
         bspbrush_s brush;
         mapTri_s tris;
-    }
+    };
 
     static class uArea_t {
 
         optimizeGroup_s groups;
         // we might want to add other fields later
-    }
+    };
 
     static class uEntity_t {
 
@@ -90,7 +90,7 @@ public class dmap {
         //
         int numAreas;
         uArea_t[] areas;
-    }
+    };
 
     // chains of mapTri_t are the general unit of processing
     static class mapTri_s {
@@ -113,20 +113,20 @@ public class dmap {
         void oSet(mapTri_s next) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     static class mesh_t {
 
         int width, height;
         idDrawVert verts;
-    }
+    };
 
     static class parseMesh_s {
 
         parseMesh_s next;
         mesh_t mesh;
         idMaterial material;
-    }
+    };
 
     static class bspface_s {
 
@@ -140,12 +140,12 @@ public class dmap {
         void clear() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     static class textureVectors_t {
 
         idVec4[] v = new idVec4[2];	// the offset value will always be in the 0.0 to 1.0 range
-    }
+    };
 
     static class side_s {
 
@@ -156,7 +156,7 @@ public class dmap {
         //
         idWinding winding;		// only clipped to the other sides of the brush
         idWinding visibleHull;          // also clipped to the solid parts of the world
-    }
+    };
 
     static class bspbrush_s {
 
@@ -175,7 +175,7 @@ public class dmap {
         idBounds bounds;
         int numsides;
         side_s[] sides = new side_s[6];	// variably sized
-    }
+    };
 
     static class uBrush_t extends bspbrush_s {
 
@@ -208,13 +208,13 @@ public class dmap {
         void oSet(uBrush_t CopyBrush) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     static class drawSurfRef_s {
 
         drawSurfRef_s nextRef;
         int outputNumber;
-    }
+    };
 
     static class node_s {
         // both leafs and nodes
@@ -243,7 +243,7 @@ public class dmap {
         void clear() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     static class uPortal_s {
 
@@ -256,7 +256,7 @@ public class dmap {
         void clear() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     // a tree_t is created by FaceBSP()
     static class tree_s {
@@ -268,14 +268,14 @@ public class dmap {
         void clear() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     static class mapLight_t {
 
         idRenderLightLocal def;
         char[] name = new char[MAX_QPATH];	// for naming the shadow volume surface and interactions
         srfTriangles_s shadowTris;
-    }
+    };
 
     static class optimizeGroup_s {
 
@@ -308,7 +308,7 @@ public class dmap {
         void oSet(optimizeGroup_s nextGroup) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     // all primitives from the map are added to optimzeGroups, creating new ones as needed
     // each optimizeGroup is then split into the map areas, creating groups in each area
@@ -325,7 +325,7 @@ public class dmap {
         SO_CLIP_OCCLUDERS, // 3
         SO_CLIP_SILS, // 4
         SO_SIL_OPTIMIZE		// 5
-    }
+    };
 
     public static class dmapGlobals_t {
         // mapFileBase will contain the qpath without any extension: "maps/test_box"
@@ -364,7 +364,7 @@ public class dmap {
         //
         int totalShadowTriangles;
         int totalShadowVerts;
-    }
+    };
     //
     public static dmapGlobals_t dmapGlobals;
     //=============================================================================
@@ -559,10 +559,10 @@ public class dmap {
             String s;
 
             s = args.Argv(i);
-            if (isNotNullOrEmpty(s) && (s.length() > 0)
+            if (isNotNullOrEmpty(s) && s.length() > 0
                     && s.startsWith("-")) {
                 s = s.substring(1);
-                if ((s.length() == 0) || s.startsWith("\0")) {
+                if (s.length() == 0 || s.startsWith("\0")) {
                     continue;
                 }
             }
@@ -637,9 +637,9 @@ public class dmap {
             passedName.oSet("maps/" + passedName);
         }
 
-        final idStr stripped = passedName;
+        idStr stripped = passedName;
         stripped.StripFileExtension();
-        idStr.Copynz(dmapGlobals.mapFileBase, stripped.getData(), dmapGlobals.mapFileBase.length);
+        idStr.Copynz(dmapGlobals.mapFileBase, stripped.c_str(), dmapGlobals.mapFileBase.length);
 
         boolean region = false;
         // if this isn't a regioned map, delete the last saved region map
@@ -661,7 +661,7 @@ public class dmap {
         //
         start = Sys_Milliseconds();
 
-        if (!LoadDMapFile(passedName.getData())) {
+        if (!LoadDMapFile(passedName.toString())) {
             return;
         }
 

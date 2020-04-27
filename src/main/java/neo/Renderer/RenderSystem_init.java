@@ -13,6 +13,18 @@ import static neo.Renderer.ModelManager.renderModelManager;
 import static neo.Renderer.RenderSystem.renderSystem;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.draw_arb2.R_ARB2_Init;
+//import static neo.Renderer.draw_nv10.R_NV10_Init;
+//import static neo.Renderer.draw_nv20.R_NV20_Init;
+//import static neo.Renderer.draw_r200.R_R200_Init;
+import static neo.Renderer.qgl.qglFinish;
+import static neo.Renderer.qgl.qglGetError;
+import static neo.Renderer.qgl.qglGetFloatv;
+import static neo.Renderer.qgl.qglGetInteger;
+import static neo.Renderer.qgl.qglGetIntegerv;
+import static neo.Renderer.qgl.qglGetString;
+import static neo.Renderer.qgl.qglGetStringi;
+import static neo.Renderer.qgl.qglReadBuffer;
+import static neo.Renderer.qgl.qglReadPixels;
 import static neo.Renderer.tr_lightrun.R_FreeDerivedData;
 import static neo.Renderer.tr_local.MAX_MULTITEXTURE_UNITS;
 import static neo.Renderer.tr_local.glConfig;
@@ -50,39 +62,6 @@ import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.Session.session;
 import static neo.idlib.Lib.idLib.common;
 import static neo.idlib.Lib.idLib.cvarSystem;
-import static neo.open.gl.QGL.qglFinish;
-import static neo.open.gl.QGL.qglGetError;
-import static neo.open.gl.QGL.qglGetFloatv;
-import static neo.open.gl.QGL.qglGetInteger;
-import static neo.open.gl.QGL.qglGetIntegerv;
-import static neo.open.gl.QGL.qglGetString;
-import static neo.open.gl.QGL.qglGetStringi;
-import static neo.open.gl.QGL.qglReadBuffer;
-import static neo.open.gl.QGL.qglReadPixels;
-import static neo.open.gl.QGLConstantsIfc.GL_DECR;
-import static neo.open.gl.QGLConstantsIfc.GL_DECR_WRAP_EXT;
-import static neo.open.gl.QGLConstantsIfc.GL_EXTENSIONS;
-import static neo.open.gl.QGLConstantsIfc.GL_FRONT;
-import static neo.open.gl.QGLConstantsIfc.GL_INCR;
-import static neo.open.gl.QGLConstantsIfc.GL_INCR_WRAP_EXT;
-import static neo.open.gl.QGLConstantsIfc.GL_INVALID_ENUM;
-import static neo.open.gl.QGLConstantsIfc.GL_INVALID_OPERATION;
-import static neo.open.gl.QGLConstantsIfc.GL_INVALID_VALUE;
-import static neo.open.gl.QGLConstantsIfc.GL_MAX_TEXTURE_COORDS_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_MAX_TEXTURE_IMAGE_UNITS_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT;
-import static neo.open.gl.QGLConstantsIfc.GL_MAX_TEXTURE_SIZE;
-import static neo.open.gl.QGLConstantsIfc.GL_MAX_TEXTURE_UNITS_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_NO_ERROR;
-import static neo.open.gl.QGLConstantsIfc.GL_OUT_OF_MEMORY;
-import static neo.open.gl.QGLConstantsIfc.GL_RENDERER;
-import static neo.open.gl.QGLConstantsIfc.GL_RGB;
-import static neo.open.gl.QGLConstantsIfc.GL_STACK_OVERFLOW;
-import static neo.open.gl.QGLConstantsIfc.GL_STACK_UNDERFLOW;
-import static neo.open.gl.QGLConstantsIfc.GL_STENCIL_INDEX;
-import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
-import static neo.open.gl.QGLConstantsIfc.GL_VENDOR;
-import static neo.open.gl.QGLConstantsIfc.GL_VERSION;
 import static neo.sys.win_glimp.GLimp_Init;
 import static neo.sys.win_glimp.GLimp_SetScreenParms;
 import static neo.sys.win_glimp.GLimp_Shutdown;
@@ -92,11 +71,37 @@ import static neo.sys.win_input.Sys_ShutdownInput;
 import static neo.sys.win_main.Sys_GetProcessorString;
 import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.ui.UserInterface.uiManager;
+import static org.lwjgl.opengl.ARBFragmentProgram.GL_MAX_TEXTURE_COORDS_ARB;
+import static org.lwjgl.opengl.ARBFragmentProgram.GL_MAX_TEXTURE_IMAGE_UNITS_ARB;
+import static org.lwjgl.opengl.ARBMultitexture.GL_MAX_TEXTURE_UNITS_ARB;
+import static org.lwjgl.opengl.EXTStencilWrap.GL_DECR_WRAP_EXT;
+import static org.lwjgl.opengl.EXTStencilWrap.GL_INCR_WRAP_EXT;
+import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT;
+import static org.lwjgl.opengl.GL11.GL_DECR;
+import static org.lwjgl.opengl.GL11.GL_EXTENSIONS;
+import static org.lwjgl.opengl.GL11.GL_FRONT;
+import static org.lwjgl.opengl.GL11.GL_INCR;
+import static org.lwjgl.opengl.GL11.GL_INVALID_ENUM;
+import static org.lwjgl.opengl.GL11.GL_INVALID_OPERATION;
+import static org.lwjgl.opengl.GL11.GL_INVALID_VALUE;
+import static org.lwjgl.opengl.GL11.GL_MAX_TEXTURE_SIZE;
+import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
+import static org.lwjgl.opengl.GL11.GL_OUT_OF_MEMORY;
+import static org.lwjgl.opengl.GL11.GL_RENDERER;
+import static org.lwjgl.opengl.GL11.GL_RGB;
+import static org.lwjgl.opengl.GL11.GL_STACK_OVERFLOW;
+import static org.lwjgl.opengl.GL11.GL_STACK_UNDERFLOW;
+import static org.lwjgl.opengl.GL11.GL_STENCIL_INDEX;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL11.GL_VENDOR;
+import static org.lwjgl.opengl.GL11.GL_VERSION;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
+
+import org.lwjgl.BufferUtils;
 
 import neo.Renderer.Cinematic.cinData_t;
 import neo.Renderer.Cinematic.idCinematic;
@@ -125,7 +130,6 @@ import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.cmp_t;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Matrix.idMat3;
-import neo.open.Nio;
 import neo.sys.win_glimp.glimpParms_t;
 
 /**
@@ -536,7 +540,7 @@ public class RenderSystem_init {
                     s = "GL_OUT_OF_MEMORY";
                     break;
                 default:
-                    final char[] ss = new char[64];
+                    char[] ss = new char[64];
                     idStr.snPrintf(ss, 64, "%d", err);
                     s = ctos(ss);
                     break;
@@ -560,7 +564,7 @@ public class RenderSystem_init {
     public static void R_ScreenshotFilename(int[] lastNumber, final String base, idStr fileName) {
         int a, b, c, d, e;
 
-        final boolean restrict = cvarSystem.GetCVarBool("fs_restrict");
+        boolean restrict = cvarSystem.GetCVarBool("fs_restrict");
         cvarSystem.SetCVarBool("fs_restrict", false);
 
         lastNumber[0]++;
@@ -584,7 +588,7 @@ public class RenderSystem_init {
             if (lastNumber[0] == 99999) {
                 break;
             }
-            final int len = fileSystem.ReadFile(fileName.getData(), null, null);
+            int len = fileSystem.ReadFile(fileName.toString(), null, null);
             if (len <= 0) {
                 break;
             }
@@ -672,7 +676,7 @@ public class RenderSystem_init {
             this.height = height;
         }
 
-    }
+    };
 
     static final vidmode_s[] r_vidModes = {
         new vidmode_s("Mode  0: 320x240", 320, 240),
@@ -769,7 +773,7 @@ public class RenderSystem_init {
         // GL_EXT_texture_filter_anisotropic
         glConfig.anisotropicAvailable = R_CheckExtension("GL_EXT_texture_filter_anisotropic");
         if (glConfig.anisotropicAvailable) {
-            final FloatBuffer maxTextureAnisotropy = Nio.newFloatBuffer(16);
+            FloatBuffer maxTextureAnisotropy = BufferUtils.createFloatBuffer(16);
             qglGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, maxTextureAnisotropy);
             common.Printf("   maxTextureAnisotropy: %f\n", (glConfig.maxTextureAnisotropy = maxTextureAnisotropy.get()));
         } else {
@@ -779,7 +783,7 @@ public class RenderSystem_init {
         // GL_EXT_texture_lod_bias
         // The actual extension is broken as specificed, storing the state in the texture unit instead
         // of the texture object.  The behavior in GL 1.4 is the behavior we use.
-        if ((glConfig.glVersion >= 1.4) || R_CheckExtension("GL_EXT_texture_lod")) {
+        if (glConfig.glVersion >= 1.4 || R_CheckExtension("GL_EXT_texture_lod")) {
             common.Printf("...using %s\n", "GL_1.4_texture_lod_bias");
             glConfig.textureLODBiasAvailable = true;
         } else {
@@ -859,13 +863,13 @@ public class RenderSystem_init {
 
         @Override
         public void run(idCmdArgs args) {
-            if ((RenderSystem_init.r_screenFraction.GetInteger() + 10) > 100) {
+            if (RenderSystem_init.r_screenFraction.GetInteger() + 10 > 100) {
                 RenderSystem_init.r_screenFraction.SetInteger(100);
             } else {
                 RenderSystem_init.r_screenFraction.SetInteger(RenderSystem_init.r_screenFraction.GetInteger() + 10);
             }
         }
-    }
+    };
 
 
     /*
@@ -888,13 +892,13 @@ public class RenderSystem_init {
 
         @Override
         public void run(idCmdArgs args) {
-            if ((RenderSystem_init.r_screenFraction.GetInteger() - 10) < 10) {
+            if (RenderSystem_init.r_screenFraction.GetInteger() - 10 < 10) {
                 RenderSystem_init.r_screenFraction.SetInteger(10);
             } else {
                 RenderSystem_init.r_screenFraction.SetInteger(RenderSystem_init.r_screenFraction.GetInteger() - 10);
             }
         }
-    }
+    };
 
 
     /*
@@ -928,7 +932,7 @@ public class RenderSystem_init {
             session.UpdateScreen();
             uiManager.Touch(gui);
         }
-    }
+    };
 
     /*
      ================== 
@@ -956,12 +960,12 @@ public class RenderSystem_init {
 
         @Override
         public void run(idCmdArgs args) {
-            final idStr checkname = new idStr();
+            idStr checkname = new idStr();
 
             int width = glConfig.vidWidth;
             int height = glConfig.vidHeight;
-            final int x = 0;
-            final int y = 0;
+            int x = 0;
+            int y = 0;
             int blends = 0;
 
             switch (args.Argc()) {
@@ -1003,11 +1007,11 @@ public class RenderSystem_init {
             // put the console away
             console.Close();
 
-            tr.TakeScreenshot(width, height, checkname.getData(), blends, null);
+            tr.TakeScreenshot(width, height, checkname.toString(), blends, null);
 
             common.Printf("Wrote %s\n", checkname);
         }
-    }
+    };
 
     /* 
      ================== 
@@ -1034,14 +1038,14 @@ public class RenderSystem_init {
             String fullname = null;
             String baseName;
             int i;
-            final idMat3[] axis = new idMat3[6];
+            idMat3[] axis = new idMat3[6];
             renderView_s ref;
             viewDef_s primary;
             int blends;
-            final String[] extensions/*[6]*/ = {"_px.tga", "_nx.tga", "_py.tga", "_ny.tga", "_pz.tga", "_nz.tga"};
+            String[] extensions/*[6]*/ = {"_px.tga", "_nx.tga", "_py.tga", "_ny.tga", "_pz.tga", "_nz.tga"};
             int size;
 
-            if ((args.Argc() != 2) && (args.Argc() != 3) && (args.Argc() != 4)) {
+            if (args.Argc() != 2 && args.Argc() != 3 && args.Argc() != 4) {
                 common.Printf("USAGE: envshot <basename> [size] [blends]\n");
                 return;
             }
@@ -1104,7 +1108,7 @@ public class RenderSystem_init {
 
             common.Printf("Wrote %s, etc\n", fullname);
         }
-    }
+    };
 
     //============================================================================
     static final idMat3[] cubeAxis = new idMat3[6];
@@ -1116,22 +1120,22 @@ public class RenderSystem_init {
      ==================
      */
     private static void R_SampleCubeMap(final idVec3 dir, int size, ByteBuffer[] buffers/*[6]*/, byte[] result/*[4]*/) {
-        final float[] adir = new float[3];
+        float[] adir = new float[3];
         int axis, x, y;
 
         adir[0] = Math.abs(dir.oGet(0));
         adir[1] = Math.abs(dir.oGet(1));
         adir[2] = Math.abs(dir.oGet(2));
 
-        if ((dir.oGet(0) >= adir[1]) && (dir.oGet(0) >= adir[2])) {
+        if (dir.oGet(0) >= adir[1] && dir.oGet(0) >= adir[2]) {
             axis = 0;
-        } else if ((-dir.oGet(0) >= adir[1]) && (-dir.oGet(0) >= adir[2])) {
+        } else if (-dir.oGet(0) >= adir[1] && -dir.oGet(0) >= adir[2]) {
             axis = 1;
-        } else if ((dir.oGet(1) >= adir[0]) && (dir.oGet(1) >= adir[2])) {
+        } else if (dir.oGet(1) >= adir[0] && dir.oGet(1) >= adir[2]) {
             axis = 2;
-        } else if ((-dir.oGet(1) >= adir[0]) && (-dir.oGet(1) >= adir[2])) {
+        } else if (-dir.oGet(1) >= adir[0] && -dir.oGet(1) >= adir[2]) {
             axis = 3;
-        } else if ((dir.oGet(2) >= adir[1]) && (dir.oGet(2) >= adir[2])) {
+        } else if (dir.oGet(2) >= adir[1] && dir.oGet(2) >= adir[2]) {
             axis = 4;
         } else {
             axis = 5;
@@ -1155,10 +1159,10 @@ public class RenderSystem_init {
             y = size - 1;
         }
 
-        result[0] = buffers[axis].get((((y * size) + x) * 4) + 0);
-        result[1] = buffers[axis].get((((y * size) + x) * 4) + 1);
-        result[2] = buffers[axis].get((((y * size) + x) * 4) + 2);
-        result[3] = buffers[axis].get((((y * size) + x) * 4) + 3);
+        result[0] = buffers[axis].get((y * size + x) * 4 + 0);
+        result[1] = buffers[axis].get((y * size + x) * 4 + 1);
+        result[2] = buffers[axis].get((y * size + x) * 4 + 2);
+        result[3] = buffers[axis].get((y * size + x) * 4 + 3);
     }
 
 
@@ -1188,16 +1192,16 @@ public class RenderSystem_init {
             String fullname;
             String baseName;
             int i;
-            final renderView_s ref;
-            final viewDef_s primary;
+            renderView_s ref;
+            viewDef_s primary;
             int downSample;
-            final String[] extensions/*[6]*/ = {"_px.tga", "_nx.tga", "_py.tga", "_ny.tga",
+            String[] extensions/*[6]*/ = {"_px.tga", "_nx.tga", "_py.tga", "_ny.tga",
                         "_pz.tga", "_nz.tga"};
             int outSize;
-            final ByteBuffer[] buffers = new ByteBuffer[6];
-            final int[] width = {0}, height = {0};
+            ByteBuffer[] buffers = new ByteBuffer[6];
+            int[] width = {0}, height = {0};
 
-            if ((args.Argc() != 2) && (args.Argc() != 3)) {
+            if (args.Argc() != 2 && args.Argc() != 3) {
                 common.Printf("USAGE: ambientshot <basename> [size]\n");
                 return;
             }
@@ -1251,32 +1255,32 @@ public class RenderSystem_init {
             }
 
             // resample with hemispherical blending
-            final int samples = 1000;
+            int samples = 1000;
 
-            final ByteBuffer outBuffer = ByteBuffer.allocate(outSize * outSize * 4);
+            ByteBuffer outBuffer = ByteBuffer.allocate(outSize * outSize * 4);
 
             for (int map = 0; map < 2; map++) {
                 for (i = 0; i < 6; i++) {
                     for (int x = 0; x < outSize; x++) {
                         for (int y = 0; y < outSize; y++) {
                             idVec3 dir;
-                            final float[] total = new float[3];
+                            float[] total = new float[3];
 
                             dir = cubeAxis[i].oGet(0).oPlus(
-                                    cubeAxis[i].oGet(1).oMultiply(-(-1 + ((2.0f * x) / (outSize - 1))))).oPlus(
-                                            cubeAxis[i].oGet(2).oMultiply(-(-1 + ((2.0f * y) / (outSize - 1)))));
+                                    cubeAxis[i].oGet(1).oMultiply(-(-1 + 2.0f * x / (outSize - 1)))).oPlus(
+                                            cubeAxis[i].oGet(2).oMultiply(-(-1 + 2.0f * y / (outSize - 1))));
                             dir.Normalize();
                             total[0] = total[1] = total[2] = 0;
                             //samples = 1;
-                            final float limit = itob(map) ? 0.95f : 0.25f;		// small for specular, almost hemisphere for ambient
+                            float limit = itob(map) ? 0.95f : 0.25f;		// small for specular, almost hemisphere for ambient
 
                             for (int s = 0; s < samples; s++) {
                                 // pick a random direction vector that is inside the unit sphere but not behind dir,
                                 // which is a robust way to evenly sample a hemisphere
-                                final idVec3 test = new idVec3();
+                                idVec3 test = new idVec3();
                                 while (true) {
                                     for (int j = 0; j < 3; j++) {
-                                        test.oSet(j, -1 + ((2 * (((int) random()) & 0x7fff)) / (float) 0x7fff));
+                                        test.oSet(j, -1 + 2 * (((int) random()) & 0x7fff) / (float) 0x7fff);
                                     }
                                     if (test.Length() > 1.0) {
                                         continue;
@@ -1286,17 +1290,17 @@ public class RenderSystem_init {
                                         break;
                                     }
                                 }
-                                final byte[] result = new byte[4];
+                                byte[] result = new byte[4];
                                 //test = dir;
                                 R_SampleCubeMap(test, width[0], buffers, result);
                                 total[0] += result[0];
                                 total[1] += result[1];
                                 total[2] += result[2];
                             }
-                            outBuffer.put((((y * outSize) + x) * 4) + 0, (byte) (total[0] / samples));
-                            outBuffer.put((((y * outSize) + x) * 4) + 1, (byte) (total[1] / samples));
-                            outBuffer.put((((y * outSize) + x) * 4) + 2, (byte) (total[2] / samples));
-                            outBuffer.put((((y * outSize) + x) * 4) + 3, (byte) 255);
+                            outBuffer.put((y * outSize + x) * 4 + 0, (byte) (total[0] / samples));
+                            outBuffer.put((y * outSize + x) * 4 + 1, (byte) (total[1] / samples));
+                            outBuffer.put((y * outSize + x) * 4 + 2, (byte) (total[2] / samples));
+                            outBuffer.put((y * outSize + x) * 4 + 3, (byte) 255);
                         }
                     }
 
@@ -1317,7 +1321,7 @@ public class RenderSystem_init {
 //                }
 //            }
         }
-    }
+    };
 
     /* 
      ============================================================================== 
@@ -1336,7 +1340,7 @@ public class RenderSystem_init {
     static float R_RenderingFPS(final renderView_s renderView) {
         qglFinish();
 
-        final int start = Sys_Milliseconds();
+        int start = Sys_Milliseconds();
         int end;
         int count = 0;
 
@@ -1348,12 +1352,12 @@ public class RenderSystem_init {
             qglFinish();
             count++;
             end = Sys_Milliseconds();
-            if ((end - start) > SAMPLE_MSEC) {
+            if (end - start > SAMPLE_MSEC) {
                 break;
             }
         }
 
-        final float fps = (float) ((count * 1000.0) / (end - start));
+        float fps = (float) (count * 1000.0 / (end - start));
 
         return fps;
     }
@@ -1388,7 +1392,7 @@ public class RenderSystem_init {
             for (int size = 100; size >= 10; size -= 10) {
                 RenderSystem_init.r_screenFraction.SetInteger(size);
                 fps = R_RenderingFPS(view);
-                final int kpix = (int) (glConfig.vidWidth * glConfig.vidHeight * (size * 0.01) * (size * 0.01) * 0.001);
+                int kpix = (int) (glConfig.vidWidth * glConfig.vidHeight * (size * 0.01) * (size * 0.01) * 0.001);
                 msec = (1000.0f / fps);
                 common.Printf("kpix: %4d  msec:%5.1f fps:%5.1f\n", kpix, msec, fps);
             }
@@ -1408,7 +1412,7 @@ public class RenderSystem_init {
             common.Printf("no context  msec:%5.1f fps:%5.1f\n", msec, fps);
             RenderSystem_init.r_skipRenderContext.SetBool(false);
         }
-    }
+    };
 
     /*
      ================
@@ -1454,7 +1458,7 @@ public class RenderSystem_init {
                 common.Printf("N/A\n");
             }
             common.Printf("CPU: %s\n", Sys_GetProcessorString());
-            final String[] active/*[2]*/ = {"", " (ACTIVE)"};
+            String[] active/*[2]*/ = {"", " (ACTIVE)"};
             common.Printf("ARB path ENABLED%s\n", active[btoi(tr.backEndRenderer == BE_ARB)]);
 
             if (glConfig.allowNV10Path) {
@@ -1502,7 +1506,7 @@ public class RenderSystem_init {
                 }
             }
 
-            final boolean tss = glConfig.twoSidedStencilAvailable || glConfig.atiTwoSidedStencilAvailable;
+            boolean tss = glConfig.twoSidedStencilAvailable || glConfig.atiTwoSidedStencilAvailable;
 
             if (!RenderSystem_init.r_useTwoSidedStencil.GetBool() && tss) {
                 common.Printf("Two sided stencil available but disabled\n");
@@ -1518,7 +1522,7 @@ public class RenderSystem_init {
                 common.Printf("Vertex cache is SLOW\n");
             }
         }
-    }
+    };
 
     /*
      =============
@@ -1556,14 +1560,14 @@ public class RenderSystem_init {
 
             if (idStr.IsNumeric(args.Argv(1))) {
                 imageNum = Integer.parseInt(args.Argv(1));
-                if ((imageNum >= 0) && (imageNum < globalImages.images.Num())) {
+                if (imageNum >= 0 && imageNum < globalImages.images.Num()) {
                     tr.testImage = globalImages.images.oGet(imageNum);
                 }
             } else {
                 tr.testImage = globalImages.ImageFromFile(args.Argv(1), TF_DEFAULT, false, TR_REPEAT, TD_DEFAULT);
             }
         }
-    }
+    };
 
     /*
      =============
@@ -1610,18 +1614,18 @@ public class RenderSystem_init {
 
             common.Printf("%d x %d images\n", cin.imageWidth, cin.imageHeight);
 
-            final int len = tr.testVideo.AnimationLength();
+            int len = tr.testVideo.AnimationLength();
             common.Printf("%5.1f seconds of video\n", len * 0.001);
 
             tr.testVideoStartTime = (float) (tr.primaryRenderView.time * 0.001);
 
             // try to play the matching wav file
-            final idStr wavString = new idStr(args.Argv((args.Argc() == 2) ? 1 : 2));
+            idStr wavString = new idStr(args.Argv((args.Argc() == 2) ? 1 : 2));
             wavString.StripFileExtension();
             wavString.oPluSet(".wav");
-            session.sw.PlayShaderDirectly(wavString.getData());
+            session.sw.PlayShaderDirectly(wavString.toString());
         }
-    }
+    };
 
     /*
      ===================
@@ -1665,11 +1669,11 @@ public class RenderSystem_init {
 
             for (; i < count; i++) {
                 // report size in "editor blocks"
-                final int blocks = (int) (list[i].GetSurfaceArea() / 4096.0);
+                int blocks = (int) (list[i].GetSurfaceArea() / 4096.0);
                 common.Printf("%7i %s\n", blocks, list[i].GetName());
             }
         }
-    }
+    };
 
     /*
      ===================
@@ -1698,7 +1702,7 @@ public class RenderSystem_init {
             int count = 0;
 
             for (i = 0; i < globalImages.images.Num(); i++) {
-                final idImage image1 = globalImages.images.oGet(i);
+                idImage image1 = globalImages.images.oGet(i);
 
                 if (image1.isPartialImage) {
                     // ignore background loading stubs
@@ -1715,12 +1719,12 @@ public class RenderSystem_init {
                 if (image1.defaulted) {
                     continue;
                 }
-                final int[] w1 = {0}, h1 = {0};
+                int[] w1 = {0}, h1 = {0};
 
-                final ByteBuffer data1 = R_LoadImageProgram(image1.imgName.getData(), w1, h1, null);
+                ByteBuffer data1 = R_LoadImageProgram(image1.imgName.toString(), w1, h1, null);
 
                 for (j = 0; j < i; j++) {
-                    final idImage image2 = globalImages.images.oGet(j);
+                    idImage image2 = globalImages.images.oGet(j);
 
                     if (image2.isPartialImage) {
                         continue;
@@ -1737,8 +1741,8 @@ public class RenderSystem_init {
                     if (!image1.imageHash.equals(image2.imageHash)) {
                         continue;
                     }
-                    if ((image2.uploadWidth != image1.uploadWidth)
-                            || (image2.uploadHeight != image1.uploadHeight)) {
+                    if (image2.uploadWidth != image1.uploadWidth
+                            || image2.uploadHeight != image1.uploadHeight) {
                         continue;
                     }
                     if (NOT(idStr.Icmp(image1.imgName, image2.imgName))) {
@@ -1746,11 +1750,11 @@ public class RenderSystem_init {
                         continue;
                     }
 
-                    final int[] w2 = {0}, h2 = {0};
+                    int[] w2 = {0}, h2 = {0};
 
-                    final ByteBuffer data2 = R_LoadImageProgram(image2.imgName.getData(), w2, h2, null);
+                    ByteBuffer data2 = R_LoadImageProgram(image2.imgName.toString(), w2, h2, null);
 
-                    if ((w2 != w1) || (h2 != h1)) {
+                    if (w2 != w1 || h2 != h1) {
 //                        R_StaticFree(data2);
                         continue;
                     }
@@ -1839,7 +1843,7 @@ public class RenderSystem_init {
                 glConfig.isInitialized = false;
 
                 // create the new context and vertex cache
-                final boolean latch = cvarSystem.GetCVarBool("r_fullscreen");
+                boolean latch = cvarSystem.GetCVarBool("r_fullscreen");
                 if (forceWindow) {
                     cvarSystem.SetCVarBool("r_fullscreen", false);
                 }
@@ -1849,7 +1853,7 @@ public class RenderSystem_init {
                 // regenerate all images
                 globalImages.ReloadAllImages();
             } else {
-                final glimpParms_t parms = new glimpParms_t();
+                glimpParms_t parms = new glimpParms_t();
                 parms.width = glConfig.vidWidth;
                 parms.height = glConfig.vidHeight;
                 parms.fullScreen = (forceWindow) ? false : RenderSystem_init.r_fullscreen.GetBool();
@@ -1876,7 +1880,7 @@ public class RenderSystem_init {
             // start sound playing again
             snd_system.soundSystem.SetMute(false);
         }
-    }
+    };
 
     /*
      ==============
@@ -1904,7 +1908,7 @@ public class RenderSystem_init {
             }
             common.Printf("\n");
         }
-    }
+    };
 
     /*
      =====================
@@ -1926,7 +1930,7 @@ public class RenderSystem_init {
 
         @Override
         public void run(idCmdArgs args) {
-            final modelTrace_s mt = new modelTrace_s();
+            modelTrace_s mt = new modelTrace_s();
             idVec3 start, end;
 
             // start far enough away that we don't hit the player model
@@ -1944,7 +1948,7 @@ public class RenderSystem_init {
             // reload any images used by the decl
             mt.material.ReloadImages(false);
         }
-    }
+    };
 
     static class R_QsortSurfaceAreas implements cmp_t<idMaterial> {
 
@@ -1973,7 +1977,7 @@ public class RenderSystem_init {
 
             return idStr.Icmp(a.GetName(), b.GetName());
         }
-    }
+    };
 
     /*
      ==================
@@ -1995,8 +1999,8 @@ public class RenderSystem_init {
 
     public static void R_InitOpenGL() {
 //	GLint			temp;
-        final IntBuffer temp = Nio.newIntBuffer(16);
-        final glimpParms_t parms = new glimpParms_t();
+        IntBuffer temp = BufferUtils.createIntBuffer(16);
+        glimpParms_t parms = new glimpParms_t();
         int i;
 
         common.Printf("----- R_InitOpenGL -----\n");
@@ -2015,7 +2019,7 @@ public class RenderSystem_init {
         for (i = 0; i < 2; i++) {
             // set the parameters we are trying
             {
-                final int[] vidWidth = {0}, vidHeight = {0};
+                int[] vidWidth = {0}, vidHeight = {0};
                 R_GetModeInfo(vidWidth, vidHeight, r_mode.GetInteger());
                 glConfig.vidWidth = 1024;//vidWidth[0];HACKME::0
                 glConfig.vidHeight = 768;//vidHeight[0];
@@ -2054,7 +2058,7 @@ public class RenderSystem_init {
         glConfig.renderer_string = qglGetString(GL_RENDERER);
         glConfig.version_string = qglGetString(GL_VERSION);
 
-        final StringBuilder bla = new StringBuilder();
+        StringBuilder bla = new StringBuilder();
         String ext;
         for (int j = 0; (ext = qglGetStringi(GL_EXTENSIONS, j)) != null; j++) {
             bla.append(ext).append(' ');
@@ -2101,7 +2105,7 @@ public class RenderSystem_init {
         if (_WIN32) {
             if (!glCheck) {// && win32.osversion.dwMajorVersion == 6) {//TODO:should this be applicable?
                 glCheck = true;
-                if ((0 == idStr.Icmp(glConfig.vendor_string, "Microsoft")) && (idStr.FindText(glConfig.renderer_string, "OpenGL-D3D") != -1)) {
+                if (0 == idStr.Icmp(glConfig.vendor_string, "Microsoft") && idStr.FindText(glConfig.renderer_string, "OpenGL-D3D") != -1) {
                     if (cvarSystem.GetCVarBool("r_fullscreen")) {
                         cmdSystem.BufferCommandText(CMD_EXEC_NOW, "vid_restart partial windowed\n");
                         Sys_GrabMouseCursor(false);
@@ -2142,7 +2146,7 @@ public class RenderSystem_init {
         if (g == 1) {
             inf = (1 << 8) | 1;
         } else {
-            inf = (0xffff * Math.pow(b / 255.0f, 1.0f / g)) + 0.5f;
+            inf = 0xffff * Math.pow(b / 255.0f, 1.0f / g) + 0.5f;
         }
 
         if (inf < 0) {
@@ -2169,12 +2173,12 @@ public class RenderSystem_init {
     private static final int[] lastNumber = {0};
 
     public static void R_ScreenShot_f(final idCmdArgs args) {
-        final idStr checkName = new idStr();
+        idStr checkName = new idStr();
 
         int width = glConfig.vidWidth;
         int height = glConfig.vidHeight;
-        final int x = 0;
-        final int y = 0;
+        int x = 0;
+        int y = 0;
         int blends = 0;
 
         switch (args.Argc()) {
@@ -2216,9 +2220,9 @@ public class RenderSystem_init {
         // put the console away
         console.Close();
 
-        tr.TakeScreenshot(width, height, checkName.getData(), blends, null);
+        tr.TakeScreenshot(width, height, checkName.toString(), blends, null);
 
-        common.Printf("Wrote %s\n", checkName.getData());
+        common.Printf("Wrote %s\n", checkName.toString());
     }
 
     /*
@@ -2231,12 +2235,12 @@ public class RenderSystem_init {
         ByteBuffer buffer;
         int i, c;
 
-        final int width = tr.GetScreenWidth();
-        final int height = tr.GetScreenHeight();
+        int width = tr.GetScreenWidth();
+        int height = tr.GetScreenHeight();
 
-        final int pix = width * height;
+        int pix = width * height;
 
-        c = (pix * 3) + 18;
+        c = pix * 3 + 18;
         buffer = ByteBuffer.allocate(c);// Mem_Alloc(c);
 //        memset(buffer, 0, 18);
 //        buffer = new int[18];//TODO:use c?
@@ -2246,10 +2250,10 @@ public class RenderSystem_init {
         qglReadPixels(0, 0, width, height, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, byteBuffer);
 
         for (i = 0; i < pix; i++) {
-            buffer.put(18 + (i * 3), byteBuffer.get(i));
-            buffer.put(18 + (i * 3) + 1, byteBuffer.get(i));
+            buffer.put(18 + i * 3, byteBuffer.get(i));
+            buffer.put(18 + i * 3 + 1, byteBuffer.get(i));
             //		buffer[18+i*3+2] = ( byteBuffer[i] & 15 ) * 16;
-            buffer.put(18 + (i * 3) + 2, byteBuffer.get(i));
+            buffer.put(18 + i * 3 + 2, byteBuffer.get(i));
         }
 
         // fill in the header (this is vertically flipped, which qglReadPixels emits)
@@ -2274,7 +2278,7 @@ public class RenderSystem_init {
      =================
      */
     public static boolean R_CheckExtension(final String name) {
-        if ((null == glConfig.extensions_string)
+        if (null == glConfig.extensions_string
                 || !glConfig.extensions_string.contains(name)) {
             common.Printf("X..%s not found\n", name);
             return false;
@@ -2306,8 +2310,8 @@ public class RenderSystem_init {
         // include extra space for OpenGL padding to word boundaries
         byte[] temp = new byte[(glConfig.vidWidth + 3) * glConfig.vidHeight * 3];//R_StaticAlloc( (glConfig.vidWidth+3) * glConfig.vidHeight * 3 );
 
-        final int oldWidth = glConfig.vidWidth;
-        final int oldHeight = glConfig.vidHeight;
+        int oldWidth = glConfig.vidWidth;
+        int oldHeight = glConfig.vidHeight;
 
         tr.tiledViewport[0] = width;
         tr.tiledViewport[1] = height;
@@ -2329,23 +2333,23 @@ public class RenderSystem_init {
                 }
 
                 int w = oldWidth;
-                if ((xo + w) > width) {
+                if (xo + w > width) {
                     w = width - xo;
                 }
                 int h = oldHeight;
-                if ((yo + h) > height) {
+                if (yo + h > height) {
                     h = height - yo;
                 }
 
                 qglReadBuffer(GL_FRONT);
                 qglReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, ByteBuffer.wrap(temp));
 
-                final int row = ((w * 3) + 3) & ~3;		// OpenGL pads to dword boundaries
+                int row = (w * 3 + 3) & ~3;		// OpenGL pads to dword boundaries
 
                 for (int y = 0; y < h; y++) {
 //				memcpy( buffer + ( ( yo + y )* width + xo ) * 3,
 //					temp + y * row, w * 3 );
-                    Nio.arraycopy(temp, y * row, buffer, offset + ((((yo + y) * width) + xo) * 3), w * 3);
+                    System.arraycopy(temp, y * row, buffer, offset + (((yo + y) * width + xo) * 3), w * 3);
                 }
             }
         }

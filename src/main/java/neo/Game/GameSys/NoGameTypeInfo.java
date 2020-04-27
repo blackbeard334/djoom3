@@ -23,7 +23,7 @@ public class NoGameTypeInfo {
             this.type = type;
             this.value = value;
         }
-    }
+    };
 
     static class enumValueInfo_t {
 
@@ -34,7 +34,7 @@ public class NoGameTypeInfo {
             this.name = name;
             this.value = value;
         }
-    }
+    };
 
     static class enumTypeInfo_t {
 
@@ -45,7 +45,7 @@ public class NoGameTypeInfo {
             this.typeName = typeName;
             this.values = values;
         }
-    }
+    };
 
     static class classVariableInfo_t {
 
@@ -53,7 +53,7 @@ public class NoGameTypeInfo {
         String name;
         int offset;
         int size;
-    }
+    };
 
     static class classTypeInfo_t {
 
@@ -68,7 +68,7 @@ public class NoGameTypeInfo {
             this.size = size;
             this.variables = variables;
         }
-    }
+    };
     
     static constantInfo_t[] constantInfo = {
         new constantInfo_t(null, null, null)

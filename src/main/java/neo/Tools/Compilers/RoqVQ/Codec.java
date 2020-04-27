@@ -34,7 +34,6 @@ import java.util.Arrays;
 import neo.Tools.Compilers.RoqVQ.QuadDefs.quadcel;
 import neo.framework.File_h.idFile;
 import neo.idlib.math.Math_h.idMath;
-import neo.open.Nio;
 
 /**
  *
@@ -65,7 +64,7 @@ public class Codec {
 
         private NSBitmapImageRep image;
         private NSBitmapImageRep newImage;
-        private final NSBitmapImageRep[] previousImage = new NSBitmapImageRep[2];// the ones in video ram and offscreen ram
+        private NSBitmapImageRep[] previousImage = new NSBitmapImageRep[2];// the ones in video ram and offscreen ram
         private int       numQuadCels;
         private int       whichFrame;
         private int       slop;
@@ -75,21 +74,21 @@ public class Codec {
         private quadcel[] qStatus;
         private int       dxMean;
         private int       dyMean;
-        private final int       codebooksize;
-        private final int[] index2 = new int[256];
-        private final int overAmount;
+        private int       codebooksize;
+        private int[] index2 = new int[256];
+        private int overAmount;
         private int pixelsWide;
         private int pixelsHigh;
-        private final int codebookmade;
-        private final boolean[] used2 = new boolean[256];
-        private final boolean[] used4 = new boolean[256];
+        private int codebookmade;
+        private boolean[] used2 = new boolean[256];
+        private boolean[] used4 = new boolean[256];
         private int dimension2;
         private int dimension4;
         //
-        private final byte[] luty = new byte[256];
+        private byte[] luty = new byte[256];
         private byte[]                luti;
-        private final double /*VQDATA*/[][] codebook2;
-        private final double /*VQDATA*/[][] codebook4;
+        private double /*VQDATA*/[][] codebook2;
+        private double /*VQDATA*/[][] codebook4;
         //
         //
 
@@ -97,120 +96,119 @@ public class Codec {
             int i;
 
             common.Printf("init: initing.....\n");
-            this.codebooksize = 256;
-            this.codebook2 = new double[256][];// Mem_ClearedAlloc(256);
+            codebooksize = 256;
+            codebook2 = new double[256][];// Mem_ClearedAlloc(256);
             for (i = 0; i < 256; i++) {
-                this.codebook2[i] = new double[16];// Mem_ClearedAlloc(16);
+                codebook2[i] = new double[16];// Mem_ClearedAlloc(16);
             }
-            this.codebook4 = new double[256][];// Mem_ClearedAlloc(256);
+            codebook4 = new double[256][];// Mem_ClearedAlloc(256);
             for (i = 0; i < 256; i++) {
-                this.codebook4[i] = new double[64];// Mem_ClearedAlloc(64);
+                codebook4[i] = new double[64];// Mem_ClearedAlloc(64);
             }
-            this.previousImage[0] = null;//0;
-            this.previousImage[1] = null;//0;
-            this.image = null;//0;
-            this.whichFrame = 0;
-            this.qStatus = null;//0;
-            this.luti = null;//0;
-            this.overAmount = 0;
-            this.codebookmade = 0;
-            this.slop = 0;
+            previousImage[0] = null;//0;
+            previousImage[1] = null;//0;
+            image = null;//0;
+            whichFrame = 0;
+            qStatus = null;//0;
+            luti = null;//0;
+            overAmount = 0;
+            codebookmade = 0;
+            slop = 0;
         }
         // ~codec();
 
         public void SparseEncode() {
             int i, j, osize, fsize, onf, ong, wtype, temp;
-            final int[] num = new int[DEAD + 1];
-			int[] ilist;
+            int[] num = new int[DEAD + 1], ilist;
             float sRMSE, numredo;
             float[] flist;
             byte[] idataA, idataB;
 
             osize = 8;
 
-            this.image = theRoQ.CurrentImage();
-            this.newImage = null;//0;
+            image = theRoQ.CurrentImage();
+            newImage = null;//0;
 
-            this.pixelsHigh = this.image.pixelsHigh();
-            this.pixelsWide = this.image.pixelsWide();
+            pixelsHigh = image.pixelsHigh();
+            pixelsWide = image.pixelsWide();
 
-            this.dimension2 = 12;
-            this.dimension4 = 48;
-            if (this.image.hasAlpha() && (theRoQ.ParamNoAlpha() == false)) {
-                this.dimension2 = 16;
-                this.dimension4 = 64;
+            dimension2 = 12;
+            dimension4 = 48;
+            if (image.hasAlpha() && (theRoQ.ParamNoAlpha() == false)) {
+                dimension2 = 16;
+                dimension4 = 64;
             }
 
             idataA = new byte[16 * 16 * 4];// Mem_Alloc(16 * 16 * 4);
             idataB = new byte[16 * 16 * 4];// Mem_Alloc(16 * 16 * 4);
 
-            if (NOT(this.previousImage[0])) {
-                common.Printf("sparseEncode: sparsely encoding a %d,%d image\n", this.pixelsWide, this.pixelsHigh);
+            if (NOT(previousImage[0])) {
+                common.Printf("sparseEncode: sparsely encoding a %d,%d image\n", pixelsWide, pixelsHigh);
             }
             InitImages();
 
-            flist = new float[this.numQuadCels + 1];// Mem_ClearedAlloc((numQuadCels + 1));
-            ilist = new int[this.numQuadCels + 1];// Mem_ClearedAlloc((numQuadCels + 1));
+            flist = new float[numQuadCels + 1];// Mem_ClearedAlloc((numQuadCels + 1));
+            ilist = new int[numQuadCels + 1];// Mem_ClearedAlloc((numQuadCels + 1));
 
             fsize = 56 * 1024;
             if (theRoQ.NumberOfFrames() > 2) {
-                if (this.previousImage[0] != null) {
+                if (previousImage[0] != null) {
                     fsize = theRoQ.NormalFrameSize();
                 } else {
                     fsize = theRoQ.FirstFrameSize();
                 }
-                if (theRoQ.HasSound() && (fsize > 6000) && (this.previousImage[0] != null)) {
+                if (theRoQ.HasSound() && fsize > 6000 && previousImage[0] != null) {
                     fsize = 6000;
                 }
             }
-            fsize += (this.slop / 50);
+            fsize += (slop / 50);
             if (fsize > 64000) {
                 fsize = 64000;
             }
-            if ((this.previousImage[0] != null) && (fsize > (theRoQ.NormalFrameSize() * 2))) {
+            if (previousImage[0] != null && fsize > theRoQ.NormalFrameSize() * 2) {
                 fsize = theRoQ.NormalFrameSize() * 2;
             }
-            this.dxMean = this.dyMean = 0;
-            if (this.previousImage[0] != null) {
+            dxMean = dyMean = 0;
+            if (previousImage[0] != null) {
                 wtype = 1;
             } else {
                 wtype = 0;
             }
 
-            for (i = 0; i < this.numQuadCels; i++) {
+            for (i = 0; i < numQuadCels; i++) {
                 for (j = 0; j < DEAD; j++) {
-                    this.qStatus[i].snr[j] = 9999;
+                    qStatus[i].snr[j] = 9999;
                 }
-                this.qStatus[i].mark = false;
-                if (this.qStatus[i].size == osize) {
-                    if (this.previousImage[0] != null) {
-                        GetData(idataA, this.qStatus[i].size, this.qStatus[i].xat, this.qStatus[i].yat, this.image);
-                        GetData(idataB, this.qStatus[i].size, this.qStatus[i].xat, this.qStatus[i].yat, this.previousImage[this.whichFrame & 1]);
-                        this.qStatus[i].snr[MOT] = Snr(idataA, idataB, this.qStatus[i].size);
-                        if (ComputeMotionBlock(idataA, idataB, this.qStatus[i].size) && !theRoQ.IsLastFrame()) {
-                            this.qStatus[i].mark = true;
+                qStatus[i].mark = false;
+                if (qStatus[i].size == osize) {
+                    if (previousImage[0] != null) {
+                        GetData(idataA, qStatus[i].size, qStatus[i].xat, qStatus[i].yat, image);
+                        GetData(idataB, qStatus[i].size, qStatus[i].xat, qStatus[i].yat, previousImage[whichFrame & 1]);
+                        qStatus[i].snr[MOT] = Snr(idataA, idataB, qStatus[i].size);
+                        if (ComputeMotionBlock(idataA, idataB, qStatus[i].size) && !theRoQ.IsLastFrame()) {
+                            qStatus[i].mark = true;
                         }
-                        if (!this.qStatus[i].mark) {
-                            FvqData(idataA, this.qStatus[i].size, this.qStatus[i].xat, this.qStatus[i].yat, this.qStatus[i], false);
+                        if (!qStatus[i].mark) {
+                            FvqData(idataA, qStatus[i].size, qStatus[i].xat, qStatus[i].yat, qStatus[i], false);
                         }
                     }
                     {
-                        final float[] rsnr = {0};
-                        final int[] status = {0};
-                        LowestQuad(this.qStatus[i], status, rsnr, wtype);
-                        this.qStatus[i].status = status[0];
-                        this.qStatus[i].rsnr = rsnr[0];
+                        float[] rsnr = {0};
+                        int[] status = {0};
+                        LowestQuad(qStatus[i], status, rsnr, wtype);
+                        qStatus[i].status = status[0];
+                        qStatus[i].rsnr = rsnr[0];
                     }
-                    if (this.qStatus[i].rsnr < 9999) {
-                        theRoQ.MarkQuadx(this.qStatus[i].xat, this.qStatus[i].yat, this.qStatus[i].size, this.qStatus[i].rsnr, this.qStatus[i].status);
+                    if (qStatus[i].rsnr < 9999) {
+                        theRoQ.MarkQuadx(qStatus[i].xat, qStatus[i].yat, qStatus[i].size, qStatus[i].rsnr, qStatus[i].status);
                     }
                 } else {
-                    if (this.qStatus[i].size < osize) {
-                        this.qStatus[i].status = 0;
-                        this.qStatus[i].size = 0;
+                    if (qStatus[i].size < osize) {
+                        qStatus[i].status = 0;
+                        qStatus[i].size = 0;
                     } else {
-                        this.qStatus[i].status = DEP;
-                        this.qStatus[i].rsnr = 0;
+                        qStatus[i].status = DEP;
+                        qStatus[i].rsnr = 0;
                     }
                 }
             }
@@ -219,25 +217,25 @@ public class Codec {
 // the first thing to do is to set it up for all the 4x4 cels to get output
 // and then recurse from there to see what's what
 //
-            sRMSE = GetCurrentRMSE(this.qStatus);
+            sRMSE = GetCurrentRMSE(qStatus);
 
             if (theRoQ.IsQuiet() == false) {
-                common.Printf("sparseEncode: rmse of quad0 is %f, size is %d (meant to be %d)\n", sRMSE, GetCurrentQuadOutputSize(this.qStatus), fsize);
+                common.Printf("sparseEncode: rmse of quad0 is %f, size is %d (meant to be %d)\n", sRMSE, GetCurrentQuadOutputSize(qStatus), fsize);
             }
 
             onf = 0;
-            for (i = 0; i < this.numQuadCels; i++) {
-                if ((this.qStatus[i].size != 0) && (this.qStatus[i].status != DEP)) {
-                    flist[onf] = this.qStatus[i].rsnr;
+            for (i = 0; i < numQuadCels; i++) {
+                if (qStatus[i].size != 0 && qStatus[i].status != DEP) {
+                    flist[onf] = qStatus[i].rsnr;
                     ilist[onf] = i;
                     onf++;
                 }
             }
 
             Sort(flist, ilist, onf);
-            Segment(ilist, flist, onf, GetCurrentRMSE(this.qStatus));
+            Segment(ilist, flist, onf, GetCurrentRMSE(qStatus));
 
-            temp = this.dxMean = this.dyMean = 0;
+            temp = dxMean = dyMean = 0;
             /*
              for( i=0; i<numQuadCels; i++ ) {
              if (qStatus[i].size && qStatus[i].status == FCC) {
@@ -248,51 +246,51 @@ public class Codec {
              }
              if (temp) { dxMean /= temp; dyMean /= temp; }	
              */
-            common.Printf("sparseEncode: dx/dy mean is %d,%d\n", this.dxMean, this.dyMean);
+            common.Printf("sparseEncode: dx/dy mean is %d,%d\n", dxMean, dyMean);
 
             numredo = 0;
-            this.detail = false;
-            if ((this.codebookmade != 0) && (this.whichFrame > 4)) {
+            detail = false;
+            if (codebookmade != 0 && whichFrame > 4) {
                 fsize -= 256;
             }
             temp = 0;
-            for (i = 0; i < this.numQuadCels; i++) {
-                if ((this.qStatus[i].size == osize) && (this.qStatus[i].mark == false) && (this.qStatus[i].snr[MOT] > 0)) {
-                    GetData(idataA, this.qStatus[i].size, this.qStatus[i].xat, this.qStatus[i].yat, this.image);
+            for (i = 0; i < numQuadCels; i++) {
+                if (qStatus[i].size == osize && qStatus[i].mark == false && qStatus[i].snr[MOT] > 0) {
+                    GetData(idataA, qStatus[i].size, qStatus[i].xat, qStatus[i].yat, image);
                     if (osize == 8) {
-                        VqData8(idataA, this.qStatus[i]);
+                        VqData8(idataA, qStatus[i]);
                     }
-                    if (this.previousImage[0] != null) {
+                    if (previousImage[0] != null) {
                         int dx, dy;
-                        dx = ((this.qStatus[i].domain >> 8) - 128 - this.dxMean) + 8;
-                        dy = ((this.qStatus[i].domain & 0xff) - 128 - this.dyMean) + 8;
-                        if ((dx < 0) || (dx > 15) || (dy < 0) || (dy > 15)) {
-                            this.qStatus[i].snr[FCC] = 9999;
+                        dx = (qStatus[i].domain >> 8) - 128 - dxMean + 8;
+                        dy = (qStatus[i].domain & 0xff) - 128 - dyMean + 8;
+                        if (dx < 0 || dx > 15 || dy < 0 || dy > 15) {
+                            qStatus[i].snr[FCC] = 9999;
                             temp++;
-                            FvqData(idataA, this.qStatus[i].size, this.qStatus[i].xat, this.qStatus[i].yat, this.qStatus[i], true);
-                            dx = ((this.qStatus[i].domain >> 8) - 128 - this.dxMean) + 8;
-                            dy = ((this.qStatus[i].domain & 0xff) - 128 - this.dyMean) + 8;
-                            if (((dx < 0) || (dx > 15) || (dy < 0) || (dy > 15)) && (this.qStatus[i].snr[FCC] != 9999) && (this.qStatus[i].status == FCC)) {
+                            FvqData(idataA, qStatus[i].size, qStatus[i].xat, qStatus[i].yat, qStatus[i], true);
+                            dx = (qStatus[i].domain >> 8) - 128 - dxMean + 8;
+                            dy = (qStatus[i].domain & 0xff) - 128 - dyMean + 8;
+                            if ((dx < 0 || dx > 15 || dy < 0 || dy > 15) && qStatus[i].snr[FCC] != 9999 && qStatus[i].status == FCC) {
                                 common.Printf("sparseEncode: something is wrong here, dx/dy is %d,%d after being clamped\n", dx, dy);
-                                common.Printf("xat:    %d\n", this.qStatus[i].xat);
-                                common.Printf("yat:    %d\n", this.qStatus[i].yat);
-                                common.Printf("size    %d\n", this.qStatus[i].size);
-                                common.Printf("type:   %d\n", this.qStatus[i].status);
-                                common.Printf("mot:    %04x\n", this.qStatus[i].domain);
-                                common.Printf("motsnr: %0f\n", this.qStatus[i].snr[FCC]);
-                                common.Printf("rmse:   %0f\n", this.qStatus[i].rsnr);
+                                common.Printf("xat:    %d\n", qStatus[i].xat);
+                                common.Printf("yat:    %d\n", qStatus[i].yat);
+                                common.Printf("size    %d\n", qStatus[i].size);
+                                common.Printf("type:   %d\n", qStatus[i].status);
+                                common.Printf("mot:    %04x\n", qStatus[i].domain);
+                                common.Printf("motsnr: %0f\n", qStatus[i].snr[FCC]);
+                                common.Printf("rmse:   %0f\n", qStatus[i].rsnr);
                                 common.Error("need to go away now\n");
                             }
                         }
                     }
                     {
-                        final float[] rsnr = {0};
-                        final int[] status = {0};
-                        LowestQuad(this.qStatus[i], status, rsnr, wtype);
-                        this.qStatus[i].status = status[0];
-                        this.qStatus[i].rsnr = rsnr[0];
+                        float[] rsnr = {0};
+                        int[] status = {0};
+                        LowestQuad(qStatus[i], status, rsnr, wtype);
+                        qStatus[i].status = status[0];
+                        qStatus[i].rsnr = rsnr[0];
                     }
-                    theRoQ.MarkQuadx(this.qStatus[i].xat, this.qStatus[i].yat, this.qStatus[i].size, this.qStatus[i].rsnr, this.qStatus[i].status);
+                    theRoQ.MarkQuadx(qStatus[i].xat, qStatus[i].yat, qStatus[i].size, qStatus[i].rsnr, qStatus[i].status);
                     /*
                      if (qStatus[i].status==FCC && qStatus[i].snr[FCC]>qStatus[i].snr[SLD]) {
                      common.Printf("sparseEncode: something is wrong here\n");
@@ -311,14 +309,14 @@ public class Codec {
             }
 
             if (theRoQ.IsQuiet() == false) {
-                common.Printf("sparseEncode: rmse of quad0 is %f, size is %d (meant to be %d)\n", GetCurrentRMSE(this.qStatus), GetCurrentQuadOutputSize(this.qStatus), fsize);
+                common.Printf("sparseEncode: rmse of quad0 is %f, size is %d (meant to be %d)\n", GetCurrentRMSE(qStatus), GetCurrentQuadOutputSize(qStatus), fsize);
                 common.Printf("sparseEncode: %d outside fcc limits\n", temp);
             }
 
             onf = 0;
-            for (i = 0; i < this.numQuadCels; i++) {
-                if ((this.qStatus[i].size != 0) && (this.qStatus[i].status != DEP)) {
-                    flist[onf] = this.qStatus[i].rsnr;
+            for (i = 0; i < numQuadCels; i++) {
+                if (qStatus[i].size != 0 && qStatus[i].status != DEP) {
+                    flist[onf] = qStatus[i].rsnr;
                     ilist[onf] = i;
                     onf++;
                 }
@@ -327,87 +325,87 @@ public class Codec {
             Sort(flist, ilist, onf);
 
             ong = 0;
-            this.detail = false;
+            detail = false;
 
-            while ((GetCurrentQuadOutputSize(this.qStatus) < fsize) && (ong < onf) && (flist[ong] > 0) && (this.qStatus[ilist[ong]].mark == false)) {
+            while (GetCurrentQuadOutputSize(qStatus) < fsize && ong < onf && flist[ong] > 0 && qStatus[ilist[ong]].mark == false) {
 //		badsnr = [self getCurrentRMSE: qStatus]; 
-                osize = AddQuad(this.qStatus, ilist[ong++]);
+                osize = AddQuad(qStatus, ilist[ong++]);
 //		if ([self getCurrentRMSE: qStatus] >= badsnr) {
 //		    break;
 //		}
             }
 
-            if (GetCurrentQuadOutputSize(this.qStatus) < fsize) {
+            if (GetCurrentQuadOutputSize(qStatus) < fsize) {
                 ong = 0;
-                while ((GetCurrentQuadOutputSize(this.qStatus) < fsize) && (ong < onf)) {
+                while (GetCurrentQuadOutputSize(qStatus) < fsize && ong < onf) {
 //			badsnr = [self getCurrentRMSE: qStatus]; 
                     i = ilist[ong++];
-                    if (this.qStatus[i].mark) {
-                        this.detail = false;
-                        this.qStatus[i].mark = false;
-                        GetData(idataA, this.qStatus[i].size, this.qStatus[i].xat, this.qStatus[i].yat, this.image);
-                        if (this.qStatus[i].size == 8) {
-                            VqData8(idataA, this.qStatus[i]);
+                    if (qStatus[i].mark) {
+                        detail = false;
+                        qStatus[i].mark = false;
+                        GetData(idataA, qStatus[i].size, qStatus[i].xat, qStatus[i].yat, image);
+                        if (qStatus[i].size == 8) {
+                            VqData8(idataA, qStatus[i]);
                         }
-                        if (this.qStatus[i].size == 4) {
-                            VqData4(idataA, this.qStatus[i]);
+                        if (qStatus[i].size == 4) {
+                            VqData4(idataA, qStatus[i]);
                         }
-                        if (this.qStatus[i].size == 4) {
-                            VqData2(idataA, this.qStatus[i]);
+                        if (qStatus[i].size == 4) {
+                            VqData2(idataA, qStatus[i]);
                         }
-                        if (this.previousImage[0] != null) {
-                            FvqData(idataA, this.qStatus[i].size, this.qStatus[i].xat, this.qStatus[i].yat, this.qStatus[i], true);
+                        if (previousImage[0] != null) {
+                            FvqData(idataA, qStatus[i].size, qStatus[i].xat, qStatus[i].yat, qStatus[i], true);
                         }
                         {
-                            final float[] rsnr = {0};
-                            final int[] status = {0};
-                            LowestQuad(this.qStatus[i], status, rsnr, wtype);
-                            this.qStatus[i].status = status[0];
-                            this.qStatus[i].rsnr = rsnr[0];
+                            float[] rsnr = {0};
+                            int[] status = {0};
+                            LowestQuad(qStatus[i], status, rsnr, wtype);
+                            qStatus[i].status = status[0];
+                            qStatus[i].rsnr = rsnr[0];
                         }
-                        if (this.qStatus[i].rsnr <= MIN_SNR) {
+                        if (qStatus[i].rsnr <= MIN_SNR) {
                             break;
                         }
-                        theRoQ.MarkQuadx(this.qStatus[i].xat, this.qStatus[i].yat, this.qStatus[i].size, this.qStatus[i].rsnr, this.qStatus[i].status);
+                        theRoQ.MarkQuadx(qStatus[i].xat, qStatus[i].yat, qStatus[i].size, qStatus[i].rsnr, qStatus[i].status);
                     }
 //			if ([self getCurrentRMSE: qStatus] >= badsnr) {
 //			    break;
 //			}
                 }
                 ong = 0;
-                while ((GetCurrentQuadOutputSize(this.qStatus) < fsize) && (ong < onf) && (flist[ong] > 0)) {
+                while (GetCurrentQuadOutputSize(qStatus) < fsize && ong < onf && flist[ong] > 0) {
 //			badsnr = [self getCurrentRMSE: qStatus]; 
                     i = ilist[ong++];
 //			if (qStatus[i].rsnr <= MIN_SNR) {
 //			    break;
 //			}
-                    this.detail = true;
-                    osize = AddQuad(this.qStatus, i);
+                    detail = true;
+                    osize = AddQuad(qStatus, i);
 //			if ([self getCurrentRMSE: qStatus] >= badsnr) {
 //			    break;
 //			}
                 }
             }
 
-            common.Printf("sparseEncode: rmse of frame %d is %f, size is %d\n", this.whichFrame, GetCurrentRMSE(this.qStatus), GetCurrentQuadOutputSize(this.qStatus));
+            common.Printf("sparseEncode: rmse of frame %d is %f, size is %d\n", whichFrame, GetCurrentRMSE(qStatus), GetCurrentQuadOutputSize(qStatus));
 
-            if (this.previousImage[0] != null) {
+            if (previousImage[0] != null) {
                 fsize = theRoQ.NormalFrameSize();
             } else {
                 fsize = theRoQ.FirstFrameSize();
             }
 
-            this.slop += (fsize - GetCurrentQuadOutputSize(this.qStatus));
+            slop += (fsize - GetCurrentQuadOutputSize(qStatus));
 
             if (theRoQ.IsQuiet() == false) {
                 for (i = 0; i < DEAD; i++) {
                     num[i] = 0;
                 }
                 j = 0;
-                for (i = 0; i < this.numQuadCels; i++) {
-                    if ((this.qStatus[i].size == 8) && (this.qStatus[i].status != 0)) {
-                        if (this.qStatus[i].status < DEAD) {
-                            num[this.qStatus[i].status]++;
+                for (i = 0; i < numQuadCels; i++) {
+                    if (qStatus[i].size == 8 && qStatus[i].status != 0) {
+                        if (qStatus[i].status < DEAD) {
+                            num[qStatus[i].status]++;
                         }
                         j++;
                     }
@@ -417,21 +415,21 @@ public class Codec {
                 for (i = 0; i < DEAD; i++) {
                     num[i] = 0;
                 }
-                for (i = 0; i < this.numQuadCels; i++) {
-                    if ((this.qStatus[i].size == 4) && (this.qStatus[i].status != 0)) {
-                        if (this.qStatus[i].status < DEAD) {
-                            num[this.qStatus[i].status]++;
+                for (i = 0; i < numQuadCels; i++) {
+                    if (qStatus[i].size == 4 && qStatus[i].status != 0) {
+                        if (qStatus[i].status < DEAD) {
+                            num[qStatus[i].status]++;
                         }
                         j++;
                     }
                 }
                 common.Printf("sparseEncode: for 04x04 CCC = %d, FCC = %d, MOT = %d, SLD = %d, PAT = %d\n", num[CCC], num[FCC], num[MOT], num[SLD], num[PAT]);
 
-                common.Printf("sparseEncode: average RMSE = %f, numActiveQuadCels = %d, estSize = %d, slop = %d \n", GetCurrentRMSE(this.qStatus), j, GetCurrentQuadOutputSize(this.qStatus), this.slop);
+                common.Printf("sparseEncode: average RMSE = %f, numActiveQuadCels = %d, estSize = %d, slop = %d \n", GetCurrentRMSE(qStatus), j, GetCurrentQuadOutputSize(qStatus), slop);
             }
 
-            theRoQ.WriteFrame(this.qStatus);
-            MakePreviousImage(this.qStatus);
+            theRoQ.WriteFrame(qStatus);
+            MakePreviousImage(qStatus);
 
 //            Mem_Free(idataA);
 //            Mem_Free(idataB);
@@ -440,95 +438,94 @@ public class Codec {
 //            Mem_Free(ilist);
             flist = null;
             ilist = null;
-            if (this.newImage != null) {
+            if (newImage != null) {
 //                delete 
-                this.newImage = null;
+                newImage = null;
             }
 
-            this.whichFrame++;
+            whichFrame++;
         }
 
         public void EncodeNothing() {
             int i, j, osize, fsize, wtype;
-            final int[] num = new int[DEAD + 1];
-			int[] ilist;
+            int[] num = new int[DEAD + 1], ilist;
             float sRMSE;
             float[] flist;
             byte[] idataA, idataB;
 
             osize = 8;
 
-            this.image = theRoQ.CurrentImage();
-            this.newImage = null;//0;
+            image = theRoQ.CurrentImage();
+            newImage = null;//0;
 
-            this.pixelsHigh = this.image.pixelsHigh();
-            this.pixelsWide = this.image.pixelsWide();
+            pixelsHigh = image.pixelsHigh();
+            pixelsWide = image.pixelsWide();
 
-            this.dimension2 = 12;
-            this.dimension4 = 48;
-            if (this.image.hasAlpha() && (theRoQ.ParamNoAlpha() == false)) {
-                this.dimension2 = 16;
-                this.dimension4 = 64;
+            dimension2 = 12;
+            dimension4 = 48;
+            if (image.hasAlpha() && (theRoQ.ParamNoAlpha() == false)) {
+                dimension2 = 16;
+                dimension4 = 64;
             }
 
             idataA = new byte[16 * 16 * 4];// Mem_Alloc(16 * 16 * 4);
             idataB = new byte[16 * 16 * 4];// Mem_Alloc(16 * 16 * 4);
 
-            if (NOT(this.previousImage[0])) {
-                common.Printf("sparseEncode: sparsely encoding a %d,%d image\n", this.pixelsWide, this.pixelsHigh);
+            if (NOT(previousImage[0])) {
+                common.Printf("sparseEncode: sparsely encoding a %d,%d image\n", pixelsWide, pixelsHigh);
             }
             InitImages();
 
-            flist = new float[this.numQuadCels + 1];// Mem_ClearedAlloc((numQuadCels + 1));
-            ilist = new int[this.numQuadCels + 1];// Mem_ClearedAlloc((numQuadCels + 1));
+            flist = new float[numQuadCels + 1];// Mem_ClearedAlloc((numQuadCels + 1));
+            ilist = new int[numQuadCels + 1];// Mem_ClearedAlloc((numQuadCels + 1));
 
             fsize = 56 * 1024;
             if (theRoQ.NumberOfFrames() > 2) {
-                if (this.previousImage[0] != null) {
+                if (previousImage[0] != null) {
                     fsize = theRoQ.NormalFrameSize();
                 } else {
                     fsize = theRoQ.FirstFrameSize();
                 }
-                if (theRoQ.HasSound() && (fsize > 6000) && (this.previousImage[0] != null)) {
+                if (theRoQ.HasSound() && fsize > 6000 && previousImage[0] != null) {
                     fsize = 6000;
                 }
             }
 
-            this.dxMean = this.dyMean = 0;
-            if (this.previousImage[0] != null) {
+            dxMean = dyMean = 0;
+            if (previousImage[0] != null) {
                 wtype = 1;
             } else {
                 wtype = 0;
             }
 
-            for (i = 0; i < this.numQuadCels; i++) {
+            for (i = 0; i < numQuadCels; i++) {
                 for (j = 0; j < DEAD; j++) {
-                    this.qStatus[i].snr[j] = 9999;
+                    qStatus[i].snr[j] = 9999;
                 }
-                this.qStatus[i].mark = false;
-                if (this.qStatus[i].size == osize) {
-                    if (this.previousImage[0] != null) {
-                        GetData(idataA, this.qStatus[i].size, this.qStatus[i].xat, this.qStatus[i].yat, this.image);
-                        GetData(idataB, this.qStatus[i].size, this.qStatus[i].xat, this.qStatus[i].yat, this.previousImage[this.whichFrame & 1]);
-                        this.qStatus[i].snr[MOT] = Snr(idataA, idataB, this.qStatus[i].size);
+                qStatus[i].mark = false;
+                if (qStatus[i].size == osize) {
+                    if (previousImage[0] != null) {
+                        GetData(idataA, qStatus[i].size, qStatus[i].xat, qStatus[i].yat, image);
+                        GetData(idataB, qStatus[i].size, qStatus[i].xat, qStatus[i].yat, previousImage[whichFrame & 1]);
+                        qStatus[i].snr[MOT] = Snr(idataA, idataB, qStatus[i].size);
                     }
                     {
-                        final float[] rsnr = {0};
-                        final int[] status = {0};
-                        LowestQuad(this.qStatus[i], status, rsnr, wtype);
-                        this.qStatus[i].status = status[0];
-                        this.qStatus[i].rsnr = rsnr[0];
+                        float[] rsnr = {0};
+                        int[] status = {0};
+                        LowestQuad(qStatus[i], status, rsnr, wtype);
+                        qStatus[i].status = status[0];
+                        qStatus[i].rsnr = rsnr[0];
                     }
-                    if (this.qStatus[i].rsnr < 9999) {
-                        theRoQ.MarkQuadx(this.qStatus[i].xat, this.qStatus[i].yat, this.qStatus[i].size, this.qStatus[i].rsnr, this.qStatus[i].status);
+                    if (qStatus[i].rsnr < 9999) {
+                        theRoQ.MarkQuadx(qStatus[i].xat, qStatus[i].yat, qStatus[i].size, qStatus[i].rsnr, qStatus[i].status);
                     }
                 } else {
-                    if (this.qStatus[i].size < osize) {
-                        this.qStatus[i].status = 0;
-                        this.qStatus[i].size = 0;
+                    if (qStatus[i].size < osize) {
+                        qStatus[i].status = 0;
+                        qStatus[i].size = 0;
                     } else {
-                        this.qStatus[i].status = DEP;
-                        this.qStatus[i].rsnr = 0;
+                        qStatus[i].status = DEP;
+                        qStatus[i].rsnr = 0;
                     }
                 }
             }
@@ -537,19 +534,19 @@ public class Codec {
 // the first thing to do is to set it up for all the 4x4 cels to get output
 // and then recurse from there to see what's what
 //
-            sRMSE = GetCurrentRMSE(this.qStatus);
+            sRMSE = GetCurrentRMSE(qStatus);
 
-            common.Printf("sparseEncode: rmse of frame %d is %f, size is %d\n", this.whichFrame, sRMSE, GetCurrentQuadOutputSize(this.qStatus));
+            common.Printf("sparseEncode: rmse of frame %d is %f, size is %d\n", whichFrame, sRMSE, GetCurrentQuadOutputSize(qStatus));
 
             if (theRoQ.IsQuiet() == false) {
                 for (i = 0; i < DEAD; i++) {
                     num[i] = 0;
                 }
                 j = 0;
-                for (i = 0; i < this.numQuadCels; i++) {
-                    if ((this.qStatus[i].size == 8) && (this.qStatus[i].status != 0)) {
-                        if (this.qStatus[i].status < DEAD) {
-                            num[this.qStatus[i].status]++;
+                for (i = 0; i < numQuadCels; i++) {
+                    if (qStatus[i].size == 8 && qStatus[i].status != 0) {
+                        if (qStatus[i].status < DEAD) {
+                            num[qStatus[i].status]++;
                         }
                         j++;
                     }
@@ -559,21 +556,21 @@ public class Codec {
                 for (i = 0; i < DEAD; i++) {
                     num[i] = 0;
                 }
-                for (i = 0; i < this.numQuadCels; i++) {
-                    if ((this.qStatus[i].size == 4) && (this.qStatus[i].status != 0)) {
-                        if (this.qStatus[i].status < DEAD) {
-                            num[this.qStatus[i].status]++;
+                for (i = 0; i < numQuadCels; i++) {
+                    if (qStatus[i].size == 4 && qStatus[i].status != 0) {
+                        if (qStatus[i].status < DEAD) {
+                            num[qStatus[i].status]++;
                         }
                         j++;
                     }
                 }
                 common.Printf("sparseEncode: for 04x04 CCC = %d, FCC = %d, MOT = %d, SLD = %d, PAT = %d\n", num[CCC], num[FCC], num[MOT], num[SLD], num[PAT]);
 
-                common.Printf("sparseEncode: average RMSE = %f, numActiveQuadCels = %d, estSize = %d \n", GetCurrentRMSE(this.qStatus), j, GetCurrentQuadOutputSize(this.qStatus));
+                common.Printf("sparseEncode: average RMSE = %f, numActiveQuadCels = %d, estSize = %d \n", GetCurrentRMSE(qStatus), j, GetCurrentQuadOutputSize(qStatus));
             }
 
-            theRoQ.WriteFrame(this.qStatus);
-            MakePreviousImage(this.qStatus);
+            theRoQ.WriteFrame(qStatus);
+            MakePreviousImage(qStatus);
 
 //            Mem_Free(idataA);
 //            Mem_Free(idataB);
@@ -582,16 +579,16 @@ public class Codec {
 //            Mem_Free(ilist);
             flist = null;
             ilist = null;
-            if (this.newImage != null) {
+            if (newImage != null) {
                 //delete newImage;
-                this.newImage = null;
+                newImage = null;
             }
 
-            this.whichFrame++;
+            whichFrame++;
         }
 
         public void IRGBtab() {
-            this.initRGBtab++;
+            initRGBtab++;
         }
 
         public void InitImages() {
@@ -599,34 +596,34 @@ public class Codec {
             float ftemp;
             byte[] lutimage;
 
-            this.numQuadCels = ((this.pixelsWide & 0xfff0) * (this.pixelsHigh & 0xfff0)) / (MINSIZE * MINSIZE);
-            this.numQuadCels += (this.numQuadCels / 4) + (this.numQuadCels / 16);
+            numQuadCels = ((pixelsWide & 0xfff0) * (pixelsHigh & 0xfff0)) / (MINSIZE * MINSIZE);
+            numQuadCels += numQuadCels / 4 + numQuadCels / 16;
 
 //            if (qStatus != null) {
 //                Mem_Free(qStatus);
 //            }
-            this.qStatus = new quadcel[this.numQuadCels];// Mem_ClearedAlloc(numQuadCels);
+            qStatus = new quadcel[numQuadCels];// Mem_ClearedAlloc(numQuadCels);
             InitQStatus();
 //
-            if (this.previousImage[0] != null) {
-                this.pixelsWide = this.previousImage[0].pixelsWide();
-                this.pixelsHigh = this.previousImage[0].pixelsHigh();
-                temp = ((this.whichFrame + 1) & 1);
-                if (NOT(this.luti)) {
-                    this.luti = new byte[this.pixelsWide * this.pixelsHigh];// Mem_Alloc(pixelsWide * pixelsHigh);
+            if (previousImage[0] != null) {
+                pixelsWide = previousImage[0].pixelsWide();
+                pixelsHigh = previousImage[0].pixelsHigh();
+                temp = ((whichFrame + 1) & 1);
+                if (NOT(luti)) {
+                    luti = new byte[pixelsWide * pixelsHigh];// Mem_Alloc(pixelsWide * pixelsHigh);
                 }
-                lutimage = this.previousImage[temp].bitmapData();
+                lutimage = previousImage[temp].bitmapData();
                 if (theRoQ.IsQuiet() == false) {
                     common.Printf("initImage: remaking lut image using buffer %d\n", temp);
                 }
                 index0 = index1 = 0;
-                for (y = 0; y < this.pixelsHigh; y++) {
-                    for (x = 0; x < this.pixelsWide; x++) {
-                        ftemp = (RMULT * lutimage[index0 + 0]) + (GMULT * lutimage[index0 + 1]) + (BMULT * lutimage[index0 + 2]);
+                for (y = 0; y < pixelsHigh; y++) {
+                    for (x = 0; x < pixelsWide; x++) {
+                        ftemp = RMULT * lutimage[index0 + 0] + GMULT * lutimage[index0 + 1] + BMULT * lutimage[index0 + 2];
                         temp = (int) ftemp;
-                        this.luti[index1] = (byte) temp;
+                        luti[index1] = (byte) temp;
 
-                        index0 += this.previousImage[0].samplesPerPixel();
+                        index0 += previousImage[0].samplesPerPixel();
                         index1++;
                     }
                 }
@@ -638,15 +635,15 @@ public class Codec {
             int bigx, bigy, lowx, lowy;
 
             lowx = lowy = 0;
-            bigx = this.pixelsWide & 0xfff0;
-            bigy = this.pixelsHigh & 0xfff0;
+            bigx = pixelsWide & 0xfff0;
+            bigy = pixelsHigh & 0xfff0;
 
-            if ((startX >= lowx) && ((startX + quadSize) <= (bigx)) && ((startY + quadSize) <= (bigy)) && (startY >= lowy) && (quadSize <= MAXSIZE)) {
-                this.qStatus[this.onQuad].size = (byte) quadSize;
-                this.qStatus[this.onQuad].xat = startX;
-                this.qStatus[this.onQuad].yat = startY;
-                this.qStatus[this.onQuad].rsnr = 999999;
-                this.onQuad++;
+            if ((startX >= lowx) && (startX + quadSize) <= (bigx) && (startY + quadSize) <= (bigy) && (startY >= lowy) && quadSize <= MAXSIZE) {
+                qStatus[onQuad].size = (byte) quadSize;
+                qStatus[onQuad].xat = startX;
+                qStatus[onQuad].yat = startY;
+                qStatus[onQuad].rsnr = 999999;
+                onQuad++;
             }
 
             if (quadSize != MINSIZE) {
@@ -661,13 +658,13 @@ public class Codec {
         public void InitQStatus() {
             int i, x, y;
 
-            for (i = 0; i < this.numQuadCels; i++) {
-                this.qStatus[i].size = 0;
+            for (i = 0; i < numQuadCels; i++) {
+                qStatus[i].size = 0;
             }
 
-            this.onQuad = 0;
-            for (y = 0; y < this.pixelsHigh; y += 16) {
-                for (x = 0; x < this.pixelsWide; x += 16) {
+            onQuad = 0;
+            for (y = 0; y < pixelsHigh; y += 16) {
+                for (x = 0; x < pixelsWide; x += 16) {
                     QuadX(x, y, 16);
                 }
             }
@@ -683,7 +680,7 @@ public class Codec {
 
             for (o_p = n_p = i = 0; i < size; i++) {
                 for (j = 0; j < size; j++) {
-                    if ((old[o_p + 3] != 0) || (bnew[n_p + 3] != 0)) {
+                    if (old[o_p + 3] != 0 || bnew[n_p + 3] != 0) {
                         ind += RGBADIST(old, bnew, o_p, n_p);
                     }
                     o_p += 4;
@@ -691,7 +688,7 @@ public class Codec {
                 }
             }
 
-            fsnr = ind;
+            fsnr = (float) ind;
             fsnr /= (size * size);
             fsnr = (float) sqrt(fsnr);
 
@@ -706,15 +703,15 @@ public class Codec {
             byte[] bitma2;
             int searchY, searchX, xxMean, yyMean;
 
-            if (NOT(this.previousImage[0]) || (this.dimension4 == 64)) {
+            if (NOT(previousImage[0]) || dimension4 == 64) {
                 return;
             }
 
             for (x = 0; x < (size * size); x++) {
-                fmblur0 = (RMULT * bitmap[(x * 4) + 0]) + (GMULT * bitmap[(x * 4) + 1]) + (BMULT * bitmap[(x * 4) + 2]);
-                this.luty[x] = (byte) fmblur0;
+                fmblur0 = RMULT * bitmap[x * 4 + 0] + GMULT * bitmap[x * 4 + 1] + BMULT * bitmap[x * 4 + 2];
+                luty[x] = (byte) fmblur0;
             }
-            if (NOT(this.luti)) {
+            if (NOT(luti)) {
                 pquad.domain = 0x8080;
                 pquad.snr[FCC] = 9999;
                 return;
@@ -723,8 +720,8 @@ public class Codec {
             ony = realy - (realy & 0xfff0);
             onx = realx - (realx & 0xfff0);
 
-            xLen = this.previousImage[0].pixelsWide();
-            yLen = this.previousImage[0].pixelsHigh();
+            xLen = previousImage[0].pixelsWide();
+            yLen = previousImage[0].pixelsHigh();
             ripl = xLen - size;
 
             breakHigh = 99999999;
@@ -742,25 +739,25 @@ public class Codec {
             }
             searchX = searchX * depthx;
             searchY = searchY * depthy;
-            xxMean = this.dxMean * depthx;
-            yyMean = this.dyMean * depthy;
+            xxMean = dxMean * depthx;
+            yyMean = dyMean * depthy;
 
-            if ((((realx - xxMean) + searchX) < 0) || ((((realx - xxMean) - searchX) + depthx + size) > xLen) || (((realy - yyMean) + searchY) < 0) || ((((realy - yyMean) - searchY) + depthy + size) > yLen)) {
+            if (((realx - xxMean) + searchX) < 0 || (((realx - xxMean) - searchX) + depthx + size) > xLen || ((realy - yyMean) + searchY) < 0 || (((realy - yyMean) - searchY) + depthy + size) > yLen) {
                 pquad.snr[FCC] = 9999;
                 return;
             }
 
-            final int sPsQ = -1;
+            int sPsQ = -1;
             int b_p, s_p;
-            for (sX = (((realx - xxMean) - searchX) + depthx), b_p = s_p = 0; (sX <= ((realx - xxMean) + searchX)) && (0 == fabort); sX += depthx) {
-                for (sY = (((realy - yyMean) - searchY) + depthy); (sY <= ((realy - yyMean) + searchY)) && (breakHigh != 0); sY += depthy) {
-                    temp1 = (xLen * sY) + sX;
-                    if ((sX >= 0) && ((sX + size) <= xLen) && (sY >= 0) && ((sY + size) <= yLen)) {
-                        bpp = this.previousImage[0].samplesPerPixel();
+            for (sX = (((realx - xxMean) - searchX) + depthx), b_p = s_p = 0; sX <= ((realx - xxMean) + searchX) && 0 == fabort; sX += depthx) {
+                for (sY = (((realy - yyMean) - searchY) + depthy); sY <= ((realy - yyMean) + searchY) && breakHigh != 0; sY += depthy) {
+                    temp1 = xLen * sY + sX;
+                    if (sX >= 0 && (sX + size) <= xLen && sY >= 0 && (sY + size) <= yLen) {
+                        bpp = previousImage[0].samplesPerPixel();
                         ripl = (xLen - size) * bpp;
                         mblur0 = 0;
                         bitma2 = bitmap;
-                        scale1 = this.previousImage[((this.whichFrame + 1) & 1)].bitmapData();
+                        scale1 = previousImage[((whichFrame + 1) & 1)].bitmapData();
                         scale1 = Arrays.copyOfRange(scale1, temp1 * bpp, scale1.length);
 //		mblur0 = 0;
 //		bitma2 = luty;
@@ -785,13 +782,13 @@ public class Codec {
                 }
             }
 
-            if ((lowX != -1) && (lowY != -1)) {
-                bpp = this.previousImage[0].samplesPerPixel();
+            if (lowX != -1 && lowY != -1) {
+                bpp = previousImage[0].samplesPerPixel();
                 ripl = (xLen - size) * bpp;
                 mblur0 = 0;
                 bitma2 = bitmap;
-                scale1 = this.previousImage[((this.whichFrame + 1) & 1)].bitmapData();
-                scale1 = Arrays.copyOfRange(scale1, ((xLen * lowY) + lowX) * bpp, scale1.length);
+                scale1 = previousImage[((whichFrame + 1) & 1)].bitmapData();
+                scale1 = Arrays.copyOfRange(scale1, (xLen * lowY + lowX) * bpp, scale1.length);
                 for (y = 0; y < size; y++) {
                     for (x = 0; x < size; x++) {
                         mblur0 += RGBADIST(bitma2, scale1, b_p, s_p);
@@ -801,18 +798,18 @@ public class Codec {
                     s_p += ripl;
                 }
 
-                lowestSNR = mblur0;
+                lowestSNR = (float) mblur0;
                 lowestSNR /= (size * size);
                 lowestSNR = (float) sqrt(lowestSNR);
 
-                sX = ((realx - lowX) + 128);
-                sY = ((realy - lowY) + 128);
+                sX = (realx - lowX + 128);
+                sY = (realy - lowY + 128);
 
                 if (depthx == 2) {
-                    sX = (((realx - lowX) / 2) + 128);
+                    sX = ((realx - lowX) / 2 + 128);
                 }
                 if (depthy == 2) {
-                    sY = (((realy - lowY) / 2) + 128);
+                    sY = ((realy - lowY) / 2 + 128);
                 }
                 pquad.domain = (sX << 8) + sY;
                 pquad.snr[FCC] = lowestSNR;
@@ -821,7 +818,7 @@ public class Codec {
 
         public void GetData( /*unsigned*/byte[] iData, int qSize, int startX, int startY, NSBitmapImageRep bitmap) {
             int x, y, yoff, bpp, yend, xend;
-            final byte[][] iPlane = new byte[5][];
+            byte[][] iPlane = new byte[5][];
             int r, g, b, a;
             int data_p = -0;
 
@@ -877,7 +874,7 @@ public class Codec {
             int i, j, snr;
             int o_p, n_p;
 
-            if (this.dimension4 == 64) {
+            if (dimension4 == 64) {
 //                return 0;	// do not use this for alpha pieces
                 return false;	// this either!
             }
@@ -895,33 +892,33 @@ public class Codec {
         }
 
         public void VqData8(byte[] cel, quadcel pquad) {
-            final byte[] tempImage = new byte[8 * 8 * 4];
+            byte[] tempImage = new byte[8 * 8 * 4];
             int x, y, i, best, temp;
 
             i = 0;
             for (y = 0; y < 4; y++) {
                 for (x = 0; x < 4; x++) {
-                    temp = (y * 64) + (x * 8);
+                    temp = y * 64 + x * 8;
                     tempImage[i++] = (byte) ((cel[temp + 0] + cel[temp + 4] + cel[temp + 32] + cel[temp + 36]) / 4);
                     tempImage[i++] = (byte) ((cel[temp + 1] + cel[temp + 5] + cel[temp + 33] + cel[temp + 37]) / 4);
                     tempImage[i++] = (byte) ((cel[temp + 2] + cel[temp + 6] + cel[temp + 34] + cel[temp + 38]) / 4);
-                    if (this.dimension4 == 64) {
+                    if (dimension4 == 64) {
                         tempImage[i++] = (byte) ((cel[temp + 3] + cel[temp + 7] + cel[temp + 35] + cel[temp + 39]) / 4);
                     }
                 }
             }
 
-            pquad.patten[0] = best = BestCodeword(tempImage, this.dimension4, this.codebook4);
+            pquad.patten[0] = best = BestCodeword(tempImage, dimension4, codebook4);
 
             for (y = 0; y < 8; y++) {
                 for (x = 0; x < 8; x++) {
-                    temp = (y * 32) + (x * 4);
-                    i = ((y / 2) * 4 * (this.dimension2 / 4)) + ((x / 2) * (this.dimension2 / 4));
-                    tempImage[temp + 0] = (byte) this.codebook4[best][i + 0];
-                    tempImage[temp + 1] = (byte) this.codebook4[best][i + 1];
-                    tempImage[temp + 2] = (byte) this.codebook4[best][i + 2];
-                    if (this.dimension4 == 64) {
-                        tempImage[temp + 3] = (byte) this.codebook4[best][i + 3];
+                    temp = y * 32 + x * 4;
+                    i = ((y / 2) * 4 * (dimension2 / 4)) + (x / 2) * (dimension2 / 4);
+                    tempImage[temp + 0] = (byte) codebook4[best][i + 0];
+                    tempImage[temp + 1] = (byte) codebook4[best][i + 1];
+                    tempImage[temp + 2] = (byte) codebook4[best][i + 2];
+                    if (dimension4 == 64) {
+                        tempImage[temp + 3] = (byte) codebook4[best][i + 3];
                     } else {
                         tempImage[temp + 3] = (byte) 255;
                     }
@@ -932,34 +929,34 @@ public class Codec {
         }
 
         public void VqData4(byte[] cel, quadcel pquad) {
-            final byte[] tempImage = new byte[64];
+            byte[] tempImage = new byte[64];
             int i, best, bpp;
 
 //	if (theRoQ.makingVideo] && previousImage[0]) return self;
-            if (this.dimension4 == 64) {
+            if (dimension4 == 64) {
                 bpp = 4;
             } else {
                 bpp = 3;
             }
             for (i = 0; i < 16; i++) {
-                tempImage[(i * bpp) + 0] = cel[(i * 4) + 0];
-                tempImage[(i * bpp) + 1] = cel[(i * 4) + 1];
-                tempImage[(i * bpp) + 2] = cel[(i * 4) + 2];
-                if (this.dimension4 == 64) {
-                    tempImage[(i * bpp) + 3] = cel[(i * 4) + 3];
+                tempImage[i * bpp + 0] = cel[i * 4 + 0];
+                tempImage[i * bpp + 1] = cel[i * 4 + 1];
+                tempImage[i * bpp + 2] = cel[i * 4 + 2];
+                if (dimension4 == 64) {
+                    tempImage[i * bpp + 3] = cel[i * 4 + 3];
                 }
             }
 
-            pquad.patten[0] = best = BestCodeword(tempImage, this.dimension4, this.codebook4);
+            pquad.patten[0] = best = BestCodeword(tempImage, dimension4, codebook4);
 
             for (i = 0; i < 16; i++) {
-                tempImage[(i * 4) + 0] = (byte) this.codebook4[best][(i * bpp) + 0];
-                tempImage[(i * 4) + 1] = (byte) this.codebook4[best][(i * bpp) + 1];
-                tempImage[(i * 4) + 2] = (byte) this.codebook4[best][(i * bpp) + 2];
-                if (this.dimension4 == 64) {
-                    tempImage[(i * 4) + 3] = (byte) this.codebook4[best][(i * bpp) + 3];
+                tempImage[i * 4 + 0] = (byte) codebook4[best][i * bpp + 0];
+                tempImage[i * 4 + 1] = (byte) codebook4[best][i * bpp + 1];
+                tempImage[i * 4 + 2] = (byte) codebook4[best][i * bpp + 2];
+                if (dimension4 == 64) {
+                    tempImage[i * 4 + 3] = (byte) codebook4[best][i * bpp + 3];
                 } else {
-                    tempImage[(i * 4) + 3] = (byte) 255;
+                    tempImage[i * 4 + 3] = (byte) 255;
                 }
             }
 
@@ -967,11 +964,11 @@ public class Codec {
         }
 
         public void VqData2(byte[] cel, quadcel pquad) {
-            final byte[] tempImage = new byte[16];
-            final byte[] tempOut = new byte[64];
+            byte[] tempImage = new byte[16];
+            byte[] tempOut = new byte[64];
             int i, j, best, x, y, xx, yy, bpp;
 
-            if (this.dimension4 == 64) {
+            if (dimension4 == 64) {
                 bpp = 4;
             } else {
                 bpp = 3;
@@ -982,25 +979,25 @@ public class Codec {
                     i = 0;
                     for (y = yy; y < (yy + 2); y++) {
                         for (x = xx; x < (xx + 2); x++) {
-                            tempImage[i++] = cel[(y * 16) + (x * 4) + 0];
-                            tempImage[i++] = cel[(y * 16) + (x * 4) + 1];
-                            tempImage[i++] = cel[(y * 16) + (x * 4) + 2];
-                            if (this.dimension4 == 64) {
-                                tempImage[i++] = cel[(y * 16) + (x * 4) + 3];
+                            tempImage[i++] = cel[y * 16 + x * 4 + 0];
+                            tempImage[i++] = cel[y * 16 + x * 4 + 1];
+                            tempImage[i++] = cel[y * 16 + x * 4 + 2];
+                            if (dimension4 == 64) {
+                                tempImage[i++] = cel[y * 16 + x * 4 + 3];
                             }
                         }
                     }
-                    pquad.patten[j++] = best = BestCodeword(tempImage, this.dimension2, this.codebook2);
+                    pquad.patten[j++] = best = BestCodeword(tempImage, dimension2, codebook2);
                     i = 0;
                     for (y = yy; y < (yy + 2); y++) {
                         for (x = xx; x < (xx + 2); x++) {
-                            tempOut[(y * 16) + (x * 4) + 0] = (byte) this.codebook2[best][i++];
-                            tempOut[(y * 16) + (x * 4) + 1] = (byte) this.codebook2[best][i++];
-                            tempOut[(y * 16) + (x * 4) + 2] = (byte) this.codebook2[best][i++];
-                            if (this.dimension4 == 64) {
-                                tempOut[(y * 16) + (x * 4) + 3] = (byte) this.codebook2[best][i++];
+                            tempOut[y * 16 + x * 4 + 0] = (byte) codebook2[best][i++];
+                            tempOut[y * 16 + x * 4 + 1] = (byte) codebook2[best][i++];
+                            tempOut[y * 16 + x * 4 + 2] = (byte) codebook2[best][i++];
+                            if (dimension4 == 64) {
+                                tempOut[y * 16 + x * 4 + 3] = (byte) codebook2[best][i++];
                             } else {
-                                tempOut[(y * 16) + (x * 4) + 3] = (byte) 255;
+                                tempOut[y * 16 + x * 4 + 3] = (byte) 255;
                             }
                         }
                     }
@@ -1011,11 +1008,11 @@ public class Codec {
         }
 
         public int MotMeanY() {
-            return this.dyMean;
+            return dyMean;
         }
 
         public int MotMeanX() {
-            return this.dxMean;
+            return dxMean;
         }
 
         public void SetPreviousImage(final String filename, NSBitmapImageRep timage) {
@@ -1029,21 +1026,21 @@ public class Codec {
 
 //	previousImage[0] = new NSBitmapImageRep( );//TODO:remove unimportant stuff.
 //	previousImage[1] = new NSBitmapImageRep( );
-            this.whichFrame = 1;
+            whichFrame = 1;
 
-            this.previousImage[0] = timage;
-            this.previousImage[1] = timage;
+            previousImage[0] = timage;
+            previousImage[1] = timage;
 
-            this.pixelsHigh = this.previousImage[0].pixelsHigh();
-            this.pixelsWide = this.previousImage[0].pixelsWide();
+            pixelsHigh = previousImage[0].pixelsHigh();
+            pixelsWide = previousImage[0].pixelsWide();
 
-            common.Printf("setPreviousImage: %dx%d\n", this.pixelsWide, this.pixelsHigh);
+            common.Printf("setPreviousImage: %dx%d\n", pixelsWide, pixelsHigh);
         }
 
         public int BestCodeword( /*unsigned*/byte[] tempvector, int dimension, double /*VQDATA*/[][] codebook) {
             double /*VQDATA*/ dist;
             double /*VQDATA*/ bestDist = Double.MAX_VALUE;//HUGE;
-            final double /*VQDATA*/[] tempvq = new double[64];
+            double /*VQDATA*/[] tempvq = new double[64];
             int bestIndex = -1;
 
             for (int i = 0; i < dimension; i++) {
@@ -1081,7 +1078,7 @@ public class Codec {
         }
 
         private void VQ(final int numEntries, final int dimension, final /*unsigned*/ byte[] vectors, float[] snr, double /*VQDATA*/[][] codebook, final boolean optimize) {
-            final int startMsec = Sys_Milliseconds();
+            int startMsec = Sys_Milliseconds();
 
             if (numEntries <= 256) {
                 //
@@ -1089,7 +1086,7 @@ public class Codec {
                 //
                 for (int i = 0; i < numEntries; i++) {
                     for (int j = 0; j < dimension; j++) {
-                        codebook[i][j] = vectors[j + (i * dimension)];
+                        codebook[i][j] = vectors[j + i * dimension];
                     }
                 }
                 return;
@@ -1101,10 +1098,10 @@ public class Codec {
             // get rid of identical entries
             int i, j, x, ibase, jbase;
 
-            final boolean[] inuse = new boolean[numEntries];
-            final float[] snrs = new float[numEntries];
-            final int[] indexes = new int[numEntries];
-            final int[] indexet = new int[numEntries];
+            boolean[] inuse = new boolean[numEntries];
+            float[] snrs = new float[numEntries];
+            int[] indexes = new int[numEntries];
+            int[] indexet = new int[numEntries];
 
             int numFinalEntries = numEntries;
             for (i = 0; i < numEntries; i++) {
@@ -1114,7 +1111,7 @@ public class Codec {
                 indexet[i] = -1;
             }
 
-            for (i = 0; i < (numEntries - 1); i++) {
+            for (i = 0; i < numEntries - 1; i++) {
                 for (j = i + 1; j < numEntries; j++) {
                     if (inuse[i] && inuse[j]) {
 //				if (!memcmp( &vectors[i*dimension], &vectors[j*dimension], dimension)) {
@@ -1144,7 +1141,7 @@ public class Codec {
                 int bestIndex = -1;
                 int bestOtherIndex = 0;
                 int aentries = 0;
-                for (i = 0; i < (numEntries - 1); i++) {
+                for (i = 0; i < numEntries - 1; i++) {
                     if (inuse[i]) {
                         end = numEntries;
                         if (optimize) {
@@ -1179,10 +1176,10 @@ public class Codec {
                                     // dist += idMath::Sqrt16( (r0-r1)*(r0-r1) + (g0-g1)*(g0-g1) + (b0-b1)*(b0-b1) );
 // #else
                                     // JDC: optimization
-                                    final int dr = (vectors[ibase + x] - vectors[jbase + x]) & 0xFFFF;
-                                    final int dg = (vectors[ibase + x + 1] - vectors[jbase + x + 1]) & 0xFFFF;
-                                    final int db = (vectors[ibase + x + 2] - vectors[jbase + x + 2]) & 0xFFFF;
-                                    dist += idMath.Sqrt16((dr * dr) + (dg * dg) + (db * db));
+                                    int dr = (vectors[ibase + x] - vectors[jbase + x]) & 0xFFFF;
+                                    int dg = (vectors[ibase + x + 1] - vectors[jbase + x + 1]) & 0xFFFF;
+                                    int db = (vectors[ibase + x + 2] - vectors[jbase + x + 2]) & 0xFFFF;
+                                    dist += idMath.Sqrt16(dr * dr + dg * dg + db * db);
 // #endif
                                 }
                                 simport = snr[i] * snr[j];
@@ -1219,12 +1216,12 @@ public class Codec {
                             }
                         }
                     }
-                    if ((bestIndex == -1) || !optimize) {
+                    if (bestIndex == -1 || !optimize) {
                         bestDist = Double.MAX_VALUE;//HUGE;
                         bestIndex = -1;
                         bestOtherIndex = 0;
                         aentries = 0;
-                        for (i = 0; i < (numEntries - 1); i++) {
+                        for (i = 0; i < numEntries - 1; i++) {
                             if (!inuse[i]) {
                                 continue;
                             }
@@ -1253,7 +1250,7 @@ public class Codec {
                                 dist = 0.0;
                                 jbase = j * dimension;
                                 simport = snr[i] * snr[j];
-                                final float scaledBestDist = (float) (bestDist / simport);
+                                float scaledBestDist = (float) (bestDist / simport);
                                 for (x = 0; x < dimension; x += 3) {
 // #if 0
                                     // r0 = (float)vectors[ibase+x];
@@ -1265,10 +1262,10 @@ public class Codec {
                                     // dist += idMath::Sqrt16( (r0-r1)*(r0-r1) + (g0-g1)*(g0-g1) + (b0-b1)*(b0-b1) );
 // #else
                                     // JDC: optimization
-                                    final int dr = (vectors[ibase + x] - vectors[jbase + x]) & 0xFFFF;
-                                    final int dg = (vectors[ibase + x + 1] - vectors[jbase + x + 1]) & 0xFFFF;
-                                    final int db = (vectors[ibase + x + 2] - vectors[jbase + x + 2]) & 0xFFFF;
-                                    dist += idMath.Sqrt16((dr * dr) + (dg * dg) + (db * db));
+                                    int dr = (vectors[ibase + x] - vectors[jbase + x]) & 0xFFFF;
+                                    int dg = (vectors[ibase + x + 1] - vectors[jbase + x + 1]) & 0xFFFF;
+                                    int db = (vectors[ibase + x + 2] - vectors[jbase + x + 2]) & 0xFFFF;
+                                    dist += idMath.Sqrt16(dr * dr + dg * dg + db * db);
                                     if (dist > scaledBestDist) {
                                         break;
                                     }
@@ -1319,7 +1316,7 @@ public class Codec {
                 }
             }
 
-            final int endMsec = Sys_Milliseconds();
+            int endMsec = Sys_Milliseconds();
             common.Printf("VQ took %d msec\n", endMsec - startMsec);
         }
 
@@ -1336,7 +1333,7 @@ public class Codec {
 
             stride = 1;
             while (stride <= numElements) {
-                stride = (stride * STRIDE_FACTOR) + 1;
+                stride = stride * STRIDE_FACTOR + 1;
             }
 
             while (stride > (STRIDE_FACTOR - 1)) { // loop to sort for each value of stride
@@ -1366,8 +1363,7 @@ public class Codec {
 
         private void Segment(int[] alist, float[] flist, int numElements, float rmse) {
             int x, y, yy, xx, numc, onf, index, temp, best, a0, a1, a2, a3, bpp, i, len;
-            final byte[] find = new byte[16];
-			byte[] lineout, cbook, src, dst;
+            byte[] find = new byte[16], lineout, cbook, src, dst;
             float fy, fcr, fcb;
             idFile fpcb;
 //	char []cbFile = new char[256], tempcb= new char[256], temptb= new char[256];
@@ -1408,7 +1404,7 @@ public class Codec {
                 doopen = true;
                 common.Printf("failed....\n");
             } else {
-                if (this.dimension2 == 16) {
+                if (dimension2 == 16) {
                     x = 3584;
                 } else {
                     x = 2560;
@@ -1429,36 +1425,36 @@ public class Codec {
                 onf = 0;
 
                 for (x = 0; x < 256; x++) {
-                    for (y = 0; y < this.dimension2; y++) {
-                        this.codebook2[x][y] = 0;
+                    for (y = 0; y < dimension2; y++) {
+                        codebook2[x][y] = 0;
                     }
-                    for (y = 0; y < this.dimension4; y++) {
-                        this.codebook4[x][y] = 0;
+                    for (y = 0; y < dimension4; y++) {
+                        codebook4[x][y] = 0;
                     }
                 }
 
-                bpp = this.image.samplesPerPixel();
-                cbook = new byte[3 * this.image.pixelsWide() * this.image.pixelsHigh()];// Mem_ClearedAlloc(3 * image.pixelsWide() * image.pixelsHigh());
-                float[] snrBook = new float[this.image.pixelsWide() * this.image.pixelsHigh()];// Mem_ClearedAlloc(image.pixelsWide() * image.pixelsHigh());
+                bpp = image.samplesPerPixel();
+                cbook = new byte[3 * image.pixelsWide() * image.pixelsHigh()];// Mem_ClearedAlloc(3 * image.pixelsWide() * image.pixelsHigh());
+                float[] snrBook = new float[image.pixelsWide() * image.pixelsHigh()];// Mem_ClearedAlloc(image.pixelsWide() * image.pixelsHigh());
                 dst = cbook;
                 int numEntries = 0;
                 int s_p = 0, d_p = 0;
-                for (i = 0; i < this.numQuadCels; i++) {
-                    if ((this.qStatus[i].size == 8) && (this.qStatus[i].rsnr >= (MIN_SNR * 4))) {
-                        for (y = this.qStatus[i].yat; y < (this.qStatus[i].yat + 8); y += 4) {
-                            for (x = this.qStatus[i].xat; x < (this.qStatus[i].xat + 8); x += 4) {
-                                if (this.qStatus[i].rsnr == 9999.0f) {
+                for (i = 0; i < numQuadCels; i++) {
+                    if (qStatus[i].size == 8 && qStatus[i].rsnr >= MIN_SNR * 4) {
+                        for (y = qStatus[i].yat; y < qStatus[i].yat + 8; y += 4) {
+                            for (x = qStatus[i].xat; x < qStatus[i].xat + 8; x += 4) {
+                                if (qStatus[i].rsnr == 9999.0f) {
                                     snrBook[numEntries] = 1.0f;
                                 } else {
-                                    snrBook[numEntries] = this.qStatus[i].rsnr;
+                                    snrBook[numEntries] = qStatus[i].rsnr;
                                 }
                                 numEntries++;
-                                src = this.image.bitmapData();
+                                src = image.bitmapData();
                                 for (yy = y; yy < (y + 4); yy++) {
                                     for (xx = x; xx < (x + 4); xx++) {
-                                        s_p = (yy * (bpp * this.image.pixelsWide())) + (xx * bpp);
+                                        s_p = (yy * (bpp * image.pixelsWide())) + (xx * bpp);
 //						memcpy( dst, src, 3); 
-                                        Nio.arraycopy(src, s_p, dst, d_p, 3);
+                                        System.arraycopy(src, s_p, dst, d_p, 3);
 //                                                dst += 3;
                                         d_p += 3;
                                     }
@@ -1469,7 +1465,7 @@ public class Codec {
                 }
                 common.Printf("segment: %d 4x4 cels to vq\n", numEntries);
 
-                VQ(numEntries, this.dimension4, cbook, snrBook, this.codebook4, true);
+                VQ(numEntries, dimension4, cbook, snrBook, codebook4, true);
 
                 dst = cbook;
                 numEntries = 0;
@@ -1481,9 +1477,9 @@ public class Codec {
                             numEntries++;
                             for (yy = y; yy < (y + 2); yy++) {
                                 for (xx = x; xx < (x + 2); xx++) {
-                                    dst[d_p + 0] = (byte) this.codebook4[i][(yy * 12) + (xx * 3) + 0];
-                                    dst[d_p + 1] = (byte) this.codebook4[i][(yy * 12) + (xx * 3) + 1];
-                                    dst[d_p + 2] = (byte) this.codebook4[i][(yy * 12) + (xx * 3) + 2];
+                                    dst[d_p + 0] = (byte) codebook4[i][yy * 12 + xx * 3 + 0];
+                                    dst[d_p + 1] = (byte) codebook4[i][yy * 12 + xx * 3 + 1];
+                                    dst[d_p + 2] = (byte) codebook4[i][yy * 12 + xx * 3 + 2];
                                     d_p += 3;
                                 }
                             }
@@ -1492,7 +1488,7 @@ public class Codec {
                 }
                 common.Printf("segment: %d 2x2 cels to vq\n", numEntries);
 
-                VQ(numEntries, this.dimension2, cbook, snrBook, this.codebook2, false);
+                VQ(numEntries, dimension2, cbook, snrBook, codebook2, false);
 
                 cbook = null;//Mem_Free(cbook);
                 snrBook = null;//Mem_Free(snrBook);
@@ -1502,9 +1498,9 @@ public class Codec {
                     numc = 0;
                     fcr = fcb = 0;
                     for (x = 0; x < 4; x++) {
-                        fy = (RMULT * (float) (this.codebook2[onf][numc + 0]))
-                                + (GMULT * (float) (this.codebook2[onf][numc + 1]))
-                                + (BMULT * (float) (this.codebook2[onf][numc + 2])) + 0.5f;
+                        fy = RMULT * (float) (codebook2[onf][numc + 0])
+                                + GMULT * (float) (codebook2[onf][numc + 1])
+                                + BMULT * (float) (codebook2[onf][numc + 2]) + 0.5f;
                         if (fy < 0) {
                             fy = 0;
                         }
@@ -1512,13 +1508,13 @@ public class Codec {
                             fy = 255;
                         }
 
-                        fcr += RIEMULT * (float) (this.codebook2[onf][numc + 0]);
-                        fcr += GIEMULT * (float) (this.codebook2[onf][numc + 1]);
-                        fcr += BIEMULT * (float) (this.codebook2[onf][numc + 2]);
+                        fcr += RIEMULT * (float) (codebook2[onf][numc + 0]);
+                        fcr += GIEMULT * (float) (codebook2[onf][numc + 1]);
+                        fcr += BIEMULT * (float) (codebook2[onf][numc + 2]);
 
-                        fcb += RQEMULT * (float) (this.codebook2[onf][numc + 0]);
-                        fcb += GQEMULT * (float) (this.codebook2[onf][numc + 1]);
-                        fcb += BQEMULT * (float) (this.codebook2[onf][numc + 2]);
+                        fcb += RQEMULT * (float) (codebook2[onf][numc + 0]);
+                        fcb += GQEMULT * (float) (codebook2[onf][numc + 1]);
+                        fcb += BQEMULT * (float) (codebook2[onf][numc + 2]);
 
                         lineout[index++] = (byte) fy;
                         numc += 3;
@@ -1547,15 +1543,15 @@ public class Codec {
                         for (x = 0; x < 4; x += 2) {
                             numc = 0;
                             for (yy = y; yy < (y + 2); yy++) {
-                                temp = (yy * this.dimension2) + (x * (this.dimension2 / 4));
-                                find[numc++] = (byte) (this.codebook4[onf][temp + 0] + 0.50f);
-                                find[numc++] = (byte) (this.codebook4[onf][temp + 1] + 0.50f);
-                                find[numc++] = (byte) (this.codebook4[onf][temp + 2] + 0.50f);
-                                find[numc++] = (byte) (this.codebook4[onf][temp + 3] + 0.50f);
-                                find[numc++] = (byte) (this.codebook4[onf][temp + 4] + 0.50f);
-                                find[numc++] = (byte) (this.codebook4[onf][temp + 5] + 0.50f);
+                                temp = (yy * dimension2) + x * (dimension2 / 4);
+                                find[numc++] = (byte) (codebook4[onf][temp + 0] + 0.50f);
+                                find[numc++] = (byte) (codebook4[onf][temp + 1] + 0.50f);
+                                find[numc++] = (byte) (codebook4[onf][temp + 2] + 0.50f);
+                                find[numc++] = (byte) (codebook4[onf][temp + 3] + 0.50f);
+                                find[numc++] = (byte) (codebook4[onf][temp + 4] + 0.50f);
+                                find[numc++] = (byte) (codebook4[onf][temp + 5] + 0.50f);
                             }
-                            lineout[index++] = (byte) BestCodeword(find, this.dimension2, this.codebook2);
+                            lineout[index++] = (byte) BestCodeword(find, dimension2, codebook2);
                         }
                     }
                 }
@@ -1569,27 +1565,27 @@ public class Codec {
 
             for (y = 0; y < 256; y++) {
                 x = y * 6;
-                y0 = lineout[x++];
-                y1 = lineout[x++];
-                y2 = lineout[x++];
-                y3 = lineout[x++];
-                cb = lineout[x++];
+                y0 = (float) lineout[x++];
+                y1 = (float) lineout[x++];
+                y2 = (float) lineout[x++];
+                y3 = (float) lineout[x++];
+                cb = (float) lineout[x++];
                 cb -= 128;
-                cr = lineout[x];
+                cr = (float) lineout[x];
                 cr -= 128;
                 x = 0;
-                this.codebook2[y][x++] = glimit(y0 + (1.40200f * cr));
-                this.codebook2[y][x++] = glimit(y0 - (0.34414f * cb) - (0.71414f * cr));
-                this.codebook2[y][x++] = glimit(y0 + (1.77200f * cb));
-                this.codebook2[y][x++] = glimit(y1 + (1.40200f * cr));
-                this.codebook2[y][x++] = glimit(y1 - (0.34414f * cb) - (0.71414f * cr));
-                this.codebook2[y][x++] = glimit(y1 + (1.77200f * cb));
-                this.codebook2[y][x++] = glimit(y2 + (1.40200f * cr));
-                this.codebook2[y][x++] = glimit(y2 - (0.34414f * cb) - (0.71414f * cr));
-                this.codebook2[y][x++] = glimit(y2 + (1.77200f * cb));
-                this.codebook2[y][x++] = glimit(y3 + (1.40200f * cr));
-                this.codebook2[y][x++] = glimit(y3 - (0.34414f * cb) - (0.71414f * cr));
-                this.codebook2[y][x++] = glimit(y3 + (1.77200f * cb));
+                codebook2[y][x++] = glimit(y0 + 1.40200f * cr);
+                codebook2[y][x++] = glimit(y0 - 0.34414f * cb - 0.71414f * cr);
+                codebook2[y][x++] = glimit(y0 + 1.77200f * cb);
+                codebook2[y][x++] = glimit(y1 + 1.40200f * cr);
+                codebook2[y][x++] = glimit(y1 - 0.34414f * cb - 0.71414f * cr);
+                codebook2[y][x++] = glimit(y1 + 1.77200f * cb);
+                codebook2[y][x++] = glimit(y2 + 1.40200f * cr);
+                codebook2[y][x++] = glimit(y2 - 0.34414f * cb - 0.71414f * cr);
+                codebook2[y][x++] = glimit(y2 + 1.77200f * cb);
+                codebook2[y][x++] = glimit(y3 + 1.40200f * cr);
+                codebook2[y][x++] = glimit(y3 - 0.34414f * cb - 0.71414f * cr);
+                codebook2[y][x++] = glimit(y3 + 1.77200f * cb);
             }
 
             index = 6 * 256;
@@ -1600,13 +1596,13 @@ public class Codec {
                         best = lineout[index++];
                         numc = 0;
                         for (yy = y; yy < (y + 2); yy++) {
-                            temp = (yy * this.dimension2) + (x * (this.dimension2 / 4));
-                            this.codebook4[onf][temp + 0] = this.codebook2[best][numc++];	//r
-                            this.codebook4[onf][temp + 1] = this.codebook2[best][numc++];	//g
-                            this.codebook4[onf][temp + 2] = this.codebook2[best][numc++];	//b
-                            this.codebook4[onf][temp + 3] = this.codebook2[best][numc++];	//r a
-                            this.codebook4[onf][temp + 4] = this.codebook2[best][numc++];	//g r
-                            this.codebook4[onf][temp + 5] = this.codebook2[best][numc++];	//b g 
+                            temp = (yy * dimension2) + x * (dimension2 / 4);
+                            codebook4[onf][temp + 0] = codebook2[best][numc++];	//r
+                            codebook4[onf][temp + 1] = codebook2[best][numc++];	//g
+                            codebook4[onf][temp + 2] = codebook2[best][numc++];	//b
+                            codebook4[onf][temp + 3] = codebook2[best][numc++];	//r a
+                            codebook4[onf][temp + 4] = codebook2[best][numc++];	//g r
+                            codebook4[onf][temp + 5] = codebook2[best][numc++];	//b g 
                         }
                     }
                 }
@@ -1620,7 +1616,7 @@ public class Codec {
 
         private void LowestQuad(quadcel qtemp, int[] status, float[] snr, int bweigh) {
             float wtemp;
-            final float[] quickadd = new float[DEAD];
+            float[] quickadd = new float[DEAD];
             int i;
 
             quickadd[CCC] = 1;
@@ -1637,7 +1633,7 @@ public class Codec {
             wtemp = 99999;
 
             for (i = (DEAD - 1); i > 0; i--) {
-                if ((qtemp.snr[i] * quickadd[i]) < wtemp) {
+                if (qtemp.snr[i] * quickadd[i] < wtemp) {
                     status[0] = i;
                     snr[0] = qtemp.snr[i];
                     wtemp = qtemp.snr[i] * quickadd[i];
@@ -1656,26 +1652,26 @@ public class Codec {
             boolean diff;
 
             for (i = 0; i < 256; i++) {
-                this.used2[i] = this.used4[i] = false;
+                used2[i] = used4[i] = false;
             }
 
-            pWide = this.pixelsWide & 0xfff0;
-            if (NOT(this.previousImage[0])) {
-                this.previousImage[0] = new NSBitmapImageRep(pWide, (this.pixelsHigh & 0xfff0));
-                this.previousImage[1] = new NSBitmapImageRep(pWide, (this.pixelsHigh & 0xfff0));
+            pWide = pixelsWide & 0xfff0;
+            if (NOT(previousImage[0])) {
+                previousImage[0] = new NSBitmapImageRep(pWide, (pixelsHigh & 0xfff0));
+                previousImage[1] = new NSBitmapImageRep(pWide, (pixelsHigh & 0xfff0));
             }
 
-            rgbmap = this.previousImage[(this.whichFrame & 1)].bitmapData();
+            rgbmap = previousImage[(whichFrame & 1)].bitmapData();
 
-            if ((this.whichFrame & 1) == 1) {
-                fccdictionary = this.previousImage[0].bitmapData();
+            if ((whichFrame & 1) == 1) {
+                fccdictionary = previousImage[0].bitmapData();
             } else {
-                fccdictionary = this.previousImage[1].bitmapData();
+                fccdictionary = previousImage[1].bitmapData();
             }
 
             idataA = new byte[16 * 16 * 4];// Mem_Alloc(16 * 16 * 4);
 
-            for (i = 0; i < this.numQuadCels; i++) {
+            for (i = 0; i < numQuadCels; i++) {
                 diff = false;
                 size = pquad[i].size;
                 if (size != 0) {
@@ -1684,71 +1680,71 @@ public class Codec {
                             break;
                         case SLD:
                             ind = pquad[i].patten[0];
-                            this.used4[ind] = true;
+                            used4[ind] = true;
                             for (dy = 0; dy < size; dy++) {
                                 pluck = (((dy + pquad[i].yat) * pWide) + pquad[i].xat) * 4;
                                 for (dx = 0; dx < size; dx++) {
-                                    xx = ((dy >> 1) * this.dimension2) + ((dx >> 1) * (this.dimension2 / 4));
-                                    if (rgbmap[pluck + 0] != this.codebook4[ind][xx + 0]) {
+                                    xx = ((dy >> 1) * dimension2) + (dx >> 1) * (dimension2 / 4);
+                                    if (rgbmap[pluck + 0] != codebook4[ind][xx + 0]) {
                                         diff = true;
                                     }
-                                    if (rgbmap[pluck + 1] != this.codebook4[ind][xx + 1]) {
+                                    if (rgbmap[pluck + 1] != codebook4[ind][xx + 1]) {
                                         diff = true;
                                     }
-                                    if (rgbmap[pluck + 2] != this.codebook4[ind][xx + 2]) {
+                                    if (rgbmap[pluck + 2] != codebook4[ind][xx + 2]) {
                                         diff = true;
                                     }
-                                    if ((this.dimension4 == 64) && (rgbmap[pluck + 3] != this.codebook4[ind][xx + 3])) {
+                                    if (dimension4 == 64 && rgbmap[pluck + 3] != codebook4[ind][xx + 3]) {
                                         diff = true;
                                     }
 
-                                    rgbmap[pluck + 0] = (byte) this.codebook4[ind][xx + 0];
-                                    rgbmap[pluck + 1] = (byte) this.codebook4[ind][xx + 1];
-                                    rgbmap[pluck + 2] = (byte) this.codebook4[ind][xx + 2];
-                                    if (this.dimension4 == 64) {
-                                        rgbmap[pluck + 3] = (byte) this.codebook4[ind][xx + 3];
+                                    rgbmap[pluck + 0] = (byte) codebook4[ind][xx + 0];
+                                    rgbmap[pluck + 1] = (byte) codebook4[ind][xx + 1];
+                                    rgbmap[pluck + 2] = (byte) codebook4[ind][xx + 2];
+                                    if (dimension4 == 64) {
+                                        rgbmap[pluck + 3] = (byte) codebook4[ind][xx + 3];
                                     } else {
                                         rgbmap[pluck + 3] = (byte) 255;
                                     }
                                     pluck += 4;
                                 }
                             }
-                            if ((diff == false) && (this.whichFrame != 0)) {
+                            if (diff == false && whichFrame != 0) {
                                 common.Printf("drawImage: SLD just changed the same thing\n");
                             }
                             break;
                         case PAT:
                             ind = pquad[i].patten[0];
-                            this.used4[ind] = true;
+                            used4[ind] = true;
                             for (dy = 0; dy < size; dy++) {
                                 pluck = (((dy + pquad[i].yat) * pWide) + pquad[i].xat) * 4;
                                 for (dx = 0; dx < size; dx++) {
-                                    xx = (dy * size * (this.dimension2 / 4)) + (dx * (this.dimension2 / 4));
-                                    if (rgbmap[pluck + 0] != this.codebook4[ind][xx + 0]) {
+                                    xx = (dy * size * (dimension2 / 4)) + dx * (dimension2 / 4);
+                                    if (rgbmap[pluck + 0] != codebook4[ind][xx + 0]) {
                                         diff = true;
                                     }
-                                    if (rgbmap[pluck + 1] != this.codebook4[ind][xx + 1]) {
+                                    if (rgbmap[pluck + 1] != codebook4[ind][xx + 1]) {
                                         diff = true;
                                     }
-                                    if (rgbmap[pluck + 2] != this.codebook4[ind][xx + 2]) {
+                                    if (rgbmap[pluck + 2] != codebook4[ind][xx + 2]) {
                                         diff = true;
                                     }
-                                    if ((this.dimension4 == 64) && (rgbmap[pluck + 3] != this.codebook4[ind][xx + 3])) {
+                                    if (dimension4 == 64 && rgbmap[pluck + 3] != codebook4[ind][xx + 3]) {
                                         diff = true;
                                     }
 
-                                    rgbmap[pluck + 0] = (byte) this.codebook4[ind][xx + 0];
-                                    rgbmap[pluck + 1] = (byte) this.codebook4[ind][xx + 1];
-                                    rgbmap[pluck + 2] = (byte) this.codebook4[ind][xx + 2];
-                                    if (this.dimension4 == 64) {
-                                        rgbmap[pluck + 3] = (byte) this.codebook4[ind][xx + 3];
+                                    rgbmap[pluck + 0] = (byte) codebook4[ind][xx + 0];
+                                    rgbmap[pluck + 1] = (byte) codebook4[ind][xx + 1];
+                                    rgbmap[pluck + 2] = (byte) codebook4[ind][xx + 2];
+                                    if (dimension4 == 64) {
+                                        rgbmap[pluck + 3] = (byte) codebook4[ind][xx + 3];
                                     } else {
                                         rgbmap[pluck + 3] = (byte) 255;
                                     }
                                     pluck += 4;
                                 }
                             }
-                            if ((diff == false) && (this.whichFrame != 0)) {
+                            if (diff == false && whichFrame != 0) {
                                 common.Printf("drawImage: PAT just changed the same thing\n");
                             }
                             break;
@@ -1757,29 +1753,29 @@ public class Codec {
                             for (yy = 0; yy < 4; yy += 2) {
                                 for (xx = 0; xx < 4; xx += 2) {
                                     ind = pquad[i].patten[dx++];
-                                    this.used2[ind] = true;
+                                    used2[ind] = true;
                                     dy = 0;
                                     for (y = yy; y < (yy + 2); y++) {
                                         for (x = xx; x < (xx + 2); x++) {
                                             pluck = (((y + pquad[i].yat) * pWide) + (pquad[i].xat + x)) * 4;
-                                            if (rgbmap[pluck + 0] != this.codebook2[ind][dy + 0]) {
+                                            if (rgbmap[pluck + 0] != codebook2[ind][dy + 0]) {
                                                 diff = true;
                                             }
-                                            if (rgbmap[pluck + 1] != this.codebook2[ind][dy + 1]) {
+                                            if (rgbmap[pluck + 1] != codebook2[ind][dy + 1]) {
                                                 diff = true;
                                             }
-                                            if (rgbmap[pluck + 2] != this.codebook2[ind][dy + 2]) {
+                                            if (rgbmap[pluck + 2] != codebook2[ind][dy + 2]) {
                                                 diff = true;
                                             }
-                                            if ((this.dimension4 == 64) && (rgbmap[pluck + 3] != this.codebook2[ind][dy + 3])) {
+                                            if (dimension4 == 64 && rgbmap[pluck + 3] != codebook2[ind][dy + 3]) {
                                                 diff = true;
                                             }
 
-                                            rgbmap[pluck + 0] = (byte) this.codebook2[ind][dy + 0];
-                                            rgbmap[pluck + 1] = (byte) this.codebook2[ind][dy + 1];
-                                            rgbmap[pluck + 2] = (byte) this.codebook2[ind][dy + 2];
-                                            if (this.dimension4 == 64) {
-                                                rgbmap[pluck + 3] = (byte) this.codebook2[ind][dy + 3];
+                                            rgbmap[pluck + 0] = (byte) codebook2[ind][dy + 0];
+                                            rgbmap[pluck + 1] = (byte) codebook2[ind][dy + 1];
+                                            rgbmap[pluck + 2] = (byte) codebook2[ind][dy + 2];
+                                            if (dimension4 == 64) {
+                                                rgbmap[pluck + 3] = (byte) codebook2[ind][dy + 3];
                                                 dy += 4;
                                             } else {
                                                 rgbmap[pluck + 3] = (byte) 255;
@@ -1789,7 +1785,7 @@ public class Codec {
                                     }
                                 }
                             }
-                            if ((diff == false) && (this.whichFrame != 0)) {
+                            if (diff == false && whichFrame != 0) {
                                 /*
                                  common->Printf("drawImage: CCC just changed the same thing\n");
                                  common->Printf("sparseEncode: something is wrong here\n");
@@ -1811,16 +1807,16 @@ public class Codec {
                         case FCC:
                             dx = pquad[i].xat - ((pquad[i].domain >> 8) - 128);
                             dy = pquad[i].yat - ((pquad[i].domain & 0xff) - 128);
-                            if (this.image.pixelsWide() == (this.image.pixelsHigh() * 4)) {
-                                dx = pquad[i].xat - (((pquad[i].domain >> 8) - 128) * 2);
+                            if (image.pixelsWide() == (image.pixelsHigh() * 4)) {
+                                dx = pquad[i].xat - ((pquad[i].domain >> 8) - 128) * 2;
                             }
                             if (theRoQ.Scaleable()) {
-                                dx = pquad[i].xat - (((pquad[i].domain >> 8) - 128) * 2);
-                                dy = pquad[i].yat - (((pquad[i].domain & 0xff) - 128) * 2);
+                                dx = pquad[i].xat - ((pquad[i].domain >> 8) - 128) * 2;
+                                dy = pquad[i].yat - ((pquad[i].domain & 0xff) - 128) * 2;
                             }
 //				if (pquad[i].yat == 0) common->Printf("dx = %d, dy = %d, xat = %d\n", dx, dy, pquad[i].xat);
 
-                            ind = ((dy * pWide) + dx) * 4;
+                            ind = (dy * pWide + dx) * 4;
                             for (dy = 0; dy < size; dy++) {
                                 pluck = (((dy + pquad[i].yat) * pWide) + pquad[i].xat) * 4;
                                 for (dx = 0; dx < size; dx++) {
@@ -1853,18 +1849,18 @@ public class Codec {
                     }
                 }
             }
-            if (this.whichFrame == 0) {
+            if (whichFrame == 0) {
 //			memcpy( previousImage[1].bitmapData(), previousImage[0].bitmapData(), pWide*(pixelsHigh & 0xfff0)*4);
-                Nio.arraycopy(this.previousImage[0].bitmapData(), 0, this.previousImage[1].bitmapData(), 0, pWide * (this.pixelsHigh & 0xfff0) * 4);
+                System.arraycopy(previousImage[0].bitmapData(), 0, previousImage[1].bitmapData(), 0, pWide * (pixelsHigh & 0xfff0) * 4);
             }
 
             x = 0;
             y = 0;
             for (i = 0; i < 256; i++) {
-                if (this.used4[i]) {
+                if (used4[i]) {
                     x++;
                 }
-                if (this.used2[i]) {
+                if (used2[i]) {
                     y++;
                 }
             }
@@ -1882,8 +1878,8 @@ public class Codec {
 
             totalbits = 0;
             j = 0;
-            for (i = 0; i < this.numQuadCels; i++) {
-                if ((pquad[i].size != 0) && (pquad[i].status != 0) && (pquad[i].status != DEAD)) {
+            for (i = 0; i < numQuadCels; i++) {
+                if (pquad[i].size != 0 && pquad[i].status != 0 && pquad[i].status != DEAD) {
                     if (pquad[i].size == 8) {
                         totalbits += pquad[i].rsnr * 4;
                         j += 4;
@@ -1900,7 +1896,7 @@ public class Codec {
 
         private int GetCurrentQuadOutputSize(quadcel[] pquad) {
             int totalbits, i, totalbytes;
-            final int[] quickadd = new int[DEAD + 1];
+            int[] quickadd = new int[DEAD + 1];
 
             totalbits = 0;
 
@@ -1912,8 +1908,8 @@ public class Codec {
             quickadd[FCC] = 10;
             quickadd[DEAD] = 0;
 
-            for (i = 0; i < this.numQuadCels; i++) {
-                if ((pquad[i].size != 0) && (pquad[i].size < 16)) {
+            for (i = 0; i < numQuadCels; i++) {
+                if (pquad[i].size != 0 && pquad[i].size < 16) {
                     totalbits += quickadd[pquad[i].status];
                 }
             }
@@ -1941,22 +1937,22 @@ public class Codec {
                 newsnr = 0;
                 idataA = new byte[8 * 8 * 4];// Mem_Alloc(8 * 8 * 4);
                 idataB = new byte[8 * 8 * 4];// Mem_Alloc(8 * 8 * 4);
-                for (i = lownum + 1; i < (lownum + (nx * 4) + 1); i += nx) {
+                for (i = lownum + 1; i < lownum + (nx * 4) + 1; i += nx) {
                     pquad[i].size = (byte) nsize;
-                    GetData(idataA, pquad[i].size, pquad[i].xat, pquad[i].yat, this.image);
+                    GetData(idataA, pquad[i].size, pquad[i].xat, pquad[i].yat, image);
                     VqData4(idataA, pquad[i]);
                     VqData2(idataA, pquad[i]);
-                    if (this.previousImage[0] != null) {
+                    if (previousImage[0] != null) {
                         FvqData(idataA, pquad[i].size, pquad[i].xat, pquad[i].yat, pquad[i], true);
-                        GetData(idataB, pquad[i].size, pquad[i].xat, pquad[i].yat, this.previousImage[this.whichFrame & 1]);
+                        GetData(idataB, pquad[i].size, pquad[i].xat, pquad[i].yat, previousImage[whichFrame & 1]);
                         pquad[i].snr[MOT] = Snr(idataA, idataB, pquad[i].size);
-                        if (ComputeMotionBlock(idataA, idataB, pquad[i].size) && !theRoQ.IsLastFrame() && !this.detail) {
+                        if (ComputeMotionBlock(idataA, idataB, pquad[i].size) && !theRoQ.IsLastFrame() && !detail) {
                             pquad[i].mark = true;
                         }
                     }
                     {
-                        final float[] rsnr = {0};
-                        final int[] status = {0};
+                        float[] rsnr = {0};
+                        int[] status = {0};
                         LowestQuad(pquad[i], status, rsnr, 1);//true);
                         pquad[i].status = status[0];
                         pquad[i].rsnr = rsnr[0];
@@ -1968,16 +1964,16 @@ public class Codec {
                 newsnr /= 4;
 
                 {
-                    final float[] rsnr = {0};
-                    final int[] status = {0};
+                    float[] rsnr = {0};
+                    int[] status = {0};
                     LowestQuad(pquad[lownum], status, rsnr, 0);//false);
                     pquad[lownum].status = status[0];
                     pquad[lownum].rsnr = rsnr[0];
                 }
 
-                if ((pquad[lownum + (nx * 0) + 1].status == MOT) && (pquad[lownum + (nx * 1) + 1].status == MOT)
-                        && (pquad[lownum + (nx * 2) + 1].status == MOT) && (pquad[lownum + (nx * 3) + 1].status == MOT)
-                        && (nsize == 4)) {
+                if (pquad[lownum + nx * 0 + 1].status == MOT && pquad[lownum + nx * 1 + 1].status == MOT
+                        && pquad[lownum + nx * 2 + 1].status == MOT && pquad[lownum + nx * 3 + 1].status == MOT
+                        && nsize == 4) {
                     newsnr = 9999;
                     pquad[lownum].status = MOT;
                 }
@@ -1985,24 +1981,24 @@ public class Codec {
                 if (pquad[lownum].rsnr > newsnr) {
                     pquad[lownum].status = DEP;
                     pquad[lownum].rsnr = 0;
-                    for (i = lownum + 1; i < (lownum + (nx * 4) + 1); i += nx) {
-                        theRoQ.MarkQuadx(pquad[i].xat, pquad[i].yat, nsize, pquad[i].rsnr, this.qStatus[i].status);
+                    for (i = lownum + 1; i < lownum + (nx * 4) + 1; i += nx) {
+                        theRoQ.MarkQuadx(pquad[i].xat, pquad[i].yat, nsize, pquad[i].rsnr, qStatus[i].status);
                     }
                 } else {
-                    theRoQ.MarkQuadx(pquad[lownum].xat, pquad[lownum].yat, nsize * 2, pquad[lownum].rsnr, this.qStatus[lownum].status);
-                    pquad[lownum + (nx * 0) + 1].status = 0;
-                    pquad[lownum + (nx * 1) + 1].status = 0;
-                    pquad[lownum + (nx * 2) + 1].status = 0;
-                    pquad[lownum + (nx * 3) + 1].status = 0;
-                    pquad[lownum + (nx * 0) + 1].size = 0;
-                    pquad[lownum + (nx * 1) + 1].size = 0;
-                    pquad[lownum + (nx * 2) + 1].size = 0;
-                    pquad[lownum + (nx * 3) + 1].size = 0;
+                    theRoQ.MarkQuadx(pquad[lownum].xat, pquad[lownum].yat, nsize * 2, pquad[lownum].rsnr, qStatus[lownum].status);
+                    pquad[lownum + nx * 0 + 1].status = 0;
+                    pquad[lownum + nx * 1 + 1].status = 0;
+                    pquad[lownum + nx * 2 + 1].status = 0;
+                    pquad[lownum + nx * 3 + 1].status = 0;
+                    pquad[lownum + nx * 0 + 1].size = 0;
+                    pquad[lownum + nx * 1 + 1].size = 0;
+                    pquad[lownum + nx * 2 + 1].size = 0;
+                    pquad[lownum + nx * 3 + 1].size = 0;
                 }
             } else {
                 lownum = -1;
             }
             return lownum;
         }
-    }
+    };
 }

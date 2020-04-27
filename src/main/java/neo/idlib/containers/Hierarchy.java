@@ -16,18 +16,18 @@ public class Hierarchy {
      */
     public static class idHierarchy<type> {
 
-        private idHierarchy<type> parent;
-        private idHierarchy<type> sibling;
-        private idHierarchy<type> child;
+        private idHierarchy parent;
+        private idHierarchy sibling;
+        private idHierarchy child;
         private type owner;
         //
         //
 
         public idHierarchy() {
-            this.owner = null;
-            this.parent = null;
-            this.sibling = null;
-            this.child = null;
+            owner = null;
+            parent = null;
+            sibling = null;
+            child = null;
         }
 //public						~idHierarchy();
 //	
@@ -40,7 +40,7 @@ public class Hierarchy {
          ================
          */
         public void SetOwner(type object) {
-            this.owner = object;
+            owner = object;
         }
 
         /*
@@ -51,7 +51,7 @@ public class Hierarchy {
          ================
          */
         public type Owner() {
-            return this.owner;
+            return owner;
         }
 
         /*
@@ -61,11 +61,11 @@ public class Hierarchy {
          Makes the given node the parent.
          ================
          */
-        public void ParentTo(idHierarchy<type> node) {
+        public void ParentTo(idHierarchy node) {
             RemoveFromParent();
 
-            this.parent = node;
-            this.sibling = node.child;
+            parent = node;
+            sibling = node.child;
             node.child = this;
         }
 
@@ -76,18 +76,18 @@ public class Hierarchy {
          Makes the given node a sibling after the passed in node.
          ================
          */
-        public void MakeSiblingAfter(idHierarchy<type> node) {
+        public void MakeSiblingAfter(idHierarchy node) {
             RemoveFromParent();
-            this.parent = node.parent;
-            this.sibling = node.sibling;
+            parent = node.parent;
+            sibling = node.sibling;
             node.sibling = this;
         }
 
-        public boolean ParentedBy(final idHierarchy<type> node) {
-            if (this.parent == node) {
+        public boolean ParentedBy(final idHierarchy node) {
+            if (parent == node) {
                 return true;
-            } else if (this.parent != null) {
-                return this.parent.ParentedBy(node);
+            } else if (parent != null) {
+                return parent.ParentedBy(node);
             }
             return false;
         }
@@ -95,17 +95,17 @@ public class Hierarchy {
         public void RemoveFromParent() {
             idHierarchy<type> prev;
 
-            if (this.parent != null) {
+            if (parent != null) {
                 prev = GetPriorSiblingNode();
                 if (prev != null) {
-                    prev.sibling = this.sibling;
+                    prev.sibling = sibling;
                 } else {
-                    this.parent.child = this.sibling;
+                    parent.child = sibling;
                 }
             }
 
-            this.parent = null;
-            this.sibling = null;
+            parent = null;
+            sibling = null;
         }
 
         /*
@@ -119,42 +119,42 @@ public class Hierarchy {
             idHierarchy<type> parentNode;
             idHierarchy<type> node;
 
-            parentNode = this.parent;
+            parentNode = parent;
             RemoveFromParent();
 
             if (parentNode != null) {
-                while (this.child != null) {
-                    node = this.child;
+                while (child != null) {
+                    node = child;
                     node.RemoveFromParent();
                     node.ParentTo(parentNode);
                 }
             } else {
-                while (this.child != null) {
-                    this.child.RemoveFromParent();
+                while (child != null) {
+                    child.RemoveFromParent();
                 }
             }
         }
 
         // parent of this node
         public type GetParent() {
-            if (this.parent != null) {
-                return (type) this.parent.owner;
+            if (parent != null) {
+                return (type) parent.owner;
             }
             return null;
         }
 
         // first child of this node
         public type GetChild() {
-            if (this.child != null) {
-                return (type) this.child.owner;
+            if (child != null) {
+                return (type) child.owner;
             }
             return null;
         }
 
         // next node with the same parent
         public type GetSibling() {
-            if (this.sibling != null) {
-                return (type) this.sibling.owner;
+            if (sibling != null) {
+                return (type) sibling.owner;
             }
             return null;
         }
@@ -166,15 +166,15 @@ public class Hierarchy {
          Returns NULL if no parent, or if it is the first child.
          ================
          */
-        public idHierarchy<type> GetPriorSibling() {        // previous node with the same parent
-            if ((null == this.parent) || (this.parent.child == this)) {
+        public type GetPriorSibling() {        // previous node with the same parent
+            if (null == parent || (parent.child == this)) {
                 return null;
             }
 
             idHierarchy<type> prev;
             idHierarchy<type> node;
 
-            node = this.parent.child;
+            node = parent.child;
             prev = null;
             while ((node != this) && (node != null)) {
                 prev = node;
@@ -185,7 +185,7 @@ public class Hierarchy {
                 idLib.Error("idHierarchy::GetPriorSibling: could not find node in parent's list of children");
             }
 
-            return prev;
+            return (type) prev;
         }
 
         /*
@@ -198,11 +198,11 @@ public class Hierarchy {
         public type GetNext() {			// goes through all nodes of the hierarchy
             idHierarchy<type> node;
 
-            if (this.child != null) {
-                return (type) this.child.owner;
+            if (child != null) {
+                return (type) child.owner;
             } else {
                 node = this;
-                while ((node != null) && (null == node.sibling)) {
+                while (node != null && null == node.sibling) {
                     node = node.parent;
                 }
                 if (node != null) {
@@ -223,15 +223,15 @@ public class Hierarchy {
         public type GetNextLeaf() {		// goes through all leaf nodes of the hierarchy
             idHierarchy<type> node;
 
-            if (this.child != null) {
-                node = this.child;
+            if (child != null) {
+                node = child;
                 while (node.child != null) {
                     node = node.child;
                 }
                 return node.owner;
             } else {
                 node = this;
-                while ((node != null) && (null == node.sibling)) {
+                while (node != null && null == node.sibling) {
                     node = node.parent;
                 }
                 if (node != null) {
@@ -256,7 +256,6 @@ public class Hierarchy {
         private idHierarchy<type> GetPriorSiblingNode() {// previous node with the same parent
             idHierarchy<type> prior;
 
-            // Check me - should it be? prior = GetPriorSibling();
             prior = GetPriorSiblingNode();
             if (prior != null) {
                 return (idHierarchy<type>) prior.owner;
@@ -264,5 +263,5 @@ public class Hierarchy {
 
             return null;
         }
-    }
+    };
 }

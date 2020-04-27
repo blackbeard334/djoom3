@@ -26,7 +26,7 @@ public class Math_h {
     }
 
     public static float ANGLE2SHORT(float x) {
-        return idMath.FtoiFast(((x) * 65536.0f) / 360.0f) & 65535;
+        return idMath.FtoiFast((x) * 65536.0f / 360.0f) & 65535;
     }
 
     public static float SHORT2ANGLE(float x) {
@@ -34,7 +34,7 @@ public class Math_h {
     }
 
     public static float ANGLE2BYTE(float x) {
-        return idMath.FtoiFast(((x) * 256.0f) / 360.0f) & 255;
+        return idMath.FtoiFast((x) * 256.0f / 360.0f) & 255;
     }
 
     public static float BYTE2ANGLE(float x) {
@@ -155,7 +155,7 @@ public class Math_h {
             i = Float.floatToIntBits(x);
             i = 0x5f3759df - (i >> 1);
             r = Float.intBitsToFloat((int) i);
-            r = r * (1.5f - (r * r * y));
+            r = r * (1.5f - r * r * y);
             return r;
         }
 
@@ -163,47 +163,47 @@ public class Math_h {
         public static float InvSqrt(float x) {
 
 //	long  a = ((union _flint*)(&x))->i;
-            final _flint seed = new _flint(x);
-            final int a = seed.getI();
+            _flint seed = new _flint(x);
+            int a = seed.getI();
 
             assert (initialized);
 
-            final double y = x * 0.5f;
-            seed.setI((int) ((((((3 * EXP_BIAS) - 1) - ((a >> EXP_POS) & 0xFF)) >> 1) << EXP_POS)
+            double y = x * 0.5f;
+            seed.setI((int) (((((3 * EXP_BIAS - 1) - ((a >> EXP_POS) & 0xFF)) >> 1) << EXP_POS)
                     | iSqrt[(a >> (EXP_POS - LOOKUP_BITS)) & LOOKUP_MASK]));
 
             double r = seed.f;
-            r = r * (1.5f - (r * r * y));
-            r = r * (1.5f - (r * r * y));
+            r = r * (1.5f - r * r * y);
+            r = r * (1.5f - r * r * y);
             return (float) r;
         }
 
         static float InvSqrt16(float x) {// inverse square root with 16 bits precision, returns huge number when x == 0.0
 
-            final _flint seed = new _flint(x);
-            final int a = seed.getI();
+            _flint seed = new _flint(x);
+            int a = seed.getI();
 
             assert (initialized);
 
-            final double y = x * 0.5f;
-            seed.setI((int) ((((((3 * EXP_BIAS) - 1) - ((a >> EXP_POS) & 0xFF)) >> 1) << EXP_POS) | iSqrt[(a >> (EXP_POS - LOOKUP_BITS)) & LOOKUP_MASK]));
+            double y = x * 0.5f;
+            seed.setI((int) (((((3 * EXP_BIAS - 1) - ((a >> EXP_POS) & 0xFF)) >> 1) << EXP_POS) | iSqrt[(a >> (EXP_POS - LOOKUP_BITS)) & LOOKUP_MASK]));
             double r = seed.f;
-            r = r * (1.5f - (r * r * y));
+            r = r * (1.5f - r * r * y);
             return (float) r;
         }
 
         static double InvSqrt64(float x) {// inverse square root with 64 bits precision, returns huge number when x == 0.0
-            final _flint seed = new _flint(x);
-            final int a = seed.getI();
+            _flint seed = new _flint(x);
+            int a = seed.getI();
 
             assert (initialized);
 
-            final double y = x * 0.5f;
-            seed.setI((int) ((((((3 * EXP_BIAS) - 1) - ((a >> EXP_POS) & 0xFF)) >> 1) << EXP_POS) | iSqrt[(a >> (EXP_POS - LOOKUP_BITS)) & LOOKUP_MASK]));
+            double y = x * 0.5f;
+            seed.setI((int) (((((3 * EXP_BIAS - 1) - ((a >> EXP_POS) & 0xFF)) >> 1) << EXP_POS) | iSqrt[(a >> (EXP_POS - LOOKUP_BITS)) & LOOKUP_MASK]));
             double r = seed.f;
-            r = r * (1.5f - (r * r * y));
-            r = r * (1.5f - (r * r * y));
-            r = r * (1.5f - (r * r * y));
+            r = r * (1.5f - r * r * y);
+            r = r * (1.5f - r * r * y);
+            r = r * (1.5f - r * r * y);
             return r;
         }
 
@@ -237,7 +237,7 @@ public class Math_h {
                     a = PI - a;
                 }
             } else {
-                if (a > (PI + HALF_PI)) {
+                if (a > PI + HALF_PI) {
                     a = a - TWO_PI;
                 } else {
                     a = PI - a;
@@ -250,7 +250,7 @@ public class Math_h {
 //	}
 //#endif
             s = a * a;
-            return a * ((((((((((-2.39e-08f * s) + 2.7526e-06f) * s) - 1.98409e-04f) * s) + 8.3333315e-03f) * s) - 1.666666664e-01f) * s) + 1.0f);
+            return (float) (a * (((((-2.39e-08f * s + 2.7526e-06f) * s - 1.98409e-04f) * s + 8.3333315e-03f) * s - 1.666666664e-01f) * s + 1.0f));
         }
 
         static double Sin64(float a) {
@@ -277,7 +277,7 @@ public class Math_h {
                     d = 1.0f;
                 }
             } else {
-                if (a > (PI + HALF_PI)) {
+                if (a > PI + HALF_PI) {
                     a = a - TWO_PI;
                     d = 1.0f;
                 } else {
@@ -295,7 +295,7 @@ public class Math_h {
 //	}
 //#endif
             s = a * a;
-            return d * ((((((((((-2.605e-07f * s) + 2.47609e-05f) * s) - 1.3888397e-03f) * s) + 4.16666418e-02f) * s) - 4.999999963e-01f) * s) + 1.0f);
+            return (float) (d * (((((-2.605e-07f * s + 2.47609e-05f) * s - 1.3888397e-03f) * s + 4.16666418e-02f) * s - 4.999999963e-01f) * s + 1.0f));
         }
 
         static double Cos64(float a) {
@@ -334,7 +334,7 @@ public class Math_h {
                     d = 1.0f;
                 }
             } else {
-                if (a > (PI + HALF_PI)) {
+                if (a > PI + HALF_PI) {
                     a = a - TWO_PI;
                     d = 1.0f;
                 } else {
@@ -352,8 +352,8 @@ public class Math_h {
 //	}
 //#endif
             t = a * a;
-            s[0] = a * ((((((((((-2.39e-08f * t) + 2.7526e-06f) * t) - 1.98409e-04f) * t) + 8.3333315e-03f) * t) - 1.666666664e-01f) * t) + 1.0f);
-            c[0] = d * ((((((((((-2.605e-07f * t) + 2.47609e-05f) * t) - 1.3888397e-03f) * t) + 4.16666418e-02f) * t) - 4.999999963e-01f) * t) + 1.0f);
+            s[0] = a * (((((-2.39e-08f * t + 2.7526e-06f) * t - 1.98409e-04f) * t + 8.3333315e-03f) * t - 1.666666664e-01f) * t + 1.0f);
+            c[0] = d * (((((-2.605e-07f * t + 2.47609e-05f) * t - 1.3888397e-03f) * t + 4.16666418e-02f) * t - 4.999999963e-01f) * t + 1.0f);
         }
 
         static void SinCos64(float a, float[] s, float[] c) {// sine and cosine with 64 bits precision
@@ -393,7 +393,7 @@ public class Math_h {
                     reciprocal = false;
                 }
             } else {
-                if (a > (HALF_PI + ONEFOURTH_PI)) {
+                if (a > HALF_PI + ONEFOURTH_PI) {
                     a = a - PI;
                     reciprocal = false;
                 } else {
@@ -411,7 +411,7 @@ public class Math_h {
 //	}
 //#endif
             s = a * a;
-            s = a * ((((((((((((9.5168091e-03f * s) + 2.900525e-03f) * s) + 2.45650893e-02f) * s) + 5.33740603e-02f) * s) + 1.333923995e-01f) * s) + 3.333314036e-01f) * s) + 1.0f);
+            s = a * ((((((9.5168091e-03f * s + 2.900525e-03f) * s + 2.45650893e-02f) * s + 5.33740603e-02f) * s + 1.333923995e-01f) * s + 3.333314036e-01f) * s + 1.0f);
             if (reciprocal) {
                 return 1.0f / s;
             } else {
@@ -439,12 +439,12 @@ public class Math_h {
                     return -HALF_PI;
                 }
                 a = Math.abs(a);
-                return (float) ((((((((-0.0187293f * a) + 0.0742610f) * a) - 0.2121144f) * a) + 1.5707288f) * Math.sqrt(1.0f - a)) - HALF_PI);
+                return (float) ((((-0.0187293f * a + 0.0742610f) * a - 0.2121144f) * a + 1.5707288f) * Math.sqrt(1.0f - a) - HALF_PI);
             } else {
                 if (a >= 1.0f) {
                     return HALF_PI;
                 }
-                return (float) (HALF_PI - (((((((-0.0187293f * a) + 0.0742610f) * a) - 0.2121144f) * a) + 1.5707288f) * Math.sqrt(1.0f - a)));
+                return (float) (HALF_PI - (((-0.0187293f * a + 0.0742610f) * a - 0.2121144f) * a + 1.5707288f) * Math.sqrt(1.0f - a));
             }
         }
 
@@ -474,12 +474,12 @@ public class Math_h {
                     return PI;
                 }
                 a = Math.abs(a);
-                return (float) (PI - (((((((-0.0187293f * a) + 0.0742610f) * a) - 0.2121144f) * a) + 1.5707288f) * Math.sqrt(1.0f - a)));
+                return (float) (PI - (((-0.0187293f * a + 0.0742610f) * a - 0.2121144f) * a + 1.5707288f) * Math.sqrt(1.0f - a));
             } else {
                 if (a >= 1.0f) {
                     return 0.0f;
                 }
-                return (float) (((((((-0.0187293f * a) + 0.0742610f) * a) - 0.2121144f) * a) + 1.5707288f) * Math.sqrt(1.0f - a));
+                return (float) ((((-0.0187293f * a + 0.0742610f) * a - 0.2121144f) * a + 1.5707288f) * Math.sqrt(1.0f - a));
             }
         }
 
@@ -503,8 +503,8 @@ public class Math_h {
             if (Math.abs(a) > 1.0f) {
                 a = 1.0f / a;
                 s = a * a;
-                s = -((((((((((((((((0.0028662257f * s) - 0.0161657367f) * s) + 0.0429096138f) * s) - 0.0752896400f)
-                        * s) + 0.1065626393f) * s) - 0.1420889944f) * s) + 0.1999355085f) * s) - 0.3333314528f) * s) + 1.0f) * a;
+                s = -(((((((((0.0028662257f * s - 0.0161657367f) * s + 0.0429096138f) * s - 0.0752896400f)
+                        * s + 0.1065626393f) * s - 0.1420889944f) * s + 0.1999355085f) * s - 0.3333314528f) * s) + 1.0f) * a;
                 if (1 == FLOATSIGNBITSET(a)) {
                     return s - HALF_PI;
                 } else {
@@ -512,8 +512,8 @@ public class Math_h {
                 }
             } else {
                 s = a * a;
-                return ((((((((((((((((0.0028662257f * s) - 0.0161657367f) * s) + 0.0429096138f) * s) - 0.0752896400f)
-                        * s) + 0.1065626393f) * s) - 0.1420889944f) * s) + 0.1999355085f) * s) - 0.3333314528f) * s) + 1.0f) * a;
+                return (((((((((0.0028662257f * s - 0.0161657367f) * s + 0.0429096138f) * s - 0.0752896400f)
+                        * s + 0.1065626393f) * s - 0.1420889944f) * s + 0.1999355085f) * s - 0.3333314528f) * s) + 1.0f) * a;
             }
         }
 
@@ -531,8 +531,8 @@ public class Math_h {
             if (Math.abs(y) > Math.abs(x)) {
                 a = x / y;
                 s = a * a;
-                s = -((((((((((((((((0.0028662257f * s) - 0.0161657367f) * s) + 0.0429096138f) * s) - 0.0752896400f)
-                        * s) + 0.1065626393f) * s) - 0.1420889944f) * s) + 0.1999355085f) * s) - 0.3333314528f) * s) + 1.0f) * a;
+                s = -(((((((((0.0028662257f * s - 0.0161657367f) * s + 0.0429096138f) * s - 0.0752896400f)
+                        * s + 0.1065626393f) * s - 0.1420889944f) * s + 0.1999355085f) * s - 0.3333314528f) * s) + 1.0f) * a;
                 if (1 == FLOATSIGNBITSET(a)) {
                     return s - HALF_PI;
                 } else {
@@ -541,8 +541,8 @@ public class Math_h {
             } else {
                 a = y / x;
                 s = a * a;
-                return ((((((((((((((((0.0028662257f * s) - 0.0161657367f) * s) + 0.0429096138f) * s) - 0.0752896400f)
-                        * s) + 0.1065626393f) * s) - 0.1420889944f) * s) + 0.1999355085f) * s) - 0.3333314528f) * s) + 1.0f) * a;
+                return (((((((((0.0028662257f * s - 0.0161657367f) * s + 0.0429096138f) * s - 0.0752896400f)
+                        * s + 0.1065626393f) * s - 0.1420889944f) * s + 0.1999355085f) * s - 0.3333314528f) * s) + 1.0f) * a;
             }
         }
 
@@ -587,15 +587,15 @@ public class Math_h {
             exponent = (i + IEEE_FLT_EXPONENT_BIAS) << IEEE_FLT_MANTISSA_BITS;
 //	y = *reinterpret_cast<float *>(&exponent);
             y = Float.intBitsToFloat(exponent);
-            x -= i;
+            x -= (float) i;
             if (x >= 0.5f) {
                 x -= 0.5f;
                 y *= 1.4142135623730950488f;	// multiply with sqrt( 2 )
             }
             x2 = x * x;
-            p = x * (7.2152891511493f + (x2 * 0.0576900723731f));
+            p = x * (7.2152891511493f + x2 * 0.0576900723731f);
             q = 20.8189237930062f + x2;
-            x = (y * (q + p)) / (q - p);
+            x = y * (q + p) / (q - p);
             return x;
         }
 
@@ -620,8 +620,8 @@ public class Math_h {
             y *= 1.4142135623730950488f;						// multiply with sqrt( 2 )
             y = (y - 1.0f) / (y + 1.0f);
             y2 = y * y;
-            y = y * (2.000000000046727f + (y2 * (0.666666635059382f + (y2 * (0.4000059794795f + (y2 * (0.28525381498f + (y2 * 0.2376245609f))))))));
-            y += 0.693147180559945f * (exponent + 0.5f);
+            y = y * (2.000000000046727f + y2 * (0.666666635059382f + y2 * (0.4000059794795f + y2 * (0.28525381498f + y2 * 0.2376245609f))));
+            y += 0.693147180559945f * ((float) exponent + 0.5f);
             return y;
         }
 
@@ -679,7 +679,7 @@ public class Math_h {
         }
 
         public static boolean IsPowerOfTwo(int x) {// returns true if x is a power of 2
-            return ((x & (x - 1)) == 0) && (x > 0);
+            return (x & (x - 1)) == 0 && x > 0;
         }
 
         static int BitCount(int x) {// returns the number of 1 bits in x
@@ -699,7 +699,7 @@ public class Math_h {
         }
 
         public static int Abs(int x) {// returns the absolute value of the integer value (for reference only)
-            final int y = x >> 31;
+            int y = x >> 31;
             return ((x ^ y) - y);
         }
 
@@ -855,14 +855,14 @@ public class Math_h {
         public static int FloatToBits(float f, int exponentBits, int mantissaBits) {
             int i, sign, exponent, mantissa, value;
 
-            assert ((exponentBits >= 2) && (exponentBits <= 8));
-            assert ((mantissaBits >= 2) && (mantissaBits <= 23));
+            assert (exponentBits >= 2 && exponentBits <= 8);
+            assert (mantissaBits >= 2 && mantissaBits <= 23);
 
-            final int maxBits = (((1 << (exponentBits - 1)) - 1) << mantissaBits) | ((1 << mantissaBits) - 1);
-            final int minBits = (((1 << exponentBits) - 2) << mantissaBits) | 1;
+            int maxBits = (((1 << (exponentBits - 1)) - 1) << mantissaBits) | ((1 << mantissaBits) - 1);
+            int minBits = (((1 << exponentBits) - 2) << mantissaBits) | 1;
 
-            final float max = BitsToFloat(maxBits, exponentBits, mantissaBits);
-            final float min = BitsToFloat(minBits, exponentBits, mantissaBits);
+            float max = BitsToFloat(maxBits, exponentBits, mantissaBits);
+            float min = BitsToFloat(minBits, exponentBits, mantissaBits);
 
             if (f >= 0.0f) {
                 if (f >= max) {
@@ -891,17 +891,17 @@ public class Math_h {
         }
 
         public static float BitsToFloat(int i, int exponentBits, int mantissaBits) {
-            final int exponentSign[] = {1, -1};
+            int exponentSign[] = {1, -1};
             int sign, exponent, mantissa, value;
 
-            assert ((exponentBits >= 2) && (exponentBits <= 8));
-            assert ((mantissaBits >= 2) && (mantissaBits <= 23));
+            assert (exponentBits >= 2 && exponentBits <= 8);
+            assert (mantissaBits >= 2 && mantissaBits <= 23);
 
             exponentBits--;
             sign = i >> (1 + exponentBits + mantissaBits);
             exponent = ((i >> mantissaBits) & ((1 << exponentBits) - 1)) * exponentSign[(i >> (exponentBits + mantissaBits)) & 1];
             mantissa = (i & ((1 << mantissaBits) - 1)) << (IEEE_FLT_MANTISSA_BITS - mantissaBits);
-            value = (sign << IEEE_FLT_SIGN_BIT) | ((exponent + IEEE_FLT_EXPONENT_BIAS) << IEEE_FLT_MANTISSA_BITS) | mantissa;
+            value = sign << IEEE_FLT_SIGN_BIT | (exponent + IEEE_FLT_EXPONENT_BIAS) << IEEE_FLT_MANTISSA_BITS | mantissa;
 //	return *reinterpret_cast<float *>(&value);
             return Float.intBitsToFloat(value);
         }
@@ -957,7 +957,7 @@ public class Math_h {
             }
 
             public int getI() {
-                return this.i;
+                return i;
             }
 
             public void setI(int i) {
@@ -966,14 +966,14 @@ public class Math_h {
             }
 
             public float getF() {
-                return this.f;
+                return f;
             }
 
             public void setF(float f) {
                 this.f = f;
                 this.i = Float.floatToIntBits(f);
             }
-        }
+        };
         private static long iSqrt[] = new long[SQRT_TABLE_SIZE];
         private static boolean initialized;
     }

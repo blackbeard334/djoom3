@@ -48,91 +48,91 @@ public class idMat3 {
     }
 
     public idMat3(final idVec3 x, final idVec3 y, final idVec3 z) {
-        this.mat[0].x = x.x;
-        this.mat[0].y = x.y;
-        this.mat[0].z = x.z;
+        mat[0].x = x.x;
+        mat[0].y = x.y;
+        mat[0].z = x.z;
         //
-        this.mat[1].x = y.x;
-        this.mat[1].y = y.y;
-        this.mat[1].z = y.z;
+        mat[1].x = y.x;
+        mat[1].y = y.y;
+        mat[1].z = y.z;
         //
-        this.mat[2].x = z.x;
-        this.mat[2].y = z.y;
-        this.mat[2].z = z.z;
+        mat[2].x = z.x;
+        mat[2].y = z.y;
+        mat[2].z = z.z;
     }
 
     public idMat3(final float xx, final float xy, final float xz, final float yx, final float yy, final float yz, final float zx, final float zy, final float zz) {
-        this.mat[0].x = xx;
-        this.mat[0].y = xy;
-        this.mat[0].z = xz;
+        mat[0].x = xx;
+        mat[0].y = xy;
+        mat[0].z = xz;
         //
-        this.mat[1].x = yx;
-        this.mat[1].y = yy;
-        this.mat[1].z = yz;
+        mat[1].x = yx;
+        mat[1].y = yy;
+        mat[1].z = yz;
         //
-        this.mat[2].x = zx;
-        this.mat[2].y = zy;
-        this.mat[2].z = zz;
+        mat[2].x = zx;
+        mat[2].y = zy;
+        mat[2].z = zz;
     }
 
     public idMat3(final idMat3 m) {
-        this.mat[0].x = m.mat[0].x;
-        this.mat[0].y = m.mat[0].y;
-        this.mat[0].z = m.mat[0].z;
+        mat[0].x = m.mat[0].x;
+        mat[0].y = m.mat[0].y;
+        mat[0].z = m.mat[0].z;
         //
-        this.mat[1].x = m.mat[1].x;
-        this.mat[1].y = m.mat[1].y;
-        this.mat[1].z = m.mat[1].z;
+        mat[1].x = m.mat[1].x;
+        mat[1].y = m.mat[1].y;
+        mat[1].z = m.mat[1].z;
         //
-        this.mat[2].x = m.mat[2].x;
-        this.mat[2].y = m.mat[2].y;
-        this.mat[2].z = m.mat[2].z;
+        mat[2].x = m.mat[2].x;
+        mat[2].y = m.mat[2].y;
+        mat[2].z = m.mat[2].z;
     }
 
     public idMat3(final float src[][]) {
 //	memcpy( mat, src, 3 * 3 * sizeof( float ) );
-        this.mat[0] = new idVec3(src[0][0], src[0][1], src[0][2]);
-        this.mat[1] = new idVec3(src[1][0], src[1][1], src[1][2]);
-        this.mat[2] = new idVec3(src[2][0], src[2][1], src[2][2]);
+        mat[0] = new idVec3(src[0][0], src[0][1], src[0][2]);
+        mat[1] = new idVec3(src[1][0], src[1][1], src[1][2]);
+        mat[2] = new idVec3(src[2][0], src[2][1], src[2][2]);
     }
 //
 //public	const idVec3 &	operator[]( int index ) const;
 //public	idVec3 &		operator[]( int index );
 
     public idVec3 oGet(int index) {
-        return this.mat[index];
+        return mat[index];
     }
 
     public float oGet(final int index1, final int index2) {
-        return this.mat[index1].oGet(index2);
+        return mat[index1].oGet(index2);
     }
 
     public void oSet(final int index, final idVec3 vec3) {
-        this.mat[index].oSet(vec3);
+        mat[index].oSet(vec3);
     }
 
 //public	idMat3			operator-() const;
     public idMat3 oNegative() {
         return new idMat3(
-                -this.mat[0].x, -this.mat[0].y, -this.mat[0].z,
-                -this.mat[1].x, -this.mat[1].y, -this.mat[1].z,
-                -this.mat[2].x, -this.mat[2].y, -this.mat[2].z);
+                -mat[0].x, -mat[0].y, -mat[0].z,
+                -mat[1].x, -mat[1].y, -mat[1].z,
+                -mat[2].x, -mat[2].y, -mat[2].z);
     }
 //public	idMat3			operator*( const float a ) const;
 
     public idMat3 oMultiply(final float a) {
         return new idMat3(
-                this.mat[0].x * a, this.mat[0].y * a, this.mat[0].z * a,
-                this.mat[1].x * a, this.mat[1].y * a, this.mat[1].z * a,
-                this.mat[2].x * a, this.mat[2].y * a, this.mat[2].z * a);
+                mat[0].x * a, mat[0].y * a, mat[0].z * a,
+                mat[1].x * a, mat[1].y * a, mat[1].z * a,
+                mat[2].x * a, mat[2].y * a, mat[2].z * a);
     }
 //public	idVec3			operator*( const idVec3 &vec ) const;
 
     public idVec3 oMultiply(final idVec3 vec) {
         return new idVec3(
-                (this.mat[0].x * vec.x) + (this.mat[1].x * vec.y) + (this.mat[2].x * vec.z),
-                (this.mat[0].y * vec.x) + (this.mat[1].y * vec.y) + (this.mat[2].y * vec.z),
-                (this.mat[0].z * vec.x) + (this.mat[1].z * vec.y) + (this.mat[2].z * vec.z));
+                mat[0].x * vec.x + mat[1].x * vec.y + mat[2].x * vec.z,
+                mat[0].y * vec.x + mat[1].y * vec.y + mat[2].y * vec.z,
+                mat[0].z * vec.x + mat[1].z * vec.y + mat[2].z * vec.z);
     }
 //public	idMat3			operator*( const idMat3 &a ) const;
 
@@ -140,16 +140,16 @@ public class idMat3 {
         int i, j;
         float[] m1Ptr, m2Ptr;
 //            float dstPtr;
-        final idMat3 dst = new idMat3();
+        idMat3 dst = new idMat3();
 
         m1Ptr = this.ToFloatPtr();//reinterpret_cast<const float *>(this);
         m2Ptr = a.ToFloatPtr();//reinterpret_cast<const float *>(&a);
 //	dstPtr = reinterpret_cast<float *>(&dst);
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 3; j++) {
-                final float value = (m1Ptr[(i * 3) + 0] * m2Ptr[(0 * 3) + j])
-                        + (m1Ptr[(i * 3) + 1] * m2Ptr[(1 * 3) + j])
-                        + (m1Ptr[(i * 3) + 2] * m2Ptr[(2 * 3) + j]);
+                float value = m1Ptr[i * 3 + 0] * m2Ptr[0 * 3 + j]
+                        + m1Ptr[i * 3 + 1] * m2Ptr[1 * 3 + j]
+                        + m1Ptr[i * 3 + 2] * m2Ptr[2 * 3 + j];
                 dst.oSet(i, j, value);
 //			dstPtr++;
             }
@@ -193,13 +193,13 @@ public class idMat3 {
 
     public idMat3 oMulSet(final idMat3 a) {
         int i, j;
-        final float[] dst = new float[3];
+        float[] dst = new float[3];
 
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 3; j++) {
-                dst[j]  = (this.mat[i].x * a.mat[0].oGet(j))
-                        + (this.mat[i].y * a.mat[1].oGet(j))
-                        + (this.mat[i].z * a.mat[2].oGet(j));
+                dst[j]  = mat[i].x * a.mat[0].oGet(j)
+                        + mat[i].y * a.mat[1].oGet(j)
+                        + mat[i].z * a.mat[2].oGet(j);
             }
             this.oSet(i, 0, dst[0]);
             this.oSet(i, 1, dst[1]);
@@ -253,9 +253,9 @@ public class idMat3 {
 //public	friend idVec3 &	operator*=( idVec3 &vec, const idMat3 &mat );
 
     public static idVec3 oMulSet(idVec3 vec, final idMat3 mat) {
-        final float x = (mat.mat[0].x * vec.x) + (mat.mat[1].x * vec.y) + (mat.mat[2].x * vec.z);
-        final float y = (mat.getRow(0).y * vec.x) + (mat.mat[1].y * vec.y) + (mat.mat[2].y * vec.z);
-        vec.z = (mat.mat[0].z * vec.x) + (mat.mat[1].z * vec.y) + (mat.mat[2].z * vec.z);
+        float x = mat.mat[0].x * vec.x + mat.mat[1].x * vec.y + mat.mat[2].x * vec.z;
+        float y = mat.getRow(0).y * vec.x + mat.mat[1].y * vec.y + mat.mat[2].y * vec.z;
+        vec.z = mat.mat[0].z * vec.x + mat.mat[1].z * vec.y + mat.mat[2].z * vec.z;
         vec.x = x;
         vec.y = y;
         return vec;
@@ -263,18 +263,18 @@ public class idMat3 {
 //
 
     public boolean Compare(final idMat3 a) {// exact compare, no epsilon
-        if (this.mat[0].Compare(a.mat[0])
-                && this.mat[1].Compare(a.mat[1])
-                && this.mat[2].Compare(a.mat[2])) {
+        if (mat[0].Compare(a.mat[0])
+                && mat[1].Compare(a.mat[1])
+                && mat[2].Compare(a.mat[2])) {
             return true;
         }
         return false;
     }
 
     public boolean Compare(final idMat3 a, final float epsilon) {// compare with epsilon
-        if (this.mat[0].Compare(a.mat[0], epsilon)
-                && this.mat[1].Compare(a.mat[1], epsilon)
-                && this.mat[2].Compare(a.mat[2], epsilon)) {
+        if (mat[0].Compare(a.mat[0], epsilon)
+                && mat[1].Compare(a.mat[1], epsilon)
+                && mat[2].Compare(a.mat[2], epsilon)) {
             return true;
         }
         return false;
@@ -285,9 +285,9 @@ public class idMat3 {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = (37 * hash) + this.mat[0].hashCode();
-        hash = (37 * hash) + this.mat[1].hashCode();
-        hash = (37 * hash) + this.mat[2].hashCode();
+        hash = 37 * hash + this.mat[0].hashCode();
+        hash = 37 * hash + this.mat[1].hashCode();
+        hash = 37 * hash + this.mat[2].hashCode();
         return hash;
     }
 
@@ -307,9 +307,9 @@ public class idMat3 {
     }
 
     public void Zero() {
-        this.mat[0].Zero();
-        this.mat[1].Zero();
-        this.mat[2].Zero();
+        mat[0].Zero();
+        mat[1].Zero();
+        mat[2].Zero();
     }
 
     public void Identity() {
@@ -329,13 +329,13 @@ public class idMat3 {
     }
 
     public boolean IsSymmetric(final float epsilon) {
-        if (idMath.Fabs(this.mat[0].y - this.mat[1].x) > epsilon) {
+        if (idMath.Fabs(mat[0].y - mat[1].x) > epsilon) {
             return false;
         }
-        if (idMath.Fabs(this.mat[0].z - this.mat[2].x) > epsilon) {
+        if (idMath.Fabs(mat[0].z - mat[2].x) > epsilon) {
             return false;
         }
-        if (idMath.Fabs(this.mat[1].z - this.mat[2].y) > epsilon) {
+        if (idMath.Fabs(mat[1].z - mat[2].y) > epsilon) {
             return false;
         }
         return true;
@@ -346,12 +346,12 @@ public class idMat3 {
     }
 
     public boolean IsDiagonal(final float epsilon) {
-        if ((idMath.Fabs(this.mat[0].y) > epsilon)
-                || (idMath.Fabs(this.mat[0].z) > epsilon)
-                || (idMath.Fabs(this.mat[1].x) > epsilon)
-                || (idMath.Fabs(this.mat[1].z) > epsilon)
-                || (idMath.Fabs(this.mat[2].x) > epsilon)
-                || (idMath.Fabs(this.mat[2].y) > epsilon)) {
+        if (idMath.Fabs(mat[0].y) > epsilon
+                || idMath.Fabs(mat[0].z) > epsilon
+                || idMath.Fabs(mat[1].x) > epsilon
+                || idMath.Fabs(mat[1].z) > epsilon
+                || idMath.Fabs(mat[2].x) > epsilon
+                || idMath.Fabs(mat[2].y) > epsilon) {
             return false;
         }
         return true;
@@ -362,42 +362,42 @@ public class idMat3 {
     }
 
     public void ProjectVector(final idVec3 src, idVec3 dst) {
-        dst.x = this.mat[0].oMultiply(src);
-        dst.y = this.mat[1].oMultiply(src);
-        dst.z = this.mat[2].oMultiply(src);
+        dst.x = mat[0].oMultiply(src);
+        dst.y = mat[1].oMultiply(src);
+        dst.z = mat[2].oMultiply(src);
     }
 
     public void UnprojectVector(final idVec3 src, idVec3 dst) {
-        dst.oSet(this.mat[0].oMultiply(src.x).oPlus(
-                this.mat[1].oMultiply(src.y).oPlus(
-                        this.mat[2].oMultiply(src.z))));
+        dst.oSet(mat[0].oMultiply(src.x).oPlus(
+                mat[1].oMultiply(src.y).oPlus(
+                        mat[2].oMultiply(src.z))));
     }
 
     public boolean FixDegeneracies() {// fix degenerate axial cases
-        boolean r = this.mat[0].FixDegenerateNormal();
-        r |= this.mat[1].FixDegenerateNormal();
-        r |= this.mat[2].FixDegenerateNormal();
+        boolean r = mat[0].FixDegenerateNormal();
+        r |= mat[1].FixDegenerateNormal();
+        r |= mat[2].FixDegenerateNormal();
         return r;
     }
 
     public boolean FixDenormals() {// change tiny numbers to zero
-        boolean r = this.mat[0].FixDenormals();
-        r |= this.mat[1].FixDenormals();
-        r |= this.mat[2].FixDenormals();
+        boolean r = mat[0].FixDenormals();
+        r |= mat[1].FixDenormals();
+        r |= mat[2].FixDenormals();
         return r;
     }
 
     public float Trace() {
-        return (this.mat[0].x + this.mat[1].y + this.mat[2].z);
+        return (mat[0].x + mat[1].y + mat[2].z);
     }
 
     public float Determinant() {
 
-        final float det2_12_01 = (this.mat[1].x * this.mat[2].y) - (this.mat[1].y * this.mat[2].x);
-        final float det2_12_02 = (this.mat[1].x * this.mat[2].z) - (this.mat[1].z * this.mat[2].x);
-        final float det2_12_12 = (this.mat[1].y * this.mat[2].z) - (this.mat[1].z * this.mat[2].y);
+        float det2_12_01 = mat[1].x * mat[2].y - mat[1].y * mat[2].x;
+        float det2_12_02 = mat[1].x * mat[2].z - mat[1].z * mat[2].x;
+        float det2_12_12 = mat[1].y * mat[2].z - mat[1].z * mat[2].y;
 
-        return ((this.mat[0].x * det2_12_12) - (this.mat[0].y * det2_12_02)) + (this.mat[0].z * det2_12_01);
+        return mat[0].x * det2_12_12 - mat[0].y * det2_12_02 + mat[0].z * det2_12_01;
     }
 
     public idMat3 OrthoNormalize() {
@@ -405,41 +405,41 @@ public class idMat3 {
 
         ortho = this;
         ortho.mat[0].Normalize();
-        ortho.mat[2].Cross(this.mat[0], this.mat[1]);
+        ortho.mat[2].Cross(mat[0], mat[1]);
         ortho.mat[2].Normalize();
-        ortho.mat[1].Cross(this.mat[2], this.mat[0]);
+        ortho.mat[1].Cross(mat[2], mat[0]);
         ortho.mat[1].Normalize();
         return ortho;
     }
 
     public idMat3 OrthoNormalizeSelf() {
-        this.mat[0].Normalize();
-        this.mat[2].Cross(this.mat[0], this.mat[1]);
-        this.mat[2].Normalize();
-        this.mat[1].Cross(this.mat[2], this.mat[0]);
-        this.mat[1].Normalize();
+        mat[0].Normalize();
+        mat[2].Cross(mat[0], mat[1]);
+        mat[2].Normalize();
+        mat[1].Cross(mat[2], mat[0]);
+        mat[1].Normalize();
         return this;
     }
 
     public idMat3 Transpose() {// returns transpose
         return new idMat3(
-                this.mat[0].x, this.mat[1].x, this.mat[2].x,
-                this.mat[0].y, this.mat[1].y, this.mat[2].y,
-                this.mat[0].z, this.mat[1].z, this.mat[2].z);
+                mat[0].x, mat[1].x, mat[2].x,
+                mat[0].y, mat[1].y, mat[2].y,
+                mat[0].z, mat[1].z, mat[2].z);
     }
 
     public idMat3 TransposeSelf() {
         float tmp0, tmp1, tmp2;
 
-        tmp0 = this.mat[0].y;
-        this.mat[0].y = this.mat[1].x;
-        this.mat[1].x = tmp0;
-        tmp1 = this.mat[0].z;
-        this.mat[0].z = this.mat[2].x;
-        this.mat[2].x = tmp1;
-        tmp2 = this.mat[1].z;
-        this.mat[1].z = this.mat[2].y;
-        this.mat[2].y = tmp2;
+        tmp0 = mat[0].y;
+        mat[0].y = mat[1].x;
+        mat[1].x = tmp0;
+        tmp1 = mat[0].z;
+        mat[0].z = mat[2].x;
+        mat[2].x = tmp1;
+        tmp2 = mat[1].z;
+        mat[1].z = mat[2].y;
+        mat[2].y = tmp2;
 
         return this;
     }
@@ -448,7 +448,7 @@ public class idMat3 {
         idMat3 invMat;
 
         invMat = new idMat3(this);
-        final boolean r = invMat.InverseSelf();
+        boolean r = invMat.InverseSelf();
         assert (r);
         return invMat;
     }
@@ -456,14 +456,14 @@ public class idMat3 {
     public boolean InverseSelf() {// returns false if determinant is zero
         // 18+3+9 = 30 multiplications
         //			 1 division
-        final idMat3 inverse = new idMat3();
+        idMat3 inverse = new idMat3();
         double det, invDet;
 
-        inverse.mat[0].x = (this.mat[1].y * this.mat[2].z) - (this.mat[1].z * this.mat[2].y);
-        inverse.mat[1].x = (this.mat[1].z * this.mat[2].x) - (this.mat[1].x * this.mat[2].z);
-        inverse.mat[2].x = (this.mat[1].x * this.mat[2].y) - (this.mat[1].y * this.mat[2].x);
+        inverse.mat[0].x = mat[1].y * mat[2].z - mat[1].z * mat[2].y;
+        inverse.mat[1].x = mat[1].z * mat[2].x - mat[1].x * mat[2].z;
+        inverse.mat[2].x = mat[1].x * mat[2].y - mat[1].y * mat[2].x;
 
-        det = (this.mat[0].x * inverse.mat[0].x) + (this.mat[0].y * inverse.mat[1].x) + (this.mat[0].z * inverse.mat[2].x);
+        det = mat[0].x * inverse.mat[0].x + mat[0].y * inverse.mat[1].x + mat[0].z * inverse.mat[2].x;
 
         if (idMath.Fabs((float) det) < MATRIX_INVERSE_EPSILON) {
             return false;
@@ -471,24 +471,24 @@ public class idMat3 {
 
         invDet = 1.0f / det;
 
-        inverse.mat[0].y = (this.mat[0].z * this.mat[2].y) - (this.mat[0].y * this.mat[2].z);
-        inverse.mat[0].z = (this.mat[0].y * this.mat[1].z) - (this.mat[0].z * this.mat[1].y);
-        inverse.mat[1].y = (this.mat[0].x * this.mat[2].z) - (this.mat[0].z * this.mat[2].x);
-        inverse.mat[1].z = (this.mat[0].z * this.mat[1].x) - (this.mat[0].x * this.mat[1].z);
-        inverse.mat[2].y = (this.mat[0].y * this.mat[2].x) - (this.mat[0].x * this.mat[2].y);
-        inverse.mat[2].z = (this.mat[0].x * this.mat[1].y) - (this.mat[0].y * this.mat[1].x);
+        inverse.mat[0].y = mat[0].z * mat[2].y - mat[0].y * mat[2].z;
+        inverse.mat[0].z = mat[0].y * mat[1].z - mat[0].z * mat[1].y;
+        inverse.mat[1].y = mat[0].x * mat[2].z - mat[0].z * mat[2].x;
+        inverse.mat[1].z = mat[0].z * mat[1].x - mat[0].x * mat[1].z;
+        inverse.mat[2].y = mat[0].y * mat[2].x - mat[0].x * mat[2].y;
+        inverse.mat[2].z = mat[0].x * mat[1].y - mat[0].y * mat[1].x;
 
-        this.mat[0].x = (float) (inverse.mat[0].x * invDet);
-        this.mat[0].y = (float) (inverse.mat[0].y * invDet);
-        this.mat[0].z = (float) (inverse.mat[0].z * invDet);
+        mat[0].x = (float) (inverse.mat[0].x * invDet);
+        mat[0].y = (float) (inverse.mat[0].y * invDet);
+        mat[0].z = (float) (inverse.mat[0].z * invDet);
 
-        this.mat[1].x = (float) (inverse.mat[1].x * invDet);
-        this.mat[1].y = (float) (inverse.mat[1].y * invDet);
-        this.mat[1].z = (float) (inverse.mat[1].z * invDet);
+        mat[1].x = (float) (inverse.mat[1].x * invDet);
+        mat[1].y = (float) (inverse.mat[1].y * invDet);
+        mat[1].z = (float) (inverse.mat[1].z * invDet);
 
-        this.mat[2].x = (float) (inverse.mat[2].x * invDet);
-        this.mat[2].y = (float) (inverse.mat[2].y * invDet);
-        this.mat[2].z = (float) (inverse.mat[2].z * invDet);
+        mat[2].x = (float) (inverse.mat[2].x * invDet);
+        mat[2].y = (float) (inverse.mat[2].y * invDet);
+        mat[2].z = (float) (inverse.mat[2].z * invDet);
 
         return true;
     }
@@ -497,7 +497,7 @@ public class idMat3 {
         idMat3 invMat;
 
         invMat = this;
-        final boolean r = invMat.InverseFastSelf();
+        boolean r = invMat.InverseFastSelf();
         assert (r);
         return invMat;
     }
@@ -509,54 +509,54 @@ public class idMat3 {
 
     public idMat3 TransposeMultiply(final idMat3 b) {
         return new idMat3(
-                (this.mat[0].x * b.mat[0].x) + (this.mat[1].x * b.mat[1].x) + (this.mat[2].x * b.mat[2].x),
-                (this.mat[0].x * b.mat[0].y) + (this.mat[1].x * b.mat[1].y) + (this.mat[2].x * b.mat[2].y),
-                (this.mat[0].x * b.mat[0].z) + (this.mat[1].x * b.mat[1].z) + (this.mat[2].x * b.mat[2].z),
-                (this.mat[0].y * b.mat[0].x) + (this.mat[1].y * b.mat[1].x) + (this.mat[2].y * b.mat[2].x),
-                (this.mat[0].y * b.mat[0].y) + (this.mat[1].y * b.mat[1].y) + (this.mat[2].y * b.mat[2].y),
-                (this.mat[0].y * b.mat[0].z) + (this.mat[1].y * b.mat[1].z) + (this.mat[2].y * b.mat[2].z),
-                (this.mat[0].z * b.mat[0].x) + (this.mat[1].z * b.mat[1].x) + (this.mat[2].z * b.mat[2].x),
-                (this.mat[0].z * b.mat[0].y) + (this.mat[1].z * b.mat[1].y) + (this.mat[2].z * b.mat[2].y),
-                (this.mat[0].z * b.mat[0].z) + (this.mat[1].z * b.mat[1].z) + (this.mat[2].z * b.mat[2].z));
+                mat[0].x * b.mat[0].x + mat[1].x * b.mat[1].x + mat[2].x * b.mat[2].x,
+                mat[0].x * b.mat[0].y + mat[1].x * b.mat[1].y + mat[2].x * b.mat[2].y,
+                mat[0].x * b.mat[0].z + mat[1].x * b.mat[1].z + mat[2].x * b.mat[2].z,
+                mat[0].y * b.mat[0].x + mat[1].y * b.mat[1].x + mat[2].y * b.mat[2].x,
+                mat[0].y * b.mat[0].y + mat[1].y * b.mat[1].y + mat[2].y * b.mat[2].y,
+                mat[0].y * b.mat[0].z + mat[1].y * b.mat[1].z + mat[2].y * b.mat[2].z,
+                mat[0].z * b.mat[0].x + mat[1].z * b.mat[1].x + mat[2].z * b.mat[2].x,
+                mat[0].z * b.mat[0].y + mat[1].z * b.mat[1].y + mat[2].z * b.mat[2].y,
+                mat[0].z * b.mat[0].z + mat[1].z * b.mat[1].z + mat[2].z * b.mat[2].z);
     }
 //
 
     public idMat3 InertiaTranslate(final float mass, final idVec3 centerOfMass, final idVec3 translation) {
-        final idMat3 m = new idMat3();
+        idMat3 m = new idMat3();
         idVec3 newCenter;
 
         newCenter = centerOfMass.oPlus(translation);
 
-        m.mat[0].x = mass * (((centerOfMass.y * centerOfMass.y) + (centerOfMass.z * centerOfMass.z))
-                - ((newCenter.y * newCenter.y) + (newCenter.z * newCenter.z)));
-        m.mat[1].y = mass * (((centerOfMass.x * centerOfMass.x) + (centerOfMass.z * centerOfMass.z))
-                - ((newCenter.x * newCenter.x) + (newCenter.z * newCenter.z)));
-        m.mat[2].z = mass * (((centerOfMass.x * centerOfMass.x) + (centerOfMass.y * centerOfMass.y))
-                - ((newCenter.x * newCenter.x) + (newCenter.y * newCenter.y)));
+        m.mat[0].x = mass * ((centerOfMass.y * centerOfMass.y + centerOfMass.z * centerOfMass.z)
+                - (newCenter.y * newCenter.y + newCenter.z * newCenter.z));
+        m.mat[1].y = mass * ((centerOfMass.x * centerOfMass.x + centerOfMass.z * centerOfMass.z)
+                - (newCenter.x * newCenter.x + newCenter.z * newCenter.z));
+        m.mat[2].z = mass * ((centerOfMass.x * centerOfMass.x + centerOfMass.y * centerOfMass.y)
+                - (newCenter.x * newCenter.x + newCenter.y * newCenter.y));
 
-        m.mat[0].y = m.mat[1].x = mass * ((newCenter.x * newCenter.y) - (centerOfMass.x * centerOfMass.y));
-        m.mat[1].z = m.mat[2].y = mass * ((newCenter.y * newCenter.z) - (centerOfMass.y * centerOfMass.z));
-        m.mat[0].z = m.mat[2].x = mass * ((newCenter.x * newCenter.z) - (centerOfMass.x * centerOfMass.z));
+        m.mat[0].y = m.mat[1].x = mass * (newCenter.x * newCenter.y - centerOfMass.x * centerOfMass.y);
+        m.mat[1].z = m.mat[2].y = mass * (newCenter.y * newCenter.z - centerOfMass.y * centerOfMass.z);
+        m.mat[0].z = m.mat[2].x = mass * (newCenter.x * newCenter.z - centerOfMass.x * centerOfMass.z);
 
         return this.oPlus(m);
     }
 
     public idMat3 InertiaTranslateSelf(final float mass, final idVec3 centerOfMass, final idVec3 translation) {
-        final idMat3 m = new idMat3();
+        idMat3 m = new idMat3();
         idVec3 newCenter;
 
         newCenter = centerOfMass.oPlus(translation);
 
-        m.mat[0].x = mass * (((centerOfMass.y * centerOfMass.y) + (centerOfMass.z * centerOfMass.z))
-                - ((newCenter.y * newCenter.y) + (newCenter.z * newCenter.z)));
-        m.mat[1].y = mass * (((centerOfMass.x * centerOfMass.x) + (centerOfMass.z * centerOfMass.z))
-                - ((newCenter.x * newCenter.x) + (newCenter.z * newCenter.z)));
-        m.mat[2].z = mass * (((centerOfMass.x * centerOfMass.x) + (centerOfMass.y * centerOfMass.y))
-                - ((newCenter.x * newCenter.x) + (newCenter.y * newCenter.y)));
+        m.mat[0].x = mass * ((centerOfMass.y * centerOfMass.y + centerOfMass.z * centerOfMass.z)
+                - (newCenter.y * newCenter.y + newCenter.z * newCenter.z));
+        m.mat[1].y = mass * ((centerOfMass.x * centerOfMass.x + centerOfMass.z * centerOfMass.z)
+                - (newCenter.x * newCenter.x + newCenter.z * newCenter.z));
+        m.mat[2].z = mass * ((centerOfMass.x * centerOfMass.x + centerOfMass.y * centerOfMass.y)
+                - (newCenter.x * newCenter.x + newCenter.y * newCenter.y));
 
-        m.mat[0].y = m.mat[1].x = mass * ((newCenter.x * newCenter.y) - (centerOfMass.x * centerOfMass.y));
-        m.mat[1].z = m.mat[2].y = mass * ((newCenter.y * newCenter.z) - (centerOfMass.y * centerOfMass.z));
-        m.mat[0].z = m.mat[2].x = mass * ((newCenter.x * newCenter.z) - (centerOfMass.x * centerOfMass.z));
+        m.mat[0].y = m.mat[1].x = mass * (newCenter.x * newCenter.y - centerOfMass.x * centerOfMass.y);
+        m.mat[1].z = m.mat[2].y = mass * (newCenter.y * newCenter.z - centerOfMass.y * centerOfMass.z);
+        m.mat[0].z = m.mat[2].x = mass * (newCenter.x * newCenter.z - centerOfMass.x * centerOfMass.z);
 
         return this.oPluSet(m);
     }
@@ -579,12 +579,12 @@ public class idMat3 {
     }
 
     public idAngles ToAngles() {
-        final idAngles angles = new idAngles();
+        idAngles angles = new idAngles();
         double theta;
         double cp;
         float sp;
 
-        sp = this.mat[0].z;
+        sp = mat[0].z;
 
         // cap off our sin value so that we don't get any NANs
         if (sp > 1.0f) {
@@ -596,20 +596,20 @@ public class idMat3 {
         theta = -Math.asin(sp);
         cp = Math.cos(theta);
 
-        if (cp > (8192.0f * idMath.FLT_EPSILON)) {
-            angles.pitch = RAD2DEG(theta);
-            angles.yaw = RAD2DEG(Math.atan2(this.mat[0].y, this.mat[0].x));
-            angles.roll = RAD2DEG(Math.atan2(this.mat[1].z, this.mat[2].z));
+        if (cp > 8192.0f * idMath.FLT_EPSILON) {
+            angles.pitch = (float) RAD2DEG(theta);
+            angles.yaw = (float) RAD2DEG(Math.atan2(mat[0].y, mat[0].x));
+            angles.roll = (float) RAD2DEG(Math.atan2(mat[1].z, mat[2].z));
         } else {
-            angles.pitch = RAD2DEG(theta);
-            angles.yaw = RAD2DEG(-Math.atan2(this.mat[1].x, this.mat[1].y));
+            angles.pitch = (float) RAD2DEG(theta);
+            angles.yaw = (float) RAD2DEG(-Math.atan2(mat[1].x, mat[1].y));
             angles.roll = 0;
         }
         return angles;
     }
 
     public idQuat ToQuat() {
-        final idQuat q = new idQuat();
+        idQuat q = new idQuat();
         float trace;
         float s;
         float t;
@@ -617,7 +617,7 @@ public class idMat3 {
         int j;
         int k;
 
-        final int next[] = {1, 2, 0};
+        int next[] = {1, 2, 0};
 
 //	trace = mat[0 ][0 ] + mat[1 ][1 ] + mat[2 ][2 ];
         trace = this.Trace();
@@ -628,35 +628,35 @@ public class idMat3 {
             s = idMath.InvSqrt(t) * 0.5f;
 
             q.oSet(3, s * t);
-            q.oSet(0, (this.mat[2].y - this.mat[1].z) * s);
-            q.oSet(1, (this.mat[0].z - this.mat[2].x) * s);
-            q.oSet(2, (this.mat[1].x - this.mat[0].y) * s);
+            q.oSet(0, (mat[2].y - mat[1].z) * s);
+            q.oSet(1, (mat[0].z - mat[2].x) * s);
+            q.oSet(2, (mat[1].x - mat[0].y) * s);
 
         } else {
 
             i = 0;
-            if (this.mat[1].y > this.mat[0].x) {
+            if (mat[1].y > mat[0].x) {
                 i = 1;
             }
-            if (this.mat[2].z > this.mat[i].oGet(i)) {
+            if (mat[2].z > mat[i].oGet(i)) {
                 i = 2;
             }
             j = next[i];
             k = next[j];
 
-            t = (this.mat[i].oGet(i) - (this.mat[j].oGet(j) + this.mat[k].oGet(k))) + 1.0f;
+            t = (mat[i].oGet(i) - (mat[j].oGet(j) + mat[k].oGet(k))) + 1.0f;
             s = idMath.InvSqrt(t) * 0.5f;
 
             q.oSet(i, s * t);
-            q.oSet(3, (this.mat[k].oGet(j) - this.mat[j].oGet(k)) * s);
-            q.oSet(j, (this.mat[j].oGet(i) + this.mat[i].oGet(j)) * s);
-            q.oSet(k, (this.mat[k].oGet(i) + this.mat[i].oGet(k)) * s);
+            q.oSet(3, (mat[k].oGet(j) - mat[j].oGet(k)) * s);
+            q.oSet(j, (mat[j].oGet(i) + mat[i].oGet(j)) * s);
+            q.oSet(k, (mat[k].oGet(i) + mat[i].oGet(k)) * s);
         }
         return q;
     }
 
     public idCQuat ToCQuat() {
-        final idQuat q = ToQuat();
+        idQuat q = ToQuat();
         if (q.w < 0.0f) {
             return new idCQuat(-q.x, -q.y, -q.z);
         }
@@ -664,7 +664,7 @@ public class idMat3 {
     }
 
     public idRotation ToRotation() {
-        final idRotation r = new idRotation();
+        idRotation r = new idRotation();
         float trace;
         float s;
         float t;
@@ -673,36 +673,36 @@ public class idMat3 {
         int k;
         final int[] next = {1, 2, 0};
 
-        trace = this.mat[0].x + this.mat[1].y + this.mat[2].z;
+        trace = mat[0].x + mat[1].y + mat[2].z;
         if (trace > 0.0f) {
 
             t = trace + 1.0f;
             s = idMath.InvSqrt(t) * 0.5f;
 
             r.angle = s * t;
-            r.vec.oSet(0, (this.mat[2].y - this.mat[1].z) * s);
-            r.vec.oSet(1, (this.mat[0].z - this.mat[2].x) * s);
-            r.vec.oSet(2, (this.mat[1].x - this.mat[0].y) * s);
+            r.vec.oSet(0, (mat[2].y - mat[1].z) * s);
+            r.vec.oSet(1, (mat[0].z - mat[2].x) * s);
+            r.vec.oSet(2, (mat[1].x - mat[0].y) * s);
 
         } else {
 
             i = 0;
-            if (this.mat[1].y > this.mat[0].x) {
+            if (mat[1].y > mat[0].x) {
                 i = 1;
             }
-            if (this.mat[2].z > this.mat[i].oGet(i)) {
+            if (mat[2].z > mat[i].oGet(i)) {
                 i = 2;
             }
             j = next[i];
             k = next[j];
 
-            t = (this.mat[i].oGet(i) - (this.mat[j].oGet(j) + this.mat[k].oGet(k))) + 1.0f;
+            t = (mat[i].oGet(i) - (mat[j].oGet(j) + mat[k].oGet(k))) + 1.0f;
             s = idMath.InvSqrt(t) * 0.5f;
 
             r.vec.oSet(i, s * t);
-            r.angle = (this.mat[k].oGet(j) - this.mat[j].oGet(k)) * s;
-            r.vec.oSet(j, (this.mat[j].oGet(i) + this.mat[i].oGet(j)) * s);
-            r.vec.oSet(k, (this.mat[k].oGet(i) + this.mat[i].oGet(k)) * s);
+            r.angle = (mat[k].oGet(j) - mat[j].oGet(k)) * s;
+            r.vec.oSet(j, (mat[j].oGet(i) + mat[i].oGet(j)) * s);
+            r.vec.oSet(k, (mat[k].oGet(i) + mat[i].oGet(k)) * s);
         }
         r.angle = idMath.ACos(r.angle);
         if (idMath.Fabs(r.angle) < 1e-10f) {
@@ -723,15 +723,15 @@ public class idMat3 {
 
     public idMat4 ToMat4() {
         // NOTE: idMat3 is transposed because it is column-major
-        return new idMat4(this.mat[0].x, this.mat[1].x, this.mat[2].x, 0.0f,
-                this.mat[0].y, this.mat[1].y, this.mat[2].y, 0.0f,
-                this.mat[0].z, this.mat[1].z, this.mat[2].z, 0.0f,
+        return new idMat4(mat[0].x, mat[1].x, mat[2].x, 0.0f,
+                mat[0].y, mat[1].y, mat[2].y, 0.0f,
+                mat[0].z, mat[1].z, mat[2].z, 0.0f,
                 0.0f, 0.0f, 0.0f, 1.0f);
     }
 
     public idVec3 ToAngularVelocity() {
-        final idRotation rotation = ToRotation();
-        return rotation.GetVec().oMultiply(DEG2RAD(rotation.GetAngle()));
+        idRotation rotation = ToRotation();
+        return rotation.GetVec().oMultiply((float) DEG2RAD(rotation.GetAngle()));
     }
 
     /**
@@ -739,9 +739,9 @@ public class idMat3 {
      */
     public float[] ToFloatPtr() {
         return new float[]{
-                this.mat[0].x, this.mat[0].y, this.mat[0].z,
-                this.mat[1].x, this.mat[1].y, this.mat[1].z,
-                this.mat[2].x, this.mat[2].y, this.mat[2].z
+                mat[0].x, mat[0].y, mat[0].z,
+                mat[1].x, mat[1].y, mat[1].z,
+                mat[2].x, mat[2].y, mat[2].z
         };
     }
     //	public	float *			ToFloatPtr( void );
@@ -756,15 +756,15 @@ public class idMat3 {
 //
 
     public static void TransposeMultiply(final idMat3 transpose, final idMat3 b, idMat3 dst) {
-        dst.mat[0].x = (transpose.mat[0].x * b.mat[0].x) + (transpose.mat[1].x * b.mat[1].x) + (transpose.mat[2].x * b.mat[2].x);
-        dst.mat[0].y = (transpose.mat[0].x * b.mat[0].y) + (transpose.mat[1].x * b.mat[1].y) + (transpose.mat[2].x * b.mat[2].y);
-        dst.mat[0].z = (transpose.mat[0].x * b.mat[0].z) + (transpose.mat[1].x * b.mat[1].z) + (transpose.mat[2].x * b.mat[2].z);
-        dst.mat[1].x = (transpose.mat[0].y * b.mat[0].x) + (transpose.mat[1].y * b.mat[1].x) + (transpose.mat[2].y * b.mat[2].x);
-        dst.mat[1].y = (transpose.mat[0].y * b.mat[0].y) + (transpose.mat[1].y * b.mat[1].y) + (transpose.mat[2].y * b.mat[2].y);
-        dst.mat[1].z = (transpose.mat[0].y * b.mat[0].z) + (transpose.mat[1].y * b.mat[1].z) + (transpose.mat[2].y * b.mat[2].z);
-        dst.mat[2].x = (transpose.mat[0].z * b.mat[0].x) + (transpose.mat[1].z * b.mat[1].x) + (transpose.mat[2].z * b.mat[2].x);
-        dst.mat[2].y = (transpose.mat[0].z * b.mat[0].y) + (transpose.mat[1].z * b.mat[1].y) + (transpose.mat[2].z * b.mat[2].y);
-        dst.mat[2].z = (transpose.mat[0].z * b.mat[0].z) + (transpose.mat[1].z * b.mat[1].z) + (transpose.mat[2].z * b.mat[2].z);
+        dst.mat[0].x = transpose.mat[0].x * b.mat[0].x + transpose.mat[1].x * b.mat[1].x + transpose.mat[2].x * b.mat[2].x;
+        dst.mat[0].y = transpose.mat[0].x * b.mat[0].y + transpose.mat[1].x * b.mat[1].y + transpose.mat[2].x * b.mat[2].y;
+        dst.mat[0].z = transpose.mat[0].x * b.mat[0].z + transpose.mat[1].x * b.mat[1].z + transpose.mat[2].x * b.mat[2].z;
+        dst.mat[1].x = transpose.mat[0].y * b.mat[0].x + transpose.mat[1].y * b.mat[1].x + transpose.mat[2].y * b.mat[2].x;
+        dst.mat[1].y = transpose.mat[0].y * b.mat[0].y + transpose.mat[1].y * b.mat[1].y + transpose.mat[2].y * b.mat[2].y;
+        dst.mat[1].z = transpose.mat[0].y * b.mat[0].z + transpose.mat[1].y * b.mat[1].z + transpose.mat[2].y * b.mat[2].z;
+        dst.mat[2].x = transpose.mat[0].z * b.mat[0].x + transpose.mat[1].z * b.mat[1].x + transpose.mat[2].z * b.mat[2].x;
+        dst.mat[2].y = transpose.mat[0].z * b.mat[0].y + transpose.mat[1].z * b.mat[1].y + transpose.mat[2].z * b.mat[2].y;
+        dst.mat[2].z = transpose.mat[0].z * b.mat[0].z + transpose.mat[1].z * b.mat[1].z + transpose.mat[2].z * b.mat[2].z;
     }
 
     public static idMat3 SkewSymmetric(final idVec3 src) {
@@ -772,28 +772,28 @@ public class idMat3 {
     }
 
     public idVec3 getRow(final int row) {
-        return this.mat[row];
+        return mat[row];
     }
 
     @Deprecated
     public void setRow(final int rowNumber, final idVec3 row) {
-        this.mat[rowNumber] = row;
+        mat[rowNumber] = row;
     }
 
     @Deprecated
     public void setRow(final int rowNumber, final float x, final float y, final float z) {
-        this.mat[rowNumber] = new idVec3(x, y, z);
+        mat[rowNumber] = new idVec3(x, y, z);
     }
 
     public float oSet(final int x, final int y, final float value) {
         switch (y) {
 //                case 0:
             default:
-                return this.mat[x].x = value;
+                return mat[x].x = value;
             case 1:
-                return this.mat[x].y = value;
+                return mat[x].y = value;
             case 2:
-                return this.mat[x].z = value;
+                return mat[x].z = value;
         }
     }
 
@@ -807,13 +807,13 @@ public class idMat3 {
     public void oMinSet(final int x, final int y, final float value) {
         switch (y) {
             case 0:
-                this.mat[x].x -= value;
+                mat[x].x -= value;
                 break;
             case 1:
-                this.mat[x].y -= value;
+                mat[x].y -= value;
                 break;
             case 2:
-                this.mat[x].z -= value;
+                mat[x].z -= value;
                 break;
         }
     }
@@ -821,13 +821,13 @@ public class idMat3 {
     public void oPluSet(final int x, final int y, final float value) {
         switch (y) {
             case 0:
-                this.mat[x].x -= value;
+                mat[x].x -= value;
                 break;
             case 1:
-                this.mat[x].y -= value;
+                mat[x].y -= value;
                 break;
             case 2:
-                this.mat[x].z -= value;
+                mat[x].z -= value;
                 break;
         }
     }
@@ -850,10 +850,10 @@ public class idMat3 {
     float[] reinterpret_cast() {
         final int size = 3;
 
-        final float[] temp = new float[size * size];
+        float[] temp = new float[size * size];
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                temp[(x * size) + y] = this.mat[x].oGet(y);
+                temp[x * size + y] = this.mat[x].oGet(y);
             }
         }
         return temp;
@@ -862,8 +862,8 @@ public class idMat3 {
     @Override
     public String toString() {
         return "\n"
-                + this.mat[0] + ",\n"
-                + this.mat[1] + ",\n"
-                + this.mat[2];
+                + mat[0] + ",\n"
+                + mat[1] + ",\n"
+                + mat[2];
     }
-}
+};

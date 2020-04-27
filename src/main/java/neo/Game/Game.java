@@ -47,7 +47,6 @@ import neo.Game.AFEntity.idAFEntity_Base;
 import neo.Game.AFEntity.idAFEntity_Generic;
 import neo.Game.AFEntity.jointTransformData_t;
 import neo.Game.Entity.idEntity;
-import neo.Game.Game_local.idGameLocal;
 import neo.Game.Player.idPlayer;
 import neo.Game.Animation.Anim.frameBlend_t;
 import neo.Game.Animation.Anim.idMD5Anim;
@@ -123,6 +122,8 @@ public class Game {
                                                                 // keep the game time in sync with real time
     }
 
+    ;
+
     public enum allowReply_t {
 
         ALLOW_YES,//= 0,
@@ -131,12 +132,16 @@ public class Game {
         ALLOW_NO            // core will abort with transmitted message
     }
 
+    ;
+
     public enum escReply_t {
 
         ESC_IGNORE,//= 0,	// do nothing
         ESC_MAIN,           // start main menu GUI
         ESC_GUI             // set an explicit GUI
     }
+
+    ;
     //
     public static final int TIME_GROUP1 = 0;
     public static final int TIME_GROUP2 = 1;
@@ -263,7 +268,7 @@ public class Game {
         public abstract boolean DownloadRequest(final String IP, final String guid, final String paks, char[] urls/*[ MAX_STRING_CHARS ]*/);
 
         public abstract void GetMapLoadingGUI(char[] gui/*[ MAX_STRING_CHARS ]*/);
-    }
+    };
 
     public static class refSound_t {
 
@@ -283,7 +288,7 @@ public class Game {
             this.origin = new idVec3();
             this.parms = new soundShaderParms_t();
         }
-    }
+    };
 
     //enum {
     public static final int TEST_PARTICLE_MODEL    = 0;
@@ -310,7 +315,7 @@ public class Game {
         public void ParseSpawnArgsToRenderLight(final idDict args, renderLight_s renderLight) {
             boolean gotTarget, gotUp, gotRight;
             String texture;
-            final idVec3 color = new idVec3();
+            idVec3 color = new idVec3();
 
             renderLight.clear();//memset( renderLight, 0, sizeof( *renderLight ) );
 
@@ -341,7 +346,7 @@ public class Game {
 
                 // create a point light
                 if (!args.GetVector("light_radius", "300 300 300", renderLight.lightRadius)) {
-                    final float[] radius = {0};
+                    float[] radius = {0};
 
                     args.GetFloat("light", "300", radius);
                     renderLight.lightRadius.oSet(0, renderLight.lightRadius.oSet(1, renderLight.lightRadius.oSet(2, radius[0])));
@@ -349,7 +354,7 @@ public class Game {
             }
 
             // get the rotation matrix in either full form, or single angle form
-            final idAngles angles = new idAngles();
+            idAngles angles = new idAngles();
             idMat3 mat = new idMat3();
             if (!args.GetMatrix("light_rotation", "1 0 0 0 1 0 0 0 1", mat)) {
                 if (!args.GetMatrix("rotation", "1 0 0 0 1 0 0 0 1", mat)) {
@@ -403,7 +408,7 @@ public class Game {
         public void ParseSpawnArgsToRenderEntity(final idDict args, renderEntity_s renderEntity) {
             int i;
             String temp;
-            final idVec3 color = new idVec3();
+            idVec3 color = new idVec3();
             float angle;
             idDeclModelDef modelDef;
 
@@ -571,7 +576,7 @@ public class Game {
 
             model = null;
 
-            final String name = args.GetString("model");
+            String name = args.GetString("model");
             modelDef = (idDeclModelDef) declManager.FindType(DECL_MODELDEF, name, false);
             if (modelDef != null) {
                 model = modelDef.ModelHandle();
@@ -581,7 +586,7 @@ public class Game {
                 model = renderModelManager.FindModel(name);
             }
 
-            if ((model != null) && model.IsDefaultModel()) {
+            if (model != null && model.IsDefaultModel()) {
                 return null;
             }
 
@@ -678,16 +683,16 @@ public class Game {
 
         public void ANIM_CreateAnimFrame(final idRenderModel model, final idMD5Anim anim, int numJoints, idJointMat[] joints, int time, final idVec3 offset, boolean remove_origin_offset) {
             int i;
-            final frameBlend_t frame = new frameBlend_t();
+            frameBlend_t frame = new frameBlend_t();
             idMD5Joint[] md5joints;
             int[] index;
 
-            if ((null == model) || model.IsDefaultModel() || (null == anim)) {
+            if (null == model || model.IsDefaultModel() || null == anim) {
                 return;
             }
 
             if (numJoints != model.NumJoints()) {
-                idGameLocal.Error("ANIM_CreateAnimFrame: different # of joints in renderEntity_t than in model (%s)", model.Name());
+                gameLocal.Error("ANIM_CreateAnimFrame: different # of joints in renderEntity_t than in model (%s)", model.Name());
             }
 
             if (0 == model.NumJoints()) {
@@ -696,7 +701,7 @@ public class Game {
             }
 
             if (null == joints) {
-                idGameLocal.Error("ANIM_CreateAnimFrame: NULL joint frame pointer on model (%s)", model.Name());
+                gameLocal.Error("ANIM_CreateAnimFrame: NULL joint frame pointer on model (%s)", model.Name());
             }
 
             if (numJoints != anim.NumJoints()) {
@@ -716,7 +721,7 @@ public class Game {
 
             // create the frame
             anim.ConvertTimeToFrame(time, 1, frame);
-            final idJointQuat[] jointFrame = new idJointQuat[numJoints];
+            idJointQuat[] jointFrame = new idJointQuat[numJoints];
             anim.GetInterpolatedFrame(frame, jointFrame, index, numJoints);
 
             // convert joint quaternions to joint matrices
@@ -743,13 +748,13 @@ public class Game {
             idRenderModel newmodel;
             idMD5Anim md5anim;
             idStr filename;
-            final idStr extension = new idStr();
+            idStr extension = new idStr();
             idAnim anim;
             int animNum;
             idVec3 offset = new idVec3();
             idDeclModelDef modelDef;
 
-            if ((null == model) || model.IsDefaultModel()) {
+            if (null == model || model.IsDefaultModel()) {
                 return null;
             }
 
@@ -810,7 +815,7 @@ public class Game {
 
         // Articulated Figure calls for AF editor and Radiant.
         public boolean AF_SpawnEntity(final String fileName) {
-            final idDict args = new idDict();
+            idDict args = new idDict();
             idPlayer player;
             idAFEntity_Generic ent;
             idDeclAF af;
@@ -833,12 +838,12 @@ public class Game {
             args.Set("origin", org.ToString());
             args.Set("spawnclass", "idAFEntity_Generic");
             if (isNotNullOrEmpty(af.model)) {
-                args.Set("model", af.model.getData());
+                args.Set("model", af.model.toString());
             } else {
                 args.Set("model", fileName);
             }
             if (isNotNullOrEmpty(af.skin)) {
-                args.Set("skin", af.skin.getData());
+                args.Set("skin", af.skin.toString());
             }
             args.Set("articulatedFigure", fileName);
             args.Set("nodrop", "1");
@@ -907,16 +912,16 @@ public class Game {
             idDeclAF af;
             idDeclAF_Body fb = new idDeclAF_Body();
             renderEntity_s ent;
-            final idVec3 origin = new idVec3();
+            idVec3 origin = new idVec3();
             idVec3[] bodyOrigin, newBodyOrigin, modifiedOrigin;
             idMat3 axis = new idMat3();
             idMat3[] bodyAxis, newBodyAxis, modifiedAxis;
             declAFJointMod_t[] jointMod;
-            final idAngles angles = new idAngles();
+            idAngles angles = new idAngles();
             idDict defArgs;
             idKeyValue arg;
-            final idStr name = new idStr();
-            final jointTransformData_t data = new jointTransformData_t();
+            idStr name = new idStr();
+            jointTransformData_t data = new jointTransformData_t();
             String classname, afName, modelName;
             idRenderModel md5;
             idDeclModelDef modelDef;
@@ -949,7 +954,7 @@ public class Game {
             }
 
             // make sure model hasn't been purged
-            if ((modelDef.ModelHandle() != null) && !modelDef.ModelHandle().IsLoaded()) {
+            if (modelDef.ModelHandle() != null && !modelDef.ModelHandle().IsLoaded()) {
                 modelDef.ModelHandle().LoadModel();
             }
 
@@ -960,7 +965,7 @@ public class Game {
             }
 
             // get the articulated figure pose anim
-            final int animNum = modelDef.GetAnim("af_pose");
+            int animNum = modelDef.GetAnim("af_pose");
             if (NOT(animNum)) {
                 return null;
             }
@@ -1025,14 +1030,13 @@ public class Game {
                     continue;
                 }
 //		sscanf( arg.GetValue(), "%f %f %f %f %f %f", &origin.x, &origin.y, &origin.z, &angles.pitch, &angles.yaw, &angles.roll );
-                final Scanner sscanf = new Scanner(arg.GetValue().getData());
+                Scanner sscanf = new Scanner(arg.GetValue().toString());
                 origin.x = sscanf.nextFloat();
                 origin.y = sscanf.nextFloat();
                 origin.z = sscanf.nextFloat();
                 angles.pitch = sscanf.nextFloat();
                 angles.yaw = sscanf.nextFloat();
                 angles.roll = sscanf.nextFloat();
-                sscanf.close();
 
                 if (fb.jointName.Icmp("origin") == 0) {
                     meshAxis = bodyAxis[i].Transpose().oMultiply(angles.ToMat3());
@@ -1073,7 +1077,7 @@ public class Game {
                     }
                 }
 
-                if ((jointNum >= 0) && (jointNum < ent.numJoints)) {
+                if (jointNum >= 0 && jointNum < ent.numJoints) {
                     jointMod[ jointNum] = fb.jointMod;
                     modifiedAxis[ jointNum] = (bodyAxis[i].oMultiply(originalJoints[jointNum].ToMat3().Transpose())).Transpose().oMultiply((newBodyAxis[i].oMultiply(meshAxis.Transpose())));
                     // FIXME: calculate correct modifiedOrigin
@@ -1086,9 +1090,9 @@ public class Game {
                 MD5joint = MD5joints[i];
 
                 parentNum = indexOf(MD5joint.parent, MD5joints);
-                final idMat3 parentAxis = originalJoints[ parentNum].ToMat3();
-                final idMat3 localm = originalJoints[i].ToMat3().oMultiply(parentAxis.Transpose());
-                final idVec3 localt = (originalJoints[i].ToVec3().oMinus(originalJoints[ parentNum].ToVec3())).oMultiply(parentAxis.Transpose());
+                idMat3 parentAxis = originalJoints[ parentNum].ToMat3();
+                idMat3 localm = originalJoints[i].ToMat3().oMultiply(parentAxis.Transpose());
+                idVec3 localt = (originalJoints[i].ToVec3().oMinus(originalJoints[ parentNum].ToVec3())).oMultiply(parentAxis.Transpose());
 
                 switch (jointMod[i]) {
                     case DECLAF_JOINTMOD_ORIGIN: {
@@ -1306,9 +1310,9 @@ public class Game {
 
         // In game map editing support.
         public idDict MapGetEntityDict(final String name) {
-            final idMapFile mapFile = gameLocal.GetLevelMap();
-            if ((mapFile != null) && isNotNullOrEmpty(name)) {
-                final idMapEntity mapent = mapFile.FindEntity(name);
+            idMapFile mapFile = gameLocal.GetLevelMap();
+            if (mapFile != null && isNotNullOrEmpty(name)) {
+                idMapEntity mapent = mapFile.FindEntity(name);
                 if (mapent != null) {
                     return mapent.epairs;
                 }
@@ -1317,16 +1321,16 @@ public class Game {
         }
 
         public void MapSave(final String path /*= NULL*/) {
-            final idMapFile mapFile = gameLocal.GetLevelMap();
+            idMapFile mapFile = gameLocal.GetLevelMap();
             if (mapFile != null) {
                 mapFile.Write((path != null) ? path : mapFile.GetName(), ".map");
             }
         }
 
         public void MapSetEntityKeyVal(final String name, final String key, final String val) {
-            final idMapFile mapFile = gameLocal.GetLevelMap();
-            if ((mapFile != null) && isNotNullOrEmpty(name)) {
-                final idMapEntity mapent = mapFile.FindEntity(name);
+            idMapFile mapFile = gameLocal.GetLevelMap();
+            if (mapFile != null && isNotNullOrEmpty(name)) {
+                idMapEntity mapent = mapFile.FindEntity(name);
                 if (mapent != null) {
                     mapent.epairs.Set(key, val);
                 }
@@ -1334,14 +1338,14 @@ public class Game {
         }
 
         public void MapCopyDictToEntity(final String name, final idDict dict) {
-            final idMapFile mapFile = gameLocal.GetLevelMap();
-            if ((mapFile != null) && isNotNullOrEmpty(name)) {
-                final idMapEntity mapent = mapFile.FindEntity(name);
+            idMapFile mapFile = gameLocal.GetLevelMap();
+            if (mapFile != null && isNotNullOrEmpty(name)) {
+                idMapEntity mapent = mapFile.FindEntity(name);
                 if (mapent != null) {
                     for (int i = 0; i < dict.GetNumKeyVals(); i++) {
                         final idKeyValue kv = dict.GetKeyVal(i);
-                        final String key = kv.GetKey().getData();
-                        final String val = kv.GetValue().getData();
+                        final String key = kv.GetKey().toString();
+                        final String val = kv.GetValue().toString();
                         mapent.epairs.Set(key, val);
                     }
                 }
@@ -1349,14 +1353,14 @@ public class Game {
         }
 
         public int MapGetUniqueMatchingKeyVals(final String key, final String[] list, final int max) {
-            final idMapFile mapFile = gameLocal.GetLevelMap();
+            idMapFile mapFile = gameLocal.GetLevelMap();
             int count = 0;
             if (mapFile != null) {
                 for (int i = 0; i < mapFile.GetNumEntities(); i++) {
-                    final idMapEntity ent = mapFile.GetEntity(i);
+                    idMapEntity ent = mapFile.GetEntity(i);
                     if (ent != null) {
                         final String k = ent.epairs.GetString(key);
-                        if (isNotNullOrEmpty(k) && (count < max)) {
+                        if (isNotNullOrEmpty(k) && count < max) {
                             list[count++] = k;
                         }
                     }
@@ -1366,27 +1370,27 @@ public class Game {
         }
 
         public void MapAddEntity(final idDict dict) {
-            final idMapFile mapFile = gameLocal.GetLevelMap();
+            idMapFile mapFile = gameLocal.GetLevelMap();
             if (mapFile != null) {
-                final idMapEntity ent = new idMapEntity();
+                idMapEntity ent = new idMapEntity();
                 ent.epairs.oSet(dict);
                 mapFile.AddEntity(ent);
             }
         }
 
         public int MapGetEntitiesMatchingClassWithString(final String classname, final String match, final String[] list, final int max) {
-            final idMapFile mapFile = gameLocal.GetLevelMap();
+            idMapFile mapFile = gameLocal.GetLevelMap();
             int count = 0;
             if (mapFile != null) {
-                final int entCount = mapFile.GetNumEntities();
+                int entCount = mapFile.GetNumEntities();
                 for (int i = 0; i < entCount; i++) {
-                    final idMapEntity ent = mapFile.GetEntity(i);
+                    idMapEntity ent = mapFile.GetEntity(i);
                     if (ent != null) {
-                        final idStr work = new idStr(ent.epairs.GetString("classname"));
+                        idStr work = new idStr(ent.epairs.GetString("classname"));
                         if (work.Icmp(classname) == 0) {
                             if (isNotNullOrEmpty(match)) {
                                 work.oSet(ent.epairs.GetString("soundgroup"));
-                                if ((count < max) && (work.Icmp(match) == 0)) {
+                                if (count < max && work.Icmp(match) == 0) {
                                     list[count++] = ent.epairs.GetString("name");
                                 }
                             } else if (count < max) {
@@ -1400,9 +1404,9 @@ public class Game {
         }
 
         public void MapRemoveEntity(final String name) {
-            final idMapFile mapFile = gameLocal.GetLevelMap();
+            idMapFile mapFile = gameLocal.GetLevelMap();
             if (mapFile != null) {
-                final idMapEntity ent = mapFile.FindEntity(name);
+                idMapEntity ent = mapFile.FindEntity(name);
                 if (ent != null) {
                     mapFile.RemoveEntity(ent);
                 }
@@ -1410,11 +1414,11 @@ public class Game {
         }
 
         public void MapEntityTranslate(final String name, final idVec3 v) {
-            final idMapFile mapFile = gameLocal.GetLevelMap();
-            if ((mapFile != null) && isNotNullOrEmpty(name)) {
-                final idMapEntity mapent = mapFile.FindEntity(name);
+            idMapFile mapFile = gameLocal.GetLevelMap();
+            if (mapFile != null && isNotNullOrEmpty(name)) {
+                idMapEntity mapent = mapFile.FindEntity(name);
                 if (mapent != null) {
-                    final idVec3 origin = new idVec3();
+                    idVec3 origin = new idVec3();
                     mapent.epairs.GetVector("origin", "", origin);
                     origin.oPluSet(v);
                     mapent.epairs.SetVector("origin", origin);
@@ -1422,7 +1426,7 @@ public class Game {
             }
         }
 
-    }
+    };
 
     /*
      ===============================================================================
@@ -1449,7 +1453,7 @@ public class Game {
         public idDeclManager           declManager;             // declaration manager
         public idAASFileManager        AASFileManager;          // AAS file manager
         public idCollisionModelManager collisionModelManager;   // collision model manager
-    }
+    };
 
     public static class gameExport_t {
 
@@ -1457,6 +1461,7 @@ public class Game {
         public idGame     game;                                 // interface to run the game
         public idGameEdit gameEdit;                             // interface for in-game editing
     }
+    ;
 //extern "C" {
 //typedef gameExport_t * (*GetGameAPI_t)( gameImport_t *import );
 //}

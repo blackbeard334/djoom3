@@ -68,7 +68,6 @@ import java.util.Map;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
 import neo.Game.Game_local.idEntityPtr;
-import neo.Game.Game_local.idGameLocal;
 import neo.Game.Player.idPlayer;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
@@ -185,11 +184,7 @@ public class Mover {
      ===============================================================================
      */
     public static class idMover extends idEntity {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// CLASS_PROTOTYPE( idMover );
+        // CLASS_PROTOTYPE( idMover );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static{
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -237,7 +232,7 @@ public class Mover {
 
         protected moveState_t move;
         //
-        private final rotationState_t rot;
+        private rotationState_t rot;
         //
         private int move_thread;
         private int rotate_thread;
@@ -257,22 +252,15 @@ public class Mover {
         //
         private int/*qhandle_t*/ areaPortal;		// 0 = no portal
         //
-		private final idList<idEntityPtr<idEntity>> guiTargets;
+        private final idList<idEntityPtr<idEntity>> guiTargets = (idList<idEntityPtr<idEntity>>) new idList<>(new idEntityPtr<>().getClass());
 
-		{
-	        @SuppressWarnings("unchecked")
-			final
-	        idList<idEntityPtr<idEntity>> guiTargets1 = new idList<idEntityPtr<idEntity>>((Class<idEntityPtr<idEntity>>) new idEntityPtr<>().getClass());
-	        this.guiTargets = guiTargets1;
-		}
-        
         @Override
         public idClass CreateInstance() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
@@ -284,7 +272,7 @@ public class Mover {
             LINEAR_STAGE,
             DECELERATION_STAGE,
             FINISHED_STAGE
-        }
+        };
 
         protected enum moverCommand_t {
 
@@ -292,7 +280,7 @@ public class Mover {
             MOVER_ROTATING,
             MOVER_MOVING,
             MOVER_SPLINE
-        }
+        };
         //
         // mover directions.  make sure to change script/doom_defs.script if you add any, or change their order
         //
@@ -318,7 +306,7 @@ public class Mover {
             int movetime;
             int deceleration;
             idVec3 dir;
-        }
+        };
 
         protected static class rotationState_t {
 
@@ -327,7 +315,7 @@ public class Mover {
             int movetime;
             int deceleration;
             idAngles rot;
-        }
+        };
         //
         protected idPhysics_Parametric physicsObj;
         //
@@ -335,69 +323,69 @@ public class Mover {
 
         public idMover() {
 //	memset( &move, 0, sizeof( move ) );
-            this.move = new moveState_t();
+            move = new moveState_t();
 //	memset( &rot, 0, sizeof( rot ) );
-            this.rot = new rotationState_t();
-            this.move_thread = 0;
-            this.rotate_thread = 0;
-            this.dest_angles = new idAngles();
-            this.angle_delta = new idAngles();
-            this.dest_position = new idVec3();
-            this.move_delta = new idVec3();
-            this.move_speed = 0.0f;
-            this.move_time = 0;
-            this.deceltime = 0;
-            this.acceltime = 0;
-            this.stopRotation = false;
-            this.useSplineAngles = true;
-            this.lastCommand = MOVER_NONE;
-            this.damage = 0.0f;
-            this.areaPortal = 0;
-            this.fl.networkSync = true;
-            this.physicsObj = new idPhysics_Parametric();
+            rot = new rotationState_t();
+            move_thread = 0;
+            rotate_thread = 0;
+            dest_angles = new idAngles();
+            angle_delta = new idAngles();
+            dest_position = new idVec3();
+            move_delta = new idVec3();
+            move_speed = 0.0f;
+            move_time = 0;
+            deceltime = 0;
+            acceltime = 0;
+            stopRotation = false;
+            useSplineAngles = true;
+            lastCommand = MOVER_NONE;
+            damage = 0.0f;
+            areaPortal = 0;
+            fl.networkSync = true;
+            physicsObj = new idPhysics_Parametric();
         }
 
         @Override
         public void Spawn() {
             super.Spawn();
             
-            final float[] damage = {0};
+            float[] damage = {0};
 
-            this.move_thread = 0;
-            this.rotate_thread = 0;
-            this.stopRotation = false;
-            this.lastCommand = MOVER_NONE;
+            move_thread = 0;
+            rotate_thread = 0;
+            stopRotation = false;
+            lastCommand = MOVER_NONE;
 
-            this.acceltime = (int) (1000 * this.spawnArgs.GetFloat("accel_time", "0"));
-            this.deceltime = (int) (1000 * this.spawnArgs.GetFloat("decel_time", "0"));
-            this.move_time = (int) (1000 * this.spawnArgs.GetFloat("move_time", "1"));	// safe default value
-            this.move_speed = this.spawnArgs.GetFloat("move_speed", "0");
+            acceltime = (int) (1000 * spawnArgs.GetFloat("accel_time", "0"));
+            deceltime = (int) (1000 * spawnArgs.GetFloat("decel_time", "0"));
+            move_time = (int) (1000 * spawnArgs.GetFloat("move_time", "1"));	// safe default value
+            move_speed = spawnArgs.GetFloat("move_speed", "0");
 
-            this.spawnArgs.GetFloat("damage", "0", damage);
+            spawnArgs.GetFloat("damage", "0", damage);
             this.damage = damage[0];
 
-            this.dest_position = GetPhysics().GetOrigin();
-            this.dest_angles = GetPhysics().GetAxis().ToAngles();
+            dest_position = GetPhysics().GetOrigin();
+            dest_angles = GetPhysics().GetAxis().ToAngles();
 
-            this.physicsObj.SetSelf(this);
-            this.physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
-            this.physicsObj.SetOrigin(GetPhysics().GetOrigin());
-            this.physicsObj.SetAxis(GetPhysics().GetAxis());
-            this.physicsObj.SetClipMask(MASK_SOLID);
-            if (!this.spawnArgs.GetBool("solid", "1")) {
-                this.physicsObj.SetContents(0);
+            physicsObj.SetSelf(this);
+            physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
+            physicsObj.SetOrigin(GetPhysics().GetOrigin());
+            physicsObj.SetAxis(GetPhysics().GetAxis());
+            physicsObj.SetClipMask(MASK_SOLID);
+            if (!spawnArgs.GetBool("solid", "1")) {
+                physicsObj.SetContents(0);
             }
-            if ((null == this.renderEntity.hModel) || !this.spawnArgs.GetBool("nopush")) {
-                this.physicsObj.SetPusher(0);
+            if (null == renderEntity.hModel || !spawnArgs.GetBool("nopush")) {
+                physicsObj.SetPusher(0);
             }
-            this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, this.dest_position, getVec3_origin(), getVec3_origin());
-            this.physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, this.dest_angles, getAng_zero(), getAng_zero());
-            SetPhysics(this.physicsObj);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_position, getVec3_origin(), getVec3_origin());
+            physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_angles, getAng_zero(), getAng_zero());
+            SetPhysics(physicsObj);
 
             // see if we are on an areaportal
-            this.areaPortal = gameRenderWorld.FindPortal(GetPhysics().GetAbsBounds());
+            areaPortal = gameRenderWorld.FindPortal(GetPhysics().GetAbsBounds());
 
-            if (this.spawnArgs.MatchPrefix("guiTarget") != null) {
+            if (spawnArgs.MatchPrefix("guiTarget") != null) {
                 if (gameLocal.GameState() == GAMESTATE_STARTUP) {
                     PostEventMS(EV_FindGuiTargets, 0);
                 } else {
@@ -406,9 +394,9 @@ public class Mover {
                 }
             }
 
-            this.health = this.spawnArgs.GetInt("health");
-            if (this.health != 0) {
-                this.fl.takedamage = true;
+            health = spawnArgs.GetInt("health");
+            if (health != 0) {
+                fl.takedamage = true;
             }
 
         }
@@ -417,59 +405,59 @@ public class Mover {
         public void Save(idSaveGame savefile) {
             int i;
 
-            savefile.WriteStaticObject(this.physicsObj);
+            savefile.WriteStaticObject(physicsObj);
 
-            savefile.WriteInt(etoi(this.move.stage));
-            savefile.WriteInt(this.move.acceleration);
-            savefile.WriteInt(this.move.movetime);
-            savefile.WriteInt(this.move.deceleration);
-            savefile.WriteVec3(this.move.dir);
+            savefile.WriteInt(etoi(move.stage));
+            savefile.WriteInt(move.acceleration);
+            savefile.WriteInt(move.movetime);
+            savefile.WriteInt(move.deceleration);
+            savefile.WriteVec3(move.dir);
 
-            savefile.WriteInt(etoi(this.rot.stage));
-            savefile.WriteInt(this.rot.acceleration);
-            savefile.WriteInt(this.rot.movetime);
-            savefile.WriteInt(this.rot.deceleration);
-            savefile.WriteFloat(this.rot.rot.pitch);
-            savefile.WriteFloat(this.rot.rot.yaw);
-            savefile.WriteFloat(this.rot.rot.roll);
+            savefile.WriteInt(etoi(rot.stage));
+            savefile.WriteInt(rot.acceleration);
+            savefile.WriteInt(rot.movetime);
+            savefile.WriteInt(rot.deceleration);
+            savefile.WriteFloat(rot.rot.pitch);
+            savefile.WriteFloat(rot.rot.yaw);
+            savefile.WriteFloat(rot.rot.roll);
 
-            savefile.WriteInt(this.move_thread);
-            savefile.WriteInt(this.rotate_thread);
+            savefile.WriteInt(move_thread);
+            savefile.WriteInt(rotate_thread);
 
-            savefile.WriteAngles(this.dest_angles);
-            savefile.WriteAngles(this.angle_delta);
-            savefile.WriteVec3(this.dest_position);
-            savefile.WriteVec3(this.move_delta);
+            savefile.WriteAngles(dest_angles);
+            savefile.WriteAngles(angle_delta);
+            savefile.WriteVec3(dest_position);
+            savefile.WriteVec3(move_delta);
 
-            savefile.WriteFloat(this.move_speed);
-            savefile.WriteInt(this.move_time);
-            savefile.WriteInt(this.deceltime);
-            savefile.WriteInt(this.acceltime);
-            savefile.WriteBool(this.stopRotation);
-            savefile.WriteBool(this.useSplineAngles);
-            savefile.WriteInt(etoi(this.lastCommand));
-            savefile.WriteFloat(this.damage);
+            savefile.WriteFloat(move_speed);
+            savefile.WriteInt(move_time);
+            savefile.WriteInt(deceltime);
+            savefile.WriteInt(acceltime);
+            savefile.WriteBool(stopRotation);
+            savefile.WriteBool(useSplineAngles);
+            savefile.WriteInt(etoi(lastCommand));
+            savefile.WriteFloat(damage);
 
-            savefile.WriteInt(this.areaPortal);
-            if (this.areaPortal > 0) {
-                savefile.WriteInt(gameRenderWorld.GetPortalState(this.areaPortal));
+            savefile.WriteInt(areaPortal);
+            if (areaPortal > 0) {
+                savefile.WriteInt(gameRenderWorld.GetPortalState(areaPortal));
             }
 
-            savefile.WriteInt(this.guiTargets.Num());
-            for (i = 0; i < this.guiTargets.Num(); i++) {
-                this.guiTargets.oGet(i).Save(savefile);
+            savefile.WriteInt(guiTargets.Num());
+            for (i = 0; i < guiTargets.Num(); i++) {
+                guiTargets.oGet(i).Save(savefile);
             }
 
-            if ((this.splineEnt.GetEntity() != null) && (this.splineEnt.GetEntity().GetSpline() != null)) {
-                final idCurve_Spline<idVec3> spline = this.physicsObj.GetSpline();
+            if (splineEnt.GetEntity() != null && splineEnt.GetEntity().GetSpline() != null) {
+                idCurve_Spline<idVec3> spline = physicsObj.GetSpline();
 
                 savefile.WriteBool(true);
-                this.splineEnt.Save(savefile);
+                splineEnt.Save(savefile);
                 savefile.WriteInt((int) spline.GetTime(0));
                 savefile.WriteInt((int) (spline.GetTime(spline.GetNumValues() - 1) - spline.GetTime(0)));
-                savefile.WriteInt(this.physicsObj.GetSplineAcceleration());
-                savefile.WriteInt(this.physicsObj.GetSplineDeceleration());
-                savefile.WriteInt(btoi(this.physicsObj.UsingSplineAngles()));
+                savefile.WriteInt(physicsObj.GetSplineAcceleration());
+                savefile.WriteInt(physicsObj.GetSplineDeceleration());
+                savefile.WriteInt(btoi(physicsObj.UsingSplineAngles()));
 
             } else {
                 savefile.WriteBool(false);
@@ -479,66 +467,66 @@ public class Mover {
         @Override
         public void Restore(idRestoreGame savefile) {
             int i;
-            final int[] num = {0};
-            final boolean[] hasSpline = {false};
+            int[] num = {0};
+            boolean[] hasSpline = {false};
 
-            savefile.ReadStaticObject(this.physicsObj);
-            RestorePhysics(this.physicsObj);
+            savefile.ReadStaticObject(physicsObj);
+            RestorePhysics(physicsObj);
 
-            this.move.stage = moveStage_t.values()[savefile.ReadInt()];
-            this.move.acceleration = savefile.ReadInt();
-            this.move.movetime = savefile.ReadInt();
-            this.move.deceleration = savefile.ReadInt();
-            savefile.ReadVec3(this.move.dir);
+            move.stage = moveStage_t.values()[savefile.ReadInt()];
+            move.acceleration = savefile.ReadInt();
+            move.movetime = savefile.ReadInt();
+            move.deceleration = savefile.ReadInt();
+            savefile.ReadVec3(move.dir);
 
-            this.rot.stage = moveStage_t.values()[savefile.ReadInt()];
-            this.rot.acceleration = savefile.ReadInt();
-            this.rot.movetime = savefile.ReadInt();
-            this.rot.deceleration = savefile.ReadInt();
-            this.rot.rot.pitch = savefile.ReadFloat();
-            this.rot.rot.yaw = savefile.ReadFloat();
-            this.rot.rot.roll = savefile.ReadFloat();
+            rot.stage = moveStage_t.values()[savefile.ReadInt()];
+            rot.acceleration = savefile.ReadInt();
+            rot.movetime = savefile.ReadInt();
+            rot.deceleration = savefile.ReadInt();
+            rot.rot.pitch = savefile.ReadFloat();
+            rot.rot.yaw = savefile.ReadFloat();
+            rot.rot.roll = savefile.ReadFloat();
 
-            this.move_thread = savefile.ReadInt();
-            this.rotate_thread = savefile.ReadInt();
+            move_thread = savefile.ReadInt();
+            rotate_thread = savefile.ReadInt();
 
-            savefile.ReadAngles(this.dest_angles);
-            savefile.ReadAngles(this.angle_delta);
-            savefile.ReadVec3(this.dest_position);
-            savefile.ReadVec3(this.move_delta);
+            savefile.ReadAngles(dest_angles);
+            savefile.ReadAngles(angle_delta);
+            savefile.ReadVec3(dest_position);
+            savefile.ReadVec3(move_delta);
 
-            this.move_speed = savefile.ReadFloat();
-            this.move_time = savefile.ReadInt();
-            this.deceltime = savefile.ReadInt();
-            this.acceltime = savefile.ReadInt();
-            this.stopRotation = savefile.ReadBool();
-            this.useSplineAngles = savefile.ReadBool();
-            this.lastCommand = moverCommand_t.values()[savefile.ReadInt()];
-            this.damage = savefile.ReadFloat();
+            move_speed = savefile.ReadFloat();
+            move_time = savefile.ReadInt();
+            deceltime = savefile.ReadInt();
+            acceltime = savefile.ReadInt();
+            stopRotation = savefile.ReadBool();
+            useSplineAngles = savefile.ReadBool();
+            lastCommand = moverCommand_t.values()[savefile.ReadInt()];
+            damage = savefile.ReadFloat();
 
-            this.areaPortal = savefile.ReadInt();
-            if (this.areaPortal > 0) {
-                final int[] portalState = {0};
+            areaPortal = savefile.ReadInt();
+            if (areaPortal > 0) {
+                int[] portalState = {0};
                 savefile.ReadInt(portalState);
-                gameLocal.SetPortalState(this.areaPortal, portalState[0]);
+                gameLocal.SetPortalState(areaPortal, portalState[0]);
             }
 
-            this.guiTargets.Clear();
+            guiTargets.Clear();
             savefile.ReadInt(num);
-            this.guiTargets.SetNum(num[0]);
+            guiTargets.SetNum(num[0]);
             for (i = 0; i < num[0]; i++) {
-                this.guiTargets.oGet(i).Restore(savefile);
+                guiTargets.oGet(i).Restore(savefile);
             }
 
             savefile.ReadBool(hasSpline);
             if (hasSpline[0]) {
-                final int[] starttime = {0};
-                final int[] totaltime = {0};
-                final int[] accel = {0};
-                final int[] decel = {0};
-                final int[] useAngles = {0};
+                int[] starttime = {0};
+                int[] totaltime = {0};
+                int[] accel = {0};
+                int[] decel = {0};
+                int[] useAngles = {0};
 
-                this.splineEnt.Restore(savefile);
+                splineEnt.Restore(savefile);
                 savefile.ReadInt(starttime);
                 savefile.ReadInt(totaltime);
                 savefile.ReadInt(accel);
@@ -551,35 +539,35 @@ public class Mover {
 
         @Override
         public void Killed(idEntity inflictor, idEntity attacker, int damage, final idVec3 dir, int location) {
-            this.fl.takedamage = false;
+            fl.takedamage = false;
             ActivateTargets(this);
         }
 
         @Override
         public void WriteToSnapshot(idBitMsgDelta msg) {
-            this.physicsObj.WriteToSnapshot(msg);
-            msg.WriteBits(etoi(this.move.stage), 3);
-            msg.WriteBits(etoi(this.rot.stage), 3);
+            physicsObj.WriteToSnapshot(msg);
+            msg.WriteBits(etoi(move.stage), 3);
+            msg.WriteBits(etoi(rot.stage), 3);
             WriteBindToSnapshot(msg);
             WriteGUIToSnapshot(msg);
         }
 
         @Override
         public void ReadFromSnapshot(final idBitMsgDelta msg) {
-            final moveStage_t oldMoveStage = this.move.stage;
-            final moveStage_t oldRotStage = this.rot.stage;
+            moveStage_t oldMoveStage = move.stage;
+            moveStage_t oldRotStage = rot.stage;
 
-            this.physicsObj.ReadFromSnapshot(msg);
-            this.move.stage = moveStage_t.values()[msg.ReadBits(3)];
-            this.rot.stage = moveStage_t.values()[msg.ReadBits(3)];
+            physicsObj.ReadFromSnapshot(msg);
+            move.stage = moveStage_t.values()[msg.ReadBits(3)];
+            rot.stage = moveStage_t.values()[msg.ReadBits(3)];
             ReadBindFromSnapshot(msg);
             ReadGUIFromSnapshot(msg);
 
             if (msg.HasChanged()) {
-                if (this.move.stage != oldMoveStage) {
+                if (move.stage != oldMoveStage) {
                     UpdateMoveSound(oldMoveStage);
                 }
-                if (this.rot.stage != oldRotStage) {
+                if (rot.stage != oldRotStage) {
                     UpdateRotationSound(oldRotStage);
                 }
                 UpdateVisuals();
@@ -589,21 +577,21 @@ public class Mover {
         @Override
         public void Hide() {
             super.Hide();
-            this.physicsObj.SetContents(0);
+            physicsObj.SetContents(0);
         }
 
         @Override
         public void Show() {
             super.Show();
-            if (this.spawnArgs.GetBool("solid", "1")) {
-                this.physicsObj.SetContents(CONTENTS_SOLID);
+            if (spawnArgs.GetBool("solid", "1")) {
+                physicsObj.SetContents(CONTENTS_SOLID);
             }
-            SetPhysics(this.physicsObj);
+            SetPhysics(physicsObj);
         }
 
         public void SetPortalState(boolean open) {
-            assert (this.areaPortal != 0);
-            gameLocal.SetPortalState(this.areaPortal, (open ? PS_BLOCK_NONE : PS_BLOCK_ALL).ordinal());
+            assert (areaPortal != 0);
+            gameLocal.SetPortalState(areaPortal, (open ? PS_BLOCK_NONE : PS_BLOCK_ALL).ordinal());
         }
 
 
@@ -615,7 +603,7 @@ public class Mover {
          ================
          */
         protected void Event_OpenPortal() {
-            if (this.areaPortal != 0) {
+            if (areaPortal != 0) {
                 SetPortalState(true);
             }
         }
@@ -628,22 +616,22 @@ public class Mover {
          ================
          */
         protected void Event_ClosePortal() {
-            if (this.areaPortal != 0) {
+            if (areaPortal != 0) {
                 SetPortalState(false);
             }
         }
 
         protected void Event_PartBlocked(idEventArg<idEntity> blockingEntity) {
-            if (this.damage > 0.0f) {
-                blockingEntity.value.Damage(this, this, getVec3_origin(), "damage_moverCrush", this.damage, INVALID_JOINT);
+            if (damage > 0.0f) {
+                blockingEntity.value.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage, INVALID_JOINT);
             }
             if (g_debugMover.GetBool()) {
-                gameLocal.Printf("%d: '%s' blocked by '%s'\n", gameLocal.time, this.name, blockingEntity.value.name);
+                gameLocal.Printf("%d: '%s' blocked by '%s'\n", gameLocal.time, name, blockingEntity.value.name);
             }
         }
 
         protected void MoveToPos(final idVec3 pos) {
-            this.dest_position = GetLocalCoordinates(pos);
+            dest_position = GetLocalCoordinates(pos);
             BeginMove(null);
         }
 
@@ -695,19 +683,19 @@ public class Mover {
 
         protected void SetGuiStates(final String state) {
             int i;
-            if (this.guiTargets.Num() != 0) {
+            if (guiTargets.Num() != 0) {
                 SetGuiState("movestate", state);
             }
             for (i = 0; i < MAX_RENDERENTITY_GUI; i++) {
-                if (this.renderEntity.gui[i] != null) {
-                    this.renderEntity.gui[i].SetStateString("movestate", state);
-                    this.renderEntity.gui[i].StateChanged(gameLocal.time, true);
+                if (renderEntity.gui[i] != null) {
+                    renderEntity.gui[i].SetStateString("movestate", state);
+                    renderEntity.gui[i].StateChanged(gameLocal.time, true);
                 }
             }
         }
 
         protected void FindGuiTargets() {
-            gameLocal.GetTargets(this.spawnArgs, this.guiTargets, "guiTarget");
+            gameLocal.GetTargets(spawnArgs, guiTargets, "guiTarget");
         }
 
         /*
@@ -719,11 +707,11 @@ public class Mover {
          */
         protected void SetGuiState(final String key, final String val) {
             gameLocal.Printf("Setting %s to %s\n", key, val);
-            for (int i = 0; i < this.guiTargets.Num(); i++) {
-                final idEntity ent = this.guiTargets.oGet(i).GetEntity();
+            for (int i = 0; i < guiTargets.Num(); i++) {
+                idEntity ent = guiTargets.oGet(i).GetEntity();
                 if (ent != null) {
                     for (int j = 0; j < MAX_RENDERENTITY_GUI; j++) {
-                        if ((ent.GetRenderEntity() != null) && (ent.GetRenderEntity().gui[ j] != null)) {
+                        if (ent.GetRenderEntity() != null && ent.GetRenderEntity().gui[ j] != null) {
                             ent.GetRenderEntity().gui[ j].SetStateString(key, val);
                             ent.GetRenderEntity().gui[ j].StateChanged(gameLocal.time, true);
                         }
@@ -735,172 +723,172 @@ public class Mover {
 
         protected void DoneMoving() {
 
-            if (this.lastCommand != MOVER_SPLINE) {
+            if (lastCommand != MOVER_SPLINE) {
                 // set our final position so that we get rid of any numerical inaccuracy
-                this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, this.dest_position, getVec3_origin(), getVec3_origin());
+                physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_position, getVec3_origin(), getVec3_origin());
             }
 
-            this.lastCommand = MOVER_NONE;
-            idThread.ObjectMoveDone(this.move_thread, this);
-            this.move_thread = 0;
+            lastCommand = MOVER_NONE;
+            idThread.ObjectMoveDone(move_thread, this);
+            move_thread = 0;
 
             StopSound(etoi(SND_CHANNEL_BODY), false);
         }
 
         protected void DoneRotating() {
-            this.lastCommand = MOVER_NONE;
-            idThread.ObjectMoveDone(this.rotate_thread, this);
-            this.rotate_thread = 0;
+            lastCommand = MOVER_NONE;
+            idThread.ObjectMoveDone(rotate_thread, this);
+            rotate_thread = 0;
 
             StopSound(etoi(SND_CHANNEL_BODY), false);
         }
 
         protected void BeginMove(idThread thread) {
             moveStage_t stage;
-            final idVec3 org = new idVec3();
+            idVec3 org = new idVec3();
             float dist;
             float acceldist;
             int totalacceltime;
             int at;
             int dt;
 
-            this.lastCommand = MOVER_MOVING;
-            this.move_thread = 0;
+            lastCommand = MOVER_MOVING;
+            move_thread = 0;
 
-            this.physicsObj.GetLocalOrigin(org);
+            physicsObj.GetLocalOrigin(org);
 
-            this.move_delta = this.dest_position.oMinus(org);
-            if (this.move_delta.Compare(getVec3_zero())) {
+            move_delta = dest_position.oMinus(org);
+            if (move_delta.Compare(getVec3_zero())) {
                 DoneMoving();
                 return;
             }
 
             // scale times up to whole physics frames
-            at = idPhysics.SnapTimeToPhysicsFrame(this.acceltime);
-            this.move_time += at - this.acceltime;
-            this.acceltime = at;
-            dt = idPhysics.SnapTimeToPhysicsFrame(this.deceltime);
-            this.move_time += dt - this.deceltime;
-            this.deceltime = dt;
+            at = idPhysics.SnapTimeToPhysicsFrame(acceltime);
+            move_time += at - acceltime;
+            acceltime = at;
+            dt = idPhysics.SnapTimeToPhysicsFrame(deceltime);
+            move_time += dt - deceltime;
+            deceltime = dt;
 
             // if we're moving at a specific speed, we need to calculate the move time
-            if (this.move_speed != 0) {
-                dist = this.move_delta.Length();
+            if (move_speed != 0) {
+                dist = move_delta.Length();
 
-                totalacceltime = this.acceltime + this.deceltime;
+                totalacceltime = acceltime + deceltime;
 
                 // calculate the distance we'll move during acceleration and deceleration
-                acceldist = totalacceltime * 0.5f * 0.001f * this.move_speed;
+                acceldist = totalacceltime * 0.5f * 0.001f * move_speed;
                 if (acceldist >= dist) {
                     // going too slow for this distance to move at a constant speed
-                    this.move_time = totalacceltime;
+                    move_time = totalacceltime;
                 } else {
                     // calculate move time taking acceleration into account
-                    this.move_time = (int) (totalacceltime + ((1000.0f * (dist - acceldist)) / this.move_speed));
+                    move_time = (int) (totalacceltime + 1000.0f * (dist - acceldist) / move_speed);
                 }
             }
 
             // scale time up to a whole physics frames
-            this.move_time = idPhysics.SnapTimeToPhysicsFrame(this.move_time);
+            move_time = idPhysics.SnapTimeToPhysicsFrame(move_time);
 
-            if (this.acceltime != 0) {
+            if (acceltime != 0) {
                 stage = ACCELERATION_STAGE;
-            } else if (this.move_time <= this.deceltime) {
+            } else if (move_time <= deceltime) {
                 stage = DECELERATION_STAGE;
             } else {
                 stage = LINEAR_STAGE;
             }
 
-            at = this.acceltime;
-            dt = this.deceltime;
+            at = acceltime;
+            dt = deceltime;
 
-            if ((at + dt) > this.move_time) {
+            if (at + dt > move_time) {
                 // there's no real correct way to handle this, so we just scale
                 // the times to fit into the move time in the same proportions
-                at = idPhysics.SnapTimeToPhysicsFrame((at * this.move_time) / (at + dt));
-                dt = this.move_time - at;
+                at = idPhysics.SnapTimeToPhysicsFrame(at * move_time / (at + dt));
+                dt = move_time - at;
             }
 
-            this.move_delta = this.move_delta.oMultiply(1000.0f / (this.move_time - ((at + dt) * 0.5f)));
+            move_delta = move_delta.oMultiply(1000.0f / ((float) move_time - (at + dt) * 0.5f));
 
-            this.move.stage = stage;
-            this.move.acceleration = at;
-            this.move.movetime = this.move_time - at - dt;
-            this.move.deceleration = dt;
-            this.move.dir = new idVec3(this.move_delta);
+            move.stage = stage;
+            move.acceleration = at;
+            move.movetime = move_time - at - dt;
+            move.deceleration = dt;
+            move.dir = new idVec3(move_delta);
 
             ProcessEvent(EV_ReachedPos);
         }
 
         protected void BeginRotation(idThread thread, boolean stopwhendone) {
             moveStage_t stage;
-            final idAngles ang = new idAngles();
+            idAngles ang = new idAngles();
             int at;
             int dt;
 
-            this.lastCommand = MOVER_ROTATING;
-            this.rotate_thread = 0;
+            lastCommand = MOVER_ROTATING;
+            rotate_thread = 0;
 
             // rotation always uses move_time so that if a move was started before the rotation,
             // the rotation will take the same amount of time as the move.  If no move has been
             // started and no time is set, the rotation takes 1 second.
-            if (0 == this.move_time) {
-                this.move_time = 1;
+            if (0 == move_time) {
+                move_time = 1;
             }
 
-            this.physicsObj.GetLocalAngles(ang);
-            this.angle_delta = this.dest_angles.oMinus(ang);
-            if (this.angle_delta.equals(getAng_zero())) {
+            physicsObj.GetLocalAngles(ang);
+            angle_delta = dest_angles.oMinus(ang);
+            if (angle_delta.equals(getAng_zero())) {
                 // set our final angles so that we get rid of any numerical inaccuracy
-                this.dest_angles.Normalize360();
-                this.physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, this.dest_angles, getAng_zero(), getAng_zero());
-                this.stopRotation = false;
+                dest_angles.Normalize360();
+                physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_angles, getAng_zero(), getAng_zero());
+                stopRotation = false;
                 DoneRotating();
                 return;
             }
 
             // scale times up to whole physics frames
-            at = idPhysics.SnapTimeToPhysicsFrame(this.acceltime);
-            this.move_time += at - this.acceltime;
-            this.acceltime = at;
-            dt = idPhysics.SnapTimeToPhysicsFrame(this.deceltime);
-            this.move_time += dt - this.deceltime;
-            this.deceltime = dt;
-            this.move_time = idPhysics.SnapTimeToPhysicsFrame(this.move_time);
+            at = idPhysics.SnapTimeToPhysicsFrame(acceltime);
+            move_time += at - acceltime;
+            acceltime = at;
+            dt = idPhysics.SnapTimeToPhysicsFrame(deceltime);
+            move_time += dt - deceltime;
+            deceltime = dt;
+            move_time = idPhysics.SnapTimeToPhysicsFrame(move_time);
 
-            if (this.acceltime != 0) {
+            if (acceltime != 0) {
                 stage = ACCELERATION_STAGE;
-            } else if (this.move_time <= this.deceltime) {
+            } else if (move_time <= deceltime) {
                 stage = DECELERATION_STAGE;
             } else {
                 stage = LINEAR_STAGE;
             }
 
-            at = this.acceltime;
-            dt = this.deceltime;
+            at = acceltime;
+            dt = deceltime;
 
-            if ((at + dt) > this.move_time) {
+            if (at + dt > move_time) {
                 // there's no real correct way to handle this, so we just scale
                 // the times to fit into the move time in the same proportions
-                at = idPhysics.SnapTimeToPhysicsFrame((at * this.move_time) / (at + dt));
-                dt = this.move_time - at;
+                at = idPhysics.SnapTimeToPhysicsFrame(at * move_time / (at + dt));
+                dt = move_time - at;
             }
 
-            this.angle_delta = this.angle_delta.oMultiply(1000.0f / (this.move_time - ((at + dt) * 0.5f)));
+            angle_delta = angle_delta.oMultiply(1000.0f / ((float) move_time - (at + dt) * 0.5f));
 
-            this.stopRotation = stopwhendone || (dt != 0);
+            stopRotation = stopwhendone || (dt != 0);
 
-            this.rot.stage = stage;
-            this.rot.acceleration = at;
-            this.rot.movetime = this.move_time - at - dt;
-            this.rot.deceleration = dt;
-            this.rot.rot = this.angle_delta;
+            rot.stage = stage;
+            rot.acceleration = at;
+            rot.movetime = move_time - at - dt;
+            rot.deceleration = dt;
+            rot.rot = angle_delta;
 
             ProcessEvent(EV_ReachedAng);
         }
 
         private void VectorForDir(float dir, idVec3 vec) {
-            final idAngles ang = new idAngles();
+            idAngles ang = new idAngles();
 
             switch ((int) dir) {
                 case DIR_UP:
@@ -912,7 +900,7 @@ public class Mover {
                     break;
 
                 case DIR_LEFT:
-                    this.physicsObj.GetLocalAngles(ang);
+                    physicsObj.GetLocalAngles(ang);
                     ang.pitch = 0;
                     ang.roll = 0;
                     ang.yaw += 90;
@@ -920,7 +908,7 @@ public class Mover {
                     break;
 
                 case DIR_RIGHT:
-                    this.physicsObj.GetLocalAngles(ang);
+                    physicsObj.GetLocalAngles(ang);
                     ang.pitch = 0;
                     ang.roll = 0;
                     ang.yaw -= 90;
@@ -928,14 +916,14 @@ public class Mover {
                     break;
 
                 case DIR_FORWARD:
-                    this.physicsObj.GetLocalAngles(ang);
+                    physicsObj.GetLocalAngles(ang);
                     ang.pitch = 0;
                     ang.roll = 0;
                     vec.oSet(ang.ToForward());
                     break;
 
                 case DIR_BACK:
-                    this.physicsObj.GetLocalAngles(ang);
+                    physicsObj.GetLocalAngles(ang);
                     ang.pitch = 0;
                     ang.roll = 0;
                     ang.yaw += 180;
@@ -951,23 +939,23 @@ public class Mover {
                     break;
 
                 case DIR_REL_LEFT:
-                    this.physicsObj.GetLocalAngles(ang);
+                    physicsObj.GetLocalAngles(ang);
                     ang.ToVectors(null, vec);
                     vec.oMulSet(-1);
                     break;
 
                 case DIR_REL_RIGHT:
-                    this.physicsObj.GetLocalAngles(ang);
+                    physicsObj.GetLocalAngles(ang);
                     ang.ToVectors(null, vec);
                     break;
 
                 case DIR_REL_FORWARD:
-                    this.physicsObj.GetLocalAngles(ang);
+                    physicsObj.GetLocalAngles(ang);
                     vec.oSet(ang.ToForward());
                     break;
 
                 case DIR_REL_BACK:
-                    this.physicsObj.GetLocalAngles(ang);
+                    physicsObj.GetLocalAngles(ang);
                     vec.oSet(ang.ToForward().oMultiply(-1));
                     break;
 
@@ -980,13 +968,13 @@ public class Mover {
 
 //        private idCurve_Spline<idVec3> GetSpline(idEntity splineEntity);
         private void Event_SetCallback() {
-            if ((this.lastCommand.equals(MOVER_ROTATING)) && (0 == this.rotate_thread)) {
-                this.lastCommand = MOVER_NONE;
-                this.rotate_thread = idThread.CurrentThreadNum();
+            if ((lastCommand.equals(MOVER_ROTATING)) && 0 == rotate_thread) {
+                lastCommand = MOVER_NONE;
+                rotate_thread = idThread.CurrentThreadNum();
                 idThread.ReturnInt(true);
-            } else if ((this.lastCommand.equals(MOVER_MOVING) || this.lastCommand.equals(MOVER_SPLINE)) && (0 == this.move_thread)) {
-                this.lastCommand = MOVER_NONE;
-                this.move_thread = idThread.CurrentThreadNum();
+            } else if ((lastCommand.equals(MOVER_MOVING) || lastCommand.equals(MOVER_SPLINE)) && 0 == move_thread) {
+                lastCommand = MOVER_NONE;
+                move_thread = idThread.CurrentThreadNum();
                 idThread.ReturnInt(true);
             } else {
                 idThread.ReturnInt(false);
@@ -995,57 +983,57 @@ public class Mover {
 
         private void Event_TeamBlocked(idEventArg<idEntity> blockedPart, idEventArg<idEntity> blockingEntity) {
             if (g_debugMover.GetBool()) {
-                gameLocal.Printf("%d: '%s' stopped due to team member '%s' blocked by '%s'\n", gameLocal.time, this.name, blockedPart.value.name, blockingEntity.value.name);
+                gameLocal.Printf("%d: '%s' stopped due to team member '%s' blocked by '%s'\n", gameLocal.time, name, blockedPart.value.name, blockingEntity.value.name);
             }
         }
 
         private void Event_StopMoving() {
-            this.physicsObj.GetLocalOrigin(this.dest_position);
+            physicsObj.GetLocalOrigin(dest_position);
             DoneMoving();
         }
 
         private void Event_StopRotating() {
-            this.physicsObj.GetLocalAngles(this.dest_angles);
-            this.physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, this.dest_angles, getAng_zero(), getAng_zero());
+            physicsObj.GetLocalAngles(dest_angles);
+            physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_angles, getAng_zero(), getAng_zero());
             DoneRotating();
         }
 
         private void Event_UpdateMove() {
-            final idVec3 org = new idVec3();
+            idVec3 org = new idVec3();
 
-            this.physicsObj.GetLocalOrigin(org);
+            physicsObj.GetLocalOrigin(org);
 
-            UpdateMoveSound(this.move.stage);
+            UpdateMoveSound(move.stage);
 
-            switch (this.move.stage) {
+            switch (move.stage) {
                 case ACCELERATION_STAGE: {
-                    this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_ACCELLINEAR, gameLocal.time, this.move.acceleration, org, this.move.dir, getVec3_origin());
-                    if (this.move.movetime > 0) {
-                        this.move.stage = LINEAR_STAGE;
-                    } else if (this.move.deceleration > 0) {
-                        this.move.stage = DECELERATION_STAGE;
+                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_ACCELLINEAR, gameLocal.time, move.acceleration, org, move.dir, getVec3_origin());
+                    if (move.movetime > 0) {
+                        move.stage = LINEAR_STAGE;
+                    } else if (move.deceleration > 0) {
+                        move.stage = DECELERATION_STAGE;
                     } else {
-                        this.move.stage = FINISHED_STAGE;
+                        move.stage = FINISHED_STAGE;
                     }
                     break;
                 }
                 case LINEAR_STAGE: {
-                    this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, gameLocal.time, this.move.movetime, org, this.move.dir, getVec3_origin());
-                    if (this.move.deceleration != 0) {
-                        this.move.stage = DECELERATION_STAGE;
+                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, gameLocal.time, move.movetime, org, move.dir, getVec3_origin());
+                    if (move.deceleration != 0) {
+                        move.stage = DECELERATION_STAGE;
                     } else {
-                        this.move.stage = FINISHED_STAGE;
+                        move.stage = FINISHED_STAGE;
                     }
                     break;
                 }
                 case DECELERATION_STAGE: {
-                    this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_DECELLINEAR, gameLocal.time, this.move.deceleration, org, this.move.dir, getVec3_origin());
-                    this.move.stage = FINISHED_STAGE;
+                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_DECELLINEAR, gameLocal.time, move.deceleration, org, move.dir, getVec3_origin());
+                    move.stage = FINISHED_STAGE;
                     break;
                 }
                 case FINISHED_STAGE: {
                     if (g_debugMover.GetBool()) {
-                        gameLocal.Printf("%d: '%s' move done\n", gameLocal.time, this.name);
+                        gameLocal.Printf("%d: '%s' move done\n", gameLocal.time, name);
                     }
                     DoneMoving();
                     break;
@@ -1054,57 +1042,57 @@ public class Mover {
         }
 
         private void Event_UpdateRotation() {
-            final idAngles ang = new idAngles();
+            idAngles ang = new idAngles();
 
-            this.physicsObj.GetLocalAngles(ang);
+            physicsObj.GetLocalAngles(ang);
 
-            UpdateRotationSound(this.rot.stage);
+            UpdateRotationSound(rot.stage);
 
-            switch (this.rot.stage) {
+            switch (rot.stage) {
                 case ACCELERATION_STAGE: {
-                    this.physicsObj.SetAngularExtrapolation(EXTRAPOLATION_ACCELLINEAR, gameLocal.time, this.rot.acceleration, ang, this.rot.rot, getAng_zero());
-                    if (this.rot.movetime > 0) {
-                        this.rot.stage = LINEAR_STAGE;
-                    } else if (this.rot.deceleration > 0) {
-                        this.rot.stage = DECELERATION_STAGE;
+                    physicsObj.SetAngularExtrapolation(EXTRAPOLATION_ACCELLINEAR, gameLocal.time, rot.acceleration, ang, rot.rot, getAng_zero());
+                    if (rot.movetime > 0) {
+                        rot.stage = LINEAR_STAGE;
+                    } else if (rot.deceleration > 0) {
+                        rot.stage = DECELERATION_STAGE;
                     } else {
-                        this.rot.stage = FINISHED_STAGE;
+                        rot.stage = FINISHED_STAGE;
                     }
                     break;
                 }
                 case LINEAR_STAGE: {
-                    if (!this.stopRotation && (0 == this.rot.deceleration)) {
-                        this.physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, this.rot.movetime, ang, this.rot.rot, getAng_zero());
+                    if (!stopRotation && 0 == rot.deceleration) {
+                        physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, rot.movetime, ang, rot.rot, getAng_zero());
                     } else {
-                        this.physicsObj.SetAngularExtrapolation(EXTRAPOLATION_LINEAR, gameLocal.time, this.rot.movetime, ang, this.rot.rot, getAng_zero());
+                        physicsObj.SetAngularExtrapolation(EXTRAPOLATION_LINEAR, gameLocal.time, rot.movetime, ang, rot.rot, getAng_zero());
                     }
 
-                    if (this.rot.deceleration != 0) {
-                        this.rot.stage = DECELERATION_STAGE;
+                    if (rot.deceleration != 0) {
+                        rot.stage = DECELERATION_STAGE;
                     } else {
-                        this.rot.stage = FINISHED_STAGE;
+                        rot.stage = FINISHED_STAGE;
                     }
                     break;
                 }
                 case DECELERATION_STAGE: {
-                    this.physicsObj.SetAngularExtrapolation(EXTRAPOLATION_DECELLINEAR, gameLocal.time, this.rot.deceleration, ang, this.rot.rot, getAng_zero());
-                    this.rot.stage = FINISHED_STAGE;
+                    physicsObj.SetAngularExtrapolation(EXTRAPOLATION_DECELLINEAR, gameLocal.time, rot.deceleration, ang, rot.rot, getAng_zero());
+                    rot.stage = FINISHED_STAGE;
                     break;
                 }
                 case FINISHED_STAGE: {
-                    this.lastCommand = MOVER_NONE;
-                    if (this.stopRotation) {
+                    lastCommand = MOVER_NONE;
+                    if (stopRotation) {
                         // set our final angles so that we get rid of any numerical inaccuracy
-                        this.dest_angles.Normalize360();
-                        this.physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, this.dest_angles, getAng_zero(), getAng_zero());
-                        this.stopRotation = false;
-                    } else if (this.physicsObj.GetAngularExtrapolationType() == EXTRAPOLATION_ACCELLINEAR) {
+                        dest_angles.Normalize360();
+                        physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_angles, getAng_zero(), getAng_zero());
+                        stopRotation = false;
+                    } else if (physicsObj.GetAngularExtrapolationType() == EXTRAPOLATION_ACCELLINEAR) {
                         // keep our angular velocity constant
-                        this.physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, ang, this.rot.rot, getAng_zero());
+                        physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, ang, rot.rot, getAng_zero());
                     }
 
                     if (g_debugMover.GetBool()) {
-                        gameLocal.Printf("%d: '%s' rotation done\n", gameLocal.time, this.name);
+                        gameLocal.Printf("%d: '%s' rotation done\n", gameLocal.time, name);
                     }
 
                     DoneRotating();
@@ -1115,36 +1103,36 @@ public class Mover {
 
         private void Event_SetMoveSpeed(idEventArg<Float> speed) {
             if (speed.value <= 0) {
-                idGameLocal.Error("Cannot set speed less than or equal to 0.");
+                gameLocal.Error("Cannot set speed less than or equal to 0.");
             }
 
-            this.move_speed = speed.value;
-            this.move_time = 0;			// move_time is calculated for each move when move_speed is non-0
+            move_speed = speed.value;
+            move_time = 0;			// move_time is calculated for each move when move_speed is non-0
         }
 
         private void Event_SetMoveTime(idEventArg<Float> time) {
             if (time.value <= 0) {
-                idGameLocal.Error("Cannot set time less than or equal to 0.");
+                gameLocal.Error("Cannot set time less than or equal to 0.");
             }
 
-            this.move_speed = 0;
-            this.move_time = (int) SEC2MS(time.value);
+            move_speed = 0;
+            move_time = (int) SEC2MS(time.value);
         }
 
         private void Event_SetDecelerationTime(idEventArg<Float> time) {
             if (time.value < 0) {
-                idGameLocal.Error("Cannot set deceleration time less than 0.");
+                gameLocal.Error("Cannot set deceleration time less than 0.");
             }
 
-            this.deceltime = (int) SEC2MS(time.value);
+            deceltime = (int) SEC2MS(time.value);
         }
 
         private void Event_SetAccellerationTime(idEventArg<Float> time) {
             if (time.value < 0) {
-                idGameLocal.Error("Cannot set acceleration time less than 0.");
+                gameLocal.Error("Cannot set acceleration time less than 0.");
             }
 
-            this.acceltime = (int) SEC2MS(time.value);
+            acceltime = (int) SEC2MS(time.value);
         }
 
         private void Event_MoveTo(idEventArg<idEntity> ent) {
@@ -1152,42 +1140,41 @@ public class Mover {
                 gameLocal.Warning("Entity not found");
             }
 
-            this.dest_position = GetLocalCoordinates(ent.value.GetPhysics().GetOrigin());
+            dest_position = GetLocalCoordinates(ent.value.GetPhysics().GetOrigin());
             BeginMove(idThread.CurrentThread());
         }
 
         private void Event_MoveToPos(idEventArg<idVec3> pos) {
-            this.dest_position = GetLocalCoordinates(pos.value);
+            dest_position = GetLocalCoordinates(pos.value);
             BeginMove(null);
         }
 
         private void Event_MoveDir(idEventArg<Float> angle, idEventArg<Float> distance) {
-            final idVec3 dir = new idVec3();
-            final idVec3 org = new idVec3();
+            idVec3 dir = new idVec3();
+            idVec3 org = new idVec3();
 
-            this.physicsObj.GetLocalOrigin(org);
+            physicsObj.GetLocalOrigin(org);
             VectorForDir(angle.value, dir);
-            this.dest_position = org.oPlus(dir.oMultiply(distance.value));
+            dest_position = org.oPlus(dir.oMultiply(distance.value));
 
             BeginMove(idThread.CurrentThread());
         }
 
         private void Event_MoveAccelerateTo(idEventArg<Float> speed, idEventArg<Float> time) {
             float v;
-            final idVec3 org = new idVec3();
-			idVec3 dir;
+            idVec3 org = new idVec3(), dir;
             int at;
 
             if (time.value < 0) {
-                idGameLocal.Error("idMover::Event_MoveAccelerateTo: cannot set acceleration time less than 0.");
+                gameLocal.Error("idMover::Event_MoveAccelerateTo: cannot set acceleration time less than 0.");
             }
 
-            dir = this.physicsObj.GetLinearVelocity();
+            dir = physicsObj.GetLinearVelocity();
             v = dir.Normalize();
 
             // if not moving already
             if (v == 0.0f) {
-                idGameLocal.Error("idMover::Event_MoveAccelerateTo: not moving.");
+                gameLocal.Error("idMover::Event_MoveAccelerateTo: not moving.");
             }
 
             // if already moving faster than the desired speed
@@ -1197,36 +1184,35 @@ public class Mover {
 
             at = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(time.value));
 
-            this.lastCommand = MOVER_MOVING;
+            lastCommand = MOVER_MOVING;
 
-            this.physicsObj.GetLocalOrigin(org);
+            physicsObj.GetLocalOrigin(org);
 
-            this.move.stage = ACCELERATION_STAGE;
-            this.move.acceleration = at;
-            this.move.movetime = 0;
-            this.move.deceleration = 0;
+            move.stage = ACCELERATION_STAGE;
+            move.acceleration = at;
+            move.movetime = 0;
+            move.deceleration = 0;
 
             StartSound("snd_accel", SND_CHANNEL_BODY2, 0, false, null);
             StartSound("snd_move", SND_CHANNEL_BODY, 0, false, null);
-            this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_ACCELLINEAR, gameLocal.time, this.move.acceleration, org, dir.oMultiply(speed.value - v), dir.oMultiply(v));
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_ACCELLINEAR, gameLocal.time, move.acceleration, org, dir.oMultiply(speed.value - v), dir.oMultiply(v));
         }
 
         private void Event_MoveDecelerateTo(idEventArg<Float> speed, idEventArg<Float> time) {
             float v;
-            final idVec3 org = new idVec3();
-			idVec3 dir;
+            idVec3 org = new idVec3(), dir;
             int dt;
 
             if (time.value < 0) {
-                idGameLocal.Error("idMover::Event_MoveDecelerateTo: cannot set deceleration time less than 0.");
+                gameLocal.Error("idMover::Event_MoveDecelerateTo: cannot set deceleration time less than 0.");
             }
 
-            dir = this.physicsObj.GetLinearVelocity();
+            dir = physicsObj.GetLinearVelocity();
             v = dir.Normalize();
 
             // if not moving already
             if (v == 0.0f) {
-                idGameLocal.Error("idMover::Event_MoveDecelerateTo: not moving.");
+                gameLocal.Error("idMover::Event_MoveDecelerateTo: not moving.");
             }
 
             // if already moving slower than the desired speed
@@ -1236,106 +1222,105 @@ public class Mover {
 
             dt = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(time.value));
 
-            this.lastCommand = MOVER_MOVING;
+            lastCommand = MOVER_MOVING;
 
-            this.physicsObj.GetLocalOrigin(org);
+            physicsObj.GetLocalOrigin(org);
 
-            this.move.stage = DECELERATION_STAGE;
-            this.move.acceleration = 0;
-            this.move.movetime = 0;
-            this.move.deceleration = dt;
+            move.stage = DECELERATION_STAGE;
+            move.acceleration = 0;
+            move.movetime = 0;
+            move.deceleration = dt;
 
             StartSound("snd_decel", SND_CHANNEL_BODY2, 0, false, null);
             StartSound("snd_move", SND_CHANNEL_BODY, 0, false, null);
-            this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_DECELLINEAR, gameLocal.time, this.move.deceleration, org, dir.oMultiply(v - speed.value), dir.oMultiply(speed.value));
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_DECELLINEAR, gameLocal.time, move.deceleration, org, dir.oMultiply(v - speed.value), dir.oMultiply(speed.value));
         }
 
         private void Event_RotateDownTo(idEventArg<Integer> _axis, idEventArg<Float> angle) {
-            final int axis = _axis.value;
-            final idAngles ang = new idAngles();
+            int axis = _axis.value;
+            idAngles ang = new idAngles();
 
             if ((axis < 0) || (axis > 2)) {
-                idGameLocal.Error("Invalid axis");
+                gameLocal.Error("Invalid axis");
             }
 
-            this.physicsObj.GetLocalAngles(ang);
+            physicsObj.GetLocalAngles(ang);
 
-            this.dest_angles.oSet(axis, angle.value);
-            if (this.dest_angles.oGet(axis) > ang.oGet(axis)) {
-                this.dest_angles.oMinSet(axis, 360);
+            dest_angles.oSet(axis, angle.value);
+            if (dest_angles.oGet(axis) > ang.oGet(axis)) {
+                dest_angles.oMinSet(axis, 360);
             }
 
             BeginRotation(idThread.CurrentThread(), true);
         }
 
         private void Event_RotateUpTo(idEventArg<Integer> _axis, idEventArg<Float> angle) {
-            final int axis = _axis.value;
-            final idAngles ang = new idAngles();
+            int axis = _axis.value;
+            idAngles ang = new idAngles();
 
             if ((axis < 0) || (axis > 2)) {
-                idGameLocal.Error("Invalid axis");
+                gameLocal.Error("Invalid axis");
             }
 
-            this.physicsObj.GetLocalAngles(ang);
+            physicsObj.GetLocalAngles(ang);
 
-            this.dest_angles.oSet(axis, angle.value);
-            if (this.dest_angles.oGet(axis) < ang.oGet(axis)) {
-                this.dest_angles.oPluSet(axis, 360);
+            dest_angles.oSet(axis, angle.value);
+            if (dest_angles.oGet(axis) < ang.oGet(axis)) {
+                dest_angles.oPluSet(axis, 360);
             }
 
             BeginRotation(idThread.CurrentThread(), true);
         }
 
         private void Event_RotateTo(idEventArg<idAngles> angles) {
-            this.dest_angles.oSet(angles.value);
+            dest_angles.oSet(angles.value);
             BeginRotation(idThread.CurrentThread(), true);
         }
 
         private void Event_Rotate(idEventArg<idVec3> angles) {
-            final idAngles ang = new idAngles();
+            idAngles ang = new idAngles();
 
-            if (this.rotate_thread != 0) {
+            if (rotate_thread != 0) {
                 DoneRotating();
             }
 
-            this.physicsObj.GetLocalAngles(ang);
-            this.dest_angles = ang.oPlus(angles.value.oMultiply(this.move_time - ((this.acceltime + this.deceltime) / 2)).oMultiply(0.001f));
+            physicsObj.GetLocalAngles(ang);
+            dest_angles = ang.oPlus(angles.value.oMultiply(move_time - (acceltime + deceltime) / 2).oMultiply(0.001f));
 
             BeginRotation(idThread.CurrentThread(), false);
         }
 
         private void Event_RotateOnce(idEventArg<idVec3> angles) {
-            final idAngles ang = new idAngles();
+            idAngles ang = new idAngles();
 
-            if (this.rotate_thread != 0) {
+            if (rotate_thread != 0) {
                 DoneRotating();
             }
 
-            this.physicsObj.GetLocalAngles(ang);
-            this.dest_angles = ang.oPlus(angles.value);
+            physicsObj.GetLocalAngles(ang);
+            dest_angles = ang.oPlus(angles.value);
 
             BeginRotation(idThread.CurrentThread(), true);
         }
 
         private void Event_Bob(idEventArg<Float> speed, idEventArg<Float> phase, idEventArg<idVec3> depth) {
-            final idVec3 org = new idVec3();
+            idVec3 org = new idVec3();
 
-            this.physicsObj.GetLocalOrigin(org);
-            this.physicsObj.SetLinearExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (speed.value * 1000 * phase.value),
+            physicsObj.GetLocalOrigin(org);
+            physicsObj.SetLinearExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (speed.value * 1000 * phase.value),
                     (int) (speed.value * 500), org, depth.value.oMultiply(2.0f), getVec3_origin());
         }
 
         private void Event_Sway(idEventArg<Float> speed, idEventArg<Float> phase, idEventArg<idVec3> _depth) {
-            final idAngles depth = new idAngles(_depth.value);
-            final idAngles ang = new idAngles();
-			idAngles angSpeed;
+            idAngles depth = new idAngles(_depth.value);
+            idAngles ang = new idAngles(), angSpeed;
             float duration;
 
-            this.physicsObj.GetLocalAngles(ang);
+            physicsObj.GetLocalAngles(ang);
             assert (speed.value > 0.0f);
-            duration = idMath.Sqrt((depth.oGet(0) * depth.oGet(0)) + (depth.oGet(1) * depth.oGet(1)) + (depth.oGet(2) * depth.oGet(2))) / speed.value;
+            duration = idMath.Sqrt(depth.oGet(0) * depth.oGet(0) + depth.oGet(1) * depth.oGet(1) + depth.oGet(2) * depth.oGet(2)) / speed.value;
             angSpeed = depth.oDivide(duration * idMath.SQRT_1OVER2);
-            this.physicsObj.SetAngularExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (duration * 1000.0f * phase.value), (int) (duration * 1000.0f), ang, angSpeed, getAng_zero());
+            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (duration * 1000.0f * phase.value), (int) (duration * 1000.0f), ang, angSpeed, getAng_zero());
         }
 
         private void Event_SetAccelSound(final idEventArg<String> sound) {
@@ -1359,27 +1344,27 @@ public class Mover {
         }
 
         private void Event_EnableSplineAngles() {
-            this.useSplineAngles = true;
+            useSplineAngles = true;
         }
 
         private void Event_DisableSplineAngles() {
-            this.useSplineAngles = false;
+            useSplineAngles = false;
         }
 
         private void Event_RemoveInitialSplineAngles() {
             idCurve_Spline<idVec3> spline;
             idAngles ang;
 
-            spline = this.physicsObj.GetSpline();
+            spline = physicsObj.GetSpline();
             if (null == spline) {
                 return;
             }
             ang = spline.GetCurrentFirstDerivative(0).ToAngles();
-            this.physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, ang.oNegative(), getAng_zero(), getAng_zero());
+            physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, ang.oNegative(), getAng_zero(), getAng_zero());
         }
 
         private void Event_StartSpline(idEventArg<idEntity> _splineEntity) {
-            final idEntity splineEntity = _splineEntity.value;
+            idEntity splineEntity = _splineEntity.value;
             idCurve_Spline<idVec3> spline;
 
             if (null == splineEntity) {
@@ -1387,35 +1372,35 @@ public class Mover {
             }
 
             // Needed for savegames
-            this.splineEnt = new idEntityPtr<>(splineEntity);
+            splineEnt = new idEntityPtr<>(splineEntity);
 
             spline = splineEntity.GetSpline();
             if (null == spline) {
                 return;
             }
 
-            this.lastCommand = MOVER_SPLINE;
-            this.move_thread = 0;
+            lastCommand = MOVER_SPLINE;
+            move_thread = 0;
 
-            if ((this.acceltime + this.deceltime) > this.move_time) {
-                this.acceltime = this.move_time / 2;
-                this.deceltime = this.move_time - this.acceltime;
+            if (acceltime + deceltime > move_time) {
+                acceltime = move_time / 2;
+                deceltime = move_time - acceltime;
             }
-            this.move.stage = FINISHED_STAGE;
-            this.move.acceleration = this.acceltime;
-            this.move.movetime = this.move_time;
-            this.move.deceleration = this.deceltime;
+            move.stage = FINISHED_STAGE;
+            move.acceleration = acceltime;
+            move.movetime = move_time;
+            move.deceleration = deceltime;
 
-            spline.MakeUniform(this.move_time);
+            spline.MakeUniform(move_time);
             spline.ShiftTime(gameLocal.time - spline.GetTime(0));
 
-            this.physicsObj.SetSpline(spline, this.move.acceleration, this.move.deceleration, this.useSplineAngles);
-            this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, this.dest_position, getVec3_origin(), getVec3_origin());
+            physicsObj.SetSpline(spline, move.acceleration, move.deceleration, useSplineAngles);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_position, getVec3_origin(), getVec3_origin());
         }
 
         private void Event_StopSpline() {
-            this.physicsObj.SetSpline(null, 0, 0, this.useSplineAngles);
-            this.splineEnt = null;
+            physicsObj.SetSpline(null, 0, 0, useSplineAngles);
+            splineEnt = null;
         }
 
         private void Event_Activate(idEventArg<idEntity> activator) {
@@ -1427,7 +1412,7 @@ public class Mover {
                                        idEventArg<Integer> decel, idEventArg<Integer> useSplineAng) {
             idCurve_Spline<idVec3> spline;
 
-            final idEntity splineEntity = this.splineEnt.GetEntity();
+            idEntity splineEntity = splineEnt.GetEntity();
             if (null == splineEntity) {
                 // We should never get this event if splineEnt is invalid
                 common.Warning("Invalid spline entity during restore\n");
@@ -1439,12 +1424,12 @@ public class Mover {
             spline.MakeUniform(total.value);
             spline.ShiftTime(start.value - spline.GetTime(0));
 
-            this.physicsObj.SetSpline(spline, accel.value, decel.value, (useSplineAng.value != 0));
-            this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, this.dest_position, getVec3_origin(), getVec3_origin());
+            physicsObj.SetSpline(spline, accel.value, decel.value, (useSplineAng.value != 0));
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_position, getVec3_origin(), getVec3_origin());
         }
 
         private void Event_IsMoving() {
-            if (this.physicsObj.GetLinearExtrapolationType() == EXTRAPOLATION_NONE) {
+            if (physicsObj.GetLinearExtrapolationType() == EXTRAPOLATION_NONE) {
                 idThread.ReturnInt(false);
             } else {
                 idThread.ReturnInt(true);
@@ -1452,7 +1437,7 @@ public class Mover {
         }
 
         private void Event_IsRotating() {
-            if (this.physicsObj.GetAngularExtrapolationType() == EXTRAPOLATION_NONE) {
+            if (physicsObj.GetAngularExtrapolationType() == EXTRAPOLATION_NONE) {
                 idThread.ReturnInt(false);
             } else {
                 idThread.ReturnInt(true);
@@ -1460,7 +1445,7 @@ public class Mover {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1468,7 +1453,7 @@ public class Mover {
             return eventCallbacks;
         }
 
-    }
+    };
 
     /*
      ===============================================================================
@@ -1480,12 +1465,7 @@ public class Mover {
     public static class idSplinePath extends idEntity {
 //	CLASS_PROTOTYPE( idSplinePath );
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public idSplinePath() {//TODO:delete this class?
+        public idSplinePath() {//TODO:delete this class?
         }
 
         @Override
@@ -1494,17 +1474,17 @@ public class Mover {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     public static class floorInfo_s {
 
         idVec3 pos;
         idStr door;
         int floor;
-    }
+    };
 
     /*
      ===============================================================================
@@ -1514,11 +1494,7 @@ public class Mover {
      ===============================================================================
      */
     public static class idElevator extends idMover {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// CLASS_PROTOTYPE( idElevator );
+        // CLASS_PROTOTYPE( idElevator );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idMover.getEventCallBacks());
@@ -1535,10 +1511,10 @@ public class Mover {
             INIT,
             IDLE,
             WAITING_ON_DOORS
-        }
+        };
         //
         private elevatorState_t state;
-        private final idList<floorInfo_s> floorInfo;
+        private idList<floorInfo_s> floorInfo;
         private int currentFloor;
         private int pendingFloor;
         private int lastFloor;
@@ -1550,15 +1526,15 @@ public class Mover {
         //
 
         public idElevator() {
-            this.state = INIT;
-            this.floorInfo = new idList<>();
-            this.currentFloor = 0;
-            this.pendingFloor = 0;
-            this.lastFloor = 0;
-            this.controlsDisabled = false;
-            this.lastTouchTime = 0;
-            this.returnFloor = 0;
-            this.returnTime = 0;
+            state = INIT;
+            floorInfo = new idList<>();
+            currentFloor = 0;
+            pendingFloor = 0;
+            lastFloor = 0;
+            controlsDisabled = false;
+            lastTouchTime = 0;
+            returnFloor = 0;
+            returnTime = 0;
         }
 
         @Override
@@ -1568,52 +1544,52 @@ public class Mover {
             idStr str;
             int len1;
 
-            this.lastFloor = 0;
-            this.currentFloor = 0;
-            this.pendingFloor = this.spawnArgs.GetInt("floor", "1");
-            SetGuiStates((this.pendingFloor == 1) ? guiBinaryMoverStates[0] : guiBinaryMoverStates[1]);
+            lastFloor = 0;
+            currentFloor = 0;
+            pendingFloor = spawnArgs.GetInt("floor", "1");
+            SetGuiStates((pendingFloor == 1) ? guiBinaryMoverStates[0] : guiBinaryMoverStates[1]);
 
-            this.returnTime = this.spawnArgs.GetFloat("returnTime");
-            this.returnFloor = this.spawnArgs.GetInt("returnFloor");
+            returnTime = spawnArgs.GetFloat("returnTime");
+            returnFloor = spawnArgs.GetInt("returnFloor");
 
             len1 = "floorPos_".length();
-            idKeyValue kv = this.spawnArgs.MatchPrefix("floorPos_", null);
+            idKeyValue kv = spawnArgs.MatchPrefix("floorPos_", null);
             while (kv != null) {
                 str = kv.GetKey().Right(kv.GetKey().Length() - len1);
-                final floorInfo_s fi = new floorInfo_s();
-                fi.floor = Integer.parseInt(str.getData());
-                fi.door = new idStr(this.spawnArgs.GetString(va("floorDoor_%d", fi.floor)));
-                fi.pos = this.spawnArgs.GetVector(kv.GetKey().getData());
-                this.floorInfo.Append(fi);
-                kv = this.spawnArgs.MatchPrefix("floorPos_", kv);
+                floorInfo_s fi = new floorInfo_s();
+                fi.floor = Integer.parseInt(str.toString());
+                fi.door = new idStr(spawnArgs.GetString(va("floorDoor_%d", fi.floor)));
+                fi.pos = spawnArgs.GetVector(kv.GetKey().toString());
+                floorInfo.Append(fi);
+                kv = spawnArgs.MatchPrefix("floorPos_", kv);
             }
-            this.lastTouchTime = 0;
-            this.state = INIT;
+            lastTouchTime = 0;
+            state = INIT;
             BecomeActive(TH_THINK | TH_PHYSICS);
             PostEventMS(EV_Mover_InitGuiTargets, 0);
-            this.controlsDisabled = false;
+            controlsDisabled = false;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
             int i;
 
-            savefile.WriteInt(etoi(this.state));
+            savefile.WriteInt(etoi(state));
 
-            savefile.WriteInt(this.floorInfo.Num());
-            for (i = 0; i < this.floorInfo.Num(); i++) {
-                savefile.WriteVec3(this.floorInfo.oGet(i).pos);
-                savefile.WriteString(this.floorInfo.oGet(i).door.getData());
-                savefile.WriteInt(this.floorInfo.oGet(i).floor);
+            savefile.WriteInt(floorInfo.Num());
+            for (i = 0; i < floorInfo.Num(); i++) {
+                savefile.WriteVec3(floorInfo.oGet(i).pos);
+                savefile.WriteString(floorInfo.oGet(i).door.toString());
+                savefile.WriteInt(floorInfo.oGet(i).floor);
             }
 
-            savefile.WriteInt(this.currentFloor);
-            savefile.WriteInt(this.pendingFloor);
-            savefile.WriteInt(this.lastFloor);
-            savefile.WriteBool(this.controlsDisabled);
-            savefile.WriteFloat(this.returnTime);
-            savefile.WriteInt(this.returnFloor);
-            savefile.WriteInt(this.lastTouchTime);
+            savefile.WriteInt(currentFloor);
+            savefile.WriteInt(pendingFloor);
+            savefile.WriteInt(lastFloor);
+            savefile.WriteBool(controlsDisabled);
+            savefile.WriteFloat(returnTime);
+            savefile.WriteInt(returnFloor);
+            savefile.WriteInt(lastTouchTime);
         }
 
         @Override
@@ -1621,33 +1597,33 @@ public class Mover {
             int i;
             int num;
 
-            this.state = elevatorState_t.values()[savefile.ReadInt()];
+            state = elevatorState_t.values()[savefile.ReadInt()];
 
             num = savefile.ReadInt();
             for (i = 0; i < num; i++) {
-                final floorInfo_s floor = new floorInfo_s();
+                floorInfo_s floor = new floorInfo_s();
 
                 savefile.ReadVec3(floor.pos);
                 savefile.ReadString(floor.door);
                 floor.floor = savefile.ReadInt();
 
-                this.floorInfo.Append(floor);
+                floorInfo.Append(floor);
             }
 
-            this.currentFloor = savefile.ReadInt();
-            this.pendingFloor = savefile.ReadInt();
-            this.lastFloor = savefile.ReadInt();
-            this.controlsDisabled = savefile.ReadBool();
-            this.returnTime = savefile.ReadFloat();
-            this.returnFloor = savefile.ReadInt();
-            this.lastTouchTime = savefile.ReadInt();
+            currentFloor = savefile.ReadInt();
+            pendingFloor = savefile.ReadInt();
+            lastFloor = savefile.ReadInt();
+            controlsDisabled = savefile.ReadBool();
+            returnTime = savefile.ReadFloat();
+            returnFloor = savefile.ReadInt();
+            lastTouchTime = savefile.ReadInt();
         }
 
         @Override
         public boolean HandleSingleGuiCommand(idEntity entityGui, idLexer src) {
-            final idToken token = new idToken();
+            idToken token = new idToken();
 
-            if (this.controlsDisabled) {
+            if (controlsDisabled) {
                 return false;
             }
 
@@ -1661,14 +1637,14 @@ public class Mover {
 
             if (token.Icmp("changefloor") == 0) {
                 if (src.ReadToken(token)) {
-                    final int newFloor = Integer.parseInt(token.getData());
-                    if (newFloor == this.currentFloor) {
+                    int newFloor = Integer.parseInt(token.toString());
+                    if (newFloor == currentFloor) {
                         // open currentFloor and interior doors
                         OpenInnerDoor();
-                        OpenFloorDoor(this.currentFloor);
+                        OpenFloorDoor(currentFloor);
                     } else {
-                        final idDoor door = GetDoor(this.spawnArgs.GetString("innerdoor"));
-                        if ((door != null) && door.IsOpen()) {
+                        idDoor door = GetDoor(spawnArgs.GetString("innerdoor"));
+                        if (door != null && door.IsOpen()) {
                             PostEventSec(EV_GotoFloor, 0.5f, newFloor);
                         } else {
                             ProcessEvent(EV_GotoFloor, newFloor);
@@ -1683,9 +1659,9 @@ public class Mover {
         }
 
         public void Event_GotoFloor(idEventArg<Integer> floor) {
-            final floorInfo_s fi = GetFloorInfo(floor.value);
+            floorInfo_s fi = GetFloorInfo(floor.value);
             if (fi != null) {
-                final idDoor door = GetDoor(this.spawnArgs.GetString("innerdoor"));
+                idDoor door = GetDoor(spawnArgs.GetString("innerdoor"));
                 if (door != null) {
                     if (door.IsBlocked() || door.IsOpen()) {
                         PostEventSec(EV_GotoFloor, 0.5f, floor);
@@ -1694,15 +1670,15 @@ public class Mover {
                 }
                 DisableAllDoors();
                 CloseAllDoors();
-                this.state = WAITING_ON_DOORS;
-                this.pendingFloor = floor.value;
+                state = WAITING_ON_DOORS;
+                pendingFloor = floor.value;
             }
         }
 
         public floorInfo_s GetFloorInfo(int floor) {
-            for (int i = 0; i < this.floorInfo.Num(); i++) {
-                if (this.floorInfo.oGet(i).floor == floor) {
-                    return this.floorInfo.oGet(i);
+            for (int i = 0; i < floorInfo.Num(); i++) {
+                if (floorInfo.oGet(i).floor == floor) {
+                    return floorInfo.oGet(i);
                 }
             }
             return null;
@@ -1712,22 +1688,22 @@ public class Mover {
         protected void DoneMoving() {
             super.DoneMoving();
             EnableProperDoors();
-            idKeyValue kv = this.spawnArgs.MatchPrefix("statusGui");
+            idKeyValue kv = spawnArgs.MatchPrefix("statusGui");
             while (kv != null) {
-                final idEntity ent = gameLocal.FindEntity(kv.GetValue().getData());
+                idEntity ent = gameLocal.FindEntity(kv.GetValue().toString());
                 if (ent != null) {
                     for (int j = 0; j < MAX_RENDERENTITY_GUI; j++) {
-                        if ((ent.GetRenderEntity() != null) && (ent.GetRenderEntity().gui[ j] != null)) {
-                            ent.GetRenderEntity().gui[ j].SetStateString("floor", va("%d", this.currentFloor));
+                        if (ent.GetRenderEntity() != null && ent.GetRenderEntity().gui[ j] != null) {
+                            ent.GetRenderEntity().gui[ j].SetStateString("floor", va("%d", currentFloor));
                             ent.GetRenderEntity().gui[ j].StateChanged(gameLocal.time, true);
                         }
                     }
                     ent.UpdateVisuals();
                 }
-                kv = this.spawnArgs.MatchPrefix("statusGui", kv);
+                kv = spawnArgs.MatchPrefix("statusGui", kv);
             }
-            if (this.spawnArgs.GetInt("pauseOnFloor", "-1") == this.currentFloor) {
-                PostEventSec(EV_PostArrival, this.spawnArgs.GetFloat("pauseTime"));
+            if (spawnArgs.GetInt("pauseOnFloor", "-1") == currentFloor) {
+                PostEventSec(EV_PostArrival, spawnArgs.GetFloat("pauseTime"));
             } else {
                 Event_PostFloorArrival();
             }
@@ -1735,24 +1711,24 @@ public class Mover {
 
         @Override
         protected void BeginMove(idThread thread /*= NULL*/) {
-            this.controlsDisabled = true;
+            controlsDisabled = true;
             CloseAllDoors();
             DisableAllDoors();
-            idKeyValue kv = this.spawnArgs.MatchPrefix("statusGui");
+            idKeyValue kv = spawnArgs.MatchPrefix("statusGui");
             while (kv != null) {
-                final idEntity ent = gameLocal.FindEntity(kv.GetValue().getData());
+                idEntity ent = gameLocal.FindEntity(kv.GetValue().toString());
                 if (ent != null) {
                     for (int j = 0; j < MAX_RENDERENTITY_GUI; j++) {
-                        if ((ent.GetRenderEntity() != null) && (ent.GetRenderEntity().gui[ j] != null)) {
+                        if (ent.GetRenderEntity() != null && ent.GetRenderEntity().gui[ j] != null) {
                             ent.GetRenderEntity().gui[ j].SetStateString("floor", "");
                             ent.GetRenderEntity().gui[ j].StateChanged(gameLocal.time, true);
                         }
                     }
                     ent.UpdateVisuals();
                 }
-                kv = this.spawnArgs.MatchPrefix("statusGui", kv);
+                kv = spawnArgs.MatchPrefix("statusGui", kv);
             }
-            SetGuiStates((this.pendingFloor == 1) ? guiBinaryMoverStates[3] : guiBinaryMoverStates[2]);
+            SetGuiStates((pendingFloor == 1) ? guiBinaryMoverStates[3] : guiBinaryMoverStates[2]);
             super.BeginMove(thread);
         }
 //
@@ -1763,7 +1739,7 @@ public class Mover {
 
         protected void Event_Touch(idEventArg<idEntity> other, idEventArg<trace_s> trace) {
 
-            if (gameLocal.time < (this.lastTouchTime + 2000)) {
+            if (gameLocal.time < lastTouchTime + 2000) {
                 return;
             }
 
@@ -1771,14 +1747,14 @@ public class Mover {
                 return;
             }
 
-            this.lastTouchTime = gameLocal.time;
+            lastTouchTime = gameLocal.time;
 
-            if ((this.thinkFlags & TH_PHYSICS) != 0) {
+            if ((thinkFlags & TH_PHYSICS) != 0) {
                 return;
             }
 
-            final int triggerFloor = this.spawnArgs.GetInt("triggerFloor");
-            if (this.spawnArgs.GetBool("trigger") && (triggerFloor != this.currentFloor)) {
+            int triggerFloor = spawnArgs.GetInt("triggerFloor");
+            if (spawnArgs.GetBool("trigger") && triggerFloor != currentFloor) {
                 PostEventSec(EV_GotoFloor, 0.25f, triggerFloor);
             }
         }
@@ -1789,9 +1765,9 @@ public class Mover {
             idDoor doorEnt;
 
             doorEnt = null;
-            if ((name != null) && !name.isEmpty()) {
+            if (name != null && !name.isEmpty()) {
                 ent = gameLocal.FindEntity(name);
-                if ((ent != null) && ent.IsType(idDoor.class)) {
+                if (ent != null && ent.IsType(idDoor.class)) {
                     doorEnt = (idDoor) ent;
                     master = doorEnt.GetMoveMaster();
                     if (master != doorEnt) {
@@ -1809,37 +1785,37 @@ public class Mover {
 
         @Override
         public void Think() {
-            final idVec3 masterOrigin = new idVec3();
-            final idMat3 masterAxis = new idMat3();
-            final idDoor doorEnt = GetDoor(this.spawnArgs.GetString("innerdoor"));
-            if (this.state == INIT) {
-                this.state = IDLE;
+            idVec3 masterOrigin = new idVec3();
+            idMat3 masterAxis = new idMat3();
+            idDoor doorEnt = GetDoor(spawnArgs.GetString("innerdoor"));
+            if (state == INIT) {
+                state = IDLE;
                 if (doorEnt != null) {
                     doorEnt.BindTeam(this);
                     doorEnt.spawnArgs.Set("snd_open", "");
                     doorEnt.spawnArgs.Set("snd_close", "");
                     doorEnt.spawnArgs.Set("snd_opened", "");
                 }
-                for (int i = 0; i < this.floorInfo.Num(); i++) {
-                    final idDoor door = GetDoor(this.floorInfo.oGet(i).door.getData());
+                for (int i = 0; i < floorInfo.Num(); i++) {
+                    idDoor door = GetDoor(floorInfo.oGet(i).door.toString());
                     if (door != null) {
                         door.SetCompanion(doorEnt);
                     }
                 }
 
-                Event_GotoFloor(idEventArg.toArg(this.pendingFloor));
+                Event_GotoFloor(idEventArg.toArg(pendingFloor));
                 DisableAllDoors();
-                SetGuiStates((this.pendingFloor == 1) ? guiBinaryMoverStates[0] : guiBinaryMoverStates[1]);
-            } else if (this.state == WAITING_ON_DOORS) {
+                SetGuiStates((pendingFloor == 1) ? guiBinaryMoverStates[0] : guiBinaryMoverStates[1]);
+            } else if (state == WAITING_ON_DOORS) {
                 if (doorEnt != null) {
-                    this.state = doorEnt.IsOpen() ? WAITING_ON_DOORS : IDLE;
+                    state = doorEnt.IsOpen() ? WAITING_ON_DOORS : IDLE;
                 } else {
-                    this.state = IDLE;
+                    state = IDLE;
                 }
-                if (this.state == IDLE) {
-                    this.lastFloor = this.currentFloor;
-                    this.currentFloor = this.pendingFloor;
-                    final floorInfo_s fi = GetFloorInfo(this.currentFloor);
+                if (state == IDLE) {
+                    lastFloor = currentFloor;
+                    currentFloor = pendingFloor;
+                    floorInfo_s fi = GetFloorInfo(currentFloor);
                     if (fi != null) {
                         MoveToPos(fi.pos);
                     }
@@ -1850,16 +1826,16 @@ public class Mover {
         }
 
         private void OpenInnerDoor() {
-            final idDoor door = GetDoor(this.spawnArgs.GetString("innerdoor"));
+            idDoor door = GetDoor(spawnArgs.GetString("innerdoor"));
             if (door != null) {
                 door.Open();
             }
         }
 
         private void OpenFloorDoor(int floor) {
-            final floorInfo_s fi = GetFloorInfo(floor);
+            floorInfo_s fi = GetFloorInfo(floor);
             if (fi != null) {
-                final idDoor door = GetDoor(fi.door.getData());
+                idDoor door = GetDoor(fi.door.toString());
                 if (door != null) {
                     door.Open();
                 }
@@ -1867,12 +1843,12 @@ public class Mover {
         }
 
         private void CloseAllDoors() {
-            idDoor door = GetDoor(this.spawnArgs.GetString("innerdoor"));
+            idDoor door = GetDoor(spawnArgs.GetString("innerdoor"));
             if (door != null) {
                 door.Close();
             }
-            for (int i = 0; i < this.floorInfo.Num(); i++) {
-                door = GetDoor(this.floorInfo.oGet(i).door.getData());
+            for (int i = 0; i < floorInfo.Num(); i++) {
+                door = GetDoor(floorInfo.oGet(i).door.toString());
                 if (door != null) {
                     door.Close();
                 }
@@ -1880,12 +1856,12 @@ public class Mover {
         }
 
         private void DisableAllDoors() {
-            idDoor door = GetDoor(this.spawnArgs.GetString("innerdoor"));
+            idDoor door = GetDoor(spawnArgs.GetString("innerdoor"));
             if (door != null) {
                 door.Enable(false);
             }
-            for (int i = 0; i < this.floorInfo.Num(); i++) {
-                door = GetDoor(this.floorInfo.oGet(i).door.getData());
+            for (int i = 0; i < floorInfo.Num(); i++) {
+                door = GetDoor(floorInfo.oGet(i).door.toString());
                 if (door != null) {
                     door.Enable(false);
                 }
@@ -1893,13 +1869,13 @@ public class Mover {
         }
 
         private void EnableProperDoors() {
-            idDoor door = GetDoor(this.spawnArgs.GetString("innerdoor"));
+            idDoor door = GetDoor(spawnArgs.GetString("innerdoor"));
             if (door != null) {
                 door.Enable(true);
             }
-            for (int i = 0; i < this.floorInfo.Num(); i++) {
-                if (this.floorInfo.oGet(i).floor == this.currentFloor) {
-                    door = GetDoor(this.floorInfo.oGet(i).door.getData());
+            for (int i = 0; i < floorInfo.Num(); i++) {
+                if (floorInfo.oGet(i).floor == currentFloor) {
+                    door = GetDoor(floorInfo.oGet(i).door.toString());
                     if (door != null) {
                         door.Enable(true);
                         break;
@@ -1910,38 +1886,38 @@ public class Mover {
 
         private void Event_TeamBlocked(idEventArg<idEntity> blockedEntity, idEventArg<idEntity> blockingEntity) {
             if (blockedEntity.value == this) {
-                Event_GotoFloor(idEventArg.toArg(this.lastFloor));
-            } else if ((blockedEntity != null) && blockedEntity.value.IsType(idDoor.class)) {
+                Event_GotoFloor(idEventArg.toArg(lastFloor));
+            } else if (blockedEntity != null && blockedEntity.value.IsType(idDoor.class)) {
                 // open the inner doors if one is blocked
-                final idDoor blocked = (idDoor) blockedEntity.value;
-                final idDoor door = GetDoor(this.spawnArgs.GetString("innerdoor"));
-                if ((door != null) && (blocked.GetMoveMaster() == door.GetMoveMaster())) {//TODO:equalds
+                idDoor blocked = (idDoor) blockedEntity.value;
+                idDoor door = GetDoor(spawnArgs.GetString("innerdoor"));
+                if (door != null && blocked.GetMoveMaster() == door.GetMoveMaster()) {//TODO:equalds
                     door.SetBlocked(true);
                     OpenInnerDoor();
-                    OpenFloorDoor(this.currentFloor);
+                    OpenFloorDoor(currentFloor);
                 }
             }
         }
 
         private void Event_Activate(idEventArg<idEntity> activator) {
-            final int triggerFloor = this.spawnArgs.GetInt("triggerFloor");
-            if (this.spawnArgs.GetBool("trigger") && (triggerFloor != this.currentFloor)) {
+            int triggerFloor = spawnArgs.GetInt("triggerFloor");
+            if (spawnArgs.GetBool("trigger") && triggerFloor != currentFloor) {
                 Event_GotoFloor(idEventArg.toArg(triggerFloor));
             }
         }
 
         private void Event_PostFloorArrival() {
-            OpenFloorDoor(this.currentFloor);
+            OpenFloorDoor(currentFloor);
             OpenInnerDoor();
-            SetGuiStates((this.currentFloor == 1) ? guiBinaryMoverStates[0] : guiBinaryMoverStates[1]);
-            this.controlsDisabled = false;
-            if ((this.returnTime > 0.0f) && (this.returnFloor != this.currentFloor)) {
-                PostEventSec(EV_GotoFloor, this.returnTime, this.returnFloor);
+            SetGuiStates((currentFloor == 1) ? guiBinaryMoverStates[0] : guiBinaryMoverStates[1]);
+            controlsDisabled = false;
+            if (returnTime > 0.0f && returnFloor != currentFloor) {
+                PostEventSec(EV_GotoFloor, returnTime, returnFloor);
             }
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1949,7 +1925,7 @@ public class Mover {
             return eventCallbacks;
         }
 
-    }
+    };
 
     /*
      ===============================================================================
@@ -1964,7 +1940,7 @@ public class Mover {
         MOVER_POS2,
         MOVER_1TO2,
         MOVER_2TO1
-    }
+    };
 
 
     /*
@@ -1978,11 +1954,7 @@ public class Mover {
      ===============================================================================
      */
     public static class idMover_Binary extends idEntity {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// CLASS_PROTOTYPE( idMover_Binary );
+        // CLASS_PROTOTYPE( idMover_Binary );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -2029,36 +2001,33 @@ public class Mover {
         //
 
         public idMover_Binary() {
-            this.pos1 = new idVec3();
-            this.pos2 = new idVec3();
-            this.moverState = MOVER_POS1;
-            this.moveMaster = null;
-            this.activateChain = null;
-            this.soundPos1 = 0;
-            this.sound1to2 = 0;
-            this.sound2to1 = 0;
-            this.soundPos2 = 0;
-            this.soundLoop = 0;
-            this.wait = 0.0f;
-            this.damage = 0.0f;
-            this.duration = 0;
-            this.accelTime = 0;
-            this.decelTime = 0;
-            this.activatedBy = new idEntityPtr<>(this);
-            this.stateStartTime = 0;
-            this.team = new idStr();
-            this.enabled = false;
-            this.move_thread = 0;
-            this.updateStatus = 0;
-            this.buddies = new idStrList();
-            this.physicsObj = new idPhysics_Parametric();
-            this.areaPortal = 0;
-            this.blocked = false;
-            this.fl.networkSync = true;
-	        @SuppressWarnings("unchecked")
-			final
-	        idList<idEntityPtr<idEntity>> guiTargets1 = new idList<idEntityPtr<idEntity>>((Class<idEntityPtr<idEntity>>) new idEntityPtr<>().getClass());
-	        this.guiTargets = guiTargets1;
+            pos1 = new idVec3();
+            pos2 = new idVec3();
+            moverState = MOVER_POS1;
+            moveMaster = null;
+            activateChain = null;
+            soundPos1 = 0;
+            sound1to2 = 0;
+            sound2to1 = 0;
+            soundPos2 = 0;
+            soundLoop = 0;
+            wait = 0.0f;
+            damage = 0.0f;
+            duration = 0;
+            accelTime = 0;
+            decelTime = 0;
+            activatedBy = new idEntityPtr<>(this);
+            stateStartTime = 0;
+            team = new idStr();
+            enabled = false;
+            move_thread = 0;
+            updateStatus = 0;
+            buddies = new idStrList();
+            physicsObj = new idPhysics_Parametric();
+            areaPortal = 0;
+            blocked = false;
+            fl.networkSync = true;
+            guiTargets = new idList(idEntityPtr.class);
         }
 
         // ~idMover_Binary();
@@ -2077,33 +2046,33 @@ public class Mover {
             super.Spawn();
             
             idEntity ent;
-            final String[] temp = {null};
+            String[] temp = {null};
 
-            this.move_thread = 0;
-            this.enabled = true;
-            this.areaPortal = 0;
+            move_thread = 0;
+            enabled = true;
+            areaPortal = 0;
 
-            this.activateChain = null;
+            activateChain = null;
 
-            this.wait = this.spawnArgs.GetFloat("wait", "0");
+            wait = spawnArgs.GetFloat("wait", "0");
 
-            this.updateStatus = this.spawnArgs.GetInt("updateStatus", "0");
+            updateStatus = spawnArgs.GetInt("updateStatus", "0");
 
-            idKeyValue kv = this.spawnArgs.MatchPrefix("buddy", null);
+            idKeyValue kv = spawnArgs.MatchPrefix("buddy", null);
             while (kv != null) {
-                this.buddies.Append(kv.GetValue());
-                kv = this.spawnArgs.MatchPrefix("buddy", kv);
+                buddies.Append(kv.GetValue());
+                kv = spawnArgs.MatchPrefix("buddy", kv);
             }
 
-            this.spawnArgs.GetString("team", "", temp);
-            this.team = new idStr(temp[0]);
+            spawnArgs.GetString("team", "", temp);
+            team = new idStr(temp[0]);
 
-            if (0 == this.team.Length()) {
+            if (0 == team.Length()) {
                 ent = this;
             } else {
                 // find the first entity spawned on this team (which could be us)
                 for (ent = gameLocal.spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
-                    if (ent.IsType(idMover_Binary.class) && NOT(idStr.Icmp(((idMover_Binary) ent).team.getData(), temp[0]))) {
+                    if (ent.IsType(idMover_Binary.class) && NOT(idStr.Icmp(((idMover_Binary) ent).team.toString(), temp[0]))) {
                         break;
                     }
                 }
@@ -2111,42 +2080,42 @@ public class Mover {
                     ent = this;
                 }
             }
-            this.moveMaster = (idMover_Binary) ent;
+            moveMaster = (idMover_Binary) ent;
 
             // create a physics team for the binary mover parts
             if (ent != this) {
                 JoinTeam(ent);
             }
 
-            this.physicsObj.SetSelf(this);
-            this.physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
-            this.physicsObj.SetOrigin(GetPhysics().GetOrigin());
-            this.physicsObj.SetAxis(GetPhysics().GetAxis());
-            this.physicsObj.SetClipMask(MASK_SOLID);
-            if (!this.spawnArgs.GetBool("solid", "1")) {
-                this.physicsObj.SetContents(0);
+            physicsObj.SetSelf(this);
+            physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
+            physicsObj.SetOrigin(GetPhysics().GetOrigin());
+            physicsObj.SetAxis(GetPhysics().GetAxis());
+            physicsObj.SetClipMask(MASK_SOLID);
+            if (!spawnArgs.GetBool("solid", "1")) {
+                physicsObj.SetContents(0);
             }
-            if (!this.spawnArgs.GetBool("nopush")) {
-                this.physicsObj.SetPusher(0);
+            if (!spawnArgs.GetBool("nopush")) {
+                physicsObj.SetPusher(0);
             }
-            this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetOrigin(), getVec3_origin(), getVec3_origin());
-            this.physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetAxis().ToAngles(), getAng_zero(), getAng_zero());
-            SetPhysics(this.physicsObj);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetOrigin(), getVec3_origin(), getVec3_origin());
+            physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetAxis().ToAngles(), getAng_zero(), getAng_zero());
+            SetPhysics(physicsObj);
 
-            if (this.moveMaster != this) {
-                JoinActivateTeam(this.moveMaster);
+            if (moveMaster != this) {
+                JoinActivateTeam(moveMaster);
             }
 
-            final idBounds soundOrigin = new idBounds();
+            idBounds soundOrigin = new idBounds();
             idMover_Binary slave;
 
             soundOrigin.Clear();
-            for (slave = this.moveMaster; slave != null; slave = slave.activateChain) {
+            for (slave = moveMaster; slave != null; slave = slave.activateChain) {
                 soundOrigin.oPluSet(slave.GetPhysics().GetAbsBounds());
             }
-            this.moveMaster.refSound.origin = soundOrigin.GetCenter();
+            moveMaster.refSound.origin = soundOrigin.GetCenter();
 
-            if (this.spawnArgs.MatchPrefix("guiTarget") != null) {
+            if (spawnArgs.MatchPrefix("guiTarget") != null) {
                 if (gameLocal.GameState() == GAMESTATE_STARTUP) {
                     PostEventMS(EV_FindGuiTargets, 0);
                 } else {
@@ -2160,51 +2129,51 @@ public class Mover {
         public void Save(idSaveGame savefile) {
             int i;
 
-            savefile.WriteVec3(this.pos1);
-            savefile.WriteVec3(this.pos2);
-            savefile.WriteInt(etoi(this.moverState));
+            savefile.WriteVec3(pos1);
+            savefile.WriteVec3(pos2);
+            savefile.WriteInt(etoi(moverState));
 
-            savefile.WriteObject(this.moveMaster);
-            savefile.WriteObject(this.activateChain);
+            savefile.WriteObject(moveMaster);
+            savefile.WriteObject(activateChain);
 
-            savefile.WriteInt(this.soundPos1);
-            savefile.WriteInt(this.sound1to2);
-            savefile.WriteInt(this.sound2to1);
-            savefile.WriteInt(this.soundPos2);
-            savefile.WriteInt(this.soundLoop);
+            savefile.WriteInt(soundPos1);
+            savefile.WriteInt(sound1to2);
+            savefile.WriteInt(sound2to1);
+            savefile.WriteInt(soundPos2);
+            savefile.WriteInt(soundLoop);
 
-            savefile.WriteFloat(this.wait);
-            savefile.WriteFloat(this.damage);
+            savefile.WriteFloat(wait);
+            savefile.WriteFloat(damage);
 
-            savefile.WriteInt(this.duration);
-            savefile.WriteInt(this.accelTime);
-            savefile.WriteInt(this.decelTime);
+            savefile.WriteInt(duration);
+            savefile.WriteInt(accelTime);
+            savefile.WriteInt(decelTime);
 
-            this.activatedBy.Save(savefile);
+            activatedBy.Save(savefile);
 
-            savefile.WriteInt(this.stateStartTime);
-            savefile.WriteString(this.team);
-            savefile.WriteBool(this.enabled);
+            savefile.WriteInt(stateStartTime);
+            savefile.WriteString(team);
+            savefile.WriteBool(enabled);
 
-            savefile.WriteInt(this.move_thread);
-            savefile.WriteInt(this.updateStatus);
+            savefile.WriteInt(move_thread);
+            savefile.WriteInt(updateStatus);
 
-            savefile.WriteInt(this.buddies.Num());
-            for (i = 0; i < this.buddies.Num(); i++) {
-                savefile.WriteString(this.buddies.oGet(i));
+            savefile.WriteInt(buddies.Num());
+            for (i = 0; i < buddies.Num(); i++) {
+                savefile.WriteString(buddies.oGet(i));
             }
 
-            savefile.WriteStaticObject(this.physicsObj);
+            savefile.WriteStaticObject(physicsObj);
 
-            savefile.WriteInt(this.areaPortal);
-            if (this.areaPortal != 0) {
-                savefile.WriteInt(gameRenderWorld.GetPortalState(this.areaPortal));
+            savefile.WriteInt(areaPortal);
+            if (areaPortal != 0) {
+                savefile.WriteInt(gameRenderWorld.GetPortalState(areaPortal));
             }
-            savefile.WriteBool(this.blocked);
+            savefile.WriteBool(blocked);
 
-            savefile.WriteInt(this.guiTargets.Num());
-            for (i = 0; i < this.guiTargets.Num(); i++) {
-                this.guiTargets.oGet(i).Save(savefile);
+            savefile.WriteInt(guiTargets.Num());
+            for (i = 0; i < guiTargets.Num(); i++) {
+                guiTargets.oGet(i).Save(savefile);
             }
         }
 
@@ -2212,76 +2181,76 @@ public class Mover {
         public void Restore(idRestoreGame savefile) {
             int i;
             int num, portalState;
-            final idStr temp = new idStr();
+            idStr temp = new idStr();
 
-            savefile.ReadVec3(this.pos1);
-            savefile.ReadVec3(this.pos2);
-            this.moverState = moverState_t.values()[savefile.ReadInt()];
+            savefile.ReadVec3(pos1);
+            savefile.ReadVec3(pos2);
+            moverState = moverState_t.values()[savefile.ReadInt()];
 
-            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/moveMaster);
-            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/activateChain);
+            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/moveMaster);
+            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/activateChain);
 
-            this.soundPos1 = savefile.ReadInt();
-            this.sound1to2 = savefile.ReadInt();
-            this.sound2to1 = savefile.ReadInt();
-            this.soundPos2 = savefile.ReadInt();
-            this.soundLoop = savefile.ReadInt();
+            soundPos1 = savefile.ReadInt();
+            sound1to2 = savefile.ReadInt();
+            sound2to1 = savefile.ReadInt();
+            soundPos2 = savefile.ReadInt();
+            soundLoop = savefile.ReadInt();
 
-            this.wait = savefile.ReadFloat();
-            this.damage = savefile.ReadFloat();
+            wait = savefile.ReadFloat();
+            damage = savefile.ReadFloat();
 
-            this.duration = savefile.ReadInt();
-            this.accelTime = savefile.ReadInt();
-            this.decelTime = savefile.ReadInt();
+            duration = savefile.ReadInt();
+            accelTime = savefile.ReadInt();
+            decelTime = savefile.ReadInt();
 
-            this.activatedBy.Restore(savefile);
+            activatedBy.Restore(savefile);
 
-            this.stateStartTime = savefile.ReadInt();
+            stateStartTime = savefile.ReadInt();
 
-            savefile.ReadString(this.team);
-            this.enabled = savefile.ReadBool();
+            savefile.ReadString(team);
+            enabled = savefile.ReadBool();
 
-            this.move_thread = savefile.ReadInt();
-            this.updateStatus = savefile.ReadInt();
+            move_thread = savefile.ReadInt();
+            updateStatus = savefile.ReadInt();
 
             num = savefile.ReadInt();
             for (i = 0; i < num; i++) {
                 savefile.ReadString(temp);
-                this.buddies.Append(temp);
+                buddies.Append(temp);
             }
 
-            savefile.ReadStaticObject(this.physicsObj);
-            RestorePhysics(this.physicsObj);
+            savefile.ReadStaticObject(physicsObj);
+            RestorePhysics(physicsObj);
 
-            this.areaPortal = savefile.ReadInt();
-            if (this.areaPortal != 0) {
+            areaPortal = savefile.ReadInt();
+            if (areaPortal != 0) {
                 portalState = savefile.ReadInt();
-                gameLocal.SetPortalState(this.areaPortal, portalState);
+                gameLocal.SetPortalState(areaPortal, portalState);
             }
-            this.blocked = savefile.ReadBool();
+            blocked = savefile.ReadBool();
 
-            this.guiTargets.Clear();
+            guiTargets.Clear();
             num = savefile.ReadInt();
-            this.guiTargets.SetNum(num);
+            guiTargets.SetNum(num);
             for (i = 0; i < num; i++) {
-                this.guiTargets.oGet(i).Restore(savefile);
+                guiTargets.oGet(i).Restore(savefile);
             }
         }
 
         @Override
         public void PreBind() {
-            this.pos1 = GetWorldCoordinates(this.pos1);
-            this.pos2 = GetWorldCoordinates(this.pos2);
+            pos1 = GetWorldCoordinates(pos1);
+            pos2 = GetWorldCoordinates(pos2);
         }
 
         @Override
         public void PostBind() {
-            this.pos1 = GetLocalCoordinates(this.pos1);
-            this.pos2 = GetLocalCoordinates(this.pos2);
+            pos1 = GetLocalCoordinates(pos1);
+            pos2 = GetLocalCoordinates(pos2);
         }
 
         public void Enable(boolean b) {
-            this.enabled = b;
+            enabled = b;
         }
 
         /*
@@ -2296,27 +2265,27 @@ public class Mover {
             float distance;
             float speed;
 
-            this.pos1 = mpos1;
-            this.pos2 = mpos2;
+            pos1 = mpos1;
+            pos2 = mpos2;
 
-            this.accelTime = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(maccelTime));
-            this.decelTime = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(mdecelTime));
+            accelTime = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(maccelTime));
+            decelTime = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(mdecelTime));
 
             speed = mspeed != 0 ? mspeed : 100;
 
             // calculate time to reach second position from speed
-            move = this.pos2.oMinus(this.pos1);
+            move = pos2.oMinus(pos1);
             distance = move.Length();
-            this.duration = idPhysics.SnapTimeToPhysicsFrame((int) ((distance * 1000) / speed));
-            if (this.duration <= 0) {
-                this.duration = 1;
+            duration = idPhysics.SnapTimeToPhysicsFrame((int) (distance * 1000 / speed));
+            if (duration <= 0) {
+                duration = 1;
             }
 
-            this.moverState = MOVER_POS1;
+            moverState = MOVER_POS1;
 
-            this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, this.pos1, getVec3_origin(), getVec3_origin());
-            this.physicsObj.SetLinearInterpolation(0, 0, 0, 0, getVec3_origin(), getVec3_origin());
-            SetOrigin(this.pos1);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, pos1, getVec3_origin(), getVec3_origin());
+            physicsObj.SetLinearInterpolation(0, 0, 0, 0, getVec3_origin(), getVec3_origin());
+            SetOrigin(pos1);
 
             PostEventMS(EV_Mover_InitGuiTargets, 0);
         }
@@ -2330,22 +2299,22 @@ public class Mover {
          */
         public void InitTime(idVec3 mpos1, idVec3 mpos2, float mtime, float maccelTime, float mdecelTime) {
 
-            this.pos1 = mpos1;
-            this.pos2 = mpos2;
+            pos1 = mpos1;
+            pos2 = mpos2;
 
-            this.accelTime = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(maccelTime));
-            this.decelTime = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(mdecelTime));
+            accelTime = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(maccelTime));
+            decelTime = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(mdecelTime));
 
-            this.duration = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(mtime));
-            if (this.duration <= 0) {
-                this.duration = 1;
+            duration = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(mtime));
+            if (duration <= 0) {
+                duration = 1;
             }
 
-            this.moverState = MOVER_POS1;
+            moverState = MOVER_POS1;
 
-            this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, this.pos1, getVec3_origin(), getVec3_origin());
-            this.physicsObj.SetLinearInterpolation(0, 0, 0, 0, getVec3_origin(), getVec3_origin());
-            SetOrigin(this.pos1);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, pos1, getVec3_origin(), getVec3_origin());
+            physicsObj.SetLinearInterpolation(0, 0, 0, 0, getVec3_origin(), getVec3_origin());
+            SetOrigin(pos1);
 
             PostEventMS(EV_Mover_InitGuiTargets, 0);
         }
@@ -2355,39 +2324,39 @@ public class Mover {
             int partial;
 
             // only the master should control this
-            if (this.moveMaster != this) {
-                this.moveMaster.GotoPosition1();
+            if (moveMaster != this) {
+                moveMaster.GotoPosition1();
                 return;
             }
 
             SetGuiStates(guiBinaryMoverStates[etoi(MOVER_2TO1)]);
 
-            if ((this.moverState == MOVER_POS1) || (this.moverState == MOVER_2TO1)) {
+            if ((moverState == MOVER_POS1) || (moverState == MOVER_2TO1)) {
                 // already there, or on the way
                 return;
             }
 
-            if (this.moverState == MOVER_POS2) {
+            if (moverState == MOVER_POS2) {
                 for (slave = this; slave != null; slave = slave.activateChain) {
                     slave.CancelEvents(EV_Mover_ReturnToPos1);
                 }
-                if (!this.spawnArgs.GetBool("toggle")) {
+                if (!spawnArgs.GetBool("toggle")) {
                     ProcessEvent(EV_Mover_ReturnToPos1);
                 }
                 return;
             }
 
             // only partway up before reversing
-            if (this.moverState == MOVER_1TO2) {
+            if (moverState == MOVER_1TO2) {
                 // use the physics times because this might be executed during the physics simulation
-                partial = this.physicsObj.GetLinearEndTime() - this.physicsObj.GetTime();
+                partial = physicsObj.GetLinearEndTime() - physicsObj.GetTime();
                 assert (partial >= 0);
                 if (partial < 0) {
                     partial = 0;
                 }
-                MatchActivateTeam(MOVER_2TO1, this.physicsObj.GetTime() - partial);
+                MatchActivateTeam(MOVER_2TO1, physicsObj.GetTime() - partial);
                 // if already at at position 1 (partial == duration) execute the reached event
-                if (partial >= this.duration) {
+                if (partial >= duration) {
                     Event_Reached_BinaryMover();
                 }
             }
@@ -2397,19 +2366,19 @@ public class Mover {
             int partial;
 
             // only the master should control this
-            if (this.moveMaster != this) {
-                this.moveMaster.GotoPosition2();
+            if (moveMaster != this) {
+                moveMaster.GotoPosition2();
                 return;
             }
 
             SetGuiStates(guiBinaryMoverStates[etoi(MOVER_1TO2)]);
 
-            if ((this.moverState == MOVER_POS2) || (this.moverState == MOVER_1TO2)) {
+            if ((moverState == MOVER_POS2) || (moverState == MOVER_1TO2)) {
                 // already there, or on the way
                 return;
             }
 
-            if (this.moverState == MOVER_POS1) {
+            if (moverState == MOVER_POS1) {
                 MatchActivateTeam(MOVER_1TO2, gameLocal.time);
 
                 // open areaportal
@@ -2418,16 +2387,16 @@ public class Mover {
             }
 
             // only partway up before reversing
-            if (this.moverState == MOVER_2TO1) {
+            if (moverState == MOVER_2TO1) {
                 // use the physics times because this might be executed during the physics simulation
-                partial = this.physicsObj.GetLinearEndTime() - this.physicsObj.GetTime();
+                partial = physicsObj.GetLinearEndTime() - physicsObj.GetTime();
                 assert (partial >= 0);
                 if (partial < 0) {
                     partial = 0;
                 }
-                MatchActivateTeam(MOVER_1TO2, this.physicsObj.GetTime() - partial);
+                MatchActivateTeam(MOVER_1TO2, physicsObj.GetTime() - partial);
                 // if already at at position 2 (partial == duration) execute the reached event
-                if (partial >= this.duration) {
+                if (partial >= duration) {
                     Event_Reached_BinaryMover();
                 }
             }
@@ -2435,18 +2404,18 @@ public class Mover {
 
         public void Use_BinaryMover(idEntity activator) {
             // only the master should be used
-            if (this.moveMaster != this) {
-                this.moveMaster.Use_BinaryMover(activator);
+            if (moveMaster != this) {
+                moveMaster.Use_BinaryMover(activator);
                 return;
             }
 
-            if (!this.enabled) {
+            if (!enabled) {
                 return;
             }
 
-            this.activatedBy.oSet(activator);
+            activatedBy.oSet(activator);
 
-            if (this.moverState == MOVER_POS1) {
+            if (moverState == MOVER_POS1) {
                 // FIXME: start moving USERCMD_MSEC later, because if this was player
                 // triggered, gameLocal.time hasn't been advanced yet
                 MatchActivateTeam(MOVER_1TO2, gameLocal.time + USERCMD_MSEC);
@@ -2458,10 +2427,10 @@ public class Mover {
             }
 
             // if all the way up, just delay before coming down
-            if (this.moverState == MOVER_POS2) {
+            if (moverState == MOVER_POS2) {
                 idMover_Binary slave;
 
-                if (this.wait == -1) {
+                if (wait == -1) {
                     return;
                 }
 
@@ -2469,30 +2438,30 @@ public class Mover {
 
                 for (slave = this; slave != null; slave = slave.activateChain) {
                     slave.CancelEvents(EV_Mover_ReturnToPos1);
-                    slave.PostEventSec(EV_Mover_ReturnToPos1, this.spawnArgs.GetBool("toggle") ? 0 : this.wait);
+                    slave.PostEventSec(EV_Mover_ReturnToPos1, spawnArgs.GetBool("toggle") ? 0 : wait);
                 }
                 return;
             }
 
             // only partway down before reversing
-            if (this.moverState == MOVER_2TO1) {
+            if (moverState == MOVER_2TO1) {
                 GotoPosition2();
                 return;
             }
 
             // only partway up before reversing
-            if (this.moverState == MOVER_1TO2) {
+            if (moverState == MOVER_1TO2) {
                 GotoPosition1();
                 return;
             }
         }
 
         public void SetGuiStates(final String state) {
-            if (this.guiTargets.Num() != 0) {
+            if (guiTargets.Num() != 0) {
                 SetGuiState("movestate", state);
             }
 
-            idMover_Binary mb = this.activateChain;
+            idMover_Binary mb = activateChain;
             while (mb != null) {
                 if (mb.guiTargets.Num() != 0) {
                     mb.SetGuiState("movestate", state);
@@ -2504,10 +2473,10 @@ public class Mover {
         public void UpdateBuddies(int val) {
             int i, c;
 
-            if (this.updateStatus == 2) {
-                c = this.buddies.Num();
+            if (updateStatus == 2) {
+                c = buddies.Num();
                 for (i = 0; i < c; i++) {
-                    final idEntity buddy = gameLocal.FindEntity(this.buddies.oGet(i));
+                    idEntity buddy = gameLocal.FindEntity(buddies.oGet(i));
                     if (buddy != null) {
                         buddy.SetShaderParm(SHADERPARM_MODE, val);
                         buddy.UpdateVisuals();
@@ -2517,11 +2486,11 @@ public class Mover {
         }
 
         public idMover_Binary GetActivateChain() {
-            return this.activateChain;
+            return activateChain;
         }
 
         public idMover_Binary GetMoveMaster() {
-            return this.moveMaster;
+            return moveMaster;
         }
 
         /*
@@ -2540,14 +2509,14 @@ public class Mover {
         }
 
         public void SetBlocked(boolean b) {
-            for (idMover_Binary slave = this.moveMaster; slave != null; slave = slave.activateChain) {
+            for (idMover_Binary slave = moveMaster; slave != null; slave = slave.activateChain) {
                 slave.blocked = b;
                 if (b) {
                     idKeyValue kv = slave.spawnArgs.MatchPrefix("triggerBlocked");
                     while (kv != null) {
-                        final idEntity ent = gameLocal.FindEntity(kv.GetValue().getData());
+                        idEntity ent = gameLocal.FindEntity(kv.GetValue().toString());
                         if (ent != null) {
-                            ent.PostEventMS(EV_Activate, 0, this.moveMaster.GetActivator());
+                            ent.PostEventMS(EV_Activate, 0, moveMaster.GetActivator());
                         }
                         kv = slave.spawnArgs.MatchPrefix("triggerBlocked", kv);
                     }
@@ -2556,39 +2525,39 @@ public class Mover {
         }
 
         public boolean IsBlocked() {
-            return this.blocked;
+            return blocked;
         }
 
         public idEntity GetActivator() {
-            return this.activatedBy.GetEntity();
+            return activatedBy.GetEntity();
         }
 
         @Override
         public void WriteToSnapshot(idBitMsgDelta msg) {
-            this.physicsObj.WriteToSnapshot(msg);
-            msg.WriteBits(etoi(this.moverState), 3);
+            physicsObj.WriteToSnapshot(msg);
+            msg.WriteBits(etoi(moverState), 3);
             WriteBindToSnapshot(msg);
         }
 
         @Override
         public void ReadFromSnapshot(final idBitMsgDelta msg) {
-            final moverState_t oldMoverState = this.moverState;
+            moverState_t oldMoverState = moverState;
 
-            this.physicsObj.ReadFromSnapshot(msg);
-            this.moverState = moverState_t.values()[msg.ReadBits(3)];
+            physicsObj.ReadFromSnapshot(msg);
+            moverState = moverState_t.values()[msg.ReadBits(3)];
             ReadBindFromSnapshot(msg);
 
             if (msg.HasChanged()) {
-                if (this.moverState != oldMoverState) {
-                    UpdateMoverSound(this.moverState);
+                if (moverState != oldMoverState) {
+                    UpdateMoverSound(moverState);
                 }
                 UpdateVisuals();
             }
         }
 
         public void SetPortalState(boolean open) {
-            assert (this.areaPortal != 0);
-            gameLocal.SetPortalState(this.areaPortal, (open ? PS_BLOCK_NONE : PS_BLOCK_ALL).ordinal());
+            assert (areaPortal != 0);
+            gameLocal.SetPortalState(areaPortal, (open ? PS_BLOCK_NONE : PS_BLOCK_ALL).ordinal());
         }
 
 
@@ -2621,7 +2590,7 @@ public class Mover {
         }
 
         protected void UpdateMoverSound(moverState_t state) {
-            if (this.moveMaster == this) {
+            if (moveMaster == this) {
                 switch (state) {
                     case MOVER_POS1:
                         break;
@@ -2638,42 +2607,42 @@ public class Mover {
         }
 
         protected void SetMoverState(moverState_t newstate, int time) {
-            final idVec3 delta;
+            idVec3 delta;
 
-            this.moverState = newstate;
-            this.move_thread = 0;
+            moverState = newstate;
+            move_thread = 0;
 
             UpdateMoverSound(newstate);
 
-            this.stateStartTime = time;
-            switch (this.moverState) {
+            stateStartTime = time;
+            switch (moverState) {
                 case MOVER_POS1: {
                     Signal(SIG_MOVER_POS1);
-                    this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, time, 0, this.pos1, getVec3_origin(), getVec3_origin());
+                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, time, 0, pos1, getVec3_origin(), getVec3_origin());
                     break;
                 }
                 case MOVER_POS2: {
                     Signal(SIG_MOVER_POS2);
-                    this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, time, 0, this.pos2, getVec3_origin(), getVec3_origin());
+                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, time, 0, pos2, getVec3_origin(), getVec3_origin());
                     break;
                 }
                 case MOVER_1TO2: {
                     Signal(SIG_MOVER_1TO2);
-                    this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, time, this.duration, this.pos1, (this.pos2.oMinus(this.pos1)).oMultiply(1000.0f).oDivide(this.duration), getVec3_origin());
-                    if ((this.accelTime != 0) || (this.decelTime != 0)) {
-                        this.physicsObj.SetLinearInterpolation(time, this.accelTime, this.decelTime, this.duration, this.pos1, this.pos2);
+                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, time, duration, pos1, (pos2.oMinus(pos1)).oMultiply(1000.0f).oDivide(duration), getVec3_origin());
+                    if (accelTime != 0 || decelTime != 0) {
+                        physicsObj.SetLinearInterpolation(time, accelTime, decelTime, duration, pos1, pos2);
                     } else {
-                        this.physicsObj.SetLinearInterpolation(0, 0, 0, 0, this.pos1, this.pos2);
+                        physicsObj.SetLinearInterpolation(0, 0, 0, 0, pos1, pos2);
                     }
                     break;
                 }
                 case MOVER_2TO1: {
                     Signal(SIG_MOVER_2TO1);
-                    this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, time, this.duration, this.pos2, (this.pos1.oMinus(this.pos2)).oMultiply(1000.0f).oDivide(this.duration), getVec3_origin());
-                    if ((this.accelTime != 0) || (this.decelTime != 0)) {
-                        this.physicsObj.SetLinearInterpolation(time, this.accelTime, this.decelTime, this.duration, this.pos2, this.pos1);
+                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, time, duration, pos2, (pos1.oMinus(pos2)).oMultiply(1000.0f).oDivide(duration), getVec3_origin());
+                    if (accelTime != 0 || decelTime != 0) {
+                        physicsObj.SetLinearInterpolation(time, accelTime, decelTime, duration, pos2, pos1);
                     } else {
-                        this.physicsObj.SetLinearInterpolation(0, 0, 0, 0, this.pos1, this.pos2);
+                        physicsObj.SetLinearInterpolation(0, 0, 0, 0, pos1, pos2);
                     }
                     break;
                 }
@@ -2681,11 +2650,11 @@ public class Mover {
         }
 
         protected moverState_t GetMoverState() {
-            return this.moverState;
+            return moverState;
         }
 
         protected void FindGuiTargets() {
-            gameLocal.GetTargets(this.spawnArgs, this.guiTargets, "guiTarget");
+            gameLocal.GetTargets(spawnArgs, guiTargets, "guiTarget");
         }
 
         /*
@@ -2698,11 +2667,11 @@ public class Mover {
         protected void SetGuiState(final String key, final String val) {
             int i;
 
-            for (i = 0; i < this.guiTargets.Num(); i++) {
-                final idEntity ent = this.guiTargets.oGet(i).GetEntity();
+            for (i = 0; i < guiTargets.Num(); i++) {
+                idEntity ent = guiTargets.oGet(i).GetEntity();
                 if (ent != null) {
                     for (int j = 0; j < MAX_RENDERENTITY_GUI; j++) {
-                        if ((ent.GetRenderEntity() != null) && (ent.GetRenderEntity().gui[ j] != null)) {
+                        if (ent.GetRenderEntity() != null && ent.GetRenderEntity().gui[ j] != null) {
                             ent.GetRenderEntity().gui[ j].SetStateString(key, val);
                             ent.GetRenderEntity().gui[ j].StateChanged(gameLocal.time, true);
                         }
@@ -2713,8 +2682,8 @@ public class Mover {
         }
 
         protected void Event_SetCallback() {
-            if ((this.moverState == MOVER_1TO2) || (this.moverState == MOVER_2TO1)) {
-                this.move_thread = idThread.CurrentThreadNum();
+            if ((moverState == MOVER_1TO2) || (moverState == MOVER_2TO1)) {
+                move_thread = idThread.CurrentThreadNum();
                 idThread.ReturnInt(true);
             } else {
                 idThread.ReturnInt(false);
@@ -2731,12 +2700,12 @@ public class Mover {
 
         protected void Event_Reached_BinaryMover() {
 
-            if (this.moverState == MOVER_1TO2) {
+            if (moverState == MOVER_1TO2) {
                 // reached pos2
-                idThread.ObjectMoveDone(this.move_thread, this);
-                this.move_thread = 0;
+                idThread.ObjectMoveDone(move_thread, this);
+                move_thread = 0;
 
-                if (this.moveMaster == this) {
+                if (moveMaster == this) {
                     StartSound("snd_opened", SND_CHANNEL_ANY, 0, false, null);
                 }
 
@@ -2746,19 +2715,19 @@ public class Mover {
 
                 UpdateBuddies(1);
 
-                if (this.enabled && (this.wait >= 0) && !this.spawnArgs.GetBool("toggle")) {
+                if (enabled && wait >= 0 && !spawnArgs.GetBool("toggle")) {
                     // return to pos1 after a delay
-                    PostEventSec(EV_Mover_ReturnToPos1, this.wait);
+                    PostEventSec(EV_Mover_ReturnToPos1, wait);
                 }
 
                 // fire targets
-                ActivateTargets(this.moveMaster.GetActivator());
+                ActivateTargets(moveMaster.GetActivator());
 
                 SetBlocked(false);
-            } else if (this.moverState == MOVER_2TO1) {
+            } else if (moverState == MOVER_2TO1) {
                 // reached pos1
-                idThread.ObjectMoveDone(this.move_thread, this);
-                this.move_thread = 0;
+                idThread.ObjectMoveDone(move_thread, this);
+                move_thread = 0;
 
                 SetMoverState(MOVER_POS1, gameLocal.time);
 
@@ -2767,17 +2736,17 @@ public class Mover {
                 UpdateBuddies(0);
 
                 // close areaportals
-                if (this.moveMaster == this) {
+                if (moveMaster == this) {
                     ProcessEvent(EV_Mover_ClosePortal);
                 }
 
-                if (this.enabled && (this.wait >= 0) && this.spawnArgs.GetBool("continuous")) {
-                    PostEventSec(EV_Activate, this.wait, this);
+                if (enabled && wait >= 0 && spawnArgs.GetBool("continuous")) {
+                    PostEventSec(EV_Activate, wait, this);
                 }
 
                 SetBlocked(false);
             } else {
-                idGameLocal.Error("Event_Reached_BinaryMover: bad moverState");
+                gameLocal.Error("Event_Reached_BinaryMover: bad moverState");
             }
         }
 
@@ -2795,7 +2764,7 @@ public class Mover {
         protected void Event_Enable() {
             idMover_Binary slave;
 
-            for (slave = this.moveMaster; slave != null; slave = slave.activateChain) {
+            for (slave = moveMaster; slave != null; slave = slave.activateChain) {
                 slave.Enable(true);//TODO: this is false in the original code.
             }
         }
@@ -2810,7 +2779,7 @@ public class Mover {
         protected void Event_Disable() {
             idMover_Binary slave;
 
-            for (slave = this.moveMaster; slave != null; slave = slave.activateChain) {
+            for (slave = moveMaster; slave != null; slave = slave.activateChain) {
                 slave.Enable(false);
             }
         }
@@ -2825,7 +2794,7 @@ public class Mover {
         protected void Event_OpenPortal() {
             idMover_Binary slave;
 
-            for (slave = this.moveMaster; slave != null; slave = slave.activateChain) {
+            for (slave = moveMaster; slave != null; slave = slave.activateChain) {
                 if (slave.areaPortal != 0) {
                     slave.SetPortalState(true);
                 }
@@ -2843,7 +2812,7 @@ public class Mover {
         protected void Event_ClosePortal() {
             idMover_Binary slave;
 
-            for (slave = this.moveMaster; slave != null; slave = slave.activateChain) {
+            for (slave = moveMaster; slave != null; slave = slave.activateChain) {
                 if (!slave.IsHidden()) {
                     if (slave.areaPortal != 0) {
                         slave.SetPortalState(false);
@@ -2857,7 +2826,7 @@ public class Mover {
         }
 
         protected void Event_InitGuiTargets() {
-            if (this.guiTargets.Num() != 0) {
+            if (guiTargets.Num() != 0) {
                 SetGuiState("movestate", guiBinaryMoverStates[MOVER_POS1.ordinal()]);
             }
         }
@@ -2888,12 +2857,12 @@ public class Mover {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2901,7 +2870,7 @@ public class Mover {
             return eventCallbacks;
         }
 
-    }
+    };
 
     /*
      ===============================================================================
@@ -2914,11 +2883,7 @@ public class Mover {
      ===============================================================================
      */
     public static class idDoor extends idMover_Binary {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idMover_Binary.getEventCallBacks());
             eventCallbacks.put(EV_TeamBlocked, (eventCallback_t2<idDoor>) idDoor::Event_TeamBlocked);
@@ -2943,15 +2908,15 @@ public class Mover {
         private boolean     crusher;
         private boolean     noTouch;
         private boolean     aas_area_closed;
-        private final idStr       buddyStr;
+        private idStr       buddyStr;
         private idClipModel trigger;
         private idClipModel sndTrigger;
         private int         nextSndTriggerTime;
         private idVec3      localTriggerOrigin;
         private idMat3      localTriggerAxis;
-        private final idStr       requires;
+        private idStr       requires;
         private int         removeItem;
-        private final idStr       syncLock;
+        private idStr       syncLock;
         private int         normalAxisIndex;        // door faces X or Y for spectator teleports
         private idDoor      companionDoor;
         //
@@ -2960,21 +2925,21 @@ public class Mover {
 // public:
         // CLASS_PROTOTYPE( idDoor );
         public idDoor() {
-            this.triggersize = 1.0f;
-            this.crusher = false;
-            this.noTouch = false;
-            this.aas_area_closed = false;
-            this.buddyStr = new idStr();
-            this.trigger = null;
-            this.sndTrigger = null;
-            this.nextSndTriggerTime = 0;
-            this.localTriggerOrigin = new idVec3();
-            this.localTriggerAxis = idMat3.getMat3_identity();
-            this.requires = new idStr();
-            this.removeItem = 0;
-            this.syncLock = new idStr();
-            this.companionDoor = null;
-            this.normalAxisIndex = 0;
+            triggersize = 1.0f;
+            crusher = false;
+            noTouch = false;
+            aas_area_closed = false;
+            buddyStr = new idStr();
+            trigger = null;
+            sndTrigger = null;
+            nextSndTriggerTime = 0;
+            localTriggerOrigin = new idVec3();
+            localTriggerAxis = idMat3.getMat3_identity();
+            requires = new idStr();
+            removeItem = 0;
+            syncLock = new idStr();
+            companionDoor = null;
+            normalAxisIndex = 0;
         }
         // ~idDoor( void );
 
@@ -2982,57 +2947,57 @@ public class Mover {
         public void Spawn() {
             super.Spawn();
             
-            final idVec3 abs_movedir = new idVec3();
+            idVec3 abs_movedir = new idVec3();
             float distance;
             idVec3 size;
-            final idVec3 moveDir = new idVec3();
-            final float[] dir = {0};
-            final float[] lip = {0};
-            final boolean[] start_open = {false};
-            final float[] time = {0};
-            final float[] speed = {0};
+            idVec3 moveDir = new idVec3();
+            float[] dir = {0};
+            float[] lip = {0};
+            boolean[] start_open = {false};
+            float[] time = {0};
+            float[] speed = {0};
 
             // get the direction to move
-            if (!this.spawnArgs.GetFloat("movedir", "0", dir)) {
+            if (!spawnArgs.GetFloat("movedir", "0", dir)) {
                 // no movedir, so angle defines movement direction and not orientation,
                 // a la oldschool Quake
                 SetAngles(getAng_zero());
-                this.spawnArgs.GetFloat("angle", "0", dir);
+                spawnArgs.GetFloat("angle", "0", dir);
             }
             GetMovedir(dir[0], moveDir);
 
             // default speed of 400
-            this.spawnArgs.GetFloat("speed", "400", speed);
+            spawnArgs.GetFloat("speed", "400", speed);
 
             // default wait of 2 seconds
-            this.wait = this.spawnArgs.GetFloat("wait", "3");
+            wait = spawnArgs.GetFloat("wait", "3");
 
             // default lip of 8 units
-            this.spawnArgs.GetFloat("lip", "8", lip);
+            spawnArgs.GetFloat("lip", "8", lip);
 
             // by default no damage
-            this.damage = this.spawnArgs.GetFloat("damage", "0");
+            damage = spawnArgs.GetFloat("damage", "0");
 
             // trigger size
-            this.triggersize = this.spawnArgs.GetFloat("triggersize", "120");
+            triggersize = spawnArgs.GetFloat("triggersize", "120");
 
-            this.crusher = this.spawnArgs.GetBool("crusher", "0");
-            this.spawnArgs.GetBool("start_open", "0", start_open);
-            this.noTouch = this.spawnArgs.GetBool("no_touch", "0");
+            crusher = spawnArgs.GetBool("crusher", "0");
+            spawnArgs.GetBool("start_open", "0", start_open);
+            noTouch = spawnArgs.GetBool("no_touch", "0");
 
             // expects syncLock to be a door that must be closed before this door will open
-            this.spawnArgs.GetString("syncLock", "", this.syncLock);
+            spawnArgs.GetString("syncLock", "", syncLock);
 
-            this.spawnArgs.GetString("buddy", "", this.buddyStr);
+            spawnArgs.GetString("buddy", "", buddyStr);
 
-            this.spawnArgs.GetString("requires", "", this.requires);
-            this.removeItem = this.spawnArgs.GetInt("removeItem", "0");
+            spawnArgs.GetString("requires", "", requires);
+            removeItem = spawnArgs.GetInt("removeItem", "0");
 
             // ever separate piece of a door is considered solid when other team mates push entities
-            this.fl.solidForTeam = true;
+            fl.solidForTeam = true;
 
             // first position at start
-            this.pos1 = GetPhysics().GetOrigin();
+            pos1 = GetPhysics().GetOrigin();
 
             // calculate second position
             abs_movedir.oSet(0, idMath.Fabs(moveDir.oGet(0)));
@@ -3040,7 +3005,7 @@ public class Mover {
             abs_movedir.oSet(2, idMath.Fabs(moveDir.oGet(2)));
             size = GetPhysics().GetAbsBounds().oGet(1).oMinus(GetPhysics().GetAbsBounds().oGet(0));
             distance = (abs_movedir.oMultiply(size)) - lip[0];
-            this.pos2 = this.pos1.oPlus(moveDir.oMultiply(distance));
+            pos2 = pos1.oPlus(moveDir.oMultiply(distance));
 
             // if "start_open", reverse position 1 and 2
             if (start_open[0]) {
@@ -3048,22 +3013,22 @@ public class Mover {
                 PostEventMS(EV_Door_StartOpen, 1);
             }
 
-            if (this.spawnArgs.GetFloat("time", "1", time)) {
-                InitTime(this.pos1, this.pos2, time[0], 0, 0);
+            if (spawnArgs.GetFloat("time", "1", time)) {
+                InitTime(pos1, pos2, time[0], 0, 0);
             } else {
-                InitSpeed(this.pos1, this.pos2, speed[0], 0, 0);
+                InitSpeed(pos1, pos2, speed[0], 0, 0);
             }
 
-            if (this.moveMaster == this) {
-                if (this.health != 0) {
-                    this.fl.takedamage = true;
+            if (moveMaster == this) {
+                if (health != 0) {
+                    fl.takedamage = true;
                 }
-                if (this.noTouch || (this.health != 0)) {
+                if (noTouch || health != 0) {
                     // non touch/shoot doors
-                    PostEventMS(EV_Mover_MatchTeam, 0, this.moverState, gameLocal.time);
+                    PostEventMS(EV_Mover_MatchTeam, 0, moverState, gameLocal.time);
 
-                    final String sndtemp = this.spawnArgs.GetString("snd_locked");
-                    if ((this.spawnArgs.GetInt("locked") != 0) && (sndtemp != null) && !sndtemp.isEmpty()) {
+                    final String sndtemp = spawnArgs.GetString("snd_locked");
+                    if (spawnArgs.GetInt("locked") != 0 && sndtemp != null && !sndtemp.isEmpty()) {
                         PostEventMS(EV_Door_SpawnSoundTrigger, 0);
                     }
                 } else {
@@ -3073,95 +3038,95 @@ public class Mover {
             }
 
             // see if we are on an areaportal
-            this.areaPortal = gameRenderWorld.FindPortal(GetPhysics().GetAbsBounds());
+            areaPortal = gameRenderWorld.FindPortal(GetPhysics().GetAbsBounds());
             if (!start_open[0]) {
                 // start closed
                 ProcessEvent(EV_Mover_ClosePortal);
             }
 
-            final int locked = this.spawnArgs.GetInt("locked");
+            int locked = spawnArgs.GetInt("locked");
             if (locked != 0) {
                 // make sure all members of the team get locked
                 PostEventMS(EV_Door_Lock, 0, locked);
             }
 
-            if (this.spawnArgs.GetBool("continuous")) {
-                PostEventSec(EV_Activate, this.spawnArgs.GetFloat("delay"), this);
+            if (spawnArgs.GetBool("continuous")) {
+                PostEventSec(EV_Activate, spawnArgs.GetFloat("delay"), this);
             }
 
             // sounds have a habit of stuttering when portals close, so make them unoccluded
-            this.refSound.parms.soundShaderFlags |= SSF_NO_OCCLUSION;
+            refSound.parms.soundShaderFlags |= SSF_NO_OCCLUSION;
 
-            this.companionDoor = null;
+            companionDoor = null;
 
-            this.enabled = true;
-            this.blocked = false;
+            enabled = true;
+            blocked = false;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
 
-            savefile.WriteFloat(this.triggersize);
-            savefile.WriteBool(this.crusher);
-            savefile.WriteBool(this.noTouch);
-            savefile.WriteBool(this.aas_area_closed);
-            savefile.WriteString(this.buddyStr);
-            savefile.WriteInt(this.nextSndTriggerTime);
+            savefile.WriteFloat(triggersize);
+            savefile.WriteBool(crusher);
+            savefile.WriteBool(noTouch);
+            savefile.WriteBool(aas_area_closed);
+            savefile.WriteString(buddyStr);
+            savefile.WriteInt(nextSndTriggerTime);
 
-            savefile.WriteVec3(this.localTriggerOrigin);
-            savefile.WriteMat3(this.localTriggerAxis);
+            savefile.WriteVec3(localTriggerOrigin);
+            savefile.WriteMat3(localTriggerAxis);
 
-            savefile.WriteString(this.requires);
-            savefile.WriteInt(this.removeItem);
-            savefile.WriteString(this.syncLock);
-            savefile.WriteInt(this.normalAxisIndex);
+            savefile.WriteString(requires);
+            savefile.WriteInt(removeItem);
+            savefile.WriteString(syncLock);
+            savefile.WriteInt(normalAxisIndex);
 
-            savefile.WriteClipModel(this.trigger);
-            savefile.WriteClipModel(this.sndTrigger);
+            savefile.WriteClipModel(trigger);
+            savefile.WriteClipModel(sndTrigger);
 
-            savefile.WriteObject(this.companionDoor);
+            savefile.WriteObject(companionDoor);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
 
-            this.triggersize = savefile.ReadFloat();
-            this.crusher = savefile.ReadBool();
-            this.noTouch = savefile.ReadBool();
-            this.aas_area_closed = savefile.ReadBool();
-            SetAASAreaState(this.aas_area_closed);
-            savefile.ReadString(this.buddyStr);
-            this.nextSndTriggerTime = savefile.ReadInt();
+            triggersize = savefile.ReadFloat();
+            crusher = savefile.ReadBool();
+            noTouch = savefile.ReadBool();
+            aas_area_closed = savefile.ReadBool();
+            SetAASAreaState(aas_area_closed);
+            savefile.ReadString(buddyStr);
+            nextSndTriggerTime = savefile.ReadInt();
 
-            savefile.ReadVec3(this.localTriggerOrigin);
-            savefile.ReadMat3(this.localTriggerAxis);
+            savefile.ReadVec3(localTriggerOrigin);
+            savefile.ReadMat3(localTriggerAxis);
 
-            savefile.ReadString(this.requires);
-            this.removeItem = savefile.ReadInt();
-            savefile.ReadString(this.syncLock);
-            this.normalAxisIndex = savefile.ReadInt();
+            savefile.ReadString(requires);
+            removeItem = savefile.ReadInt();
+            savefile.ReadString(syncLock);
+            normalAxisIndex = savefile.ReadInt();
 
-            savefile.ReadClipModel(this.trigger);
-            savefile.ReadClipModel(this.sndTrigger);
+            savefile.ReadClipModel(trigger);
+            savefile.ReadClipModel(sndTrigger);
 
-            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/companionDoor);
+            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/companionDoor);
         }
 
         @Override
         public void Think() {
-            final idVec3 masterOrigin = new idVec3();
-            final idMat3 masterAxis = new idMat3();
+            idVec3 masterOrigin = new idVec3();
+            idMat3 masterAxis = new idMat3();
 
             super.Think();
 
-            if ((this.thinkFlags & TH_PHYSICS) != 0) {
+            if ((thinkFlags & TH_PHYSICS) != 0) {
                 // update trigger position
                 if (GetMasterPosition(masterOrigin, masterAxis)) {
-                    if (this.trigger != null) {
-                        this.trigger.Link(gameLocal.clip, this, 0, masterOrigin.oPlus(this.localTriggerOrigin.oMultiply(masterAxis)), this.localTriggerAxis.oMultiply(masterAxis));
+                    if (trigger != null) {
+                        trigger.Link(gameLocal.clip, this, 0, masterOrigin.oPlus(localTriggerOrigin.oMultiply(masterAxis)), localTriggerAxis.oMultiply(masterAxis));
                     }
-                    if (this.sndTrigger != null) {
-                        this.sndTrigger.Link(gameLocal.clip, this, 0, masterOrigin.oPlus(this.localTriggerOrigin.oMultiply(masterAxis)), this.localTriggerAxis.oMultiply(masterAxis));
+                    if (sndTrigger != null) {
+                        sndTrigger.Link(gameLocal.clip, this, 0, masterOrigin.oPlus(localTriggerOrigin.oMultiply(masterAxis)), localTriggerAxis.oMultiply(masterAxis));
                     }
                 }
             }
@@ -3175,7 +3140,7 @@ public class Mover {
         @Override
         public void PostBind() {
             super.PostBind();
-            GetLocalTriggerPosition(this.trigger != null ? this.trigger : this.sndTrigger);
+            GetLocalTriggerPosition(trigger != null ? trigger : sndTrigger);
         }
 
         @Override
@@ -3193,7 +3158,7 @@ public class Mover {
                     if (slave.IsType(idDoor.class)) {
                         slaveDoor = (idDoor) slave;
                         companion = slaveDoor.companionDoor;
-                        if ((companion != null) && (!companion.equals(master)) && (!companion.GetMoveMaster().equals(master))) {
+                        if (companion != null && (!companion.equals(master)) && (!companion.GetMoveMaster().equals(master))) {
                             companion.Hide();
                         }
                         if (slaveDoor.trigger != null) {
@@ -3228,7 +3193,7 @@ public class Mover {
                     if (slave.IsType(idDoor.class)) {
                         slaveDoor = (idDoor) slave;
                         companion = slaveDoor.companionDoor;
-                        if ((companion != null) && (!companion.equals(master)) && (!companion.GetMoveMaster().equals(master))) {
+                        if (companion != null && (!companion.equals(master)) && (!companion.GetMoveMaster().equals(master))) {
                             companion.Show();
                         }
                         if (slaveDoor.trigger != null) {
@@ -3237,10 +3202,10 @@ public class Mover {
                         if (slaveDoor.sndTrigger != null) {
                             slaveDoor.sndTrigger.Enable();
                         }
-                        if ((slaveDoor.areaPortal != 0) && (slaveDoor.moverState == MOVER_POS1)) {
+                        if (slaveDoor.areaPortal != 0 && (slaveDoor.moverState == MOVER_POS1)) {
                             slaveDoor.SetPortalState(false);
                         }
-                        slaveDoor.SetAASAreaState((IsLocked() != 0) || IsNoTouch());
+                        slaveDoor.SetAASAreaState(IsLocked() != 0 || IsNoTouch());
                     }
                     slave.GetPhysics().GetClipModel().Enable();
                     slave.Show();
@@ -3249,33 +3214,33 @@ public class Mover {
         }
 
         public boolean IsOpen() {
-            return (this.moverState != MOVER_POS1);
+            return (moverState != MOVER_POS1);
         }
 
         public boolean IsNoTouch() {
-            return this.noTouch;
+            return noTouch;
         }
 
         public int IsLocked() {
-            return this.spawnArgs.GetInt("locked");
+            return spawnArgs.GetInt("locked");
         }
 
         public void Lock(int f) {
             idMover_Binary other;
 
             // lock all the doors on the team
-            for (other = this.moveMaster; other != null; other = other.GetActivateChain()) {
+            for (other = moveMaster; other != null; other = other.GetActivateChain()) {
                 if (other.IsType(idDoor.class)) {
-                    final idDoor door = (idDoor) other;
-                    if (other.equals(this.moveMaster)) {
+                    idDoor door = (idDoor) other;
+                    if (other.equals(moveMaster)) {
                         if (door.sndTrigger == null) {
                             // in this case the sound trigger never got spawned
                             final String sndtemp = door.spawnArgs.GetString("snd_locked");
-                            if ((sndtemp != null) && !sndtemp.isEmpty()) {
+                            if (sndtemp != null && !sndtemp.isEmpty()) {
                                 door.PostEventMS(EV_Door_SpawnSoundTrigger, 0);
                             }
                         }
-                        if ((0 == f) && (door.spawnArgs.GetInt("locked") != 0)) {
+                        if (0 == f && (door.spawnArgs.GetInt("locked") != 0)) {
                             door.StartSound("snd_unlocked", SND_CHANNEL_ANY, 0, false, null);
                         }
                     }
@@ -3292,10 +3257,10 @@ public class Mover {
         }
 
         public void Use(idEntity other, idEntity activator) {
-            if (gameLocal.RequirementMet(activator, this.requires, this.removeItem)) {
-                if (this.syncLock.Length() != 0) {
-                    final idEntity sync = gameLocal.FindEntity(this.syncLock);
-                    if ((sync != null) && sync.IsType(idDoor.class)) {
+            if (gameLocal.RequirementMet(activator, requires, removeItem)) {
+                if (syncLock.Length() != 0) {
+                    idEntity sync = gameLocal.FindEntity(syncLock);
+                    if (sync != null && sync.IsType(idDoor.class)) {
                         if (((idDoor) sync).IsOpen()) {
                             return;
                         }
@@ -3315,25 +3280,25 @@ public class Mover {
         }
 
         public void SetCompanion(idDoor door) {
-            this.companionDoor = door;
+            companionDoor = door;
         }
 
         private void SetAASAreaState(boolean closed) {
-            this.aas_area_closed = closed;
-            gameLocal.SetAASAreaState(this.physicsObj.GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL | AREACONTENTS_OBSTACLE, closed);
+            aas_area_closed = closed;
+            gameLocal.SetAASAreaState(physicsObj.GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL | AREACONTENTS_OBSTACLE, closed);
         }
 
         private void GetLocalTriggerPosition(final idClipModel trigger) {
-            final idVec3 origin = new idVec3();
-            final idMat3 axis = new idMat3();
+            idVec3 origin = new idVec3();
+            idMat3 axis = new idMat3();
 
             if (NOT(trigger)) {
                 return;
             }
 
             GetMasterPosition(origin, axis);
-            this.localTriggerOrigin = (trigger.GetOrigin().oMinus(origin)).oMultiply(axis.Transpose());
-            this.localTriggerAxis = trigger.GetAxis().oMultiply(axis.Transpose());
+            localTriggerOrigin = (trigger.GetOrigin().oMinus(origin)).oMultiply(axis.Transpose());
+            localTriggerAxis = trigger.GetAxis().oMultiply(axis.Transpose());
         }
 
         /*
@@ -3351,8 +3316,8 @@ public class Mover {
             // find the bounds of everything on the team
             bounds.oSet(GetPhysics().GetAbsBounds());
 
-            this.fl.takedamage = true;
-            for (other = this.activateChain; other != null; other = other.GetActivateChain()) {
+            fl.takedamage = true;
+            for (other = activateChain; other != null; other = other.GetActivateChain()) {
                 if (other.IsType(idDoor.class)) {
                     // find the bounds of everything on the team
                     bounds.AddBounds(other.GetPhysics().GetAbsBounds());
@@ -3365,36 +3330,36 @@ public class Mover {
             // find the thinnest axis, which will be the one we expand
             best = 0;
             for (i = 1; i < 3; i++) {
-                if ((bounds.oGet(1, i) - bounds.oGet(0, i)) < (bounds.oGet(1, best) - bounds.oGet(0, best))) {
+                if (bounds.oGet(1, i) - bounds.oGet(0, i) < bounds.oGet(1, best) - bounds.oGet(0, best)) {
                     best = i;
                 }
             }
-            this.normalAxisIndex = best;
-            bounds.oGet(0).oMinSet(best, size);
-            bounds.oGet(1).oPluSet(best, size);
+            normalAxisIndex = best;
+            bounds.oGet(0).oMinSet(best, size);;
+            bounds.oGet(1).oPluSet(best, size);;
             bounds.oMinSet(GetPhysics().GetOrigin());
         }
 
         @Override
         protected void Event_Reached_BinaryMover() {
-            if (this.moverState == MOVER_2TO1) {
+            if (moverState == MOVER_2TO1) {
                 SetBlocked(false);
-                idKeyValue kv = this.spawnArgs.MatchPrefix("triggerClosed");
+                idKeyValue kv = spawnArgs.MatchPrefix("triggerClosed");
                 while (kv != null) {
-                    final idEntity ent = gameLocal.FindEntity(kv.GetValue().getData());
+                    idEntity ent = gameLocal.FindEntity(kv.GetValue().toString());
                     if (ent != null) {
-                        ent.PostEventMS(EV_Activate, 0, this.moveMaster.GetActivator());
+                        ent.PostEventMS(EV_Activate, 0, moveMaster.GetActivator());
                     }
-                    kv = this.spawnArgs.MatchPrefix("triggerClosed", kv);
+                    kv = spawnArgs.MatchPrefix("triggerClosed", kv);
                 }
-            } else if (this.moverState == MOVER_1TO2) {
-                idKeyValue kv = this.spawnArgs.MatchPrefix("triggerOpened");
+            } else if (moverState == MOVER_1TO2) {
+                idKeyValue kv = spawnArgs.MatchPrefix("triggerOpened");
                 while (kv != null) {
-                    final idEntity ent = gameLocal.FindEntity(kv.GetValue().getData());
+                    idEntity ent = gameLocal.FindEntity(kv.GetValue().toString());
                     if (ent != null) {
-                        ent.PostEventMS(EV_Activate, 0, this.moveMaster.GetActivator());
+                        ent.PostEventMS(EV_Activate, 0, moveMaster.GetActivator());
                     }
-                    kv = this.spawnArgs.MatchPrefix("triggerOpened", kv);
+                    kv = spawnArgs.MatchPrefix("triggerOpened", kv);
                 }
             }
             super.Event_Reached_BinaryMover();
@@ -3403,43 +3368,43 @@ public class Mover {
         private void Event_TeamBlocked(idEventArg<idEntity> blockedEntity, idEventArg<idEntity> blockingEntity) {
             SetBlocked(true);
 
-            if (this.crusher) {
+            if (crusher) {
                 return;		// crushers don't reverse
             }
 
             // reverse direction
-            Use_BinaryMover(this.moveMaster.GetActivator());
+            Use_BinaryMover(moveMaster.GetActivator());
 
-            if (this.companionDoor != null) {
-                this.companionDoor.ProcessEvent(EV_TeamBlocked, blockedEntity.value, blockingEntity.value);
+            if (companionDoor != null) {
+                companionDoor.ProcessEvent(EV_TeamBlocked, blockedEntity.value, blockingEntity.value);
             }
         }
 
         private void Event_PartBlocked(idEventArg<idEntity> blockingEntity) {
-            if (this.damage > 0.0f) {
-                blockingEntity.value.Damage(this, this, getVec3_origin(), "damage_moverCrush", this.damage, INVALID_JOINT);
+            if (damage > 0.0f) {
+                blockingEntity.value.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage, INVALID_JOINT);
             }
         }
 
         private void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> _trace) {
-            final idEntity other = _other.value;
-            final trace_s trace = _trace.value;
+            idEntity other = _other.value;
+            trace_s trace = _trace.value;
 //            idVec3 contact, translate;
 //            idVec3 planeaxis1, planeaxis2, normal;
 //            idBounds bounds;
 
-            if (!this.enabled) {
+            if (!enabled) {
                 return;
             }
 
-            if ((this.trigger != null) && (trace.c.id == this.trigger.GetId())) {
-                if (!IsNoTouch() && (0 == IsLocked()) && (GetMoverState() != MOVER_1TO2)) {
+            if (trigger != null && trace.c.id == trigger.GetId()) {
+                if (!IsNoTouch() && 0 == IsLocked() && GetMoverState() != MOVER_1TO2) {
                     Use(this, other);
                 }
-            } else if ((this.sndTrigger != null) && (trace.c.id == this.sndTrigger.GetId())) {
-                if ((other != null) && other.IsType(idPlayer.class) && (IsLocked() != 0) && (gameLocal.time > this.nextSndTriggerTime)) {
+            } else if (sndTrigger != null && trace.c.id == sndTrigger.GetId()) {
+                if (other != null && other.IsType(idPlayer.class) && IsLocked() != 0 && gameLocal.time > nextSndTriggerTime) {
                     StartSound("snd_locked", SND_CHANNEL_ANY, 0, false, null);
-                    this.nextSndTriggerTime = gameLocal.time + 10000;
+                    nextSndTriggerTime = gameLocal.time + 10000;
                 }
             }
         }
@@ -3447,28 +3412,28 @@ public class Mover {
         private void Event_Activate(idEventArg<idEntity> activator) {
             int old_lock;
 
-            if (this.spawnArgs.GetInt("locked") != 0) {
-                if (NOT(this.trigger)) {
+            if (spawnArgs.GetInt("locked") != 0) {
+                if (NOT(trigger)) {
                     PostEventMS(EV_Door_SpawnDoorTrigger, 0);
                 }
-                if (this.buddyStr.Length() != 0) {
-                    final idEntity buddy = gameLocal.FindEntity(this.buddyStr);
+                if (buddyStr.Length() != 0) {
+                    idEntity buddy = gameLocal.FindEntity(buddyStr);
                     if (buddy != null) {
                         buddy.SetShaderParm(SHADERPARM_MODE, 1);
                         buddy.UpdateVisuals();
                     }
                 }
 
-                old_lock = this.spawnArgs.GetInt("locked");
+                old_lock = spawnArgs.GetInt("locked");
                 Lock(0);
                 if (old_lock == 2) {
                     return;
                 }
             }
 
-            if (this.syncLock.Length() != 0) {
-                final idEntity sync = gameLocal.FindEntity(this.syncLock);
-                if ((sync != null) && sync.IsType(idDoor.class)) {
+            if (syncLock.Length() != 0) {
+                idEntity sync = gameLocal.FindEntity(syncLock);
+                if (sync != null && sync.IsType(idDoor.class)) {
                     if (((idDoor) sync).IsOpen()) {
                         return;
                     }
@@ -3477,7 +3442,7 @@ public class Mover {
 
             ActivateTargets(activator.value);
 
-            this.renderEntity.shaderParms[ SHADERPARM_MODE] = 1;
+            renderEntity.shaderParms[ SHADERPARM_MODE] = 1;
             UpdateVisuals();
 
             Use_BinaryMover(activator.value);
@@ -3491,19 +3456,19 @@ public class Mover {
          ======================
          */
         private void Event_StartOpen() {
-            final float[] time = {0};
-            final float[] speed = {0};
+            float[] time = {0};
+            float[] speed = {0};
 
             // if "start_open", reverse position 1 and 2
-            this.pos1 = this.pos2;
-            this.pos2 = GetPhysics().GetOrigin();
+            pos1 = pos2;
+            pos2 = GetPhysics().GetOrigin();
 
-            this.spawnArgs.GetFloat("speed", "400", speed);
+            spawnArgs.GetFloat("speed", "400", speed);
 
-            if (this.spawnArgs.GetFloat("time", "1", time)) {
-                InitTime(this.pos1, this.pos2, time[0], 0, 0);
+            if (spawnArgs.GetFloat("time", "1", time)) {
+                InitTime(pos1, pos2, time[0], 0, 0);
             } else {
-                InitSpeed(this.pos1, this.pos2, speed[0], 0, 0);
+                InitSpeed(pos1, pos2, speed[0], 0, 0);
             }
         }
 
@@ -3516,18 +3481,18 @@ public class Mover {
          ======================
          */
         private void Event_SpawnDoorTrigger() {
-            final idBounds bounds = new idBounds();
+            idBounds bounds = new idBounds();
             idMover_Binary other;
             boolean toggle;
 
-            if (this.trigger != null) {
+            if (trigger != null) {
                 // already have a trigger, so don't spawn a new one.
                 return;
             }
 
             // check if any of the doors are marked as toggled
             toggle = false;
-            for (other = this.moveMaster; other != null; other = other.GetActivateChain()) {
+            for (other = moveMaster; other != null; other = other.GetActivateChain()) {
                 if (other.IsType(idDoor.class) && other.spawnArgs.GetBool("toggle")) {
                     toggle = true;
                     break;
@@ -3536,7 +3501,7 @@ public class Mover {
 
             if (toggle) {
                 // mark them all as toggled
-                for (other = this.moveMaster; other != null; other = other.GetActivateChain()) {
+                for (other = moveMaster; other != null; other = other.GetActivateChain()) {
                     if (other.IsType(idDoor.class)) {
                         other.spawnArgs.Set("toggle", "1");
                     }
@@ -3545,21 +3510,21 @@ public class Mover {
                 return;
             }
 
-            final String sndtemp = this.spawnArgs.GetString("snd_locked");
-            if ((this.spawnArgs.GetInt("locked") != 0) && (sndtemp != null) && !sndtemp.isEmpty()) {
+            final String sndtemp = spawnArgs.GetString("snd_locked");
+            if (spawnArgs.GetInt("locked") != 0 && sndtemp != null && !sndtemp.isEmpty()) {
                 PostEventMS(EV_Door_SpawnSoundTrigger, 0);
             }
 
-            CalcTriggerBounds(this.triggersize, bounds);
+            CalcTriggerBounds(triggersize, bounds);
 
             // create a trigger clip model
-            this.trigger = new idClipModel(new idTraceModel(bounds));
-            this.trigger.Link(gameLocal.clip, this, 255, GetPhysics().GetOrigin(), getMat3_identity());
-            this.trigger.SetContents(CONTENTS_TRIGGER);
+            trigger = new idClipModel(new idTraceModel(bounds));
+            trigger.Link(gameLocal.clip, this, 255, GetPhysics().GetOrigin(), getMat3_identity());
+            trigger.SetContents(CONTENTS_TRIGGER);
 
-            GetLocalTriggerPosition(this.trigger);
+            GetLocalTriggerPosition(trigger);
 
-            MatchActivateTeam(this.moverState, gameLocal.time);
+            MatchActivateTeam(moverState, gameLocal.time);
         }
 
         /*
@@ -3570,20 +3535,20 @@ public class Mover {
          ======================
          */
         private void Event_SpawnSoundTrigger() {
-            final idBounds bounds = new idBounds();
+            idBounds bounds = new idBounds();
 
-            if (this.sndTrigger != null) {
+            if (sndTrigger != null) {
                 return;
             }
 
-            CalcTriggerBounds(this.triggersize * 0.5f, bounds);
+            CalcTriggerBounds(triggersize * 0.5f, bounds);
 
             // create a trigger clip model
-            this.sndTrigger = new idClipModel(new idTraceModel(bounds));
-            this.sndTrigger.Link(gameLocal.clip, this, 254, GetPhysics().GetOrigin(), getMat3_identity());
-            this.sndTrigger.SetContents(CONTENTS_TRIGGER);
+            sndTrigger = new idClipModel(new idTraceModel(bounds));
+            sndTrigger.Link(gameLocal.clip, this, 254, GetPhysics().GetOrigin(), getMat3_identity());
+            sndTrigger.SetContents(CONTENTS_TRIGGER);
 
-            GetLocalTriggerPosition(this.sndTrigger);
+            GetLocalTriggerPosition(sndTrigger);
         }
 
         private void Event_Close() {
@@ -3606,34 +3571,33 @@ public class Mover {
         }
 
         private void Event_Locked() {
-            idThread.ReturnFloat(this.spawnArgs.GetInt("locked"));
+            idThread.ReturnFloat(spawnArgs.GetInt("locked"));
         }
 
         private void Event_SpectatorTouch(idEventArg<idEntity> _other, idEventArg<trace_s> trace) {
-            final idEntity other = _other.value;
-            idVec3 contact, translate;
-			final idVec3 normal = new idVec3();
+            idEntity other = _other.value;
+            idVec3 contact, translate, normal = new idVec3();
             idBounds bounds;
             idPlayer p;
 
-            assert ((other != null) && other.IsType(idPlayer.class) && ((idPlayer) other).spectating);
+            assert (other != null && other.IsType(idPlayer.class) && ((idPlayer) other).spectating);
 
             p = (idPlayer) other;
             // avoid flicker when stopping right at clip box boundaries
-            if (p.lastSpectateTeleport > (gameLocal.time - 1000)) {
+            if (p.lastSpectateTeleport > gameLocal.time - 1000) {
                 return;
             }
-            if ((this.trigger != null) && !IsOpen()) {
+            if (trigger != null && !IsOpen()) {
                 // teleport to the other side, center to the middle of the trigger brush
-                bounds = this.trigger.GetAbsBounds();
+                bounds = trigger.GetAbsBounds();
                 contact = trace.value.endpos.oMinus(bounds.GetCenter());
                 translate = bounds.GetCenter();
                 normal.Zero();
-                normal.oSet(this.normalAxisIndex, 1.0f);
+                normal.oSet(normalAxisIndex, 1.0f);
                 if (normal.oMultiply(contact) > 0) {
-                    translate.oPluSet(this.normalAxisIndex, (bounds.oGet(0, this.normalAxisIndex) - translate.oGet(this.normalAxisIndex)) * 0.5f);
+                    translate.oPluSet(normalAxisIndex, (bounds.oGet(0, normalAxisIndex) - translate.oGet(normalAxisIndex)) * 0.5f);
                 } else {
-                    translate.oPluSet(this.normalAxisIndex, (bounds.oGet(1, this.normalAxisIndex) - translate.oGet(this.normalAxisIndex)) * 0.5f);
+                    translate.oPluSet(normalAxisIndex, (bounds.oGet(1, normalAxisIndex) - translate.oGet(normalAxisIndex)) * 0.5f);
                 }
                 p.SetOrigin(translate);
                 p.lastSpectateTeleport = gameLocal.time;
@@ -3682,14 +3646,14 @@ public class Mover {
                         if (slaveDoor.areaPortal != 0) {
                             slaveDoor.SetPortalState(false);
                         }
-                        slaveDoor.SetAASAreaState((IsLocked() != 0) || IsNoTouch());
+                        slaveDoor.SetAASAreaState(IsLocked() != 0 || IsNoTouch());
                     }
                 }
             }
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -3697,7 +3661,7 @@ public class Mover {
             return eventCallbacks;
         }
 
-    }
+    };
 
     /*
      ===============================================================================
@@ -3707,11 +3671,7 @@ public class Mover {
      ===============================================================================
      */
     public static class idPlat extends idMover_Binary {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// CLASS_PROTOTYPE( idPlat );
+        // CLASS_PROTOTYPE( idPlat );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idMover_Binary.getEventCallBacks());
@@ -3727,45 +3687,45 @@ public class Mover {
         //
 
         public idPlat() {
-            this.trigger = null;
-            this.localTriggerOrigin.Zero();
-            this.localTriggerAxis.Identity();
+            trigger = null;
+            localTriggerOrigin.Zero();
+            localTriggerAxis.Identity();
         }
         // ~idPlat( void );
 
         @Override
         public void Spawn() {
-            final float[] lip = {0};
-            final float[] height = {0};
-            final float[] time = {0};
-            final float[] speed = {0};
-            final float[] accel = {0};
-            final float[] decel = {0};
-            final boolean[] noTouch = {false};
+            float[] lip = {0};
+            float[] height = {0};
+            float[] time = {0};
+            float[] speed = {0};
+            float[] accel = {0};
+            float[] decel = {0};
+            boolean[] noTouch = {false};
 
-            this.spawnArgs.GetFloat("speed", "100", speed);
-            this.damage = this.spawnArgs.GetFloat("damage", "0");
-            this.wait = this.spawnArgs.GetFloat("wait", "1");
-            this.spawnArgs.GetFloat("lip", "8", lip);
-            this.spawnArgs.GetFloat("accel_time", "0.25", accel);
-            this.spawnArgs.GetFloat("decel_time", "0.25", decel);
+            spawnArgs.GetFloat("speed", "100", speed);
+            damage = spawnArgs.GetFloat("damage", "0");
+            wait = spawnArgs.GetFloat("wait", "1");
+            spawnArgs.GetFloat("lip", "8", lip);
+            spawnArgs.GetFloat("accel_time", "0.25", accel);
+            spawnArgs.GetFloat("decel_time", "0.25", decel);
 
             // create second position
-            if (!this.spawnArgs.GetFloat("height", "0", height)) {
+            if (!spawnArgs.GetFloat("height", "0", height)) {
                 height[0] = (GetPhysics().GetBounds().oGet(1, 2) - GetPhysics().GetBounds().oGet(0, 2)) - lip[0];
             }
 
-            this.spawnArgs.GetBool("no_touch", "0", noTouch);
+            spawnArgs.GetBool("no_touch", "0", noTouch);
 
             // pos1 is the rest (bottom) position, pos2 is the top
-            this.pos2 = GetPhysics().GetOrigin();
-            this.pos1 = this.pos2;
-            this.pos1.oMinSet(2, height[0]);
+            pos2 = GetPhysics().GetOrigin();
+            pos1 = pos2;
+            pos1.oMinSet(2, height[0]);
 
-            if (this.spawnArgs.GetFloat("time", "1", time)) {
-                InitTime(this.pos1, this.pos2, time[0], accel[0], decel[0]);
+            if (spawnArgs.GetFloat("time", "1", time)) {
+                InitTime(pos1, pos2, time[0], accel[0], decel[0]);
             } else {
-                InitSpeed(this.pos1, this.pos2, speed[0], accel[0], decel[0]);
+                InitSpeed(pos1, pos2, speed[0], accel[0], decel[0]);
             }
 
             SetMoverState(MOVER_POS1, gameLocal.time);
@@ -3774,36 +3734,36 @@ public class Mover {
             // spawn the trigger if one hasn't been custom made
             if (!noTouch[0]) {
                 // spawn trigger
-                SpawnPlatTrigger(this.pos1);
+                SpawnPlatTrigger(pos1);
             }
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteClipModel(this.trigger);
-            savefile.WriteVec3(this.localTriggerOrigin);
-            savefile.WriteMat3(this.localTriggerAxis);
+            savefile.WriteClipModel(trigger);
+            savefile.WriteVec3(localTriggerOrigin);
+            savefile.WriteMat3(localTriggerAxis);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            savefile.ReadClipModel(this.trigger);
-            savefile.ReadVec3(this.localTriggerOrigin);
-            savefile.ReadMat3(this.localTriggerAxis);
+            savefile.ReadClipModel(trigger);
+            savefile.ReadVec3(localTriggerOrigin);
+            savefile.ReadMat3(localTriggerAxis);
         }
 
         @Override
         public void Think() {
-            final idVec3 masterOrigin = new idVec3();
-            final idMat3 masterAxis = new idMat3();
+            idVec3 masterOrigin = new idVec3();
+            idMat3 masterAxis = new idMat3();
 
             super.Think();
 
-            if ((this.thinkFlags & TH_PHYSICS) != 0) {
+            if ((thinkFlags & TH_PHYSICS) != 0) {
                 // update trigger position
                 if (GetMasterPosition(masterOrigin, masterAxis)) {
-                    if (this.trigger != null) {
-                        this.trigger.Link(gameLocal.clip, this, 0, masterOrigin.oPlus(this.localTriggerOrigin.oMultiply(masterAxis)), this.localTriggerAxis.oMultiply(masterAxis));
+                    if (trigger != null) {
+                        trigger.Link(gameLocal.clip, this, 0, masterOrigin.oPlus(localTriggerOrigin.oMultiply(masterAxis)), localTriggerAxis.oMultiply(masterAxis));
                     }
                 }
             }
@@ -3817,26 +3777,26 @@ public class Mover {
         @Override
         public void PostBind() {
             super.PostBind();
-            GetLocalTriggerPosition(this.trigger);
+            GetLocalTriggerPosition(trigger);
         }
 
         private void GetLocalTriggerPosition(final idClipModel trigger) {
-            final idVec3 origin = new idVec3();
-            final idMat3 axis = new idMat3();
+            idVec3 origin = new idVec3();
+            idMat3 axis = new idMat3();
 
             if (NOT(trigger)) {
                 return;
             }
 
             GetMasterPosition(origin, axis);
-            this.localTriggerOrigin = (trigger.GetOrigin().oMinus(origin)).oMultiply(axis.Transpose());
-            this.localTriggerAxis = trigger.GetAxis().oMultiply(axis.Transpose());
+            localTriggerOrigin = (trigger.GetOrigin().oMinus(origin)).oMultiply(axis.Transpose());
+            localTriggerAxis = trigger.GetAxis().oMultiply(axis.Transpose());
         }
 
         private void SpawnPlatTrigger(idVec3 pos) {
             idBounds bounds;
-            final idVec3 tmin = new idVec3();
-            final idVec3 tmax = new idVec3();
+            idVec3 tmin = new idVec3();
+            idVec3 tmax = new idVec3();
 
             // the middle trigger will be a thin trigger just
             // above the starting position
@@ -3859,35 +3819,35 @@ public class Mover {
                 tmax.oSet(0, tmin.oGet(1) + 1);
             }
 
-            this.trigger = new idClipModel(new idTraceModel(new idBounds(tmin, tmax)));
-            this.trigger.Link(gameLocal.clip, this, 255, GetPhysics().GetOrigin(), getMat3_identity());
-            this.trigger.SetContents(CONTENTS_TRIGGER);
+            trigger = new idClipModel(new idTraceModel(new idBounds(tmin, tmax)));
+            trigger.Link(gameLocal.clip, this, 255, GetPhysics().GetOrigin(), getMat3_identity());
+            trigger.SetContents(CONTENTS_TRIGGER);
         }
 
         private void Event_TeamBlocked(idEventArg<idEntity> blockedEntity, idEventArg<idEntity> blockingEntity) {
             // reverse direction
-            Use_BinaryMover(this.activatedBy.GetEntity());
+            Use_BinaryMover(activatedBy.GetEntity());
         }
 
         private void Event_PartBlocked(idEventArg<idEntity> blockingEntity) {
-            if (this.damage > 0) {
-                blockingEntity.value.Damage(this, this, getVec3_origin(), "damage_moverCrush", this.damage, INVALID_JOINT);
+            if (damage > 0) {
+                blockingEntity.value.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage, INVALID_JOINT);
             }
         }
 
         private void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> trace) {
-            final idEntity other = _other.value;
+            idEntity other = _other.value;
             if (!other.IsType(idPlayer.class)) {
                 return;
             }
 
-            if ((GetMoverState() == MOVER_POS1) && (this.trigger != null) && (trace.value.c.id == this.trigger.GetId()) && (other.health > 0)) {
+            if ((GetMoverState() == MOVER_POS1) && trigger != null && (trace.value.c.id == trigger.GetId()) && (other.health > 0)) {
                 Use_BinaryMover(other);
             }
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -3895,7 +3855,7 @@ public class Mover {
             return eventCallbacks;
         }
 
-    }
+    };
 
     /*
      ===============================================================================
@@ -3912,11 +3872,7 @@ public class Mover {
      ===============================================================================
      */
     public static class idMover_Periodic extends idEntity {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// CLASS_PROTOTYPE( idMover_Periodic );
+        // CLASS_PROTOTYPE( idMover_Periodic );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -3930,32 +3886,32 @@ public class Mover {
         //
 
         public idMover_Periodic() {
-            this.damage[0] = 0;
-            this.physicsObj = new idPhysics_Parametric();
-            this.fl.neverDormant = false;
+            damage[0] = 0;
+            physicsObj = new idPhysics_Parametric();
+            fl.neverDormant = false;
         }
 
         @Override
         public void Spawn() {
             super.Spawn();
 
-            this.spawnArgs.GetFloat("damage", "0", this.damage);
-            if (!this.spawnArgs.GetBool("solid", "1")) {
+            spawnArgs.GetFloat("damage", "0", damage);
+            if (!spawnArgs.GetBool("solid", "1")) {
                 GetPhysics().SetContents(0);
             }
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteFloat(this.damage[0]);
-            savefile.WriteStaticObject(this.physicsObj);
+            savefile.WriteFloat(damage[0]);
+            savefile.WriteStaticObject(physicsObj);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            savefile.ReadFloat(this.damage);
-            savefile.ReadStaticObject(this.physicsObj);
-            RestorePhysics(this.physicsObj);
+            savefile.ReadFloat(damage);
+            savefile.ReadStaticObject(physicsObj);
+            RestorePhysics(physicsObj);
         }
 
         @Override
@@ -3971,13 +3927,13 @@ public class Mover {
 
         @Override
         public void WriteToSnapshot(idBitMsgDelta msg) {
-            this.physicsObj.WriteToSnapshot(msg);
+            physicsObj.WriteToSnapshot(msg);
             WriteBindToSnapshot(msg);
         }
 
         @Override
         public void ReadFromSnapshot(final idBitMsgDelta msg) {
-            this.physicsObj.ReadFromSnapshot(msg);
+            physicsObj.ReadFromSnapshot(msg);
             ReadBindFromSnapshot(msg);
 
             if (msg.HasChanged()) {
@@ -3989,8 +3945,8 @@ public class Mover {
         }
 
         protected void Event_PartBlocked(idEventArg<idEntity> blockingEntity) {
-            if (this.damage[0] > 0) {
-                blockingEntity.value.Damage(this, this, getVec3_origin(), "damage_moverCrush", this.damage[0], INVALID_JOINT);
+            if (damage[0] > 0) {
+                blockingEntity.value.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage[0], INVALID_JOINT);
             }
         }
 
@@ -4000,12 +3956,12 @@ public class Mover {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -4013,7 +3969,7 @@ public class Mover {
             return eventCallbacks;
         }
 
-    }
+    };
 
     /*
      ===============================================================================
@@ -4023,18 +3979,14 @@ public class Mover {
      ===============================================================================
      */
     public static class idRotater extends idMover_Periodic {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// CLASS_PROTOTYPE( idRotater );
+        // CLASS_PROTOTYPE( idRotater );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idMover_Periodic.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idRotater>) idRotater::Event_Activate);
         }
 
-        private final idEntityPtr<idEntity> activatedBy;
+        private idEntityPtr<idEntity> activatedBy;
         //
         //
 
@@ -4046,48 +3998,48 @@ public class Mover {
         public void Spawn() {
             super.Spawn();
 
-            this.physicsObj.SetSelf(this);
-            this.physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
-            this.physicsObj.SetOrigin(GetPhysics().GetOrigin());
-            this.physicsObj.SetAxis(GetPhysics().GetAxis());
-            this.physicsObj.SetClipMask(MASK_SOLID);
-            if (!this.spawnArgs.GetBool("nopush")) {
-                this.physicsObj.SetPusher(0);
+            physicsObj.SetSelf(this);
+            physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
+            physicsObj.SetOrigin(GetPhysics().GetOrigin());
+            physicsObj.SetAxis(GetPhysics().GetAxis());
+            physicsObj.SetClipMask(MASK_SOLID);
+            if (!spawnArgs.GetBool("nopush")) {
+                physicsObj.SetPusher(0);
             }
-            this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, gameLocal.time, 0, GetPhysics().GetOrigin(), getVec3_origin(), getVec3_origin());
-            this.physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, GetPhysics().GetAxis().ToAngles(), getAng_zero(), getAng_zero());
-            SetPhysics(this.physicsObj);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, gameLocal.time, 0, GetPhysics().GetOrigin(), getVec3_origin(), getVec3_origin());
+            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, GetPhysics().GetAxis().ToAngles(), getAng_zero(), getAng_zero());
+            SetPhysics(physicsObj);
 
-            if (this.spawnArgs.GetBool("start_on")) {
+            if (spawnArgs.GetBool("start_on")) {
                 ProcessEvent(EV_Activate, this);
             }
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            this.activatedBy.Save(savefile);
+            activatedBy.Save(savefile);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            this.activatedBy.Restore(savefile);
+            activatedBy.Restore(savefile);
         }
 
         private void Event_Activate(idEventArg<idEntity> activator) {
-            final float[] speed = {0};
-            final boolean[] x_axis = {false};
-            final boolean[] y_axis = {false};
-            final idAngles delta = new idAngles();
+            float[] speed = {0};
+            boolean[] x_axis = {false};
+            boolean[] y_axis = {false};
+            idAngles delta = new idAngles();
 
-            this.activatedBy.oSet(activator.value);
+            activatedBy.oSet(activator.value);
 
             delta.Zero();
 
-            if (!this.spawnArgs.GetBool("rotate")) {
-                this.spawnArgs.Set("rotate", "1");
-                this.spawnArgs.GetFloat("speed", "100", speed);
-                this.spawnArgs.GetBool("x_axis", "0", x_axis);
-                this.spawnArgs.GetBool("y_axis", "0", y_axis);
+            if (!spawnArgs.GetBool("rotate")) {
+                spawnArgs.Set("rotate", "1");
+                spawnArgs.GetFloat("speed", "100", speed);
+                spawnArgs.GetBool("x_axis", "0", x_axis);
+                spawnArgs.GetBool("y_axis", "0", y_axis);
 
                 // set the axis of rotation
                 if (x_axis[0]) {
@@ -4098,14 +4050,14 @@ public class Mover {
                     delta.oSet(1, speed[0]);
                 }
             } else {
-                this.spawnArgs.Set("rotate", "0");
+                spawnArgs.Set("rotate", "0");
             }
 
-            this.physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, this.physicsObj.GetAxis().ToAngles(), delta, getAng_zero());
+            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, physicsObj.GetAxis().ToAngles(), delta, getAng_zero());
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -4113,7 +4065,7 @@ public class Mover {
             return eventCallbacks;
         }
 
-    }
+    };
 
     /*
      ===============================================================================
@@ -4125,28 +4077,23 @@ public class Mover {
     public static class idBobber extends idMover_Periodic {
         // CLASS_PROTOTYPE( idBobber );
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public idBobber() {
+        public idBobber() {
         }
 
         @Override
         public void Spawn() {
-            final float[] speed = {0};
-            final float[] height = {0};
-            final float[] phase = {0};
-            final boolean[] x_axis = {false};
-            final boolean[] y_axis = {false};
+            float[] speed = {0};
+            float[] height = {0};
+            float[] phase = {0};
+            boolean[] x_axis = {false};
+            boolean[] y_axis = {false};
             idVec3 delta;
 
-            this.spawnArgs.GetFloat("speed", "4", speed);
-            this.spawnArgs.GetFloat("height", "32", height);
-            this.spawnArgs.GetFloat("phase", "0", phase);
-            this.spawnArgs.GetBool("x_axis", "0", x_axis);
-            this.spawnArgs.GetBool("y_axis", "0", y_axis);
+            spawnArgs.GetFloat("speed", "4", speed);
+            spawnArgs.GetFloat("height", "32", height);
+            spawnArgs.GetFloat("phase", "0", phase);
+            spawnArgs.GetBool("x_axis", "0", x_axis);
+            spawnArgs.GetBool("y_axis", "0", y_axis);
 
             // set the axis of bobbing
             delta = getVec3_origin();
@@ -4158,18 +4105,18 @@ public class Mover {
                 delta.oSet(2, height[0]);
             }
 
-            this.physicsObj.SetSelf(this);
-            this.physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
-            this.physicsObj.SetOrigin(GetPhysics().GetOrigin());
-            this.physicsObj.SetAxis(GetPhysics().GetAxis());
-            this.physicsObj.SetClipMask(MASK_SOLID);
-            if (!this.spawnArgs.GetBool("nopush")) {
-                this.physicsObj.SetPusher(0);
+            physicsObj.SetSelf(this);
+            physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
+            physicsObj.SetOrigin(GetPhysics().GetOrigin());
+            physicsObj.SetAxis(GetPhysics().GetAxis());
+            physicsObj.SetClipMask(MASK_SOLID);
+            if (!spawnArgs.GetBool("nopush")) {
+                physicsObj.SetPusher(0);
             }
-            this.physicsObj.SetLinearExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (phase[0] * 1000), (int) (speed[0] * 500), GetPhysics().GetOrigin(), delta.oMultiply(2.0f), getVec3_origin());
-            SetPhysics(this.physicsObj);
+            physicsObj.SetLinearExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (phase[0] * 1000), (int) (speed[0] * 500), GetPhysics().GetOrigin(), delta.oMultiply(2.0f), getVec3_origin());
+            SetPhysics(physicsObj);
         }
-    }
+    };
 
     /*
      ===============================================================================
@@ -4181,28 +4128,23 @@ public class Mover {
     public static class idPendulum extends idMover_Periodic {
         // CLASS_PROTOTYPE( idPendulum );
 
-/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		//        public idPendulum() {//TODO:remove default constructor override
+//        public idPendulum() {//TODO:remove default constructor override
 //        }
         @Override
         public void Spawn() {
             super.Spawn();
 
-            final float[] speed = {0};
-            final float[] freq = {0};
-            final float[] length = {0};
-            final float[] phase = {0};
+            float[] speed = {0};
+            float[] freq = {0};
+            float[] length = {0};
+            float[] phase = {0};
 
-            this.spawnArgs.GetFloat("speed", "30", speed);
-            this.spawnArgs.GetFloat("phase", "0", phase);
+            spawnArgs.GetFloat("speed", "30", speed);
+            spawnArgs.GetFloat("phase", "0", phase);
 
-            if (this.spawnArgs.GetFloat("freq", "", freq)) {
+            if (spawnArgs.GetFloat("freq", "", freq)) {
                 if (freq[0] <= 0.0f) {
-                    idGameLocal.Error("Invalid frequency on entity '%s'", GetName());
+                    gameLocal.Error("Invalid frequency on entity '%s'", GetName());
                 }
             } else {
                 // find pendulum length
@@ -4211,22 +4153,22 @@ public class Mover {
                     length[0] = 8;
                 }
 
-                freq[0] = (1 / (idMath.TWO_PI)) * idMath.Sqrt(g_gravity.GetFloat() / (3 * length[0]));
+                freq[0] = 1 / (idMath.TWO_PI) * idMath.Sqrt(g_gravity.GetFloat() / (3 * length[0]));
             }
 
-            this.physicsObj.SetSelf(this);
-            this.physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
-            this.physicsObj.SetOrigin(GetPhysics().GetOrigin());
-            this.physicsObj.SetAxis(GetPhysics().GetAxis());
-            this.physicsObj.SetClipMask(MASK_SOLID);
-            if (!this.spawnArgs.GetBool("nopush")) {
-                this.physicsObj.SetPusher(0);
+            physicsObj.SetSelf(this);
+            physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
+            physicsObj.SetOrigin(GetPhysics().GetOrigin());
+            physicsObj.SetAxis(GetPhysics().GetAxis());
+            physicsObj.SetClipMask(MASK_SOLID);
+            if (!spawnArgs.GetBool("nopush")) {
+                physicsObj.SetPusher(0);
             }
-            this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetOrigin(), getVec3_origin(), getVec3_origin());
-            this.physicsObj.SetAngularExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (phase[0] * 1000), (int) (500 / freq[0]), GetPhysics().GetAxis().ToAngles(), new idAngles(0, 0, speed[0] * 2.0f), getAng_zero());
-            SetPhysics(this.physicsObj);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetOrigin(), getVec3_origin(), getVec3_origin());
+            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (phase[0] * 1000), (int) (500 / freq[0]), GetPhysics().GetAxis().ToAngles(), new idAngles(0, 0, speed[0] * 2.0f), getAng_zero());
+            SetPhysics(physicsObj);
         }
-    }
+    };
 
 
     /*
@@ -4237,11 +4179,7 @@ public class Mover {
      ===============================================================================
      */
     public static class idRiser extends idMover_Periodic {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// CLASS_PROTOTYPE( idRiser );
+        // CLASS_PROTOTYPE( idRiser );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idMover_Periodic.getEventCallBacks());
@@ -4251,44 +4189,44 @@ public class Mover {
 //public	idRiser( ){}
         @Override
         public void Spawn() {
-            this.physicsObj.SetSelf(this);
-            this.physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
-            this.physicsObj.SetOrigin(GetPhysics().GetOrigin());
-            this.physicsObj.SetAxis(GetPhysics().GetAxis());
+            physicsObj.SetSelf(this);
+            physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
+            physicsObj.SetOrigin(GetPhysics().GetOrigin());
+            physicsObj.SetAxis(GetPhysics().GetAxis());
 
-            this.physicsObj.SetClipMask(MASK_SOLID);
-            if (!this.spawnArgs.GetBool("solid", "1")) {
-                this.physicsObj.SetContents(0);
+            physicsObj.SetClipMask(MASK_SOLID);
+            if (!spawnArgs.GetBool("solid", "1")) {
+                physicsObj.SetContents(0);
             }
-            if (!this.spawnArgs.GetBool("nopush")) {
-                this.physicsObj.SetPusher(0);
+            if (!spawnArgs.GetBool("nopush")) {
+                physicsObj.SetPusher(0);
             }
-            this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetOrigin(), getVec3_origin(), getVec3_origin());
-            SetPhysics(this.physicsObj);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetOrigin(), getVec3_origin(), getVec3_origin());
+            SetPhysics(physicsObj);
         }
 
         private void Event_Activate(idEventArg<idEntity> activator) {
 
-            if (!IsHidden() && this.spawnArgs.GetBool("hide")) {
+            if (!IsHidden() && spawnArgs.GetBool("hide")) {
                 Hide();
             } else {
                 Show();
-                final float[] time = {0};
-                final float[] height = {0};
+                float[] time = {0};
+                float[] height = {0};
                 idVec3 delta;
 
-                this.spawnArgs.GetFloat("time", "4", time);
-                this.spawnArgs.GetFloat("height", "32", height);
+                spawnArgs.GetFloat("time", "4", time);
+                spawnArgs.GetFloat("height", "32", height);
 
                 delta = getVec3_origin();
                 delta.oSet(2, height[0]);
 
-                this.physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, gameLocal.time, (int) (time[0] * 1000), this.physicsObj.GetOrigin(), delta, getVec3_origin());
+                physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, gameLocal.time, (int) (time[0] * 1000), physicsObj.GetOrigin(), delta, getVec3_origin());
             }
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -4296,5 +4234,5 @@ public class Mover {
             return eventCallbacks;
         }
 
-    }
+    };
 }

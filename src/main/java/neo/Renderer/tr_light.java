@@ -49,7 +49,6 @@ import static neo.idlib.precompiled.MAX_EXPRESSION_REGISTERS;
 
 import java.util.stream.Stream;
 
-import neo.TempDump;
 import neo.Renderer.Interaction.idInteraction;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Material.shaderStage_t;
@@ -79,7 +78,6 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.open.Nio;
 import neo.ui.UserInterface.idUserInterface;
 
 /**
@@ -127,7 +125,7 @@ public class tr_light {
      ==================
      */
     public static boolean R_CreateLightingCache(final idRenderEntityLocal ent, final idRenderLightLocal light, srfTriangles_s tri) {
-        final idVec3 localLightOrigin = new idVec3();
+        idVec3 localLightOrigin = new idVec3();
 
         // fogs and blends don't need light vectors
         if (light.lightShader.IsFogLight() || light.lightShader.IsBlendLight()) {
@@ -141,12 +139,12 @@ public class tr_light {
 
         R_GlobalPointToLocal(ent.modelMatrix, light.globalLightOrigin, localLightOrigin);
 
-        final int size = tri.ambientSurface.numVerts * lightingCache_s.BYTES;
-        final lightingCache_s[] cache = new lightingCache_s[size];
+        int size = tri.ambientSurface.numVerts * lightingCache_s.BYTES;
+        lightingCache_s[] cache = new lightingCache_s[size];
 
-        if (!TempDump.isDeadCodeTrue()) {
+        if (true) {
 
-            SIMDProcessor.CreateTextureSpaceLightVectors(cache[0].localLightVector, localLightOrigin, tri.ambientSurface.verts, tri.ambientSurface.numVerts, tri.getIndexes().getValues(), tri.getIndexes().getNumValues());
+            SIMDProcessor.CreateTextureSpaceLightVectors(cache[0].localLightVector, localLightOrigin, tri.ambientSurface.verts, tri.ambientSurface.numVerts, tri.indexes, tri.numIndexes);
 
         } else {
 //	boolean []used = new boolean[tri.ambientSurface.numVerts];
@@ -209,7 +207,7 @@ public class tr_light {
             return;
         }
 
-        final shadowCache_s[] temp = Stream.generate(shadowCache_s::new).limit(tri.numVerts * 2).toArray(shadowCache_s[]::new);
+        shadowCache_s[] temp = Stream.generate(shadowCache_s::new).limit(tri.numVerts * 2).toArray(shadowCache_s[]::new);
 
 //        if (true) {
 //
@@ -218,14 +216,14 @@ public class tr_light {
 //        } else {
         for (int i = 0; i < tri.numVerts; i++) {
             final float[] v = tri.verts[i].xyz.ToFloatPtr();
-            temp[(i * 2) + 0].xyz.oSet(0, v[0]);
-            temp[(i * 2) + 1].xyz.oSet(0, v[0]);
-            temp[(i * 2) + 0].xyz.oSet(1, v[1]);
-            temp[(i * 2) + 1].xyz.oSet(1, v[1]);
-            temp[(i * 2) + 0].xyz.oSet(2, v[2]);
-            temp[(i * 2) + 1].xyz.oSet(2, v[2]);
-            temp[(i * 2) + 0].xyz.oSet(3, 1.0f);        // on the model surface
-            temp[(i * 2) + 1].xyz.oSet(3, 0.0f);        // will be projected to infinity
+            temp[i * 2 + 0].xyz.oSet(0, v[0]);
+            temp[i * 2 + 1].xyz.oSet(0, v[0]);
+            temp[i * 2 + 0].xyz.oSet(1, v[1]);
+            temp[i * 2 + 1].xyz.oSet(1, v[1]);
+            temp[i * 2 + 0].xyz.oSet(2, v[2]);
+            temp[i * 2 + 1].xyz.oSet(2, v[2]);
+            temp[i * 2 + 0].xyz.oSet(3, 1.0f);        // on the model surface
+            temp[i * 2 + 1].xyz.oSet(3, 0.0f);        // will be projected to infinity
         }
 
         tri.shadowCache = vertexCache.Alloc(temp, tri.numVerts * 2 * shadowCache_s.BYTES);
@@ -238,13 +236,13 @@ public class tr_light {
      */
     public static void R_SkyboxTexGen(drawSurf_s surf, final idVec3 viewOrg) {
         int i;
-        final idVec3 localViewOrigin = new idVec3();
+        idVec3 localViewOrigin = new idVec3();
 
         R_GlobalPointToLocal(surf.space.modelMatrix, viewOrg, localViewOrigin);
 
-        final int numVerts = surf.geo.numVerts;
-        final int size = numVerts;//* sizeof( idVec3 );
-        final idVec3[] texCoords = new idVec3[size];
+        int numVerts = surf.geo.numVerts;
+        int size = numVerts;//* sizeof( idVec3 );
+        idVec3[] texCoords = new idVec3[size];
 
         final idDrawVert[] verts = surf.geo.verts;
         for (i = 0; i < numVerts; i++) {
@@ -261,7 +259,7 @@ public class tr_light {
      */
     public static void R_WobbleskyTexGen(drawSurf_s surf, final idVec3 viewOrg) {
         int i;
-        final idVec3 localViewOrigin = new idVec3();
+        idVec3 localViewOrigin = new idVec3();
 
         final int[] parms = surf.material.GetTexGenRegisters();
 
@@ -269,18 +267,18 @@ public class tr_light {
         float wobbleSpeed = surf.shaderRegisters[ parms[1]];
         float rotateSpeed = surf.shaderRegisters[ parms[2]];
 
-        wobbleDegrees = (wobbleDegrees * idMath.PI) / 180;
-        wobbleSpeed = (wobbleSpeed * 2 * idMath.PI) / 60;
-        rotateSpeed = (rotateSpeed * 2 * idMath.PI) / 60;
+        wobbleDegrees = wobbleDegrees * idMath.PI / 180;
+        wobbleSpeed = wobbleSpeed * 2 * idMath.PI / 60;
+        rotateSpeed = rotateSpeed * 2 * idMath.PI / 60;
 
         // very ad-hoc "wobble" transform
-        final float[] transform = new float[16];
-        final float a = tr.viewDef.floatTime * wobbleSpeed;
+        float[] transform = new float[16];
+        float a = tr.viewDef.floatTime * wobbleSpeed;
         float s = (float) (Math.sin(a) * Math.sin(wobbleDegrees));
         float c = (float) (Math.cos(a) * Math.sin(wobbleDegrees));
-        final float z = (float) Math.cos(wobbleDegrees);
+        float z = (float) Math.cos(wobbleDegrees);
 
-        final idVec3[] axis = new idVec3[3];
+        idVec3[] axis = new idVec3[3];
 
         axis[2].oSet(0, c);
         axis[2].oSet(1, s);
@@ -288,7 +286,7 @@ public class tr_light {
 
         axis[1].oSet(0, (float) (-Math.sin(a * 2) * Math.sin(wobbleDegrees)));
         axis[1].oSet(2, (float) (-s * Math.sin(wobbleDegrees)));
-        axis[1].oSet(1, (float) Math.sqrt(1.0f - ((axis[1].oGet(0) * axis[1].oGet(0)) + (axis[1].oGet(2) * axis[1].oGet(2)))));
+        axis[1].oSet(1, (float) Math.sqrt(1.0f - (axis[1].oGet(0) * axis[1].oGet(0) + axis[1].oGet(2) * axis[1].oGet(2))));
 
         // make the second vector exactly perpendicular to the first
         axis[1].oMinSet(axis[2].oMultiply((axis[2].oMultiply(axis[1]))));
@@ -301,13 +299,13 @@ public class tr_light {
         s = (float) Math.sin(rotateSpeed * tr.viewDef.floatTime);
         c = (float) Math.cos(rotateSpeed * tr.viewDef.floatTime);
 
-        transform[ 0] = (axis[0].oGet(0) * c) + (axis[1].oGet(0) * s);
-        transform[ 4] = (axis[0].oGet(1) * c) + (axis[1].oGet(1) * s);
-        transform[ 8] = (axis[0].oGet(2) * c) + (axis[1].oGet(2) * s);
+        transform[ 0] = axis[0].oGet(0) * c + axis[1].oGet(0) * s;
+        transform[ 4] = axis[0].oGet(1) * c + axis[1].oGet(1) * s;
+        transform[ 8] = axis[0].oGet(2) * c + axis[1].oGet(2) * s;
 
-        transform[ 1] = (axis[1].oGet(0) * c) - (axis[0].oGet(0) * s);
-        transform[ 5] = (axis[1].oGet(1) * c) - (axis[0].oGet(1) * s);
-        transform[ 9] = (axis[1].oGet(2) * c) - (axis[0].oGet(2) * s);
+        transform[ 1] = axis[1].oGet(0) * c - axis[0].oGet(0) * s;
+        transform[ 5] = axis[1].oGet(1) * c - axis[0].oGet(1) * s;
+        transform[ 9] = axis[1].oGet(2) * c - axis[0].oGet(2) * s;
 
         transform[ 2] = axis[2].oGet(0);
         transform[ 6] = axis[2].oGet(1);
@@ -318,13 +316,13 @@ public class tr_light {
 
         R_GlobalPointToLocal(surf.space.modelMatrix, viewOrg, localViewOrigin);
 
-        final int numVerts = surf.geo.numVerts;
-        final int size = numVerts;// sizeof(idVec3);
-        final idVec3[] texCoords = new idVec3[size];
+        int numVerts = surf.geo.numVerts;
+        int size = numVerts;// sizeof(idVec3);
+        idVec3[] texCoords = new idVec3[size];
 
         final idDrawVert[] verts = surf.geo.verts;
         for (i = 0; i < numVerts; i++) {
-            final idVec3 v = new idVec3();
+            idVec3 v = new idVec3();
 
             v.oSet(0, verts[i].xyz.oGet(0) - localViewOrigin.oGet(0));
             v.oSet(1, verts[i].xyz.oGet(1) - localViewOrigin.oGet(1));
@@ -345,8 +343,8 @@ public class tr_light {
      */
     public static void R_SpecularTexGen(drawSurf_s surf, final idVec3 globalLightOrigin, final idVec3 viewOrg) {
         srfTriangles_s tri;
-        final idVec3 localLightOrigin = new idVec3();
-        final idVec3 localViewOrigin = new idVec3();
+        idVec3 localLightOrigin = new idVec3();
+        idVec3 localViewOrigin = new idVec3();
 
         R_GlobalPointToLocal(surf.space.modelMatrix, globalLightOrigin, localLightOrigin);
         R_GlobalPointToLocal(surf.space.modelMatrix, viewOrg, localViewOrigin);
@@ -354,13 +352,13 @@ public class tr_light {
         tri = surf.geo;
 
         // FIXME: change to 3 component?
-        final int size = tri.numVerts;// * sizeof( idVec4 );
-        final idVec4[] texCoords = new idVec4[size];
+        int size = tri.numVerts;// * sizeof( idVec4 );
+        idVec4[] texCoords = new idVec4[size];
 
-        if (!TempDump.isDeadCodeTrue()) {
+        if (true) {
 
             SIMDProcessor.CreateSpecularTextureCoords(texCoords, localLightOrigin, localViewOrigin,
-                    tri.verts, tri.numVerts, tri.getIndexes().getValues(), tri.getIndexes().getNumValues());
+                    tri.verts, tri.numVerts, tri.indexes, tri.numIndexes);
 
         } else {
 //	bool *used = (bool *)_alloca16( tri.numVerts * sizeof( used[0] ) );
@@ -441,7 +439,7 @@ public class tr_light {
 
         // we may not have a viewDef if we are just creating shadows at entity creation time
         if (tr.viewDef != null) {
-            myGlMultMatrix(vModel.modelMatrix, tr.viewDef.worldSpace.getModelViewMatrix(), vModel.getModelViewMatrix());
+            myGlMultMatrix(vModel.modelMatrix, tr.viewDef.worldSpace.modelViewMatrix, vModel.modelViewMatrix);
 
             vModel.next = tr.viewDef.viewEntitys;
             tr.viewDef.viewEntitys = vModel;
@@ -465,7 +463,7 @@ public class tr_light {
 //	idVec3	local;
 
         for (i = 0; i < 6; i++) {
-            final float d = light.frustum[i].Distance(org);
+            float d = light.frustum[i].Distance(org);
             if (d > INSIDE_LIGHT_FRUSTUM_SLOP) {
                 return false;
             }
@@ -483,7 +481,7 @@ public class tr_light {
      */
     public static boolean R_PointInFrustum(idVec3 p, idPlane[] planes, int numPlanes) {
         for (int i = 0; i < numPlanes; i++) {
-            final float d = planes[i].Distance(p);
+            float d = planes[i].Distance(p);
             if (d > 0) {
                 return false;
             }
@@ -520,7 +518,7 @@ public class tr_light {
         if (!vLight.viewInsideLight) {
             vLight.viewSeesShadowPlaneBits = 0;
             for (int i = 0; i < light.numShadowFrustums; i++) {
-                final float d = light.shadowFrustums[i].planes[5].Distance(tr.viewDef.renderView.vieworg);
+                float d = light.shadowFrustums[i].planes[5].Distance(tr.viewDef.renderView.vieworg);
                 if (d < INSIDE_LIGHT_FRUSTUM_SLOP) {
                     vLight.viewSeesShadowPlaneBits |= 1 << i;
                 }
@@ -591,13 +589,13 @@ public class tr_light {
                 drawSurf.shaderRegisters = constRegs.clone();
             } else {
                 // FIXME: share with the ambient surface?
-                final float[] regs = new float[shader.GetNumRegisters()];//R_FrameAlloc(shader.GetNumRegisters());
+                float[] regs = new float[shader.GetNumRegisters()];//R_FrameAlloc(shader.GetNumRegisters());
                 drawSurf.shaderRegisters = regs;
                 shader.EvaluateRegisters(regs, space.entityDef.parms.shaderParms, tr.viewDef, space.entityDef.parms.referenceSound);
             }
 
             // calculate the specular coordinates if we aren't using vertex programs
-            if (!tr.backEndRendererHasVertexPrograms && !r_skipSpecular.GetBool() && (tr.backEndRenderer != BE_ARB)) {
+            if (!tr.backEndRendererHasVertexPrograms && !r_skipSpecular.GetBool() && tr.backEndRenderer != BE_ARB) {
                 R_SpecularTexGen(drawSurf, light.globalLightOrigin, tr.viewDef.renderView.vieworg);
                 // if we failed to allocate space for the specular calculations, drop the surface
                 if (NOT(drawSurf.dynamicTexCoords)) {
@@ -618,9 +616,9 @@ public class tr_light {
      */
     public static idScreenRect R_ClippedLightScissorRectangle(viewLight_s vLight) {
         int i, j;
-        final idRenderLightLocal light = vLight.lightDef;
-        final idScreenRect r = new idScreenRect();
-        final idFixedWinding w = new idFixedWinding();
+        idRenderLightLocal light = vLight.lightDef;
+        idScreenRect r = new idScreenRect();
+        idFixedWinding w = new idFixedWinding();
 
         r.Clear();
 
@@ -651,13 +649,13 @@ public class tr_light {
 
             // project these points to the screen and add to bounds
             for (j = 0; j < w.GetNumPoints(); j++) {
-                final idPlane eye = new idPlane(), clip = new idPlane();
-                final idVec3 ndc = new idVec3();
+                idPlane eye = new idPlane(), clip = new idPlane();
+                idVec3 ndc = new idVec3();
 
-                R_TransformModelToClip(w.oGet(j).ToVec3(), tr.viewDef.worldSpace.getModelViewMatrix(), tr.viewDef.getProjectionMatrix(), eye, clip);
+                R_TransformModelToClip(w.oGet(j).ToVec3(), tr.viewDef.worldSpace.modelViewMatrix, tr.viewDef.projectionMatrix, eye, clip);
 
                 if (clip.oGet(3) <= 0.01f) {
-                    clip.oSet(3, 0.01f);
+                    clip.oSet(3, 0.01f);;
                 }
 
                 R_TransformClipToDevice(clip, tr.viewDef, ndc);
@@ -697,14 +695,14 @@ public class tr_light {
     static int c_clippedLight, c_unclippedLight;
 
     public static idScreenRect R_CalcLightScissorRectangle(viewLight_s vLight) {
-        final idScreenRect r = new idScreenRect();
+        idScreenRect r = new idScreenRect();
         srfTriangles_s tri;
-        final idPlane eye = new idPlane(), clip = new idPlane();
-        final idVec3 ndc = new idVec3();
+        idPlane eye = new idPlane(), clip = new idPlane();
+        idVec3 ndc = new idVec3();
 
         if (vLight.lightDef.parms.pointLight) {
-            final idBounds bounds = new idBounds();
-            final idRenderLightLocal lightDef = vLight.lightDef;
+            idBounds bounds = new idBounds();
+            idRenderLightLocal lightDef = vLight.lightDef;
             tr.viewDef.viewFrustum.ProjectionBounds(new idBox(lightDef.parms.origin, lightDef.parms.lightRadius, lightDef.parms.axis), bounds);
             return R_ScreenRectFromViewFrustumBounds(bounds);
         }
@@ -717,8 +715,8 @@ public class tr_light {
 
         tri = vLight.lightDef.frustumTris;
         for (int i = 0; i < tri.numVerts; i++) {
-            R_TransformModelToClip(tri.verts[i].xyz, tr.viewDef.worldSpace.getModelViewMatrix(),
-                    tr.viewDef.getProjectionMatrix(), eye, clip);
+            R_TransformModelToClip(tri.verts[i].xyz, tr.viewDef.worldSpace.modelViewMatrix,
+                    tr.viewDef.projectionMatrix, eye, clip);
 
             // if it is near clipped, clip the winding polygons to the view frustum
             if (clip.oGet(3) <= 1) {
@@ -799,30 +797,24 @@ public class tr_light {
 
             // see if we are suppressing the light in this view
             if (!r_skipSuppress.GetBool()) {
-                if ((light.parms.suppressLightInViewID != 0)
-                        && (light.parms.suppressLightInViewID == tr.viewDef.renderView.viewID)) {
-                    if (vLight == tr.viewDef.viewLights) {
-						tr.viewDef.viewLights = ptr = vLight.next;
-					} else {
-						prevPtr.next = ptr = vLight.next;
-					}
+                if (light.parms.suppressLightInViewID != 0
+                        && light.parms.suppressLightInViewID == tr.viewDef.renderView.viewID) {
+                    if (vLight == tr.viewDef.viewLights) tr.viewDef.viewLights = ptr = vLight.next;
+                    else prevPtr.next = ptr = vLight.next;
                     light.viewCount = -1;
                     continue;
                 }
-                if ((light.parms.allowLightInViewID != 0)
-                        && (light.parms.allowLightInViewID != tr.viewDef.renderView.viewID)) {
-                    if (vLight == tr.viewDef.viewLights) {
-						tr.viewDef.viewLights = ptr = vLight.next;
-					} else {
-						prevPtr.next = ptr = vLight.next;
-					}
+                if (light.parms.allowLightInViewID != 0
+                        && light.parms.allowLightInViewID != tr.viewDef.renderView.viewID) {
+                    if (vLight == tr.viewDef.viewLights) tr.viewDef.viewLights = ptr = vLight.next;
+                    else prevPtr.next = ptr = vLight.next;
                     light.viewCount = -1;
                     continue;
                 }
             }
 
             // evaluate the light shader registers
-            final float[] lightRegs = new float[lightShader.GetNumRegisters()];// R_FrameAlloc(lightShader.GetNumRegisters());
+            float[] lightRegs = new float[lightShader.GetNumRegisters()];// R_FrameAlloc(lightShader.GetNumRegisters());
             vLight.shaderRegisters = lightRegs;
             lightShader.EvaluateRegisters(lightRegs, light.parms.shaderParms, tr.viewDef, light.parms.referenceSound);
 
@@ -856,9 +848,9 @@ public class tr_light {
                     //lightRegs[ registers[0] ] = 1.5143074e-005f;
                     //lightRegs[ registers[1] ] = 1.5483369e-005f;
                     //lightRegs[ registers[2] ] = 1.7014690e-005f;
-                    if ((lightRegs[ registers[0]] > 0.0f)
-                            || (lightRegs[ registers[1]] > 0.0f)
-                            || (lightRegs[ registers[2]] > 0.0f)) {
+                    if (lightRegs[ registers[0]] > 0.0f
+                            || lightRegs[ registers[1]] > 0.0f
+                            || lightRegs[ registers[2]] > 0.0f) {
                         break;
                     }
                 }
@@ -867,11 +859,8 @@ public class tr_light {
                     // remove the light from the viewLights list, and change its frame marker
                     // so interaction generation doesn't think the light is visible and
                     // create a shadow for it
-                    if (vLight == tr.viewDef.viewLights) {
-						tr.viewDef.viewLights = ptr = vLight.next;
-					} else {
-						prevPtr.next = ptr = vLight.next;
-					}
+                    if (vLight == tr.viewDef.viewLights) tr.viewDef.viewLights = ptr = vLight.next;
+                    else prevPtr.next = ptr = vLight.next;
                     light.viewCount = -1;
                     continue;
                 }
@@ -880,7 +869,7 @@ public class tr_light {
             if (r_useLightScissors.GetBool()) {
                 // calculate the screen area covered by the light frustum
                 // which will be used to crop the stencil cull
-                final idScreenRect scissorRect = R_CalcLightScissorRectangle(vLight);
+                idScreenRect scissorRect = R_CalcLightScissorRectangle(vLight);
                 // intersect with the portal crossing scissor rectangle
                 vLight.scissorRect.Intersect(scissorRect);
 //                System.out.println("LoveTheRide===="+vLight.scissorRect);
@@ -906,7 +895,7 @@ public class tr_light {
             // a random offset every time
             if (r_lightSourceRadius.GetFloat() != 0.0f) {
                 for (int i = 0; i < 3; i++) {
-                    light.globalLightOrigin.oPluSet(i, r_lightSourceRadius.GetFloat() * (-1 + ((2 * (((int) random()) & 0xfff)) / (float) 0xfff)));
+                    light.globalLightOrigin.oPluSet(i, r_lightSourceRadius.GetFloat() * (-1 + 2 * (((int) random()) & 0xfff) / (float) 0xfff));
                 }
             }
 
@@ -930,13 +919,13 @@ public class tr_light {
             }
 
             // add the prelight shadows for the static world geometry
-            if ((light.parms.prelightModel != null) && r_useOptimizedShadows.GetBool()) {
+            if (light.parms.prelightModel != null && r_useOptimizedShadows.GetBool()) {
 
                 if (0 == light.parms.prelightModel.NumSurfaces()) {
                     common.Error("no surfs in prelight model '%s'", light.parms.prelightModel.Name());
                 }
 
-                final Model.srfTriangles_s tri = light.parms.prelightModel.Surface(0).geometry;
+                Model.srfTriangles_s tri = light.parms.prelightModel.Surface(0).geometry;
                 if (null == tri.shadowVertexes) {
                     common.Error("R_AddLightSurfaces: prelight model '%s' without shadowVertexes", light.parms.prelightModel.Name());
                 }
@@ -960,7 +949,7 @@ public class tr_light {
                 vertexCache.Touch(tri.shadowCache);
 
                 if (NOT(tri.indexCache) && r_useIndexBuffers.GetBool()) {
-                    tri.indexCache = vertexCache.Alloc(tri.getIndexes().getValues(), tri.getIndexes().getNumValues(), true);
+                    tri.indexCache = vertexCache.Alloc(tri.indexes, tri.numIndexes * Integer.BYTES, true);
                 }
                 if (tri.indexCache != null) {
                     vertexCache.Touch(tri.indexCache);
@@ -968,9 +957,6 @@ public class tr_light {
 
                 R_LinkLightSurf(vLight.globalShadows, tri, null, light, null, vLight.scissorRect, true /* FIXME? */);
             }
-        }
-        if (z == 0) {
-        	//System.out.println("		ptr "+z+" times");
         }
     }
     //================================================================================================================================================================================================
@@ -1001,12 +987,12 @@ public class tr_light {
         }
 
         if (r_checkBounds.GetBool()) {
-            if ((oldBounds.oGet(0, 0) > (def.referenceBounds.oGet(0, 0) + CHECK_BOUNDS_EPSILON))
-                    || (oldBounds.oGet(0, 1) > (def.referenceBounds.oGet(0, 1) + CHECK_BOUNDS_EPSILON))
-                    || (oldBounds.oGet(0, 2) > (def.referenceBounds.oGet(0, 2) + CHECK_BOUNDS_EPSILON))
-                    || (oldBounds.oGet(1, 0) < (def.referenceBounds.oGet(1, 0) - CHECK_BOUNDS_EPSILON))
-                    || (oldBounds.oGet(1, 1) < (def.referenceBounds.oGet(1, 1) - CHECK_BOUNDS_EPSILON))
-                    || (oldBounds.oGet(1, 2) < (def.referenceBounds.oGet(1, 2) - CHECK_BOUNDS_EPSILON))) {
+            if (oldBounds.oGet(0, 0) > def.referenceBounds.oGet(0, 0) + CHECK_BOUNDS_EPSILON
+                    || oldBounds.oGet(0, 1) > def.referenceBounds.oGet(0, 1) + CHECK_BOUNDS_EPSILON
+                    || oldBounds.oGet(0, 2) > def.referenceBounds.oGet(0, 2) + CHECK_BOUNDS_EPSILON
+                    || oldBounds.oGet(1, 0) < def.referenceBounds.oGet(1, 0) - CHECK_BOUNDS_EPSILON
+                    || oldBounds.oGet(1, 1) < def.referenceBounds.oGet(1, 1) - CHECK_BOUNDS_EPSILON
+                    || oldBounds.oGet(1, 2) < def.referenceBounds.oGet(1, 2) - CHECK_BOUNDS_EPSILON) {
                 common.Printf("entity %d callback extended reference bounds\n", def.index);
             }
         }
@@ -1034,7 +1020,7 @@ public class tr_light {
             callbackUpdate = false;
         }
 
-        final idRenderModel model = def.parms.hModel;
+        idRenderModel model = def.parms.hModel;
 
         if (null == model) {
             common.Error("R_EntityDefDynamicModel: NULL model");
@@ -1047,7 +1033,7 @@ public class tr_light {
         }
 
         // continously animating models (particle systems, etc) will have their snapshot updated every single view
-        if (callbackUpdate || ((model.IsDynamicModel() == DM_CONTINUOUS) && (def.dynamicModelFrameCount != tr.frameCount))) {
+        if (callbackUpdate || (model.IsDynamicModel() == DM_CONTINUOUS && def.dynamicModelFrameCount != tr.frameCount)) {
             R_ClearEntityDefDynamicModel(def);
         }
 
@@ -1060,20 +1046,20 @@ public class tr_light {
             if (def.cachedDynamicModel != null) {
 
                 // add any overlays to the snapshot of the dynamic model
-                if ((def.overlay != null) && !r_skipOverlays.GetBool()) {
+                if (def.overlay != null && !r_skipOverlays.GetBool()) {
                     def.overlay.AddOverlaySurfacesToModel(def.cachedDynamicModel);
                 } else {
                     idRenderModelOverlay.RemoveOverlaySurfacesFromModel(def.cachedDynamicModel);
                 }
 
                 if (r_checkBounds.GetBool()) {
-                    final idBounds b = def.cachedDynamicModel.Bounds();
-                    if ((b.oGet(0, 0) < (def.referenceBounds.oGet(0, 0) - CHECK_BOUNDS_EPSILON))
-                            || (b.oGet(0, 1) < (def.referenceBounds.oGet(0, 1) - CHECK_BOUNDS_EPSILON))
-                            || (b.oGet(0, 2) < (def.referenceBounds.oGet(0, 2) - CHECK_BOUNDS_EPSILON))
-                            || (b.oGet(1, 0) > (def.referenceBounds.oGet(1, 0) + CHECK_BOUNDS_EPSILON))
-                            || (b.oGet(1, 1) > (def.referenceBounds.oGet(1, 1) + CHECK_BOUNDS_EPSILON))
-                            || (b.oGet(1, 2) > (def.referenceBounds.oGet(1, 2) + CHECK_BOUNDS_EPSILON))) {
+                    idBounds b = def.cachedDynamicModel.Bounds();
+                    if (b.oGet(0, 0) < def.referenceBounds.oGet(0, 0) - CHECK_BOUNDS_EPSILON
+                            || b.oGet(0, 1) < def.referenceBounds.oGet(0, 1) - CHECK_BOUNDS_EPSILON
+                            || b.oGet(0, 2) < def.referenceBounds.oGet(0, 2) - CHECK_BOUNDS_EPSILON
+                            || b.oGet(1, 0) > def.referenceBounds.oGet(1, 0) + CHECK_BOUNDS_EPSILON
+                            || b.oGet(1, 1) > def.referenceBounds.oGet(1, 1) + CHECK_BOUNDS_EPSILON
+                            || b.oGet(1, 2) > def.referenceBounds.oGet(1, 2) + CHECK_BOUNDS_EPSILON) {
                         common.Printf("entity %d dynamic model exceeded reference bounds\n", def.index);
                     }
                 }
@@ -1084,10 +1070,10 @@ public class tr_light {
         }
 
         // set model depth hack value
-        if ((def.dynamicModel != null) && (model.DepthHack() != 0.0f) && (tr.viewDef != null)) {
-            final idPlane eye = new idPlane(), clip = new idPlane();
-            final idVec3 ndc = new idVec3();
-            R_TransformModelToClip(def.parms.origin, tr.viewDef.worldSpace.getModelViewMatrix(), tr.viewDef.getProjectionMatrix(), eye, clip);
+        if (def.dynamicModel != null && model.DepthHack() != 0.0f && tr.viewDef != null) {
+            idPlane eye = new idPlane(), clip = new idPlane();
+            idVec3 ndc = new idVec3();
+            R_TransformModelToClip(def.parms.origin, tr.viewDef.worldSpace.modelViewMatrix, tr.viewDef.projectionMatrix, eye, clip);
             R_TransformClipToDevice(clip, tr.viewDef, ndc);
             def.parms.modelDepthHack = model.DepthHack() * (1.0f - ndc.z);
         }
@@ -1126,7 +1112,7 @@ public class tr_light {
 
         // if it doesn't fit, resize the list
         if (tr.viewDef.numDrawSurfs == tr.viewDef.maxDrawSurfs) {
-            final drawSurf_s[] old = tr.viewDef.drawSurfs;
+            drawSurf_s[] old = tr.viewDef.drawSurfs;
             int count;
 
             if (tr.viewDef.maxDrawSurfs == 0) {
@@ -1150,7 +1136,7 @@ public class tr_light {
             // shader only uses constant values
             drawSurf.shaderRegisters = constRegs.clone();
         } else {
-            final float[] regs = new float[shader.GetNumRegisters()];// R_FrameAlloc(shader.GetNumRegisters());
+            float[] regs = new float[shader.GetNumRegisters()];// R_FrameAlloc(shader.GetNumRegisters());
             drawSurf.shaderRegisters = regs;
 
             // a reference shader will take the calculated stage color value from another shader
@@ -1165,7 +1151,7 @@ public class tr_light {
                 pStage = renderEntity.referenceShader.GetStage(0);
 
 //			memcpy( generatedShaderParms, renderEntity.shaderParms, sizeof( generatedShaderParms ) );
-                Nio.arraycopy(renderEntity.shaderParms, 0, generatedShaderParms, 0, renderEntity.shaderParms.length);
+                System.arraycopy(renderEntity.shaderParms, 0, generatedShaderParms, 0, renderEntity.shaderParms.length);
                 generatedShaderParms[0] = refRegs[pStage.color.registers[0]];
                 generatedShaderParms[1] = refRegs[pStage.color.registers[1]];
                 generatedShaderParms[2] = refRegs[pStage.color.registers[2]];
@@ -1179,7 +1165,7 @@ public class tr_light {
             float oldFloatTime = 0;
             int oldTime = 0;
 
-            if ((space.entityDef != null) && (space.entityDef.parms.timeGroup != 0)) {
+            if (space.entityDef != null && space.entityDef.parms.timeGroup != 0) {
                 oldFloatTime = tr.viewDef.floatTime;
                 oldTime = tr.viewDef.renderView.time;
 
@@ -1189,7 +1175,7 @@ public class tr_light {
 
             shader.EvaluateRegisters(regs, shaderParms, tr.viewDef, renderEntity.referenceSound);
 
-            if ((space.entityDef != null) && (space.entityDef.parms.timeGroup != 0)) {
+            if (space.entityDef != null && space.entityDef.parms.timeGroup != 0) {
                 tr.viewDef.floatTime = oldFloatTime;
                 tr.viewDef.renderView.time = oldTime;
             }
@@ -1206,9 +1192,6 @@ public class tr_light {
             case TG_WOBBLESKY_CUBE:
                 R_WobbleskyTexGen(drawSurf, tr.viewDef.renderView.vieworg);
                 break;
-		default:
-			// TODO check unused Enum case labels
-			break;
         }
 
         // check for gui surfaces
@@ -1217,8 +1200,8 @@ public class tr_light {
         if (null == space.entityDef) {
             gui = shader.GlobalGui();
         } else {
-            final int guiNum = shader.GetEntityGui() - 1;
-            if ((guiNum >= 0) && (guiNum < MAX_RENDERENTITY_GUI)) {
+            int guiNum = shader.GetEntityGui() - 1;
+            if (guiNum >= 0 && guiNum < MAX_RENDERENTITY_GUI) {
                 gui = renderEntity.gui[ guiNum];
             }
             if (gui == null) {
@@ -1237,7 +1220,7 @@ public class tr_light {
             tr.viewDef.floatTime = game.GetTimeGroupTime(1) * 0.001f;
             tr.viewDef.renderView.time = game.GetTimeGroupTime(1);
 
-            final idBounds ndcBounds = new idBounds();
+            idBounds ndcBounds = new idBounds();
 
             if (!R_PreciseCullSurface(drawSurf, ndcBounds)) {
                 // did we ever use this to forward an entity color to a gui that didn't set color?
@@ -1268,7 +1251,7 @@ public class tr_light {
         idRenderEntityLocal def;
         srfTriangles_s tri;
         idRenderModel model;
-        final idMaterial[] shader = {null};
+        idMaterial[] shader = {null};
 
         def = vEntity.entityDef;
 
@@ -1284,7 +1267,7 @@ public class tr_light {
             final modelSurface_s surf = model.Surface(i);
 
             // for debugging, only show a single surface at a time
-            if ((r_singleSurface.GetInteger() >= 0) && (i != r_singleSurface.GetInteger())) {
+            if (r_singleSurface.GetInteger() >= 0 && i != r_singleSurface.GetInteger()) {
                 continue;
             }
 
@@ -1292,7 +1275,7 @@ public class tr_light {
             if (null == tri) {
                 continue;
             }
-            if (0 == tri.getIndexes().getNumValues()) {
+            if (0 == tri.numIndexes) {
                 continue;
             }
             shader[0] = surf.shader = R_RemapShaderBySkin(surf.shader, def.parms.customSkin, def.parms.customShader);
@@ -1311,13 +1294,13 @@ public class tr_light {
                 int j, k;
                 for (j = 0; j < tri.numVerts; j++) {
                     for (k = 0; k < 3; k++) {
-                        if ((tri.verts[j].xyz.oGet(k) > (tri.bounds.oGet(1, k) + CHECK_BOUNDS_EPSILON))
-                                || (tri.verts[j].xyz.oGet(k) < (tri.bounds.oGet(0, k) - CHECK_BOUNDS_EPSILON))) {
+                        if (tri.verts[j].xyz.oGet(k) > tri.bounds.oGet(1, k) + CHECK_BOUNDS_EPSILON
+                                || tri.verts[j].xyz.oGet(k) < tri.bounds.oGet(0, k) - CHECK_BOUNDS_EPSILON) {
                             common.Printf("bad tri.bounds on %s:%s\n", def.parms.hModel.Name(), shader[0].GetName());
                             break;
                         }
-                        if ((tri.verts[j].xyz.oGet(k) > (def.referenceBounds.oGet(1, k) + CHECK_BOUNDS_EPSILON))
-                                || (tri.verts[j].xyz.oGet(k) < (def.referenceBounds.oGet(0, k) - CHECK_BOUNDS_EPSILON))) {
+                        if (tri.verts[j].xyz.oGet(k) > def.referenceBounds.oGet(1, k) + CHECK_BOUNDS_EPSILON
+                                || tri.verts[j].xyz.oGet(k) < def.referenceBounds.oGet(0, k) - CHECK_BOUNDS_EPSILON) {
                             common.Printf("bad referenceBounds on %s:%s\n", def.parms.hModel.Name(), shader[0].GetName());
                             break;
                         }
@@ -1341,7 +1324,7 @@ public class tr_light {
                 vertexCache.Touch(tri.ambientCache);
 
                 if (r_useIndexBuffers.GetBool() && NOT(tri.indexCache)) {
-                    tri.indexCache = vertexCache.Alloc(tri.getIndexes().getValues(), tri.getIndexes().getNumValues(), true);
+                    tri.indexCache = vertexCache.Alloc(tri.indexes, tri.numIndexes * Integer.BYTES, true);
                 }
                 if (tri.indexCache != null) {
                     vertexCache.Touch(tri.indexCache);
@@ -1368,8 +1351,8 @@ public class tr_light {
      ==================
      */
     public static idScreenRect R_CalcEntityScissorRectangle(viewEntity_s vEntity) {
-        final idBounds bounds = new idBounds();
-        final idRenderEntityLocal def = vEntity.entityDef;
+        idBounds bounds = new idBounds();
+        idRenderEntityLocal def = vEntity.entityDef;
 
         tr.viewDef.viewFrustum.ProjectionBounds(new idBox(def.referenceBounds, def.parms.origin, def.parms.axis), bounds);
 
@@ -1491,7 +1474,7 @@ public class tr_light {
 
             if (r_useEntityScissors.GetBool()) {
                 // calculate the screen area covered by the entity
-                final idScreenRect scissorRect = R_CalcEntityScissorRectangle(vEntity);
+                idScreenRect scissorRect = R_CalcEntityScissorRectangle(vEntity);
                 // intersect with the portal crossing scissor rectangle
                 vEntity.scissorRect.Intersect(scissorRect);
 
@@ -1513,13 +1496,13 @@ public class tr_light {
                 tr.viewDef.renderView.time = game.GetTimeGroupTime(vEntity.entityDef.parms.timeGroup);
             }
 
-            if (tr.viewDef.isXraySubview && (vEntity.entityDef.parms.xrayIndex == 1)) {
+            if (tr.viewDef.isXraySubview && vEntity.entityDef.parms.xrayIndex == 1) {
                 if (vEntity.entityDef.parms.timeGroup != 0) {
                     tr.viewDef.floatTime = oldFloatTime;
                     tr.viewDef.renderView.time = oldTime;
                 }
                 continue;
-            } else if (!tr.viewDef.isXraySubview && (vEntity.entityDef.parms.xrayIndex == 2)) {
+            } else if (!tr.viewDef.isXraySubview && vEntity.entityDef.parms.xrayIndex == 2) {
                 if (vEntity.entityDef.parms.timeGroup != 0) {
                     tr.viewDef.floatTime = oldFloatTime;
                     tr.viewDef.renderView.time = oldTime;
@@ -1530,7 +1513,7 @@ public class tr_light {
             // add the ambient surface if it has a visible rectangle
             if (!vEntity.scissorRect.IsEmpty()) {
                 model = R_EntityDefDynamicModel(vEntity.entityDef);
-                if ((model == null) || (model.NumSurfaces() <= 0)) {
+                if (model == null || model.NumSurfaces() <= 0) {
                     if (vEntity.entityDef.parms.timeGroup != 0) {
                         tr.viewDef.floatTime = oldFloatTime;
                         tr.viewDef.renderView.time = oldTime;
@@ -1549,7 +1532,7 @@ public class tr_light {
             //
             if (tr.viewDef.isXraySubview) {
                 if (vEntity.entityDef.parms.xrayIndex == 2) {
-                    for (inter = vEntity.entityDef.firstInteraction; (inter != null) && !inter.IsEmpty(); inter = next) {
+                    for (inter = vEntity.entityDef.firstInteraction; inter != null && !inter.IsEmpty(); inter = next) {
                         next = inter.entityNext;
                         if (inter.lightDef.viewCount != tr.viewCount) {
                             continue;
@@ -1560,7 +1543,7 @@ public class tr_light {
             } else {
                 // all empty interactions are at the end of the list so once the
                 // first is encountered all the remaining interactions are empty
-                for (inter = vEntity.entityDef.firstInteraction; (inter != null) && !inter.IsEmpty(); inter = next) {
+                for (inter = vEntity.entityDef.firstInteraction; inter != null && !inter.IsEmpty(); inter = next) {
                     next = inter.entityNext;
 
                     // skip any lights that aren't currently visible
@@ -1605,7 +1588,7 @@ public class tr_light {
             // rects aren't actually the surface, but only the portal clippings.
             for (vLight = tr.viewDef.viewLights; vLight != null; vLight = vLight.next) {
                 drawSurf_s surf;
-                final idScreenRect surfRect = new idScreenRect();
+                idScreenRect surfRect = new idScreenRect();
 
                 if (!vLight.lightShader.LightCastsShadows()) {
                     continue;

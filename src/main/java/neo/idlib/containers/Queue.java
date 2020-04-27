@@ -26,12 +26,7 @@ public class Queue {//TODO:test this
 //        //
 //        //
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public idQueueTemplate() {
+        public idQueueTemplate() {
 //            first = last = null;
         }
 
@@ -63,14 +58,14 @@ public class Queue {//TODO:test this
 //            final type[] tempQueue = queue;
 //            queue = (type[]) new Object[queue.length + QUEUE_BLOCK_SIZE];
 //
-//            Nio.arraycopy(tempQueue, 0, queue, 0, tempQueue.length);
+//            System.arraycopy(tempQueue, 0, queue, 0, tempQueue.length);
 //        }
 //
 //        private void shrinkQueue() {
 //            final type[] tempQueue = queue;
 //            queue = (type[]) new Object[queue.length - QUEUE_BLOCK_SIZE];
 //
-//            Nio.arraycopy(tempQueue, 0, queue, 0, queue.length);
+//            System.arraycopy(tempQueue, 0, queue, 0, queue.length);
 //        }
     }
 }

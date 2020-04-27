@@ -43,7 +43,6 @@ import neo.Game.AFEntity.idAFEntity_Base;
 import neo.Game.AFEntity.idAFEntity_Gibbable;
 import neo.Game.Entity.idEntity;
 import neo.Game.Game_local.idEntityPtr;
-import neo.Game.Game_local.idGameLocal;
 import neo.Game.IK.idIK_Walk;
 import neo.Game.Item.idMoveableItem;
 import neo.Game.Light.idLight;
@@ -148,168 +147,168 @@ public class Actor {
         //
 
         public idAnimState() {
-            this.state = new idStr();
-            this.self = null;
-            this.animator = null;
-            this.thread = null;
-            this.idleAnim = true;
-            this.disabled = true;
-            this.channel = ANIMCHANNEL_ALL;
-            this.animBlendFrames = 0;
-            this.lastAnimBlendFrames = 0;
+            state = new idStr();
+            self = null;
+            animator = null;
+            thread = null;
+            idleAnim = true;
+            disabled = true;
+            channel = ANIMCHANNEL_ALL;
+            animBlendFrames = 0;
+            lastAnimBlendFrames = 0;
         }
         // ~idAnimState();
 
         public void Save(idSaveGame savefile) {
 
-            savefile.WriteObject(this.self);
+            savefile.WriteObject(self);
 
             // Save the entity owner of the animator
-            savefile.WriteObject(this.animator.GetEntity());
+            savefile.WriteObject(animator.GetEntity());
 
-            savefile.WriteObject(this.thread);
+            savefile.WriteObject(thread);
 
-            savefile.WriteString(this.state);
+            savefile.WriteString(state);
 
-            savefile.WriteInt(this.animBlendFrames);
-            savefile.WriteInt(this.lastAnimBlendFrames);
-            savefile.WriteInt(this.channel);
-            savefile.WriteBool(this.idleAnim);
-            savefile.WriteBool(this.disabled);
+            savefile.WriteInt(animBlendFrames);
+            savefile.WriteInt(lastAnimBlendFrames);
+            savefile.WriteInt(channel);
+            savefile.WriteBool(idleAnim);
+            savefile.WriteBool(disabled);
         }
 
         public void Restore(idRestoreGame savefile) {
-            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/self);
+            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/self);
 
-            final idEntity animOwner = new idEntity();
+            idEntity animOwner = new idEntity();
             savefile.ReadObject(/*reinterpret_cast<idClass *&>*/animOwner);
             if (animOwner != null) {
-                this.animator = animOwner.GetAnimator();
+                animator = animOwner.GetAnimator();
             }
 
-            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/thread);
+            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/thread);
 
-            savefile.ReadString(this.state);
+            savefile.ReadString(state);
 
-            this.animBlendFrames = savefile.ReadInt();
-            this.lastAnimBlendFrames = savefile.ReadInt();
-            this.channel = savefile.ReadInt();
-            this.idleAnim = savefile.ReadBool();
-            this.disabled = savefile.ReadBool();
+            animBlendFrames = savefile.ReadInt();
+            lastAnimBlendFrames = savefile.ReadInt();
+            channel = savefile.ReadInt();
+            idleAnim = savefile.ReadBool();
+            disabled = savefile.ReadBool();
         }
 
         public void Init(idActor owner, idAnimator _animator, int animchannel) {
             assert (owner != null);
             assert (_animator != null);
-            this.self = owner;
-            this.animator = _animator;
-            this.channel = animchannel;
+            self = owner;
+            animator = _animator;
+            channel = animchannel;
 
-            if (NOT(this.thread)) {
-                this.thread = new idThread();
-                this.thread.ManualDelete();
+            if (NOT(thread)) {
+                thread = new idThread();
+                thread.ManualDelete();
             }
-            this.thread.EndThread();
-            this.thread.ManualControl();
+            thread.EndThread();
+            thread.ManualControl();
         }
 
         public void Shutdown() {
 //	delete thread;
-            this.thread = null;
+            thread = null;
         }
 
         public void SetState(final String statename, int blendFrames) {
             function_t func;
 
-            func = this.self.scriptObject.GetFunction(statename);
+            func = self.scriptObject.GetFunction(statename);
             if (null == func) {
                 assert (false);
-                idGameLocal.Error("Can't find function '%s' in object '%s'", statename, this.self.scriptObject.GetTypeName());
+                gameLocal.Error("Can't find function '%s' in object '%s'", statename, self.scriptObject.GetTypeName());
             }
 
-            this.state.oSet(statename);
-            this.disabled = false;
-            this.animBlendFrames = blendFrames;
-            this.lastAnimBlendFrames = blendFrames;
-            this.thread.CallFunction(this.self, func, true);
+            state.oSet(statename);
+            disabled = false;
+            animBlendFrames = blendFrames;
+            lastAnimBlendFrames = blendFrames;
+            thread.CallFunction(self, func, true);
 
-            this.animBlendFrames = blendFrames;
-            this.lastAnimBlendFrames = blendFrames;
-            this.disabled = false;
-            this.idleAnim = false;
+            animBlendFrames = blendFrames;
+            lastAnimBlendFrames = blendFrames;
+            disabled = false;
+            idleAnim = false;
 
-            if (ai_debugScript.GetInteger() == this.self.entityNumber) {
-                gameLocal.Printf("%d: %s: Animstate: %s\n", gameLocal.time, this.self.name, this.state);
+            if (ai_debugScript.GetInteger() == self.entityNumber) {
+                gameLocal.Printf("%d: %s: Animstate: %s\n", gameLocal.time, self.name, state);
             }
         }
 
         public void StopAnim(int frames) {
-            this.animBlendFrames = 0;
-            this.animator.Clear(this.channel, gameLocal.time, FRAME2MS(frames));
+            animBlendFrames = 0;
+            animator.Clear(channel, gameLocal.time, FRAME2MS(frames));
         }
 
         public void PlayAnim(int anim) {
             if (anim != 0) {
-                this.animator.PlayAnim(this.channel, anim, gameLocal.time, FRAME2MS(this.animBlendFrames));
+                animator.PlayAnim(channel, anim, gameLocal.time, FRAME2MS(animBlendFrames));
             }
-            this.animBlendFrames = 0;
+            animBlendFrames = 0;
         }
 
         public void CycleAnim(int anim) {
             if (anim != 0) {
-                this.animator.CycleAnim(this.channel, anim, gameLocal.time, FRAME2MS(this.animBlendFrames));
+                animator.CycleAnim(channel, anim, gameLocal.time, FRAME2MS(animBlendFrames));
             }
-            this.animBlendFrames = 0;
+            animBlendFrames = 0;
         }
 
         public void BecomeIdle() {
-            this.idleAnim = true;
+            idleAnim = true;
         }
 
         public boolean UpdateState() {
-            if (this.disabled) {
+            if (disabled) {
                 return false;
             }
 
-            if (ai_debugScript.GetInteger() == this.self.entityNumber) {
-                this.thread.EnableDebugInfo();
+            if (ai_debugScript.GetInteger() == self.entityNumber) {
+                thread.EnableDebugInfo();
             } else {
-                this.thread.DisableDebugInfo();
+                thread.DisableDebugInfo();
             }
 
-            this.thread.Execute();
+            thread.Execute();
 
             return true;
         }
 
         public boolean Disabled() {
-            return this.disabled;
+            return disabled;
         }
 
         public void Enable(int blendFrames) {
-            if (this.disabled) {
-                this.disabled = false;
-                this.animBlendFrames = blendFrames;
-                this.lastAnimBlendFrames = blendFrames;
-                if (this.state.Length() != 0) {
-                    SetState(this.state.getData(), blendFrames);
+            if (disabled) {
+                disabled = false;
+                animBlendFrames = blendFrames;
+                lastAnimBlendFrames = blendFrames;
+                if (state.Length() != 0) {
+                    SetState(state.toString(), blendFrames);
                 }
             }
         }
 
         public void Disable() {
-            this.disabled = true;
-            this.idleAnim = false;
+            disabled = true;
+            idleAnim = false;
         }
 
         public boolean AnimDone(int blendFrames) {
             int animDoneTime;
 
-            animDoneTime = this.animator.CurrentAnim(this.channel).GetEndTime();
+            animDoneTime = animator.CurrentAnim(channel).GetEndTime();
             if (animDoneTime < 0) {
                 // playing a cycle
                 return false;
-            } else if ((animDoneTime - FRAME2MS(blendFrames)) <= gameLocal.time) {
+            } else if (animDoneTime - FRAME2MS(blendFrames) <= gameLocal.time) {
                 return true;
             } else {
                 return false;
@@ -317,20 +316,20 @@ public class Actor {
         }
 
         public boolean IsIdle() {
-            return this.disabled || this.idleAnim;
+            return disabled || idleAnim;
         }
 
         public animFlags_t GetAnimFlags() {
             animFlags_t flags = new animFlags_t();
 
 //            memset(flags, 0, sizeof(flags));
-            if (!this.disabled && !AnimDone(0)) {
-                flags = this.animator.GetAnimFlags(this.animator.CurrentAnim(this.channel).AnimNum());
+            if (!disabled && !AnimDone(0)) {
+                flags = animator.GetAnimFlags(animator.CurrentAnim(channel).AnimNum());
             }
 
             return flags;
         }
-    }
+    };
 
     public static class idAttachInfo {
 
@@ -340,14 +339,14 @@ public class Actor {
         public idAttachInfo() {
             this.ent = new idEntityPtr<>();
         }
-    }
+    };
 
     public static class copyJoints_t {
 
         public jointModTransform_t    mod;
         public int[]/*jointHandle_t*/ from = {0};
         public int[]/*jointHandle_t*/ to = {0};
-    }
+    };
 
     /* **********************************************************************
 
@@ -357,11 +356,7 @@ public class Actor {
     public static class idActor extends idAFEntity_Gibbable {
         //public	CLASS_PROTOTYPE( idActor );
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		//        public static idTypeInfo Type;
+        //        public static idTypeInfo Type;
 //
 //        public static idClass CreateInstance();
         //        public idTypeInfo GetType();
@@ -478,61 +473,61 @@ public class Actor {
         //
 
         public idActor() {
-            this.viewAxis = idMat3.getMat3_identity();
+            viewAxis = idMat3.getMat3_identity();
 
-            this.scriptThread = null;		// initialized by ConstructScriptObject, which is called by idEntity::Spawn
+            scriptThread = null;		// initialized by ConstructScriptObject, which is called by idEntity::Spawn
 
-            this.use_combat_bbox = false;
-            this.head = new idEntityPtr<>();
+            use_combat_bbox = false;
+            head = new idEntityPtr<>();
 
-            this.team = 0;
-            this.rank = 0;
-            this.fovDot = 0;
-            this.eyeOffset = new idVec3();
-            this.pain_debounce_time = 0;
-            this.pain_delay = 0;
-            this.pain_threshold = 0;
+            team = 0;
+            rank = 0;
+            fovDot = 0;
+            eyeOffset = new idVec3();
+            pain_debounce_time = 0;
+            pain_delay = 0;
+            pain_threshold = 0;
             
-            this.copyJoints = new idList<>();
+            copyJoints = new idList<>();
 
-            this.state = null;
-            this.idealState = null;
+            state = null;
+            idealState = null;
 
-            this.leftEyeJoint = INVALID_JOINT;
-            this.rightEyeJoint = INVALID_JOINT;
-            this.soundJoint = INVALID_JOINT;
+            leftEyeJoint = INVALID_JOINT;
+            rightEyeJoint = INVALID_JOINT;
+            soundJoint = INVALID_JOINT;
 
-            this.modelOffset = new idVec3();
-            this.deltaViewAngles = new idAngles();
+            modelOffset = new idVec3();
+            deltaViewAngles = new idAngles();
 
-            this.painTime = 0;
-            this.allowPain = false;
-            this.allowEyeFocus = false;
+            painTime = 0;
+            allowPain = false;
+            allowEyeFocus = false;
             
-            this.damageGroups = new idStrList();
-            this.damageScale = new idList<>();
+            damageGroups = new idStrList();
+            damageScale = new idList<>();
 
-            this.waitState = new idStr();
-            this.headAnim = new idAnimState();
-            this.torsoAnim = new idAnimState();
-            this.legsAnim = new idAnimState();
+            waitState = new idStr();
+            headAnim = new idAnimState();
+            torsoAnim = new idAnimState();
+            legsAnim = new idAnimState();
             
-            this.walkIK = new idIK_Walk();
+            walkIK = new idIK_Walk();
             
-            this.animPrefix = new idStr();
-            this.painAnim = new idStr();
+            animPrefix = new idStr();
+            painAnim = new idStr();
 
-            this.blink_anim = 0;//null;
-            this.blink_time = 0;
-            this.blink_min = 0;
-            this.blink_max = 0;
+            blink_anim = 0;//null;
+            blink_time = 0;
+            blink_min = 0;
+            blink_max = 0;
 
-            this.finalBoss = false;
+            finalBoss = false;
 
-            this.attachments.SetGranularity(1);
+            attachments.SetGranularity(1);
 
-            this.enemyNode = new idLinkList<>(this);
-            this.enemyList = new idLinkList<>(this);
+            enemyNode = new idLinkList<>(this);
+            enemyList = new idLinkList<>(this);
         }
         // virtual					~idActor( void );
 
@@ -540,49 +535,49 @@ public class Actor {
         public void Spawn() {
             super.Spawn();
             
-            final idEntity[] ent = {null};
-            final idStr jointName = new idStr();
-            final float[] fovDegrees = {0};
-            final int[] rank = {0}, team = {0};
-            final boolean[] use_combat_bbox = {false};
+            idEntity[] ent = {null};
+            idStr jointName = new idStr();
+            float[] fovDegrees = {0};
+            int[] rank = {0}, team = {0};
+            boolean[] use_combat_bbox = {false};
 
-            this.animPrefix.oSet("");
-            this.state = null;
-            this.idealState = null;
+            animPrefix.oSet("");
+            state = null;
+            idealState = null;
 
-            this.spawnArgs.GetInt("rank", "0", rank);
-            this.spawnArgs.GetInt("team", "0", team);
+            spawnArgs.GetInt("rank", "0", rank);
+            spawnArgs.GetInt("team", "0", team);
             this.rank = rank[0];
             this.team = team[0];
 
-            this.spawnArgs.GetVector("offsetModel", "0 0 0", this.modelOffset);
+            spawnArgs.GetVector("offsetModel", "0 0 0", modelOffset);
 
-            this.spawnArgs.GetBool("use_combat_bbox", "0", use_combat_bbox);
+            spawnArgs.GetBool("use_combat_bbox", "0", use_combat_bbox);
             this.use_combat_bbox = use_combat_bbox[0];
 
-            this.viewAxis.oSet(GetPhysics().GetAxis());
+            viewAxis.oSet(GetPhysics().GetAxis());
 
-            this.spawnArgs.GetFloat("fov", "90", fovDegrees);
+            spawnArgs.GetFloat("fov", "90", fovDegrees);
             SetFOV(fovDegrees[0]);
 
-            this.pain_debounce_time = 0;
+            pain_debounce_time = 0;
 
-            this.pain_delay = (int) SEC2MS(this.spawnArgs.GetFloat("pain_delay"));
-            this.pain_threshold = this.spawnArgs.GetInt("pain_threshold");
+            pain_delay = (int) SEC2MS(spawnArgs.GetFloat("pain_delay"));
+            pain_threshold = spawnArgs.GetInt("pain_threshold");
 
             LoadAF();
 
-            this.walkIK.Init(this, IK_ANIM, this.modelOffset);
+            walkIK.Init(this, IK_ANIM, modelOffset);
 
             // the animation used to be set to the IK_ANIM at this point, but that was fixed, resulting in
             // attachments not binding correctly, so we're stuck setting the IK_ANIM before attaching things.
-            this.animator.ClearAllAnims(gameLocal.time, 0);
-            this.animator.SetFrame(ANIMCHANNEL_ALL, this.animator.GetAnim(IK_ANIM), 0, 0, 0);
+            animator.ClearAllAnims(gameLocal.time, 0);
+            animator.SetFrame(ANIMCHANNEL_ALL, animator.GetAnim(IK_ANIM), 0, 0, 0);
 
             // spawn any attachments we might have
-            idKeyValue kv = this.spawnArgs.MatchPrefix("def_attach", null);
+            idKeyValue kv = spawnArgs.MatchPrefix("def_attach", null);
             while (kv != null) {
-                final idDict args = new idDict();
+                idDict args = new idDict();
 
                 args.Set("classname", kv.GetValue());
 
@@ -594,36 +589,36 @@ public class Actor {
 
                 gameLocal.SpawnEntityDef(args, ent);
                 if (NOT(ent[0])) {
-                    idGameLocal.Error("Couldn't spawn '%s' to attach to entity '%s'", kv.GetValue(), this.name);
+                    gameLocal.Error("Couldn't spawn '%s' to attach to entity '%s'", kv.GetValue(), name);
                 } else {
                     Attach(ent[0]);
                 }
-                kv = this.spawnArgs.MatchPrefix("def_attach", kv);
+                kv = spawnArgs.MatchPrefix("def_attach", kv);
             }
 
             SetupDamageGroups();
             SetupHead();
 
             // clear the bind anim
-            this.animator.ClearAllAnims(gameLocal.time, 0);
+            animator.ClearAllAnims(gameLocal.time, 0);
 
-            final idEntity headEnt = this.head.GetEntity();
+            idEntity headEnt = head.GetEntity();
             idAnimator headAnimator;
             if (headEnt != null) {
                 headAnimator = headEnt.GetAnimator();
             } else {
-                headAnimator = this.animator;
+                headAnimator = animator;
             }
 
             if (headEnt != null) {
                 // set up the list of joints to copy to the head
-                for (kv = this.spawnArgs.MatchPrefix("copy_joint", null); kv != null; kv = this.spawnArgs.MatchPrefix("copy_joint", kv)) {
+                for (kv = spawnArgs.MatchPrefix("copy_joint", null); kv != null; kv = spawnArgs.MatchPrefix("copy_joint", kv)) {
                     if (kv.GetValue().IsEmpty()) {
                         // probably clearing out inherited key, so skip it
                         continue;
                     }
 
-                    final copyJoints_t copyJoint = new copyJoints_t();
+                    copyJoints_t copyJoint = new copyJoints_t();
                     jointName.oSet(kv.GetKey());
                     if (jointName.StripLeadingOnce("copy_joint_world ")) {
                         copyJoint.mod = JOINTMOD_WORLD_OVERRIDE;
@@ -632,31 +627,31 @@ public class Actor {
                         copyJoint.mod = JOINTMOD_LOCAL_OVERRIDE;
                     }
 
-                    copyJoint.from[0] = this.animator.GetJointHandle(jointName);
+                    copyJoint.from[0] = animator.GetJointHandle(jointName);
                     if (copyJoint.from[0] == INVALID_JOINT) {
-                        gameLocal.Warning("Unknown copy_joint '%s' on entity %s", jointName, this.name);
+                        gameLocal.Warning("Unknown copy_joint '%s' on entity %s", jointName, name);
                         continue;
                     }
 
                     jointName.oSet(kv.GetValue());
                     copyJoint.to[0] = headAnimator.GetJointHandle(jointName);
                     if (copyJoint.to[0] == INVALID_JOINT) {
-                        gameLocal.Warning("Unknown copy_joint '%s' on head of entity %s", jointName, this.name);
+                        gameLocal.Warning("Unknown copy_joint '%s' on head of entity %s", jointName, name);
                         continue;
                     }
 
-                    this.copyJoints.Append(copyJoint);
+                    copyJoints.Append(copyJoint);
                 }
             }
 
             // set up blinking
-            this.blink_anim = headAnimator.GetAnim("blink");
-            this.blink_time = 0;	// it's ok to blink right away
-            this.blink_min = (int) SEC2MS(this.spawnArgs.GetFloat("blink_min", "0.5"));
-            this.blink_max = (int) SEC2MS(this.spawnArgs.GetFloat("blink_max", "8"));
+            blink_anim = headAnimator.GetAnim("blink");
+            blink_time = 0;	// it's ok to blink right away
+            blink_min = (int) SEC2MS(spawnArgs.GetFloat("blink_min", "0.5"));
+            blink_max = (int) SEC2MS(spawnArgs.GetFloat("blink_max", "8"));
 
             // set up the head anim if necessary
-            final int headAnim = headAnimator.GetAnim("def_head");
+            int headAnim = headAnimator.GetAnim("def_head");
             if (headAnim != 0) {
                 if (headEnt != null) {
                     headAnimator.CycleAnim(ANIMCHANNEL_ALL, headAnim, gameLocal.time, 0);
@@ -665,20 +660,20 @@ public class Actor {
                 }
             }
 
-            if (this.spawnArgs.GetString("sound_bone", "", jointName)) {
-                this.soundJoint = this.animator.GetJointHandle(jointName);
-                if (this.soundJoint == INVALID_JOINT) {
-                    gameLocal.Warning("idAnimated '%s' at (%s): cannot find joint '%s' for sound playback", this.name, GetPhysics().GetOrigin().ToString(0), jointName);
+            if (spawnArgs.GetString("sound_bone", "", jointName)) {
+                soundJoint = animator.GetJointHandle(jointName);
+                if (soundJoint == INVALID_JOINT) {
+                    gameLocal.Warning("idAnimated '%s' at (%s): cannot find joint '%s' for sound playback", name, GetPhysics().GetOrigin().ToString(0), jointName);
                 }
             }
 
-            this.finalBoss = this.spawnArgs.GetBool("finalBoss");
+            finalBoss = spawnArgs.GetBool("finalBoss");
 
             FinishSetup();
         }
 
         public void Restart() {
-            assert (NOT(this.head.GetEntity()));
+            assert (NOT(head.GetEntity()));
             SetupHead();
             FinishSetup();
         }
@@ -695,85 +690,85 @@ public class Actor {
             idActor ent;
             int i;
 
-            savefile.WriteInt(this.team);
-            savefile.WriteInt(this.rank);
-            savefile.WriteMat3(this.viewAxis);
+            savefile.WriteInt(team);
+            savefile.WriteInt(rank);
+            savefile.WriteMat3(viewAxis);
 
-            savefile.WriteInt(this.enemyList.Num());
-            for (ent = this.enemyList.Next(); ent != null; ent = ent.enemyNode.Next()) {
+            savefile.WriteInt(enemyList.Num());
+            for (ent = enemyList.Next(); ent != null; ent = ent.enemyNode.Next()) {
                 savefile.WriteObject(ent);
             }
 
-            savefile.WriteFloat(this.fovDot);
-            savefile.WriteVec3(this.eyeOffset);
-            savefile.WriteVec3(this.modelOffset);
-            savefile.WriteAngles(this.deltaViewAngles);
+            savefile.WriteFloat(fovDot);
+            savefile.WriteVec3(eyeOffset);
+            savefile.WriteVec3(modelOffset);
+            savefile.WriteAngles(deltaViewAngles);
 
-            savefile.WriteInt(this.pain_debounce_time);
-            savefile.WriteInt(this.pain_delay);
-            savefile.WriteInt(this.pain_threshold);
+            savefile.WriteInt(pain_debounce_time);
+            savefile.WriteInt(pain_delay);
+            savefile.WriteInt(pain_threshold);
 
-            savefile.WriteInt(this.damageGroups.Num());
-            for (i = 0; i < this.damageGroups.Num(); i++) {
-                savefile.WriteString(this.damageGroups.oGet(i));
+            savefile.WriteInt(damageGroups.Num());
+            for (i = 0; i < damageGroups.Num(); i++) {
+                savefile.WriteString(damageGroups.oGet(i));
             }
 
-            savefile.WriteInt(this.damageScale.Num());
-            for (i = 0; i < this.damageScale.Num(); i++) {
-                savefile.WriteFloat(this.damageScale.oGet(i));
+            savefile.WriteInt(damageScale.Num());
+            for (i = 0; i < damageScale.Num(); i++) {
+                savefile.WriteFloat(damageScale.oGet(i));
             }
 
-            savefile.WriteBool(this.use_combat_bbox);
-            this.head.Save(savefile);
+            savefile.WriteBool(use_combat_bbox);
+            head.Save(savefile);
 
-            savefile.WriteInt(this.copyJoints.Num());
-            for (i = 0; i < this.copyJoints.Num(); i++) {
-                savefile.WriteInt(etoi(this.copyJoints.oGet(i).mod));
-                savefile.WriteJoint(this.copyJoints.oGet(i).from[0]);
-                savefile.WriteJoint(this.copyJoints.oGet(i).to[0]);
+            savefile.WriteInt(copyJoints.Num());
+            for (i = 0; i < copyJoints.Num(); i++) {
+                savefile.WriteInt(etoi(copyJoints.oGet(i).mod));
+                savefile.WriteJoint(copyJoints.oGet(i).from[0]);
+                savefile.WriteJoint(copyJoints.oGet(i).to[0]);
             }
 
-            savefile.WriteJoint(this.leftEyeJoint);
-            savefile.WriteJoint(this.rightEyeJoint);
-            savefile.WriteJoint(this.soundJoint);
+            savefile.WriteJoint(leftEyeJoint);
+            savefile.WriteJoint(rightEyeJoint);
+            savefile.WriteJoint(soundJoint);
 
-            this.walkIK.Save(savefile);
+            walkIK.Save(savefile);
 
-            savefile.WriteString(this.animPrefix);
-            savefile.WriteString(this.painAnim);
+            savefile.WriteString(animPrefix);
+            savefile.WriteString(painAnim);
 
-            savefile.WriteInt(this.blink_anim);
-            savefile.WriteInt(this.blink_time);
-            savefile.WriteInt(this.blink_min);
-            savefile.WriteInt(this.blink_max);
+            savefile.WriteInt(blink_anim);
+            savefile.WriteInt(blink_time);
+            savefile.WriteInt(blink_min);
+            savefile.WriteInt(blink_max);
 
             // script variables
-            savefile.WriteObject(this.scriptThread);
+            savefile.WriteObject(scriptThread);
 
-            savefile.WriteString(this.waitState);
+            savefile.WriteString(waitState);
 
-            this.headAnim.Save(savefile);
-            this.torsoAnim.Save(savefile);
-            this.legsAnim.Save(savefile);
+            headAnim.Save(savefile);
+            torsoAnim.Save(savefile);
+            legsAnim.Save(savefile);
 
-            savefile.WriteBool(this.allowPain);
-            savefile.WriteBool(this.allowEyeFocus);
+            savefile.WriteBool(allowPain);
+            savefile.WriteBool(allowEyeFocus);
 
-            savefile.WriteInt(this.painTime);
+            savefile.WriteInt(painTime);
 
-            savefile.WriteInt(this.attachments.Num());
-            for (i = 0; i < this.attachments.Num(); i++) {
-                this.attachments.oGet(i).ent.Save(savefile);
-                savefile.WriteInt(this.attachments.oGet(i).channel);
+            savefile.WriteInt(attachments.Num());
+            for (i = 0; i < attachments.Num(); i++) {
+                attachments.oGet(i).ent.Save(savefile);
+                savefile.WriteInt(attachments.oGet(i).channel);
             }
 
-            savefile.WriteBool(this.finalBoss);
+            savefile.WriteBool(finalBoss);
 
-            final idToken token = new idToken();
+            idToken token = new idToken();
 
             //FIXME: this is unneccesary
-            if (this.state != null) {
-                final idLexer src = new idLexer(this.state.Name(), this.state.Name().length(), "idAI::Save");
+            if (state != null) {
+                idLexer src = new idLexer(state.Name(), state.Name().length(), "idAI::Save");
 
                 src.ReadTokenOnLine(token);
                 src.ExpectTokenString("::");
@@ -784,8 +779,8 @@ public class Actor {
                 savefile.WriteString("");
             }
 
-            if (this.idealState != null) {
-                final idLexer src = new idLexer(this.idealState.Name(), this.idealState.Name().length(), "idAI::Save");
+            if (idealState != null) {
+                idLexer src = new idLexer(idealState.Name(), idealState.Name().length(), "idAI::Save");
 
                 src.ReadTokenOnLine(token);
                 src.ExpectTokenString("::");
@@ -808,103 +803,103 @@ public class Actor {
         @Override
         public void Restore(idRestoreGame savefile) {
             int i;
-            final int[] num = {0};
-            final idActor ent = new idActor();
+            int[] num = {0};
+            idActor ent = new idActor();
 
-            this.team = savefile.ReadInt();
-            this.rank = savefile.ReadInt();
-            savefile.ReadMat3(this.viewAxis);
+            team = savefile.ReadInt();
+            rank = savefile.ReadInt();
+            savefile.ReadMat3(viewAxis);
 
             savefile.ReadInt(num);
             for (i = 0; i < num[0]; i++) {
                 savefile.ReadObject(/*reinterpret_cast<idClass *&>*/ent);
                 assert (ent != null);
                 if (ent != null) {
-                    ent.enemyNode.AddToEnd(this.enemyList);
+                    ent.enemyNode.AddToEnd(enemyList);
                 }
             }
 
-            this.fovDot = savefile.ReadFloat();
-            savefile.ReadVec3(this.eyeOffset);
-            savefile.ReadVec3(this.modelOffset);
-            savefile.ReadAngles(this.deltaViewAngles);
+            fovDot = savefile.ReadFloat();
+            savefile.ReadVec3(eyeOffset);
+            savefile.ReadVec3(modelOffset);
+            savefile.ReadAngles(deltaViewAngles);
 
-            this.pain_debounce_time = savefile.ReadInt();
-            this.pain_delay = savefile.ReadInt();
-            this.pain_threshold = savefile.ReadInt();
+            pain_debounce_time = savefile.ReadInt();
+            pain_delay = savefile.ReadInt();
+            pain_threshold = savefile.ReadInt();
 
             savefile.ReadInt(num);
-            this.damageGroups.SetGranularity(1);
-            this.damageGroups.SetNum(num[0]);
+            damageGroups.SetGranularity(1);
+            damageGroups.SetNum(num[0]);
             for (i = 0; i < num[0]; i++) {
-                savefile.ReadString(this.damageGroups.oGet(i));
+                savefile.ReadString(damageGroups.oGet(i));
             }
 
             savefile.ReadInt(num);
-            this.damageScale.SetNum(num[0]);
+            damageScale.SetNum(num[0]);
             for (i = 0; i < num[0]; i++) {
-                this.damageScale.oSet(i, savefile.ReadFloat());
+                damageScale.oSet(i, savefile.ReadFloat());
             }
 
-            this.use_combat_bbox = savefile.ReadBool();
-            this.head.Restore(savefile);
+            use_combat_bbox = savefile.ReadBool();
+            head.Restore(savefile);
 
             savefile.ReadInt(num);
-            this.copyJoints.SetNum(num[0]);
+            copyJoints.SetNum(num[0]);
             for (i = 0; i < num[0]; i++) {
-                final int[] val = {0};
+                int[] val = {0};
                 savefile.ReadInt(val);
-                this.copyJoints.oGet(i).mod = jointModTransform_t.values()[val[0]];
-                savefile.ReadJoint(this.copyJoints.oGet(i).from);
-                savefile.ReadJoint(this.copyJoints.oGet(i).to);
+                copyJoints.oGet(i).mod = jointModTransform_t.values()[val[0]];
+                savefile.ReadJoint(copyJoints.oGet(i).from);
+                savefile.ReadJoint(copyJoints.oGet(i).to);
             }
 
-            this.leftEyeJoint = savefile.ReadJoint();
-            this.rightEyeJoint = savefile.ReadJoint();
-            this.soundJoint = savefile.ReadJoint();
+            leftEyeJoint = savefile.ReadJoint();
+            rightEyeJoint = savefile.ReadJoint();
+            soundJoint = savefile.ReadJoint();
 
-            this.walkIK.Restore(savefile);
+            walkIK.Restore(savefile);
 
-            savefile.ReadString(this.animPrefix);
-            savefile.ReadString(this.painAnim);
+            savefile.ReadString(animPrefix);
+            savefile.ReadString(painAnim);
 
-            this.blink_anim = savefile.ReadInt();
-            this.blink_time = savefile.ReadInt();
-            this.blink_min = savefile.ReadInt();
-            this.blink_max = savefile.ReadInt();
+            blink_anim = savefile.ReadInt();
+            blink_time = savefile.ReadInt();
+            blink_min = savefile.ReadInt();
+            blink_max = savefile.ReadInt();
 
-            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/(this.scriptThread));
+            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/(scriptThread));
 
-            savefile.ReadString(this.waitState);
+            savefile.ReadString(waitState);
 
-            this.headAnim.Restore(savefile);
-            this.torsoAnim.Restore(savefile);
-            this.legsAnim.Restore(savefile);
+            headAnim.Restore(savefile);
+            torsoAnim.Restore(savefile);
+            legsAnim.Restore(savefile);
 
-            this.allowPain = savefile.ReadBool();
-            this.allowEyeFocus = savefile.ReadBool();
+            allowPain = savefile.ReadBool();
+            allowEyeFocus = savefile.ReadBool();
 
-            this.painTime = savefile.ReadInt();
+            painTime = savefile.ReadInt();
 
             savefile.ReadInt(num);
             for (i = 0; i < num[0]; i++) {
-                final idAttachInfo attach = this.attachments.Alloc();
+                idAttachInfo attach = attachments.Alloc();
                 attach.ent.Restore(savefile);
                 attach.channel = savefile.ReadInt();
             }
 
-            this.finalBoss = savefile.ReadBool();
+            finalBoss = savefile.ReadBool();
 
-            final idStr stateName = new idStr();
+            idStr stateName = new idStr();
 
             savefile.ReadString(stateName);
             if (stateName.Length() > 0) {
-                this.state = GetScriptFunction(stateName.getData());
+                state = GetScriptFunction(stateName.toString());
             }
 
             savefile.ReadString(stateName);
             if (stateName.Length() > 0) {
-                this.idealState = GetScriptFunction(stateName.getData());
+                idealState = GetScriptFunction(stateName.toString());
             }
         }
 
@@ -914,8 +909,8 @@ public class Actor {
             idEntity next;
 
             idAFEntity_Base_Hide();//TODO:super size me
-            if (this.head.GetEntity() != null) {
-                this.head.GetEntity().Hide();
+            if (head.GetEntity() != null) {
+                head.GetEntity().Hide();
             }
 
             for (ent = GetNextTeamEntity(); ent != null; ent = next) {
@@ -936,8 +931,8 @@ public class Actor {
             idEntity next;
 
             idAFEntity_Base_Show();//TODO:super size me
-            if (this.head.GetEntity() != null) {
-                this.head.GetEntity().Show();
+            if (head.GetEntity() != null) {
+                head.GetEntity().Show();
             }
 
             for (ent = GetNextTeamEntity(); ent != null; ent = next) {
@@ -976,117 +971,117 @@ public class Actor {
 
         @Override
         public boolean LoadAF() {
-            final idStr fileName = new idStr();
+            idStr fileName = new idStr();
 
-            if (!this.spawnArgs.GetString("ragdoll", "*unknown*", fileName) || (0 == fileName.Length())) {
+            if (!spawnArgs.GetString("ragdoll", "*unknown*", fileName) || 0 == fileName.Length()) {
                 return false;
             }
-            this.af.SetAnimator(GetAnimator());
-            return this.af.Load(this, fileName);
+            af.SetAnimator(GetAnimator());
+            return af.Load(this, fileName);
         }
 
         public void SetupBody() {
             String jointname;
 
-            this.animator.ClearAllAnims(gameLocal.time, 0);
-            this.animator.ClearAllJoints();
+            animator.ClearAllAnims(gameLocal.time, 0);
+            animator.ClearAllJoints();
 
-            final idEntity headEnt = this.head.GetEntity();
+            idEntity headEnt = head.GetEntity();
             if (headEnt != null) {
-                jointname = this.spawnArgs.GetString("bone_leftEye");
-                this.leftEyeJoint = headEnt.GetAnimator().GetJointHandle(jointname);
+                jointname = spawnArgs.GetString("bone_leftEye");
+                leftEyeJoint = headEnt.GetAnimator().GetJointHandle(jointname);
 
-                jointname = this.spawnArgs.GetString("bone_rightEye");
-                this.rightEyeJoint = headEnt.GetAnimator().GetJointHandle(jointname);
+                jointname = spawnArgs.GetString("bone_rightEye");
+                rightEyeJoint = headEnt.GetAnimator().GetJointHandle(jointname);
 
                 // set up the eye height.  check if it's specified in the def.
-                if (!this.spawnArgs.GetFloat("eye_height", "0", new float[]{this.eyeOffset.z})) {
+                if (!spawnArgs.GetFloat("eye_height", "0", new float[]{eyeOffset.z})) {
                     // if not in the def, then try to base it off the idle animation
-                    final int anim = headEnt.GetAnimator().GetAnim("idle");
-                    if ((anim != 0) && (this.leftEyeJoint != INVALID_JOINT)) {
-                        final idVec3 pos = new idVec3();
-                        final idMat3 axis = new idMat3();
+                    int anim = headEnt.GetAnimator().GetAnim("idle");
+                    if (anim != 0 && (leftEyeJoint != INVALID_JOINT)) {
+                        idVec3 pos = new idVec3();
+                        idMat3 axis = new idMat3();
                         headEnt.GetAnimator().PlayAnim(ANIMCHANNEL_ALL, anim, gameLocal.time, 0);
-                        headEnt.GetAnimator().GetJointTransform(this.leftEyeJoint, gameLocal.time, pos, axis);
+                        headEnt.GetAnimator().GetJointTransform(leftEyeJoint, gameLocal.time, pos, axis);
                         headEnt.GetAnimator().ClearAllAnims(gameLocal.time, 0);
                         headEnt.GetAnimator().ForceUpdate();
                         pos.oPluSet(headEnt.GetPhysics().GetOrigin().oMinus(GetPhysics().GetOrigin()));
-                        this.eyeOffset = pos.oPlus(this.modelOffset);
+                        eyeOffset = pos.oPlus(modelOffset);
                     } else {
                         // just base it off the bounding box size
-                        this.eyeOffset.z = GetPhysics().GetBounds().oGet(1).z - 6;
+                        eyeOffset.z = GetPhysics().GetBounds().oGet(1).z - 6;
                     }
                 }
-                this.headAnim.Init(this, headEnt.GetAnimator(), ANIMCHANNEL_ALL);
+                headAnim.Init(this, headEnt.GetAnimator(), ANIMCHANNEL_ALL);
             } else {
-                jointname = this.spawnArgs.GetString("bone_leftEye");
-                this.leftEyeJoint = this.animator.GetJointHandle(jointname);
+                jointname = spawnArgs.GetString("bone_leftEye");
+                leftEyeJoint = animator.GetJointHandle(jointname);
 
-                jointname = this.spawnArgs.GetString("bone_rightEye");
-                this.rightEyeJoint = this.animator.GetJointHandle(jointname);
+                jointname = spawnArgs.GetString("bone_rightEye");
+                rightEyeJoint = animator.GetJointHandle(jointname);
 
                 // set up the eye height.  check if it's specified in the def.
-                if (!this.spawnArgs.GetFloat("eye_height", "0", new float[]{this.eyeOffset.z})) {
+                if (!spawnArgs.GetFloat("eye_height", "0", new float[]{eyeOffset.z})) {
                     // if not in the def, then try to base it off the idle animation
-                    final int anim = this.animator.GetAnim("idle");
-                    if ((anim != 0) && (this.leftEyeJoint != INVALID_JOINT)) {
-                        final idVec3 pos = new idVec3();
-                        final idMat3 axis = new idMat3();
-                        this.animator.PlayAnim(ANIMCHANNEL_ALL, anim, gameLocal.time, 0);
-                        this.animator.GetJointTransform(this.leftEyeJoint, gameLocal.time, pos, axis);
-                        this.animator.ClearAllAnims(gameLocal.time, 0);
-                        this.animator.ForceUpdate();
-                        this.eyeOffset = pos.oPlus(this.modelOffset);
+                    int anim = animator.GetAnim("idle");
+                    if (anim != 0 && (leftEyeJoint != INVALID_JOINT)) {
+                        idVec3 pos = new idVec3();
+                        idMat3 axis = new idMat3();
+                        animator.PlayAnim(ANIMCHANNEL_ALL, anim, gameLocal.time, 0);
+                        animator.GetJointTransform(leftEyeJoint, gameLocal.time, pos, axis);
+                        animator.ClearAllAnims(gameLocal.time, 0);
+                        animator.ForceUpdate();
+                        eyeOffset = pos.oPlus(modelOffset);
                     } else {
                         // just base it off the bounding box size
-                        this.eyeOffset.z = GetPhysics().GetBounds().oGet(1).z - 6;
+                        eyeOffset.z = GetPhysics().GetBounds().oGet(1).z - 6;
                     }
                 }
-                this.headAnim.Init(this, this.animator, ANIMCHANNEL_HEAD);
+                headAnim.Init(this, animator, ANIMCHANNEL_HEAD);
             }
 
-            this.waitState.oSet("");
+            waitState.oSet("");
 
-            this.torsoAnim.Init(this, this.animator, ANIMCHANNEL_TORSO);
-            this.legsAnim.Init(this, this.animator, ANIMCHANNEL_LEGS);
+            torsoAnim.Init(this, animator, ANIMCHANNEL_TORSO);
+            legsAnim.Init(this, animator, ANIMCHANNEL_LEGS);
         }
 
         public void CheckBlink() {
             // check if it's time to blink
-            if ((0 == this.blink_anim) || (this.health <= 0) || !this.allowEyeFocus || (this.blink_time > gameLocal.time)) {
+            if (0 == blink_anim || (health <= 0) || !allowEyeFocus || (blink_time > gameLocal.time)) {
                 return;
             }
 
-            final idEntity headEnt = this.head.GetEntity();
+            idEntity headEnt = head.GetEntity();
             if (headEnt != null) {
-                headEnt.GetAnimator().PlayAnim(ANIMCHANNEL_EYELIDS, this.blink_anim, gameLocal.time, 1);
+                headEnt.GetAnimator().PlayAnim(ANIMCHANNEL_EYELIDS, blink_anim, gameLocal.time, 1);
             } else {
-                this.animator.PlayAnim(ANIMCHANNEL_EYELIDS, this.blink_anim, gameLocal.time, 1);
+                animator.PlayAnim(ANIMCHANNEL_EYELIDS, blink_anim, gameLocal.time, 1);
             }
 
             // set the next blink time
-            this.blink_time = (int) (gameLocal.time + this.blink_min + (gameLocal.random.RandomFloat() * (this.blink_max - this.blink_min)));
+            blink_time = (int) (gameLocal.time + blink_min + gameLocal.random.RandomFloat() * (blink_max - blink_min));
         }
 
         @Override
         public boolean GetPhysicsToVisualTransform(idVec3 origin, idMat3 axis) {
-            if (this.af.IsActive()) {
-                this.af.GetPhysicsToVisualTransform(origin, axis);
+            if (af.IsActive()) {
+                af.GetPhysicsToVisualTransform(origin, axis);
                 return true;
             }
-            origin.oSet(this.modelOffset);
-            axis.oSet(this.viewAxis);
+            origin.oSet(modelOffset);
+            axis.oSet(viewAxis);
             return true;
         }
 
         @Override
         public boolean GetPhysicsToSoundTransform(idVec3 origin, idMat3 axis) {
-            if (this.soundJoint != INVALID_JOINT) {
-                this.animator.GetJointTransform(this.soundJoint, gameLocal.time, origin, axis);
-                origin.oPluSet(this.modelOffset);
-                axis.oSet(this.viewAxis);
+            if (soundJoint != INVALID_JOINT) {
+                animator.GetJointTransform(soundJoint, gameLocal.time, origin, axis);
+                origin.oPluSet(modelOffset);
+                axis.oSet(viewAxis);
             } else {
-                origin.oSet(GetPhysics().GetGravityNormal().oMultiply(-this.eyeOffset.z));
+                origin.oSet(GetPhysics().GetGravityNormal().oMultiply(-eyeOffset.z));
                 axis.Identity();
             }
             return true;
@@ -1099,15 +1094,15 @@ public class Actor {
          ***********************************************************************/
         // script state management
         public void ShutdownThreads() {
-            this.headAnim.Shutdown();
-            this.torsoAnim.Shutdown();
-            this.legsAnim.Shutdown();
+            headAnim.Shutdown();
+            torsoAnim.Shutdown();
+            legsAnim.Shutdown();
 
-            if (this.scriptThread != null) {
-                this.scriptThread.EndThread();
-                this.scriptThread.PostEventMS(EV_Remove, 0);
+            if (scriptThread != null) {
+                scriptThread.EndThread();
+                scriptThread.PostEventMS(EV_Remove, 0);
 //		delete scriptThread;
-                this.scriptThread = null;
+                scriptThread = null;
             }
         }
 
@@ -1137,73 +1132,73 @@ public class Actor {
             function_t constructor;
 
             // make sure we have a scriptObject
-            if (!this.scriptObject.HasObject()) {
-                idGameLocal.Error("No scriptobject set on '%s'.  Check the '%s' entityDef.", this.name, GetEntityDefName());
+            if (!scriptObject.HasObject()) {
+                gameLocal.Error("No scriptobject set on '%s'.  Check the '%s' entityDef.", name, GetEntityDefName());
             }
 
-            if (NOT(this.scriptThread)) {
+            if (NOT(scriptThread)) {
                 // create script thread
-                this.scriptThread = new idThread();
-                this.scriptThread.ManualDelete();
-                this.scriptThread.ManualControl();
-                this.scriptThread.SetThreadName(this.name.getData());
+                scriptThread = new idThread();
+                scriptThread.ManualDelete();
+                scriptThread.ManualControl();
+                scriptThread.SetThreadName(name.toString());
             } else {
-                this.scriptThread.EndThread();
+                scriptThread.EndThread();
             }
 
             // call script object's constructor
-            constructor = this.scriptObject.GetConstructor();
+            constructor = scriptObject.GetConstructor();
             if (NOT(constructor)) {
-                idGameLocal.Error("Missing constructor on '%s' for entity '%s'", this.scriptObject.GetTypeName(), this.name);
+                gameLocal.Error("Missing constructor on '%s' for entity '%s'", scriptObject.GetTypeName(), name);
             }
 
             // init the script object's data
-            this.scriptObject.ClearObject();
+            scriptObject.ClearObject();
 
             // just set the current function on the script.  we'll execute in the subclasses.
-            this.scriptThread.CallFunction(this, constructor, true);
+            scriptThread.CallFunction(this, constructor, true);
 
-            return this.scriptThread;
+            return scriptThread;
         }
 
         public void UpdateScript() {
             int i;
 
-            if (ai_debugScript.GetInteger() == this.entityNumber) {
-                this.scriptThread.EnableDebugInfo();
+            if (ai_debugScript.GetInteger() == entityNumber) {
+                scriptThread.EnableDebugInfo();
             } else {
-                this.scriptThread.DisableDebugInfo();
+                scriptThread.DisableDebugInfo();
             }
 
             // a series of state changes can happen in a single frame.
             // this loop limits them in case we've entered an infinite loop.
             for (i = 0; i < 20; i++) {
-                if (this.idealState != this.state) {
-                    SetState(this.idealState);
+                if (idealState != state) {
+                    SetState(idealState);
                 }
 
                 // don't call script until it's done waiting
-                if (this.scriptThread.IsWaiting()) {
+                if (scriptThread.IsWaiting()) {
                     break;
                 }
 
-                this.scriptThread.Execute();
-                if (this.idealState == this.state) {
+                scriptThread.Execute();
+                if (idealState == state) {
                     break;
                 }
             }
 
             if (i == 20) {
-                this.scriptThread.Warning("idActor::UpdateScript: exited loop to prevent lockup");
+                scriptThread.Warning("idActor::UpdateScript: exited loop to prevent lockup");
             }
         }
 
         public function_t GetScriptFunction(final String funcname) {
             final function_t func;
 
-            func = this.scriptObject.GetFunction(funcname);
+            func = scriptObject.GetFunction(funcname);
             if (null == func) {
-                this.scriptThread.Error("Unknown function '%s' in '%s'", funcname, this.scriptObject.GetTypeName());
+                scriptThread.Error("Unknown function '%s' in '%s'", funcname, scriptObject.GetTypeName());
             }
 
             return func;
@@ -1211,16 +1206,16 @@ public class Actor {
 
         public void SetState(final function_t newState) {
             if (NOT(newState)) {
-                idGameLocal.Error("idActor::SetState: Null state");
+                gameLocal.Error("idActor::SetState: Null state");
             }
 
-            if (ai_debugScript.GetInteger() == this.entityNumber) {
-                gameLocal.Printf("%d: %s: State: %s\n", gameLocal.time, this.name, newState.Name());
+            if (ai_debugScript.GetInteger() == entityNumber) {
+                gameLocal.Printf("%d: %s: State: %s\n", gameLocal.time, name, newState.Name());
             }
 
-            this.state = newState;
-            this.idealState = this.state;
-            this.scriptThread.CallFunction(this, this.state, true);
+            state = newState;
+            idealState = state;
+            scriptThread.CallFunction(this, state, true);
         }
 
         public void SetState(final String statename) {
@@ -1237,32 +1232,32 @@ public class Actor {
          ***********************************************************************/
         // vision testing
         public void SetEyeHeight(float height) {
-            this.eyeOffset.z = height;
+            eyeOffset.z = height;
         }
 
         public float EyeHeight() {
-            return this.eyeOffset.z;
+            return eyeOffset.z;
         }
 
         public idVec3 EyeOffset() {
-            return GetPhysics().GetGravityNormal().oMultiply(-this.eyeOffset.z);
+            return GetPhysics().GetGravityNormal().oMultiply(-eyeOffset.z);
         }
 
         public idVec3 GetEyePosition() {
-            return GetPhysics().GetOrigin().oPlus((GetPhysics().GetGravityNormal().oMultiply(-this.eyeOffset.z)));
+            return GetPhysics().GetOrigin().oPlus((GetPhysics().GetGravityNormal().oMultiply(-eyeOffset.z)));
         }
 
         public void GetViewPos(idVec3 origin, idMat3 axis) {
             origin.oSet(GetEyePosition());
-            axis.oSet(this.viewAxis);
+            axis.oSet(viewAxis);
         }
 
         public void SetFOV(float fov) {
-            this.fovDot = (float) Math.cos(DEG2RAD(fov * 0.5f));
+            fovDot = (float) Math.cos(DEG2RAD(fov * 0.5f));
         }
 
         public boolean CheckFOV(final idVec3 pos) {
-            if (this.fovDot == 1.0f) {
+            if (fovDot == 1.0f) {
                 return true;
             }
 
@@ -1278,13 +1273,13 @@ public class Actor {
             delta.oMinSet(gravityDir.oMultiply(gravityDir.oMultiply(delta)));
 
             delta.Normalize();
-            dot = this.viewAxis.oGet(0).oMultiply(delta);
+            dot = viewAxis.oGet(0).oMultiply(delta);
 
-            return (dot >= this.fovDot);
+            return (dot >= fovDot);
         }
 
         public boolean CanSee(idEntity ent, boolean useFOV) {
-            final trace_s[] tr = {null};
+            trace_s[] tr = {null};
             idVec3 eye;
             idVec3 toPos;
 
@@ -1305,7 +1300,7 @@ public class Actor {
             eye = GetEyePosition();
 
             gameLocal.clip.TracePoint(tr, eye, toPos, MASK_OPAQUE, this);
-            if ((tr[0].fraction >= 1.0f) || (gameLocal.GetTraceEntity(tr[0]) == ent)) {
+            if (tr[0].fraction >= 1.0f || (gameLocal.GetTraceEntity(tr[0]) == ent)) {
                 return true;
             }
 
@@ -1313,7 +1308,7 @@ public class Actor {
         }
 
         public boolean PointVisible(final idVec3 point) {
-            final trace_s[] results = {null};
+            trace_s[] results = {null};
             idVec3 start, end;
 
             start = GetEyePosition();
@@ -1352,44 +1347,44 @@ public class Actor {
         public void SetupDamageGroups() {
             int i;
             idKeyValue arg;
-            final idStr groupname = new idStr();
-            final idList<Integer/*jointHandle_t*/> jointList = new idList<>();
+            idStr groupname = new idStr();
+            idList<Integer/*jointHandle_t*/> jointList = new idList<>();
             int jointnum;
             float scale;
 
             // create damage zones
-            this.damageGroups.SetNum(this.animator.NumJoints());
-            arg = this.spawnArgs.MatchPrefix("damage_zone ", null);
+            damageGroups.SetNum(animator.NumJoints());
+            arg = spawnArgs.MatchPrefix("damage_zone ", null);
             while (arg != null) {
                 groupname.oSet(arg.GetKey());
                 groupname.Strip("damage_zone ");
-                this.animator.GetJointList(arg.GetValue(), jointList);
+                animator.GetJointList(arg.GetValue(), jointList);
                 for (i = 0; i < jointList.Num(); i++) {
                     jointnum = jointList.oGet(i);
-                    this.damageGroups.oSet(jointnum, groupname);
+                    damageGroups.oSet(jointnum, groupname);
                 }
                 jointList.Clear();
-                arg = this.spawnArgs.MatchPrefix("damage_zone ", arg);
+                arg = spawnArgs.MatchPrefix("damage_zone ", arg);
             }
 
             // initilize the damage zones to normal damage
-            this.damageScale.SetNum(this.animator.NumJoints());
-            for (i = 0; i < this.damageScale.Num(); i++) {
-                this.damageScale.oSet(i, 1.0f);
+            damageScale.SetNum(animator.NumJoints());
+            for (i = 0; i < damageScale.Num(); i++) {
+                damageScale.oSet(i, 1.0f);
             }
 
             // set the percentage on damage zones
-            arg = this.spawnArgs.MatchPrefix("damage_scale ", null);
+            arg = spawnArgs.MatchPrefix("damage_scale ", null);
             while (arg != null) {
                 scale = atof(arg.GetValue());
                 groupname.oSet(arg.GetKey());
                 groupname.Strip("damage_scale ");
-                for (i = 0; i < this.damageScale.Num(); i++) {
-                    if (groupname.equals(this.damageGroups.oGet(i))) {
-                        this.damageScale.oSet(i, scale);
+                for (i = 0; i < damageScale.Num(); i++) {
+                    if (groupname.equals(damageGroups.oGet(i))) {
+                        damageScale.oSet(i, scale);
                     }
                 }
-                arg = this.spawnArgs.MatchPrefix("damage_scale ", arg);
+                arg = spawnArgs.MatchPrefix("damage_scale ", arg);
             }
         }
 
@@ -1414,7 +1409,7 @@ public class Actor {
          */
         @Override
         public void Damage(idEntity inflictor, idEntity attacker, final idVec3 dir, final String damageDefName, final float damageScale, final int location) {
-            if (!this.fl.takedamage) {
+            if (!fl.takedamage) {
                 return;
             }
 
@@ -1425,28 +1420,28 @@ public class Actor {
                 attacker = gameLocal.world;
             }
 
-            if (this.finalBoss && !inflictor.IsType(idSoulCubeMissile.class)) {
+            if (finalBoss && !inflictor.IsType(idSoulCubeMissile.class)) {
                 return;
             }
 
             final idDict damageDef = gameLocal.FindEntityDefDict(damageDefName);
             if (null == damageDef) {
-                idGameLocal.Error("Unknown damageDef '%s'", damageDefName);
+                gameLocal.Error("Unknown damageDef '%s'", damageDefName);
             }
 
-            final int[] damage = {(int) (damageDef.GetInt("damage") * damageScale)};
+            int[] damage = {(int) (damageDef.GetInt("damage") * damageScale)};
             damage[0] = GetDamageForLocation(damage[0], location);
 
             // inform the attacker that they hit someone
             attacker.DamageFeedback(this, inflictor, damage);
             if (damage[0] > 0) {
-                this.health -= damage[0];
-                if (this.health <= 0) {
-                    if (this.health < -999) {
-                        this.health = -999;
+                health -= damage[0];
+                if (health <= 0) {
+                    if (health < -999) {
+                        health = -999;
                     }
                     Killed(inflictor, attacker, damage[0], dir, location);
-                    if ((this.health < -20) && this.spawnArgs.GetBool("gib") && damageDef.GetBool("gib")) {
+                    if ((health < -20) && spawnArgs.GetBool("gib") && damageDef.GetBool("gib")) {
                         Gib(dir, damageDefName);
                     }
                 } else {
@@ -1454,9 +1449,9 @@ public class Actor {
                 }
             } else {
                 // don't accumulate knockback
-                if (this.af.IsLoaded()) {
+                if (af.IsLoaded()) {
                     // clear impacts
-                    this.af.Rest();
+                    af.Rest();
 
                     // physics is turned off by calling af.Rest()
                     BecomeActive(TH_PHYSICS);
@@ -1465,99 +1460,99 @@ public class Actor {
         }
 
         public int GetDamageForLocation(int damage, int location) {
-            if ((location < 0) || (location >= this.damageScale.Num())) {
+            if ((location < 0) || (location >= damageScale.Num())) {
                 return damage;
             }
 
-            return (int) Math.ceil(damage * this.damageScale.oGet(location));
+            return (int) Math.ceil(damage * damageScale.oGet(location));
         }
 
         public String GetDamageGroup(int location) {
-            if ((location < 0) || (location >= this.damageGroups.Num())) {
+            if ((location < 0) || (location >= damageGroups.Num())) {
                 return "";
             }
 
-            return this.damageGroups.oGet(location).getData();
+            return damageGroups.oGet(location).toString();
         }
 
         public void ClearPain() {
-            this.pain_debounce_time = 0;
+            pain_debounce_time = 0;
         }
 
         @Override
         public boolean Pain(idEntity inflictor, idEntity attacker, int damage, final idVec3 dir, int location) {
-            if (this.af.IsLoaded()) {
+            if (af.IsLoaded()) {
                 // clear impacts
-                this.af.Rest();
+                af.Rest();
 
                 // physics is turned off by calling af.Rest()
                 BecomeActive(TH_PHYSICS);
             }
 
-            if (gameLocal.time < this.pain_debounce_time) {
+            if (gameLocal.time < pain_debounce_time) {
                 return false;
             }
 
             // don't play pain sounds more than necessary
-            this.pain_debounce_time = gameLocal.time + this.pain_delay;
+            pain_debounce_time = gameLocal.time + pain_delay;
 
-            if (this.health > 75) {
+            if (health > 75) {
                 StartSound("snd_pain_small", SND_CHANNEL_VOICE, 0, false, null);
-            } else if (this.health > 50) {
+            } else if (health > 50) {
                 StartSound("snd_pain_medium", SND_CHANNEL_VOICE, 0, false, null);
-            } else if (this.health > 25) {
+            } else if (health > 25) {
                 StartSound("snd_pain_large", SND_CHANNEL_VOICE, 0, false, null);
             } else {
                 StartSound("snd_pain_huge", SND_CHANNEL_VOICE, 0, false, null);
             }
 
-            if (!this.allowPain || (gameLocal.time < this.painTime)) {
+            if (!allowPain || (gameLocal.time < painTime)) {
                 // don't play a pain anim
                 return false;
             }
 
-            if ((this.pain_threshold != 0) && (damage < this.pain_threshold)) {
+            if (pain_threshold != 0 && (damage < pain_threshold)) {
                 return false;
             }
 
             // set the pain anim
-            final String damageGroup = GetDamageGroup(location);
+            String damageGroup = GetDamageGroup(location);
 
-            this.painAnim.oSet("");
-            if (this.animPrefix.Length() != 0) {
+            painAnim.oSet("");
+            if (animPrefix.Length() != 0) {
                 if (isNotNullOrEmpty(damageGroup) && !damageGroup.equals("legs")) {
-                    this.painAnim.oSet(String.format("%s_pain_%s", this.animPrefix.getData(), damageGroup));
-                    if (!this.animator.HasAnim(this.painAnim)) {
-                        this.painAnim.oSet(String.format("pain_%s", damageGroup));
-                        if (!this.animator.HasAnim(this.painAnim)) {
-                            this.painAnim.oSet("");
+                    painAnim.oSet(String.format("%s_pain_%s", animPrefix.toString(), damageGroup));
+                    if (!animator.HasAnim(painAnim)) {
+                        painAnim.oSet(String.format("pain_%s", damageGroup));
+                        if (!animator.HasAnim(painAnim)) {
+                            painAnim.oSet("");
                         }
                     }
                 }
 
-                if (0 == this.painAnim.Length()) {
-                    this.painAnim.oSet(String.format("%s_pain", this.animPrefix.getData()));
-                    if (!this.animator.HasAnim(this.painAnim)) {
-                        this.painAnim.oSet("");
+                if (0 == painAnim.Length()) {
+                    painAnim.oSet(String.format("%s_pain", animPrefix.toString()));
+                    if (!animator.HasAnim(painAnim)) {
+                        painAnim.oSet("");
                     }
                 }
             } else if (isNotNullOrEmpty(damageGroup) && (!damageGroup.equals("legs"))) {
-                this.painAnim.oSet(String.format("pain_%s", damageGroup));
-                if (!this.animator.HasAnim(this.painAnim)) {
-                    this.painAnim.oSet(String.format("pain_%s", damageGroup));
-                    if (!this.animator.HasAnim(this.painAnim)) {
-                        this.painAnim.oSet("");
+                painAnim.oSet(String.format("pain_%s", damageGroup));
+                if (!animator.HasAnim(painAnim)) {
+                    painAnim.oSet(String.format("pain_%s", damageGroup));
+                    if (!animator.HasAnim(painAnim)) {
+                        painAnim.oSet("");
                     }
                 }
             }
 
-            if (0 == this.painAnim.Length()) {
-                this.painAnim.oSet("pain");
+            if (0 == painAnim.Length()) {
+                painAnim.oSet("pain");
             }
 
             if (g_debugDamage.GetBool()) {
-                gameLocal.Printf("Damage: joint: '%s', zone '%s', anim '%s'\n", this.animator.GetJointName(location),
-                        damageGroup, this.painAnim);
+                gameLocal.Printf("Damage: joint: '%s', zone '%s', anim '%s'\n", animator.GetJointName((int/*jointHandle_t*/) location),
+                        damageGroup, painAnim);
             }
 
             return true;
@@ -1574,15 +1569,15 @@ public class Actor {
         public void SetCombatModel() {
             idAFAttachment headEnt;
 
-            if (!this.use_combat_bbox) {
-                if (this.combatModel != null) {
-                    this.combatModel.Unlink();
-                    this.combatModel.LoadModel(this.modelDefHandle);
+            if (!use_combat_bbox) {
+                if (combatModel != null) {
+                    combatModel.Unlink();
+                    combatModel.LoadModel(modelDefHandle);
                 } else {
-                    this.combatModel = new idClipModel(this.modelDefHandle);
+                    combatModel = new idClipModel(modelDefHandle);
                 }
 
-                headEnt = this.head.GetEntity();
+                headEnt = head.GetEntity();
                 if (headEnt != null) {
                     headEnt.SetCombatModel();
                 }
@@ -1591,21 +1586,21 @@ public class Actor {
 
         @Override
         public idClipModel GetCombatModel() {
-            return this.combatModel;
+            return combatModel;
         }
 
         @Override
         public void LinkCombat() {
             idAFAttachment headEnt;
 
-            if (this.fl.hidden || this.use_combat_bbox) {
+            if (fl.hidden || use_combat_bbox) {
                 return;
             }
 
-            if (this.combatModel != null) {
-                this.combatModel.Link(gameLocal.clip, this, 0, this.renderEntity.origin, this.renderEntity.axis, this.modelDefHandle);
+            if (combatModel != null) {
+                combatModel.Link(gameLocal.clip, this, 0, renderEntity.origin, renderEntity.axis, modelDefHandle);
             }
-            headEnt = this.head.GetEntity();
+            headEnt = head.GetEntity();
             if (headEnt != null) {
                 headEnt.LinkCombat();
             }
@@ -1615,10 +1610,10 @@ public class Actor {
         public void UnlinkCombat() {
             idAFAttachment headEnt;
 
-            if (this.combatModel != null) {
-                this.combatModel.Unlink();
+            if (combatModel != null) {
+                combatModel.Unlink();
             }
-            headEnt = this.head.GetEntity();
+            headEnt = head.GetEntity();
             if (headEnt != null) {
                 headEnt.UnlinkCombat();
             }
@@ -1630,12 +1625,12 @@ public class Actor {
             float contactFrictionDent, contactFrictionDentStart, contactFrictionDentEnd;
 
             // if no AF loaded
-            if (!this.af.IsLoaded()) {
+            if (!af.IsLoaded()) {
                 return false;
             }
 
             // if the AF is already active
-            if (this.af.IsActive()) {
+            if (af.IsActive()) {
                 return true;
             }
 
@@ -1643,27 +1638,27 @@ public class Actor {
             GetPhysics().DisableClip();
 
             // start using the AF
-            this.af.StartFromCurrentPose(this.spawnArgs.GetInt("velocityTime", "0"));
+            af.StartFromCurrentPose(spawnArgs.GetInt("velocityTime", "0"));
 
-            slomoStart = MS2SEC(gameLocal.time) + this.spawnArgs.GetFloat("ragdoll_slomoStart", "-1.6");
-            slomoEnd = MS2SEC(gameLocal.time) + this.spawnArgs.GetFloat("ragdoll_slomoEnd", "0.8");
+            slomoStart = MS2SEC(gameLocal.time) + spawnArgs.GetFloat("ragdoll_slomoStart", "-1.6");
+            slomoEnd = MS2SEC(gameLocal.time) + spawnArgs.GetFloat("ragdoll_slomoEnd", "0.8");
 
             // do the first part of the death in slow motion
-            this.af.GetPhysics().SetTimeScaleRamp(slomoStart, slomoEnd);
+            af.GetPhysics().SetTimeScaleRamp(slomoStart, slomoEnd);
 
-            jointFrictionDent = this.spawnArgs.GetFloat("ragdoll_jointFrictionDent", "0.1");
-            jointFrictionDentStart = MS2SEC(gameLocal.time) + this.spawnArgs.GetFloat("ragdoll_jointFrictionStart", "0.2");
-            jointFrictionDentEnd = MS2SEC(gameLocal.time) + this.spawnArgs.GetFloat("ragdoll_jointFrictionEnd", "1.2");
+            jointFrictionDent = spawnArgs.GetFloat("ragdoll_jointFrictionDent", "0.1");
+            jointFrictionDentStart = MS2SEC(gameLocal.time) + spawnArgs.GetFloat("ragdoll_jointFrictionStart", "0.2");
+            jointFrictionDentEnd = MS2SEC(gameLocal.time) + spawnArgs.GetFloat("ragdoll_jointFrictionEnd", "1.2");
 
             // set joint friction dent
-            this.af.GetPhysics().SetJointFrictionDent(jointFrictionDent, jointFrictionDentStart, jointFrictionDentEnd);
+            af.GetPhysics().SetJointFrictionDent(jointFrictionDent, jointFrictionDentStart, jointFrictionDentEnd);
 
-            contactFrictionDent = this.spawnArgs.GetFloat("ragdoll_contactFrictionDent", "0.1");
-            contactFrictionDentStart = MS2SEC(gameLocal.time) + this.spawnArgs.GetFloat("ragdoll_contactFrictionStart", "1.0");
-            contactFrictionDentEnd = MS2SEC(gameLocal.time) + this.spawnArgs.GetFloat("ragdoll_contactFrictionEnd", "2.0");
+            contactFrictionDent = spawnArgs.GetFloat("ragdoll_contactFrictionDent", "0.1");
+            contactFrictionDentStart = MS2SEC(gameLocal.time) + spawnArgs.GetFloat("ragdoll_contactFrictionStart", "1.0");
+            contactFrictionDentEnd = MS2SEC(gameLocal.time) + spawnArgs.GetFloat("ragdoll_contactFrictionEnd", "2.0");
 
             // set contact friction dent
-            this.af.GetPhysics().SetContactFrictionDent(contactFrictionDent, contactFrictionDentStart, contactFrictionDentEnd);
+            af.GetPhysics().SetContactFrictionDent(contactFrictionDent, contactFrictionDentStart, contactFrictionDentEnd);
 
             // drop any items the actor is holding
             idMoveableItem.DropItems(this, "death", null);
@@ -1677,22 +1672,22 @@ public class Actor {
         }
 
         public void StopRagdoll() {
-            if (this.af.IsActive()) {
-                this.af.Stop();
+            if (af.IsActive()) {
+                af.Stop();
             }
         }
 
         @Override
         public boolean UpdateAnimationControllers() {
 
-            if (this.af.IsActive()) {
+            if (af.IsActive()) {
                 return idAFEntity_Base_UpdateAnimationControllers();
             } else {
-                this.animator.ClearAFPose();
+                animator.ClearAFPose();
             }
 
-            if (this.walkIK.IsInitialized()) {
-                this.walkIK.Evaluate();
+            if (walkIK.IsInitialized()) {
+                walkIK.Evaluate();
                 return true;
             }
 
@@ -1701,17 +1696,17 @@ public class Actor {
 
         // delta view angles to allow movers to rotate the view of the actor
         public idAngles GetDeltaViewAngles() {
-            return this.deltaViewAngles;
+            return deltaViewAngles;
         }
 
         public void SetDeltaViewAngles(final idAngles delta) {
-            this.deltaViewAngles = delta;
+            deltaViewAngles = delta;
         }
 
         public boolean HasEnemies() {
             idActor ent;
 
-            for (ent = this.enemyList.Next(); ent != null; ent = ent.enemyNode.Next()) {
+            for (ent = enemyList.Next(); ent != null; ent = ent.enemyNode.Next()) {
                 if (!ent.fl.hidden) {
                     return true;
                 }
@@ -1729,7 +1724,7 @@ public class Actor {
 
             bestDistSquared = idMath.INFINITY;
             bestEnt = null;
-            for (ent = this.enemyList.Next(); ent != null; ent = ent.enemyNode.Next()) {
+            for (ent = enemyList.Next(); ent != null; ent = ent.enemyNode.Next()) {
                 if (ent.fl.hidden) {
                     continue;
                 }
@@ -1750,7 +1745,7 @@ public class Actor {
 
             int most = -9999;
             bestEnt = null;
-            for (ent = this.enemyList.Next(); ent != null; ent = ent.enemyNode.Next()) {
+            for (ent = enemyList.Next(); ent != null; ent = ent.enemyNode.Next()) {
                 if (!ent.fl.hidden && (ent.health > most)) {
                     bestEnt = ent;
                     most = ent.health;
@@ -1765,7 +1760,7 @@ public class Actor {
 
         public void GetAASLocation(idAAS aas, idVec3 pos, int[] areaNum) {
             idVec3 size;
-            final idBounds bounds = new idBounds();
+            idBounds bounds = new idBounds();
 
             GetFloorPos(64.0f, pos);
             if (NOT(aas)) {
@@ -1785,33 +1780,33 @@ public class Actor {
         }
 
         public void Attach(idEntity ent) {
-            final idVec3 origin = new idVec3();
-            final idMat3 axis = new idMat3();
+            idVec3 origin = new idVec3();
+            idMat3 axis = new idMat3();
             int/*jointHandle_t*/ joint;
             String jointName;
-            final idAttachInfo attach = this.attachments.Alloc();
+            idAttachInfo attach = attachments.Alloc();
             idAngles angleOffset;
             idVec3 originOffset;
 
             jointName = ent.spawnArgs.GetString("joint");
-            joint = this.animator.GetJointHandle(jointName);
+            joint = animator.GetJointHandle(jointName);
             if (joint == INVALID_JOINT) {
-                idGameLocal.Error("Joint '%s' not found for attaching '%s' on '%s'", jointName, ent.GetClassname(), this.name);
+                gameLocal.Error("Joint '%s' not found for attaching '%s' on '%s'", jointName, ent.GetClassname(), name);
             }
 
             angleOffset = ent.spawnArgs.GetAngles("angles");
             originOffset = ent.spawnArgs.GetVector("origin");
 
-            attach.channel = this.animator.GetChannelForJoint(joint);
+            attach.channel = animator.GetChannelForJoint(joint);
             GetJointWorldTransform(joint, gameLocal.time, origin, axis);
             attach.ent.oSet(ent);
 
-            ent.SetOrigin(origin.oPlus(originOffset.oMultiply(this.renderEntity.axis)));
-            final idMat3 rotate = angleOffset.ToMat3();
-            final idMat3 newAxis = rotate.oMultiply(axis);
+            ent.SetOrigin(origin.oPlus(originOffset.oMultiply(renderEntity.axis)));
+            idMat3 rotate = angleOffset.ToMat3();
+            idMat3 newAxis = rotate.oMultiply(axis);
             ent.SetAxis(newAxis);
             ent.BindToJoint(this, joint, true);
-            ent.cinematic = this.cinematic;
+            ent.cinematic = cinematic;
         }
 
         @Override
@@ -1819,7 +1814,7 @@ public class Actor {
             GetPhysics().SetOrigin(origin.oPlus(new idVec3(0, 0, CM_CLIP_EPSILON)));
             GetPhysics().SetLinearVelocity(getVec3_origin());
 
-            this.viewAxis = angles.ToMat3();
+            viewAxis = angles.ToMat3();
 
             UpdateVisuals();
 
@@ -1831,8 +1826,8 @@ public class Actor {
 
         @Override
         public renderView_s GetRenderView() {
-            final renderView_s rv = super.GetRenderView();//TODO:super.super....
-            rv.viewaxis = new idMat3(this.viewAxis);
+            renderView_s rv = super.GetRenderView();//TODO:super.super....
+            rv.viewaxis = new idMat3(viewAxis);
             rv.vieworg = GetEyePosition();
             return rv;
         }
@@ -1849,16 +1844,16 @@ public class Actor {
             idAnimator animatorPtr;
 
             if (channel == ANIMCHANNEL_HEAD) {
-                if (NOT(this.head.GetEntity())) {
+                if (NOT(head.GetEntity())) {
                     return 0;
                 }
-                animatorPtr = this.head.GetEntity().GetAnimator();
+                animatorPtr = head.GetEntity().GetAnimator();
             } else {
-                animatorPtr = this.animator;
+                animatorPtr = animator;
             }
 
-            if (this.animPrefix.Length() != 0) {
-                temp = va("%s_%s", this.animPrefix, animName);
+            if (animPrefix.Length() != 0) {
+                temp = va("%s_%s", animPrefix, animName);
                 anim = animatorPtr.GetAnim(temp);
                 if (anim != 0) {
                     return anim;
@@ -1871,42 +1866,42 @@ public class Actor {
         }
 
         public void UpdateAnimState() {
-            this.headAnim.UpdateState();
-            this.torsoAnim.UpdateState();
-            this.legsAnim.UpdateState();
+            headAnim.UpdateState();
+            torsoAnim.UpdateState();
+            legsAnim.UpdateState();
         }
 
         public void SetAnimState(int channel, final String statename, int blendFrames) {
             function_t func;
 
-            func = this.scriptObject.GetFunction(statename);
+            func = scriptObject.GetFunction(statename);
             if (null == func) {
                 assert (false);
-                idGameLocal.Error("Can't find function '%s' in object '%s'", statename, this.scriptObject.GetTypeName());
+                gameLocal.Error("Can't find function '%s' in object '%s'", statename, scriptObject.GetTypeName());
             }
 
             switch (channel) {
                 case ANIMCHANNEL_HEAD:
-                    this.headAnim.SetState(statename, blendFrames);
-                    this.allowEyeFocus = true;
+                    headAnim.SetState(statename, blendFrames);
+                    allowEyeFocus = true;
                     break;
 
                 case ANIMCHANNEL_TORSO:
-                    this.torsoAnim.SetState(statename, blendFrames);
-                    this.legsAnim.Enable(blendFrames);
-                    this.allowPain = true;
-                    this.allowEyeFocus = true;
+                    torsoAnim.SetState(statename, blendFrames);
+                    legsAnim.Enable(blendFrames);
+                    allowPain = true;
+                    allowEyeFocus = true;
                     break;
 
                 case ANIMCHANNEL_LEGS:
-                    this.legsAnim.SetState(statename, blendFrames);
-                    this.torsoAnim.Enable(blendFrames);
-                    this.allowPain = true;
-                    this.allowEyeFocus = true;
+                    legsAnim.SetState(statename, blendFrames);
+                    torsoAnim.Enable(blendFrames);
+                    allowPain = true;
+                    allowEyeFocus = true;
                     break;
 
                 default:
-                    idGameLocal.Error("idActor::SetAnimState: Unknown anim group");
+                    gameLocal.Error("idActor::SetAnimState: Unknown anim group");
                     break;
             }
         }
@@ -1914,13 +1909,13 @@ public class Actor {
         public idStr GetAnimState(int channel) {
             switch (channel) {
                 case ANIMCHANNEL_HEAD:
-                    return this.headAnim.state;
+                    return headAnim.state;
                 case ANIMCHANNEL_TORSO:
-                    return this.torsoAnim.state;
+                    return torsoAnim.state;
                 case ANIMCHANNEL_LEGS:
-                    return this.legsAnim.state;
+                    return legsAnim.state;
                 default:
-                    idGameLocal.Error("idActor::GetAnimState: Unknown anim group");
+                    gameLocal.Error("idActor::GetAnimState: Unknown anim group");
                     return null;
             }
         }
@@ -1928,25 +1923,25 @@ public class Actor {
         public boolean InAnimState(int channel, final String stateName) {
             switch (channel) {
                 case ANIMCHANNEL_HEAD:
-                    if (this.headAnim.state.equals(stateName)) {
+                    if (headAnim.state.equals(stateName)) {
                         return true;
                     }
                     break;
 
                 case ANIMCHANNEL_TORSO:
-                    if (this.torsoAnim.state.equals(stateName)) {
+                    if (torsoAnim.state.equals(stateName)) {
                         return true;
                     }
                     break;
 
                 case ANIMCHANNEL_LEGS:
-                    if (this.legsAnim.state.equals(stateName)) {
+                    if (legsAnim.state.equals(stateName)) {
                         return true;
                     }
                     break;
 
                 default:
-                    idGameLocal.Error("idActor::InAnimState: Unknown anim group");
+                    gameLocal.Error("idActor::InAnimState: Unknown anim group");
                     break;
             }
 
@@ -1954,25 +1949,25 @@ public class Actor {
         }
 
         public String WaitState() {
-            if (this.waitState.Length() != 0) {
-                return this.waitState.getData();
+            if (waitState.Length() != 0) {
+                return waitState.toString();
             } else {
                 return null;
             }
         }
 
         public void SetWaitState(final String _waitstate) {
-            this.waitState.oSet(_waitstate);
+            waitState.oSet(_waitstate);
         }
 
         public boolean AnimDone(int channel, int blendFrames) {
             int animDoneTime;
 
-            animDoneTime = this.animator.CurrentAnim(channel).GetEndTime();
+            animDoneTime = animator.CurrentAnim(channel).GetEndTime();
             if (animDoneTime < 0) {
                 // playing a cycle
                 return false;
-            } else if ((animDoneTime - FRAME2MS(blendFrames)) <= gameLocal.time) {
+            } else if (animDoneTime - FRAME2MS(blendFrames) <= gameLocal.time) {
                 return true;
             } else {
                 return false;
@@ -1992,12 +1987,12 @@ public class Actor {
                 return;
             }
             // only gib once
-            if (this.gibbed) {
+            if (gibbed) {
                 return;
             }
             super.Gib(dir, damageDefName);
-            if (this.head.GetEntity() != null) {
-                this.head.GetEntity().Hide();
+            if (head.GetEntity() != null) {
+                head.GetEntity().Hide();
             }
             StopSound(etoi(SND_CHANNEL_VOICE), false);
         }
@@ -2008,9 +2003,9 @@ public class Actor {
             idEntity ent;
 
             // remove any attached entities
-            for (i = 0; i < this.attachments.Num(); i++) {
-                ent = this.attachments.oGet(i).ent.GetEntity();
-                if ((ent != null) && ent.spawnArgs.GetBool("remove")) {
+            for (i = 0; i < attachments.Num(); i++) {
+                ent = attachments.oGet(i).ent.GetEntity();
+                if (ent != null && ent.spawnArgs.GetBool("remove")) {
                     ent.PostEventMS(EV_Remove, 0);
                 }
             }
@@ -2018,12 +2013,12 @@ public class Actor {
 
         // copies animation from body to head joints
         protected void CopyJointsFromBodyToHead() {
-            final idEntity headEnt = this.head.GetEntity();
+            idEntity headEnt = head.GetEntity();
             idAnimator headAnimator;
             int i;
             idMat3 mat;
-            final idMat3 axis = new idMat3();
-            final idVec3 pos = new idVec3();
+            idMat3 axis = new idMat3();
+            idVec3 pos = new idVec3();
 
             if (null == headEnt) {
                 return;
@@ -2032,17 +2027,17 @@ public class Actor {
             headAnimator = headEnt.GetAnimator();
 
             // copy the animation from the body to the head
-            for (i = 0; i < this.copyJoints.Num(); i++) {
-                if (this.copyJoints.oGet(i).mod == JOINTMOD_WORLD_OVERRIDE) {
+            for (i = 0; i < copyJoints.Num(); i++) {
+                if (copyJoints.oGet(i).mod == JOINTMOD_WORLD_OVERRIDE) {
                     mat = headEnt.GetPhysics().GetAxis().Transpose();
-                    GetJointWorldTransform(this.copyJoints.oGet(i).from[0], gameLocal.time, pos, axis);
+                    GetJointWorldTransform(copyJoints.oGet(i).from[0], gameLocal.time, pos, axis);
                     pos.oMinSet(headEnt.GetPhysics().GetOrigin());
-                    headAnimator.SetJointPos(this.copyJoints.oGet(i).to[0], this.copyJoints.oGet(i).mod, pos.oMultiply(mat));
-                    headAnimator.SetJointAxis(this.copyJoints.oGet(i).to[0], this.copyJoints.oGet(i).mod, axis.oMultiply(mat));
+                    headAnimator.SetJointPos(copyJoints.oGet(i).to[0], copyJoints.oGet(i).mod, pos.oMultiply(mat));
+                    headAnimator.SetJointAxis(copyJoints.oGet(i).to[0], copyJoints.oGet(i).mod, axis.oMultiply(mat));
                 } else {
-                    this.animator.GetJointLocalTransform(this.copyJoints.oGet(i).from[0], gameLocal.time, pos, axis);
-                    headAnimator.SetJointPos(this.copyJoints.oGet(i).to[0], this.copyJoints.oGet(i).mod, pos);
-                    headAnimator.SetJointAxis(this.copyJoints.oGet(i).to[0], this.copyJoints.oGet(i).mod, axis);
+                    animator.GetJointLocalTransform(copyJoints.oGet(i).from[0], gameLocal.time, pos, axis);
+                    headAnimator.SetJointPos(copyJoints.oGet(i).to[0], copyJoints.oGet(i).mod, pos);
+                    headAnimator.SetJointAxis(copyJoints.oGet(i).to[0], copyJoints.oGet(i).mod, axis);
                 }
             }
         }
@@ -2058,18 +2053,18 @@ public class Actor {
 
             blendTime = FRAME2MS(blendFrames);
             if (channel == ANIMCHANNEL_HEAD) {
-                headEnt = this.head.GetEntity();
+                headEnt = head.GetEntity();
                 if (headEnt != null) {
                     headAnimator = headEnt.GetAnimator();
-                    syncAnim = this.animator.CurrentAnim(syncToChannel);
+                    syncAnim = animator.CurrentAnim(syncToChannel);
                     if (syncAnim != null) {
                         anim = headAnimator.GetAnim(syncAnim.AnimFullName());
                         if (0 == anim) {
                             anim = headAnimator.GetAnim(syncAnim.AnimName());
                         }
                         if (anim != 0) {
-                            cycle = this.animator.CurrentAnim(syncToChannel).GetCycleCount();
-                            starttime = this.animator.CurrentAnim(syncToChannel).GetStartTime();
+                            cycle = animator.CurrentAnim(syncToChannel).GetCycleCount();
+                            starttime = animator.CurrentAnim(syncToChannel).GetStartTime();
                             headAnimator.PlayAnim(ANIMCHANNEL_ALL, anim, gameLocal.time, blendTime);
                             headAnimator.CurrentAnim(ANIMCHANNEL_ALL).SetCycleCount(cycle);
                             headAnimator.CurrentAnim(ANIMCHANNEL_ALL).SetStartTime(starttime);
@@ -2079,7 +2074,7 @@ public class Actor {
                     }
                 }
             } else if (syncToChannel == ANIMCHANNEL_HEAD) {
-                headEnt = this.head.GetEntity();
+                headEnt = head.GetEntity();
                 if (headEnt != null) {
                     headAnimator = headEnt.GetAnimator();
                     syncAnim = headAnimator.CurrentAnim(ANIMCHANNEL_ALL);
@@ -2091,24 +2086,24 @@ public class Actor {
                         if (anim != 0) {
                             cycle = headAnimator.CurrentAnim(ANIMCHANNEL_ALL).GetCycleCount();
                             starttime = headAnimator.CurrentAnim(ANIMCHANNEL_ALL).GetStartTime();
-                            this.animator.PlayAnim(channel, anim, gameLocal.time, blendTime);
-                            this.animator.CurrentAnim(channel).SetCycleCount(cycle);
-                            this.animator.CurrentAnim(channel).SetStartTime(starttime);
+                            animator.PlayAnim(channel, anim, gameLocal.time, blendTime);
+                            animator.CurrentAnim(channel).SetCycleCount(cycle);
+                            animator.CurrentAnim(channel).SetStartTime(starttime);
                         }
                     }
                 }
             } else {
-                this.animator.SyncAnimChannels(channel, syncToChannel, gameLocal.time, blendTime);
+                animator.SyncAnimChannels(channel, syncToChannel, gameLocal.time, blendTime);
             }
         }
 
         private void FinishSetup() {
-            final String[] scriptObjectName = {null};
+            String[] scriptObjectName = {null};
 
             // setup script object
-            if (this.spawnArgs.GetString("scriptobject", null, scriptObjectName)) {
-                if (!this.scriptObject.SetType(scriptObjectName[0])) {
-                    idGameLocal.Error("Script object '%s' not found on entity '%s'.", scriptObjectName, this.name);
+            if (spawnArgs.GetString("scriptobject", null, scriptObjectName)) {
+                if (!scriptObject.SetType(scriptObjectName[0])) {
+                    gameLocal.Error("Script object '%s' not found on entity '%s'.", scriptObjectName, name);
                 }
 
                 ConstructScriptObject();
@@ -2130,47 +2125,47 @@ public class Actor {
                 return;
             }
 
-            headModel = this.spawnArgs.GetString("def_head", "");
+            headModel = spawnArgs.GetString("def_head", "");
             if (!headModel.isEmpty()) {
-                jointName = this.spawnArgs.GetString("head_joint");
-                joint = this.animator.GetJointHandle(jointName);
+                jointName = spawnArgs.GetString("head_joint");
+                joint = animator.GetJointHandle(jointName);
                 if (joint == INVALID_JOINT) {
-                    idGameLocal.Error("Joint '%s' not found for 'head_joint' on '%s'", jointName, this.name);
+                    gameLocal.Error("Joint '%s' not found for 'head_joint' on '%s'", jointName, name);
                 }
 
                 // set the damage joint to be part of the head damage group
                 damageJoint = joint;
-                for (i = 0; i < this.damageGroups.Num(); i++) {
-                    final idStr d = this.damageGroups.oGet(i);
-                    if ((d != null) && d.equals("head")) {
+                for (i = 0; i < damageGroups.Num(); i++) {
+                    final idStr d = damageGroups.oGet(i);
+                    if (d != null && d.equals("head")) {
                         damageJoint = /*(jointHandle_t)*/ i;
                         break;
                     }
                 }
 
                 // copy any sounds in case we have frame commands on the head
-                final idDict args = new idDict();
-                sndKV = this.spawnArgs.MatchPrefix("snd_", null);
+                idDict args = new idDict();
+                sndKV = spawnArgs.MatchPrefix("snd_", null);
                 while (sndKV != null) {
                     args.Set(sndKV.GetKey(), sndKV.GetValue());
-                    sndKV = this.spawnArgs.MatchPrefix("snd_", sndKV);
+                    sndKV = spawnArgs.MatchPrefix("snd_", sndKV);
                 }
 
                 headEnt = (idAFAttachment) gameLocal.SpawnEntityType(idAFAttachment.class, args);
-                headEnt.SetName(va("%s_head", this.name));
+                headEnt.SetName(va("%s_head", name));
                 headEnt.SetBody(this, headModel, damageJoint);
-                this.head.oSet(headEnt);
+                head.oSet(headEnt);
 
                 idVec3 origin = new idVec3();
-                final idMat3 axis = new idMat3();
-                final idAttachInfo attach = this.attachments.Alloc();
-                attach.channel = this.animator.GetChannelForJoint(joint);
-                this.animator.GetJointTransform(joint, gameLocal.time, origin, axis);
-                origin = this.renderEntity.origin.oPlus((origin.oPlus(this.modelOffset)).oMultiply(this.renderEntity.axis));
+                idMat3 axis = new idMat3();
+                idAttachInfo attach = attachments.Alloc();
+                attach.channel = animator.GetChannelForJoint(joint);
+                animator.GetJointTransform(joint, gameLocal.time, origin, axis);
+                origin = renderEntity.origin.oPlus((origin.oPlus(modelOffset)).oMultiply(renderEntity.axis));
                 attach.ent = new idEntityPtr<>();
                 attach.ent.oSet(headEnt);
                 headEnt.SetOrigin(origin);
-                headEnt.SetAxis(this.renderEntity.axis);
+                headEnt.SetAxis(renderEntity.axis);
                 headEnt.BindToJoint(this, joint, true);
             }
         }
@@ -2186,10 +2181,10 @@ public class Actor {
             // start footstep sound based on material type
             material = GetPhysics().GetContact(0).material;
             if (material != null) {
-                sound = this.spawnArgs.GetString(va("snd_footstep_%s", gameLocal.sufaceTypeNames[etoi(material.GetSurfaceType())]));
+                sound = spawnArgs.GetString(va("snd_footstep_%s", gameLocal.sufaceTypeNames[etoi(material.GetSurfaceType())]));
             }
             if (sound.isEmpty()) {// == '\0' ) {
-                sound = this.spawnArgs.GetString("snd_footstep");
+                sound = spawnArgs.GetString("snd_footstep");
             }
             if (!sound.isEmpty()) {// != '\0' ) {
                 StartSoundShader(declManager.FindSound(sound), etoi(SND_CHANNEL_BODY), 0, false, null);
@@ -2207,10 +2202,10 @@ public class Actor {
             // start footstep sound based on material type
             material = GetPhysics().GetContact(0).material;
             if (material != null) {
-                sound = this.spawnArgs.GetString(va("snd_footstep_%s", gameLocal.sufaceTypeNames[etoi(material.GetSurfaceType())]));
+                sound = spawnArgs.GetString(va("snd_footstep_%s", gameLocal.sufaceTypeNames[etoi(material.GetSurfaceType())]));
             }
             if (sound.isEmpty()) {// == '\0' ) {
-                sound = this.spawnArgs.GetString("snd_footstep");
+                sound = spawnArgs.GetString("snd_footstep");
             }
             if (!sound.isEmpty()) {// != '\0' ) {
                 StartSoundShader(declManager.FindSound(sound), etoi(SND_CHANNEL_BODY), 0, false, null);
@@ -2218,13 +2213,13 @@ public class Actor {
         }
 
         private void Event_DisableEyeFocus() {
-            this.allowEyeFocus = false;
+            allowEyeFocus = false;
 
-            final idEntity headEnt = this.head.GetEntity();
+            idEntity headEnt = head.GetEntity();
             if (headEnt != null) {
                 headEnt.GetAnimator().Clear(ANIMCHANNEL_EYELIDS, gameLocal.time, FRAME2MS(2));
             } else {
-                this.animator.Clear(ANIMCHANNEL_EYELIDS, gameLocal.time, FRAME2MS(2));
+                animator.Clear(ANIMCHANNEL_EYELIDS, gameLocal.time, FRAME2MS(2));
             }
         }
 
@@ -2233,62 +2228,62 @@ public class Actor {
         }
 
         private void Event_EnableWalkIK() {
-            this.walkIK.EnableAll();
+            walkIK.EnableAll();
         }
 
         private void Event_DisableWalkIK() {
-            this.walkIK.DisableAll();
+            walkIK.DisableAll();
         }
 
         private void Event_EnableLegIK(idEventArg<Integer> num) {
-            this.walkIK.EnableLeg(num.value);
+            walkIK.EnableLeg(num.value);
         }
 
         private void Event_DisableLegIK(idEventArg<Integer> num) {
-            this.walkIK.DisableLeg(num.value);
+            walkIK.DisableLeg(num.value);
         }
 
         private void Event_SetAnimPrefix(final idEventArg<String> prefix) {
-            this.animPrefix.oSet(prefix.value);
+            animPrefix.oSet(prefix.value);
         }
 
 //        private void Event_LookAtEntity(idEntity ent, float duration);
         private void Event_PreventPain(idEventArg<Float> duration) {
-            this.painTime = (int) (gameLocal.time + SEC2MS(duration.value));
+            painTime = (int) (gameLocal.time + SEC2MS(duration.value));
         }
 
         private void Event_DisablePain() {
-            this.allowPain = false;
+            allowPain = false;
         }
 
         private void Event_EnablePain() {
-            this.allowPain = true;
+            allowPain = true;
         }
 
         private void Event_GetPainAnim() {
-            if (0 == this.painAnim.Length()) {
+            if (0 == painAnim.Length()) {
                 idThread.ReturnString("pain");
             } else {
-                idThread.ReturnString(this.painAnim);
+                idThread.ReturnString(painAnim);
             }
         }
 
         private void Event_StopAnim(idEventArg<Integer> channel, idEventArg<Integer> frames) {
             switch (channel.value) {
                 case ANIMCHANNEL_HEAD:
-                    this.headAnim.StopAnim(frames.value);
+                    headAnim.StopAnim(frames.value);
                     break;
 
                 case ANIMCHANNEL_TORSO:
-                    this.torsoAnim.StopAnim(frames.value);
+                    torsoAnim.StopAnim(frames.value);
                     break;
 
                 case ANIMCHANNEL_LEGS:
-                    this.legsAnim.StopAnim(frames.value);
+                    legsAnim.StopAnim(frames.value);
                     break;
 
                 default:
-                    idGameLocal.Error("Unknown anim group");
+                    gameLocal.Error("Unknown anim group");
                     break;
             }
         }
@@ -2302,10 +2297,10 @@ public class Actor {
 
             anim = GetAnim(channel, animName);
             if (0 == anim) {
-                if ((channel == ANIMCHANNEL_HEAD) && (this.head.GetEntity() != null)) {
-                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, this.name.getData(), this.spawnArgs.GetString("def_head", ""));
+                if ((channel == ANIMCHANNEL_HEAD) && head.GetEntity() != null) {
+                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, name.toString(), spawnArgs.GetString("def_head", ""));
                 } else {
-                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, this.name.getData(), GetEntityDefName());
+                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, name.toString(), GetEntityDefName());
                 }
                 idThread.ReturnInt(0);
                 return;
@@ -2313,18 +2308,18 @@ public class Actor {
 
             switch (channel) {
                 case ANIMCHANNEL_HEAD:
-                    headEnt = this.head.GetEntity();
+                    headEnt = head.GetEntity();
                     if (headEnt != null) {
-                        this.headAnim.idleAnim = false;
-                        this.headAnim.PlayAnim(anim);
-                        flags = this.headAnim.GetAnimFlags();
+                        headAnim.idleAnim = false;
+                        headAnim.PlayAnim(anim);
+                        flags = headAnim.GetAnimFlags();
                         if (!flags.prevent_idle_override) {
-                            if (this.torsoAnim.IsIdle()) {
-                                this.torsoAnim.animBlendFrames = this.headAnim.lastAnimBlendFrames;
-                                SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_HEAD, this.headAnim.lastAnimBlendFrames);
-                                if (this.legsAnim.IsIdle()) {
-                                    this.legsAnim.animBlendFrames = this.headAnim.lastAnimBlendFrames;
-                                    SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_HEAD, this.headAnim.lastAnimBlendFrames);
+                            if (torsoAnim.IsIdle()) {
+                                torsoAnim.animBlendFrames = headAnim.lastAnimBlendFrames;
+                                SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_HEAD, headAnim.lastAnimBlendFrames);
+                                if (legsAnim.IsIdle()) {
+                                    legsAnim.animBlendFrames = headAnim.lastAnimBlendFrames;
+                                    SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_HEAD, headAnim.lastAnimBlendFrames);
                                 }
                             }
                         }
@@ -2332,39 +2327,39 @@ public class Actor {
                     break;
 
                 case ANIMCHANNEL_TORSO:
-                    this.torsoAnim.idleAnim = false;
-                    this.torsoAnim.PlayAnim(anim);
-                    flags = this.torsoAnim.GetAnimFlags();
+                    torsoAnim.idleAnim = false;
+                    torsoAnim.PlayAnim(anim);
+                    flags = torsoAnim.GetAnimFlags();
                     if (!flags.prevent_idle_override) {
-                        if (this.headAnim.IsIdle()) {
-                            this.headAnim.animBlendFrames = this.torsoAnim.lastAnimBlendFrames;
-                            SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_TORSO, this.torsoAnim.lastAnimBlendFrames);
+                        if (headAnim.IsIdle()) {
+                            headAnim.animBlendFrames = torsoAnim.lastAnimBlendFrames;
+                            SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_TORSO, torsoAnim.lastAnimBlendFrames);
                         }
-                        if (this.legsAnim.IsIdle()) {
-                            this.legsAnim.animBlendFrames = this.torsoAnim.lastAnimBlendFrames;
-                            SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_TORSO, this.torsoAnim.lastAnimBlendFrames);
+                        if (legsAnim.IsIdle()) {
+                            legsAnim.animBlendFrames = torsoAnim.lastAnimBlendFrames;
+                            SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_TORSO, torsoAnim.lastAnimBlendFrames);
                         }
                     }
                     break;
 
                 case ANIMCHANNEL_LEGS:
-                    this.legsAnim.idleAnim = false;
-                    this.legsAnim.PlayAnim(anim);
-                    flags = this.legsAnim.GetAnimFlags();
+                    legsAnim.idleAnim = false;
+                    legsAnim.PlayAnim(anim);
+                    flags = legsAnim.GetAnimFlags();
                     if (!flags.prevent_idle_override) {
-                        if (this.torsoAnim.IsIdle()) {
-                            this.torsoAnim.animBlendFrames = this.legsAnim.lastAnimBlendFrames;
-                            SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_LEGS, this.legsAnim.lastAnimBlendFrames);
-                            if (this.headAnim.IsIdle()) {
-                                this.headAnim.animBlendFrames = this.legsAnim.lastAnimBlendFrames;
-                                SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_LEGS, this.legsAnim.lastAnimBlendFrames);
+                        if (torsoAnim.IsIdle()) {
+                            torsoAnim.animBlendFrames = legsAnim.lastAnimBlendFrames;
+                            SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_LEGS, legsAnim.lastAnimBlendFrames);
+                            if (headAnim.IsIdle()) {
+                                headAnim.animBlendFrames = legsAnim.lastAnimBlendFrames;
+                                SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_LEGS, legsAnim.lastAnimBlendFrames);
                             }
                         }
                     }
                     break;
 
                 default:
-                    idGameLocal.Error("Unknown anim group");
+                    gameLocal.Error("Unknown anim group");
                     break;
             }
             idThread.ReturnInt(1);
@@ -2378,10 +2373,10 @@ public class Actor {
 
             anim = GetAnim(channel, animName);
             if (0 == anim) {
-                if ((channel == ANIMCHANNEL_HEAD) && (this.head.GetEntity() != null)) {
-                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, this.name, this.spawnArgs.GetString("def_head", ""));
+                if ((channel == ANIMCHANNEL_HEAD) && head.GetEntity() != null) {
+                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, name, spawnArgs.GetString("def_head", ""));
                 } else {
-                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, this.name, GetEntityDefName());
+                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, name, GetEntityDefName());
                 }
                 idThread.ReturnInt(false);
                 return;
@@ -2389,53 +2384,53 @@ public class Actor {
 
             switch (channel) {
                 case ANIMCHANNEL_HEAD:
-                    this.headAnim.idleAnim = false;
-                    this.headAnim.CycleAnim(anim);
-                    flags = this.headAnim.GetAnimFlags();
+                    headAnim.idleAnim = false;
+                    headAnim.CycleAnim(anim);
+                    flags = headAnim.GetAnimFlags();
                     if (!flags.prevent_idle_override) {
-                        if (this.torsoAnim.IsIdle() && this.legsAnim.IsIdle()) {
-                            this.torsoAnim.animBlendFrames = this.headAnim.lastAnimBlendFrames;
-                            SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_HEAD, this.headAnim.lastAnimBlendFrames);
-                            this.legsAnim.animBlendFrames = this.headAnim.lastAnimBlendFrames;
-                            SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_HEAD, this.headAnim.lastAnimBlendFrames);
+                        if (torsoAnim.IsIdle() && legsAnim.IsIdle()) {
+                            torsoAnim.animBlendFrames = headAnim.lastAnimBlendFrames;
+                            SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_HEAD, headAnim.lastAnimBlendFrames);
+                            legsAnim.animBlendFrames = headAnim.lastAnimBlendFrames;
+                            SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_HEAD, headAnim.lastAnimBlendFrames);
                         }
                     }
                     break;
 
                 case ANIMCHANNEL_TORSO:
-                    this.torsoAnim.idleAnim = false;
-                    this.torsoAnim.CycleAnim(anim);
-                    flags = this.torsoAnim.GetAnimFlags();
+                    torsoAnim.idleAnim = false;
+                    torsoAnim.CycleAnim(anim);
+                    flags = torsoAnim.GetAnimFlags();
                     if (!flags.prevent_idle_override) {
-                        if (this.headAnim.IsIdle()) {
-                            this.headAnim.animBlendFrames = this.torsoAnim.lastAnimBlendFrames;
-                            SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_TORSO, this.torsoAnim.lastAnimBlendFrames);
+                        if (headAnim.IsIdle()) {
+                            headAnim.animBlendFrames = torsoAnim.lastAnimBlendFrames;
+                            SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_TORSO, torsoAnim.lastAnimBlendFrames);
                         }
-                        if (this.legsAnim.IsIdle()) {
-                            this.legsAnim.animBlendFrames = this.torsoAnim.lastAnimBlendFrames;
-                            SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_TORSO, this.torsoAnim.lastAnimBlendFrames);
+                        if (legsAnim.IsIdle()) {
+                            legsAnim.animBlendFrames = torsoAnim.lastAnimBlendFrames;
+                            SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_TORSO, torsoAnim.lastAnimBlendFrames);
                         }
                     }
                     break;
 
                 case ANIMCHANNEL_LEGS:
-                    this.legsAnim.idleAnim = false;
-                    this.legsAnim.CycleAnim(anim);
-                    flags = this.legsAnim.GetAnimFlags();
+                    legsAnim.idleAnim = false;
+                    legsAnim.CycleAnim(anim);
+                    flags = legsAnim.GetAnimFlags();
                     if (!flags.prevent_idle_override) {
-                        if (this.torsoAnim.IsIdle()) {
-                            this.torsoAnim.animBlendFrames = this.legsAnim.lastAnimBlendFrames;
-                            SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_LEGS, this.legsAnim.lastAnimBlendFrames);
-                            if (this.headAnim.IsIdle()) {
-                                this.headAnim.animBlendFrames = this.legsAnim.lastAnimBlendFrames;
-                                SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_LEGS, this.legsAnim.lastAnimBlendFrames);
+                        if (torsoAnim.IsIdle()) {
+                            torsoAnim.animBlendFrames = legsAnim.lastAnimBlendFrames;
+                            SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_LEGS, legsAnim.lastAnimBlendFrames);
+                            if (headAnim.IsIdle()) {
+                                headAnim.animBlendFrames = legsAnim.lastAnimBlendFrames;
+                                SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_LEGS, legsAnim.lastAnimBlendFrames);
                             }
                         }
                     }
                     break;
 
                 default:
-                    idGameLocal.Error("Unknown anim group");
+                    gameLocal.Error("Unknown anim group");
             }
 
             idThread.ReturnInt(true);
@@ -2448,27 +2443,27 @@ public class Actor {
 
             anim = GetAnim(channel, animName);
             if (0 == anim) {
-                if ((channel == ANIMCHANNEL_HEAD) && (this.head.GetEntity() != null)) {
-                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, this.name, this.spawnArgs.GetString("def_head", ""));
+                if ((channel == ANIMCHANNEL_HEAD) && head.GetEntity() != null) {
+                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, name, spawnArgs.GetString("def_head", ""));
                 } else {
-                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, this.name, GetEntityDefName());
+                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, name, GetEntityDefName());
                 }
 
                 switch (channel) {
                     case ANIMCHANNEL_HEAD:
-                        this.headAnim.BecomeIdle();
+                        headAnim.BecomeIdle();
                         break;
 
                     case ANIMCHANNEL_TORSO:
-                        this.torsoAnim.BecomeIdle();
+                        torsoAnim.BecomeIdle();
                         break;
 
                     case ANIMCHANNEL_LEGS:
-                        this.legsAnim.BecomeIdle();
+                        legsAnim.BecomeIdle();
                         break;
 
                     default:
-                        idGameLocal.Error("Unknown anim group");
+                        gameLocal.Error("Unknown anim group");
                 }
 
                 idThread.ReturnInt(false);
@@ -2477,69 +2472,69 @@ public class Actor {
 
             switch (channel) {
                 case ANIMCHANNEL_HEAD:
-                    this.headAnim.BecomeIdle();
-                    if (this.torsoAnim.GetAnimFlags().prevent_idle_override) {
+                    headAnim.BecomeIdle();
+                    if (torsoAnim.GetAnimFlags().prevent_idle_override) {
                         // don't sync to torso body if it doesn't override idle anims
-                        this.headAnim.CycleAnim(anim);
-                    } else if (this.torsoAnim.IsIdle() && this.legsAnim.IsIdle()) {
+                        headAnim.CycleAnim(anim);
+                    } else if (torsoAnim.IsIdle() && legsAnim.IsIdle()) {
                         // everything is idle, so play the anim on the head and copy it to the torso and legs
-                        this.headAnim.CycleAnim(anim);
-                        this.torsoAnim.animBlendFrames = this.headAnim.lastAnimBlendFrames;
-                        SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_HEAD, this.headAnim.lastAnimBlendFrames);
-                        this.legsAnim.animBlendFrames = this.headAnim.lastAnimBlendFrames;
-                        SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_HEAD, this.headAnim.lastAnimBlendFrames);
-                    } else if (this.torsoAnim.IsIdle()) {
+                        headAnim.CycleAnim(anim);
+                        torsoAnim.animBlendFrames = headAnim.lastAnimBlendFrames;
+                        SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_HEAD, headAnim.lastAnimBlendFrames);
+                        legsAnim.animBlendFrames = headAnim.lastAnimBlendFrames;
+                        SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_HEAD, headAnim.lastAnimBlendFrames);
+                    } else if (torsoAnim.IsIdle()) {
                         // sync the head and torso to the legs
-                        SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_LEGS, this.headAnim.animBlendFrames);
-                        this.torsoAnim.animBlendFrames = this.headAnim.lastAnimBlendFrames;
-                        SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_LEGS, this.torsoAnim.animBlendFrames);
+                        SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_LEGS, headAnim.animBlendFrames);
+                        torsoAnim.animBlendFrames = headAnim.lastAnimBlendFrames;
+                        SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_LEGS, torsoAnim.animBlendFrames);
                     } else {
                         // sync the head to the torso
-                        SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_TORSO, this.headAnim.animBlendFrames);
+                        SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_TORSO, headAnim.animBlendFrames);
                     }
                     break;
 
                 case ANIMCHANNEL_TORSO:
-                    this.torsoAnim.BecomeIdle();
-                    if (this.legsAnim.GetAnimFlags().prevent_idle_override) {
+                    torsoAnim.BecomeIdle();
+                    if (legsAnim.GetAnimFlags().prevent_idle_override) {
                         // don't sync to legs if legs anim doesn't override idle anims
-                        this.torsoAnim.CycleAnim(anim);
-                    } else if (this.legsAnim.IsIdle()) {
+                        torsoAnim.CycleAnim(anim);
+                    } else if (legsAnim.IsIdle()) {
                         // play the anim in both legs and torso
-                        this.torsoAnim.CycleAnim(anim);
-                        this.legsAnim.animBlendFrames = this.torsoAnim.lastAnimBlendFrames;
-                        SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_TORSO, this.torsoAnim.lastAnimBlendFrames);
+                        torsoAnim.CycleAnim(anim);
+                        legsAnim.animBlendFrames = torsoAnim.lastAnimBlendFrames;
+                        SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_TORSO, torsoAnim.lastAnimBlendFrames);
                     } else {
                         // sync the anim to the legs
-                        SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_LEGS, this.torsoAnim.animBlendFrames);
+                        SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_LEGS, torsoAnim.animBlendFrames);
                     }
 
-                    if (this.headAnim.IsIdle()) {
-                        SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_TORSO, this.torsoAnim.lastAnimBlendFrames);
+                    if (headAnim.IsIdle()) {
+                        SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_TORSO, torsoAnim.lastAnimBlendFrames);
                     }
                     break;
 
                 case ANIMCHANNEL_LEGS:
-                    this.legsAnim.BecomeIdle();
-                    if (this.torsoAnim.GetAnimFlags().prevent_idle_override) {
+                    legsAnim.BecomeIdle();
+                    if (torsoAnim.GetAnimFlags().prevent_idle_override) {
                         // don't sync to torso if torso anim doesn't override idle anims
-                        this.legsAnim.CycleAnim(anim);
-                    } else if (this.torsoAnim.IsIdle()) {
+                        legsAnim.CycleAnim(anim);
+                    } else if (torsoAnim.IsIdle()) {
                         // play the anim in both legs and torso
-                        this.legsAnim.CycleAnim(anim);
-                        this.torsoAnim.animBlendFrames = this.legsAnim.lastAnimBlendFrames;
-                        SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_LEGS, this.legsAnim.lastAnimBlendFrames);
-                        if (this.headAnim.IsIdle()) {
-                            SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_LEGS, this.legsAnim.lastAnimBlendFrames);
+                        legsAnim.CycleAnim(anim);
+                        torsoAnim.animBlendFrames = legsAnim.lastAnimBlendFrames;
+                        SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_LEGS, legsAnim.lastAnimBlendFrames);
+                        if (headAnim.IsIdle()) {
+                            SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_LEGS, legsAnim.lastAnimBlendFrames);
                         }
                     } else {
                         // sync the anim to the torso
-                        SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_TORSO, this.legsAnim.animBlendFrames);
+                        SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_TORSO, legsAnim.animBlendFrames);
                     }
                     break;
 
                 default:
-                    idGameLocal.Error("Unknown anim group");
+                    gameLocal.Error("Unknown anim group");
             }
 
             idThread.ReturnInt(true);
@@ -2551,73 +2546,73 @@ public class Actor {
             final float weight = _weight.value;
             idEntity headEnt;
 
-            headEnt = this.head.GetEntity();
+            headEnt = head.GetEntity();
             switch (channel) {
                 case ANIMCHANNEL_HEAD:
                     if (headEnt != null) {
-                        this.animator.CurrentAnim(ANIMCHANNEL_ALL).SetSyncedAnimWeight(anim, weight);
+                        animator.CurrentAnim(ANIMCHANNEL_ALL).SetSyncedAnimWeight(anim, weight);
                     } else {
-                        this.animator.CurrentAnim(ANIMCHANNEL_HEAD).SetSyncedAnimWeight(anim, weight);
+                        animator.CurrentAnim(ANIMCHANNEL_HEAD).SetSyncedAnimWeight(anim, weight);
                     }
-                    if (this.torsoAnim.IsIdle()) {
-                        this.animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(anim, weight);
-                        if (this.legsAnim.IsIdle()) {
-                            this.animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(anim, weight);
+                    if (torsoAnim.IsIdle()) {
+                        animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(anim, weight);
+                        if (legsAnim.IsIdle()) {
+                            animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(anim, weight);
                         }
                     }
                     break;
 
                 case ANIMCHANNEL_TORSO:
-                    this.animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(anim, weight);
-                    if (this.legsAnim.IsIdle()) {
-                        this.animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(anim, weight);
+                    animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(anim, weight);
+                    if (legsAnim.IsIdle()) {
+                        animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(anim, weight);
                     }
-                    if ((headEnt != null) && this.headAnim.IsIdle()) {
-                        this.animator.CurrentAnim(ANIMCHANNEL_ALL).SetSyncedAnimWeight(anim, weight);
+                    if (headEnt != null && headAnim.IsIdle()) {
+                        animator.CurrentAnim(ANIMCHANNEL_ALL).SetSyncedAnimWeight(anim, weight);
                     }
                     break;
 
                 case ANIMCHANNEL_LEGS:
-                    this.animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(anim, weight);
-                    if (this.torsoAnim.IsIdle()) {
-                        this.animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(anim, weight);
-                        if ((headEnt != null) && this.headAnim.IsIdle()) {
-                            this.animator.CurrentAnim(ANIMCHANNEL_ALL).SetSyncedAnimWeight(anim, weight);
+                    animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(anim, weight);
+                    if (torsoAnim.IsIdle()) {
+                        animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(anim, weight);
+                        if (headEnt != null && headAnim.IsIdle()) {
+                            animator.CurrentAnim(ANIMCHANNEL_ALL).SetSyncedAnimWeight(anim, weight);
                         }
                     }
                     break;
 
                 default:
-                    idGameLocal.Error("Unknown anim group");
+                    gameLocal.Error("Unknown anim group");
             }
         }
 
         private void Event_OverrideAnim(idEventArg<Integer> channel) {
             switch (channel.value) {
                 case ANIMCHANNEL_HEAD:
-                    this.headAnim.Disable();
-                    if (!this.torsoAnim.IsIdle()) {
-                        SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_TORSO, this.torsoAnim.lastAnimBlendFrames);
+                    headAnim.Disable();
+                    if (!torsoAnim.IsIdle()) {
+                        SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_TORSO, torsoAnim.lastAnimBlendFrames);
                     } else {
-                        SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_LEGS, this.legsAnim.lastAnimBlendFrames);
+                        SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_LEGS, legsAnim.lastAnimBlendFrames);
                     }
                     break;
 
                 case ANIMCHANNEL_TORSO:
-                    this.torsoAnim.Disable();
-                    SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_LEGS, this.legsAnim.lastAnimBlendFrames);
-                    if (this.headAnim.IsIdle()) {
-                        SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_TORSO, this.torsoAnim.lastAnimBlendFrames);
+                    torsoAnim.Disable();
+                    SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_LEGS, legsAnim.lastAnimBlendFrames);
+                    if (headAnim.IsIdle()) {
+                        SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_TORSO, torsoAnim.lastAnimBlendFrames);
                     }
                     break;
 
                 case ANIMCHANNEL_LEGS:
-                    this.legsAnim.Disable();
-                    SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_TORSO, this.torsoAnim.lastAnimBlendFrames);
+                    legsAnim.Disable();
+                    SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_TORSO, torsoAnim.lastAnimBlendFrames);
                     break;
 
                 default:
-                    idGameLocal.Error("Unknown anim group");
+                    gameLocal.Error("Unknown anim group");
                     break;
             }
         }
@@ -2626,19 +2621,19 @@ public class Actor {
             final int blendFrames = _blendFrames.value;
             switch (channel.value) {
                 case ANIMCHANNEL_HEAD:
-                    this.headAnim.Enable(blendFrames);
+                    headAnim.Enable(blendFrames);
                     break;
 
                 case ANIMCHANNEL_TORSO:
-                    this.torsoAnim.Enable(blendFrames);
+                    torsoAnim.Enable(blendFrames);
                     break;
 
                 case ANIMCHANNEL_LEGS:
-                    this.legsAnim.Enable(blendFrames);
+                    legsAnim.Enable(blendFrames);
                     break;
 
                 default:
-                    idGameLocal.Error("Unknown anim group");
+                    gameLocal.Error("Unknown anim group");
                     break;
             }
         }
@@ -2648,22 +2643,22 @@ public class Actor {
             final int blendFrames = _blendFrames.value;
             switch (channel) {
                 case ANIMCHANNEL_HEAD:
-                    this.headAnim.animBlendFrames = blendFrames;
-                    this.headAnim.lastAnimBlendFrames = blendFrames;
+                    headAnim.animBlendFrames = blendFrames;
+                    headAnim.lastAnimBlendFrames = blendFrames;
                     break;
 
                 case ANIMCHANNEL_TORSO:
-                    this.torsoAnim.animBlendFrames = blendFrames;
-                    this.torsoAnim.lastAnimBlendFrames = blendFrames;
+                    torsoAnim.animBlendFrames = blendFrames;
+                    torsoAnim.lastAnimBlendFrames = blendFrames;
                     break;
 
                 case ANIMCHANNEL_LEGS:
-                    this.legsAnim.animBlendFrames = blendFrames;
-                    this.legsAnim.lastAnimBlendFrames = blendFrames;
+                    legsAnim.animBlendFrames = blendFrames;
+                    legsAnim.lastAnimBlendFrames = blendFrames;
                     break;
 
                 default:
-                    idGameLocal.Error("Unknown anim group");
+                    gameLocal.Error("Unknown anim group");
                     break;
             }
         }
@@ -2672,19 +2667,19 @@ public class Actor {
             final int channel = _channel.value;
             switch (channel) {
                 case ANIMCHANNEL_HEAD:
-                    idThread.ReturnInt(this.headAnim.animBlendFrames);
+                    idThread.ReturnInt(headAnim.animBlendFrames);
                     break;
 
                 case ANIMCHANNEL_TORSO:
-                    idThread.ReturnInt(this.torsoAnim.animBlendFrames);
+                    idThread.ReturnInt(torsoAnim.animBlendFrames);
                     break;
 
                 case ANIMCHANNEL_LEGS:
-                    idThread.ReturnInt(this.legsAnim.animBlendFrames);
+                    idThread.ReturnInt(legsAnim.animBlendFrames);
                     break;
 
                 default:
-                    idGameLocal.Error("Unknown anim group");
+                    gameLocal.Error("Unknown anim group");
                     break;
             }
         }
@@ -2708,33 +2703,33 @@ public class Actor {
         }
 
         private void Event_FinishAction(final idEventArg<String> actionname) {
-            if (this.waitState.equals(actionname.value)) {
+            if (waitState.equals(actionname.value)) {
                 SetWaitState("");
             }
         }
 
         private void Event_AnimDone(idEventArg<Integer> channel, idEventArg<Integer> _blendFrames) {
-            final int blendFrames = _blendFrames.value;
+            int blendFrames = _blendFrames.value;
             boolean result;
 
             switch (channel.value) {
                 case ANIMCHANNEL_HEAD:
-                    result = this.headAnim.AnimDone(blendFrames);
+                    result = headAnim.AnimDone(blendFrames);
                     idThread.ReturnInt(result);
                     break;
 
                 case ANIMCHANNEL_TORSO:
-                    result = this.torsoAnim.AnimDone(blendFrames);
+                    result = torsoAnim.AnimDone(blendFrames);
                     idThread.ReturnInt(result);
                     break;
 
                 case ANIMCHANNEL_LEGS:
-                    result = this.legsAnim.AnimDone(blendFrames);
+                    result = legsAnim.AnimDone(blendFrames);
                     idThread.ReturnInt(result);
                     break;
 
                 default:
-                    idGameLocal.Error("Unknown anim group");
+                    gameLocal.Error("Unknown anim group");
             }
         }
 
@@ -2748,10 +2743,10 @@ public class Actor {
 
         private void Event_CheckAnim(idEventArg<Integer> channel, final idEventArg<String> animname) {
             if (0 == GetAnim(channel.value, animname.value)) {
-                if (this.animPrefix.Length() != 0) {
-                    idGameLocal.Error("Can't find anim '%s_%s' for '%s'", this.animPrefix, animname, this.name);
+                if (animPrefix.Length() != 0) {
+                    gameLocal.Error("Can't find anim '%s_%s' for '%s'", animPrefix, animname, name);
                 } else {
-                    idGameLocal.Error("Can't find anim '%s' for '%s'", animname, this.name);
+                    gameLocal.Error("Can't find anim '%s' for '%s'", animname, name);
                 }
             }
         }
@@ -2762,12 +2757,12 @@ public class Actor {
             anim = GetAnim(channel.value, animname.value);
             if (anim != 0) {
                 if (channel.value == ANIMCHANNEL_HEAD) {
-                    if (this.head.GetEntity() != null) {
-                        idThread.ReturnString(this.head.GetEntity().GetAnimator().AnimFullName(anim));
+                    if (head.GetEntity() != null) {
+                        idThread.ReturnString(head.GetEntity().GetAnimator().AnimFullName(anim));
                         return;
                     }
                 } else {
-                    idThread.ReturnString(this.animator.AnimFullName(anim));
+                    idThread.ReturnString(animator.AnimFullName(anim));
                     return;
                 }
             }
@@ -2781,12 +2776,12 @@ public class Actor {
             anim = GetAnim(channel.value, animname.value);
             if (anim != 0) {
                 if (channel.value == ANIMCHANNEL_HEAD) {
-                    if (this.head.GetEntity() != null) {
-                        idThread.ReturnFloat(MS2SEC(this.head.GetEntity().GetAnimator().AnimLength(anim)));
+                    if (head.GetEntity() != null) {
+                        idThread.ReturnFloat(MS2SEC(head.GetEntity().GetAnimator().AnimLength(anim)));
                         return;
                     }
                 } else {
-                    idThread.ReturnFloat(MS2SEC(this.animator.AnimLength(anim)));
+                    idThread.ReturnFloat(MS2SEC(animator.AnimLength(anim)));
                     return;
                 }
             }
@@ -2800,12 +2795,12 @@ public class Actor {
             anim = GetAnim(channel.value, animname.value);
             if (anim != 0) {
                 if (channel.value == ANIMCHANNEL_HEAD) {
-                    if (this.head.GetEntity() != null) {
-                        idThread.ReturnFloat(this.head.GetEntity().GetAnimator().TotalMovementDelta(anim).Length());
+                    if (head.GetEntity() != null) {
+                        idThread.ReturnFloat(head.GetEntity().GetAnimator().TotalMovementDelta(anim).Length());
                         return;
                     }
                 } else {
-                    idThread.ReturnFloat(this.animator.TotalMovementDelta(anim).Length());
+                    idThread.ReturnFloat(animator.TotalMovementDelta(anim).Length());
                     return;
                 }
             }
@@ -2821,19 +2816,19 @@ public class Actor {
         }
 
         private void Event_NextEnemy(idEventArg<idEntity> _ent) {
-            final idEntity ent = _ent.value;
+            idEntity ent = _ent.value;
             idActor actor;
 
-            if ((null == ent) || (ent.equals(this))) {
-                actor = this.enemyList.Next();
+            if (null == ent || (ent.equals(this))) {
+                actor = enemyList.Next();
             } else {
                 if (!ent.IsType(idActor.class)) {
-                    idGameLocal.Error("'%s' cannot be an enemy", ent.name);
+                    gameLocal.Error("'%s' cannot be an enemy", ent.name);
                 }
 
                 actor = (idActor) ent;
-                if (actor.enemyNode.ListHead() != this.enemyList) {
-                    idGameLocal.Error("'%s' is not in '%s' enemy list", actor.name, this.name);
+                if (actor.enemyNode.ListHead() != enemyList) {
+                    gameLocal.Error("'%s' is not in '%s' enemy list", actor.name, name);
                 }
             }
 
@@ -2848,13 +2843,13 @@ public class Actor {
         }
 
         private void Event_ClosestEnemyToPoint(final idEventArg<idVec3> pos) {
-            final idActor bestEnt = ClosestEnemyToPoint(pos.value);
+            idActor bestEnt = ClosestEnemyToPoint(pos.value);
             idThread.ReturnEntity(bestEnt);
         }
 
         private void Event_StopSound(idEventArg<Integer> channel, idEventArg<Integer> netSync) {
             if (channel.value == etoi(SND_CHANNEL_VOICE)) {
-                final idEntity headEnt = this.head.GetEntity();
+                idEntity headEnt = head.GetEntity();
                 if (headEnt != null) {
                     headEnt.StopSound(channel.value, (netSync.value != 0));
                 }
@@ -2863,34 +2858,34 @@ public class Actor {
         }
 
         private void Event_SetNextState(final idEventArg<String> name) {
-            this.idealState = GetScriptFunction(name.value);
-            if (this.idealState == this.state) {
-                this.state = null;
+            idealState = GetScriptFunction(name.value);
+            if (idealState == state) {
+                state = null;
             }
         }
 
         private void Event_SetState(final idEventArg<String> name) {
-            this.idealState = GetScriptFunction(name.value);
-            if (this.idealState == this.state) {
-                this.state = null;
+            idealState = GetScriptFunction(name.value);
+            if (idealState == state) {
+                state = null;
             }
-            this.scriptThread.DoneProcessing();
+            scriptThread.DoneProcessing();
         }
 
         private void Event_GetState() {
-            if (this.state != null) {
-                idThread.ReturnString(this.state.Name());
+            if (state != null) {
+                idThread.ReturnString(state.Name());
             } else {
                 idThread.ReturnString("");
             }
         }
 
         private void Event_GetHead() {
-            idThread.ReturnEntity(this.head.GetEntity());
+            idThread.ReturnEntity(head.GetEntity());
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2904,21 +2899,21 @@ public class Actor {
             idEntity ent;
 
             DeconstructScriptObject();
-            this.scriptObject.Free();
+            scriptObject.Free();
 
             StopSound(SND_CHANNEL_ANY.ordinal(), false);
 
-            idClipModel.delete(this.combatModel);
-            this.combatModel = null;
+            idClipModel.delete(combatModel);
+            combatModel = null;
 
-            if (this.head.GetEntity() != null) {
-                this.head.GetEntity().ClearBody();
-                this.head.GetEntity().PostEventMS(EV_Remove, 0);
+            if (head.GetEntity() != null) {
+                head.GetEntity().ClearBody();
+                head.GetEntity().PostEventMS(EV_Remove, 0);
             }
 
             // remove any attached entities
-            for (i = 0; i < this.attachments.Num(); i++) {
-                ent = this.attachments.oGet(i).ent.GetEntity();
+            for (i = 0; i < attachments.Num(); i++) {
+                ent = attachments.oGet(i).ent.GetEntity();
                 if (ent != null) {
                     ent.PostEventMS(EV_Remove, 0);
                 }
@@ -2928,5 +2923,5 @@ public class Actor {
 
             super._deconstructor();
         }
-    }
+    };
 }

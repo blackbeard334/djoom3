@@ -41,42 +41,45 @@ import static neo.idlib.Text.Str.va;
 import static neo.idlib.math.Math_h.DEG2RAD;
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
 import static neo.idlib.math.Simd.SIMDProcessor;
-import static neo.open.al.QAL.alBufferData;
-import static neo.open.al.QAL.alDeleteBuffers;
-import static neo.open.al.QAL.alGenBuffers;
-import static neo.open.al.QAL.alGetSourcei;
-import static neo.open.al.QAL.alIsSource;
-import static neo.open.al.QAL.alListener3f;
-import static neo.open.al.QAL.alListenerf;
-import static neo.open.al.QAL.alListenerfv;
-import static neo.open.al.QAL.alSource3f;
-import static neo.open.al.QAL.alSourcePlay;
-import static neo.open.al.QAL.alSourceQueueBuffers;
-import static neo.open.al.QAL.alSourceStop;
-import static neo.open.al.QAL.alSourceUnqueueBuffers;
-import static neo.open.al.QAL.alSourcef;
-import static neo.open.al.QAL.alSourcei;
-import static neo.open.al.QALConstantsIfc.AL_BUFFER;
-import static neo.open.al.QALConstantsIfc.AL_BUFFERS_PROCESSED;
-import static neo.open.al.QALConstantsIfc.AL_FALSE;
-import static neo.open.al.QALConstantsIfc.AL_FORMAT_MONO16;
-import static neo.open.al.QALConstantsIfc.AL_FORMAT_STEREO16;
-import static neo.open.al.QALConstantsIfc.AL_GAIN;
-import static neo.open.al.QALConstantsIfc.AL_LOOPING;
-import static neo.open.al.QALConstantsIfc.AL_MAX_DISTANCE;
-import static neo.open.al.QALConstantsIfc.AL_ORIENTATION;
-import static neo.open.al.QALConstantsIfc.AL_PITCH;
-import static neo.open.al.QALConstantsIfc.AL_POSITION;
-import static neo.open.al.QALConstantsIfc.AL_REFERENCE_DISTANCE;
-import static neo.open.al.QALConstantsIfc.AL_SOURCE_RELATIVE;
-import static neo.open.al.QALConstantsIfc.AL_TRUE;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
+import static org.lwjgl.openal.AL10.AL_BUFFER;
+import static org.lwjgl.openal.AL10.AL_BUFFERS_PROCESSED;
+import static org.lwjgl.openal.AL10.AL_FALSE;
+import static org.lwjgl.openal.AL10.AL_FORMAT_MONO16;
+import static org.lwjgl.openal.AL10.AL_FORMAT_STEREO16;
+import static org.lwjgl.openal.AL10.AL_GAIN;
+import static org.lwjgl.openal.AL10.AL_LOOPING;
+import static org.lwjgl.openal.AL10.AL_MAX_DISTANCE;
+import static org.lwjgl.openal.AL10.AL_ORIENTATION;
+import static org.lwjgl.openal.AL10.AL_PITCH;
+import static org.lwjgl.openal.AL10.AL_POSITION;
+import static org.lwjgl.openal.AL10.AL_REFERENCE_DISTANCE;
+import static org.lwjgl.openal.AL10.AL_SOURCE_RELATIVE;
+import static org.lwjgl.openal.AL10.AL_TRUE;
+import static org.lwjgl.openal.AL10.alBufferData;
+import static org.lwjgl.openal.AL10.alDeleteBuffers;
+import static org.lwjgl.openal.AL10.alGenBuffers;
+import static org.lwjgl.openal.AL10.alGetSourcei;
+import static org.lwjgl.openal.AL10.alIsSource;
+//import static org.lwjgl.openal.AL10.alListener;
+import static org.lwjgl.openal.AL10.alListener3f;
+import static org.lwjgl.openal.AL10.alListenerf;
+import static org.lwjgl.openal.AL10.alListenerfv;
+import static org.lwjgl.openal.AL10.alSource3f;
+import static org.lwjgl.openal.AL10.alSourcePlay;
+import static org.lwjgl.openal.AL10.alSourceQueueBuffers;
+import static org.lwjgl.openal.AL10.alSourceStop;
+import static org.lwjgl.openal.AL10.alSourceUnqueueBuffers;
+import static org.lwjgl.openal.AL10.alSourcef;
+import static org.lwjgl.openal.AL10.alSourcei;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+
+import org.lwjgl.BufferUtils;
 
 import neo.TempDump.TODO_Exception;
 import neo.Renderer.Cinematic.idSndWindow;
@@ -109,7 +112,6 @@ import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
-import neo.open.Nio;
 
 /**
  *
@@ -126,20 +128,24 @@ public class snd_world {
         int activeSounds;
 
         public s_stats() {
-            this.rinuse = 0;
-            this.runs = 1;
-            this.timeinprocess = 0;
-            this.missedWindow = 0;
-            this.missedUpdateWindow = 0;
-            this.activeSounds = 0;
+            rinuse = 0;
+            runs = 1;
+            timeinprocess = 0;
+            missedWindow = 0;
+            missedUpdateWindow = 0;
+            activeSounds = 0;
         }
     }
+
+    ;
 
     static class soundPortalTrace_s {
 
         int                portalArea;
         soundPortalTrace_s prevStack;
     }
+
+    ;
 
     public static class idSoundWorldLocal extends idSoundWorld {
 
@@ -197,11 +203,11 @@ public class snd_world {
 
             AVIClose();
 
-            for (i = 0; i < this.emitters.Num(); i++) {
-                final idSoundEmitterLocal sound = this.emitters.oGet(i);
+            for (i = 0; i < emitters.Num(); i++) {
+                idSoundEmitterLocal sound = emitters.oGet(i);
                 sound.Clear();
             }
-            this.localSound = null;
+            localSound = null;
 
             Sys_LeaveCriticalSection();
         }
@@ -216,8 +222,8 @@ public class snd_world {
         @Override
         public void StopAllSounds() {
 
-            for (int i = 0; i < this.emitters.Num(); i++) {
-                final idSoundEmitterLocal def = this.emitters.oGet(i);
+            for (int i = 0; i < emitters.Num(); i++) {
+                idSoundEmitterLocal def = emitters.oGet(i);
                 def.StopSound(SCHANNEL_ANY);
             }
         }
@@ -232,15 +238,15 @@ public class snd_world {
         // get a new emitter that can play sounds in this world
         @Override
         public idSoundEmitter AllocSoundEmitter() {
-            final idSoundEmitterLocal emitter = AllocLocalSoundEmitter();
+            idSoundEmitterLocal emitter = AllocLocalSoundEmitter();
 
             if (idSoundSystemLocal.s_showStartSound.GetInteger() != 0) {
                 common.Printf("AllocSoundEmitter = %d\n", emitter.index);
             }
-            if (this.writeDemo != null) {
-                this.writeDemo.WriteInt(DS_SOUND);
-                this.writeDemo.WriteInt(SCMD_ALLOC_EMITTER);
-                this.writeDemo.WriteInt(emitter.index);
+            if (writeDemo != null) {
+                writeDemo.WriteInt(DS_SOUND);
+                writeDemo.WriteInt(SCMD_ALLOC_EMITTER);
+                writeDemo.WriteInt(emitter.index);
             }
 
             return emitter;
@@ -252,10 +258,10 @@ public class snd_world {
             if (index == 0) {
                 return null;
             }
-            if (index >= this.emitters.Num()) {
-                common.Error("idSoundWorldLocal::EmitterForIndex: %d > %d", index, this.emitters.Num());
+            if (index >= emitters.Num()) {
+                common.Error("idSoundWorldLocal::EmitterForIndex: %d > %d", index, emitters.Num());
             }
-            return this.emitters.oGet(index);
+            return emitters.oGet(index);
         }
 
         /*
@@ -277,8 +283,8 @@ public class snd_world {
 
             localTime = soundSystemLocal.GetCurrent44kHzTime();
 
-            for (int i = 1; i < this.emitters.Num(); i++) {
-                final idSoundEmitterLocal sound = this.emitters.oGet(i);
+            for (int i = 1; i < emitters.Num(); i++) {
+                idSoundEmitterLocal sound = emitters.oGet(i);
                 if (!sound.hasShakes) {
                     continue;
                 }
@@ -305,17 +311,17 @@ public class snd_world {
                 return;
             }
 
-            if (this.pause44kHz >= 0) {
+            if (pause44kHz >= 0) {
                 return;
             }
 
-            if (this.writeDemo != null) {
-                this.writeDemo.WriteInt(DS_SOUND);
-                this.writeDemo.WriteInt(SCMD_PLACE_LISTENER);
-                this.writeDemo.WriteVec3(origin);
-                this.writeDemo.WriteMat3(axis);
-                this.writeDemo.WriteInt(listenerId);
-                this.writeDemo.WriteInt(gameTime);
+            if (writeDemo != null) {
+                writeDemo.WriteInt(DS_SOUND);
+                writeDemo.WriteInt(SCMD_PLACE_LISTENER);
+                writeDemo.WriteVec3(origin);
+                writeDemo.WriteMat3(axis);
+                writeDemo.WriteInt(listenerId);
+                writeDemo.WriteInt(gameTime);
             }
 
             current44kHzTime = soundSystemLocal.GetCurrent44kHzTime();
@@ -325,34 +331,34 @@ public class snd_world {
             // amount, while the hardware 44kHz position will not have changed accordingly,
             // which would make sounds (like long character speaches) continue from the
             // old time.  Fix this by killing all non-looping sounds
-            if (gameTime > (this.gameMsec + 500)) {
-                OffsetSoundTime((int) (-(gameTime - this.gameMsec) * 0.001f * 44100.0f));
+            if (gameTime > gameMsec + 500) {
+                OffsetSoundTime((int) (-(gameTime - gameMsec) * 0.001f * 44100.0f));
             }
 
-            this.gameMsec = gameTime;
-            if (this.fpa[0] != null) {
+            gameMsec = gameTime;
+            if (fpa[0] != null) {
                 // exactly 30 fps so the wave file can be used for exact video frames
-                this.game44kHz = idMath.FtoiFast(this.gameMsec * ((1000.0f / 60.0f) / 16.0f) * 0.001f * 44100.0f);
+                game44kHz = idMath.FtoiFast(gameMsec * ((1000.0f / 60.0f) / 16.0f) * 0.001f * 44100.0f);
             } else {
                 // the normal 16 msec / frame
-                this.game44kHz = idMath.FtoiFast(this.gameMsec * 0.001f * 44100.0f);
+                game44kHz = idMath.FtoiFast(gameMsec * 0.001f * 44100.0f);
             }
 
-            this.listenerPrivateId = listenerId;
+            listenerPrivateId = listenerId;
 
-            this.listenerQU.oSet(origin);                            // Doom units
-            this.listenerPos = origin.oMultiply(DOOM_TO_METERS);     // meters
-            this.listenerAxis.oSet(axis);
-            this.listenerAreaName.oSet(areaName);
-            this.listenerAreaName.ToLower();
+            listenerQU.oSet(origin);                            // Doom units
+            listenerPos = origin.oMultiply(DOOM_TO_METERS);     // meters
+            listenerAxis.oSet(axis);
+            listenerAreaName.oSet(areaName);
+            listenerAreaName.ToLower();
 
-            if (this.rw != null) {
-                this.listenerArea = this.rw.PointInArea(this.listenerQU);    // where are we?
+            if (rw != null) {
+                listenerArea = rw.PointInArea(listenerQU);    // where are we?
             } else {
-                this.listenerArea = 0;
+                listenerArea = 0;
             }
 
-            if (this.listenerArea < 0) {
+            if (listenerArea < 0) {
                 return;
             }
 
@@ -369,25 +375,25 @@ public class snd_world {
          */
         @Override
         public void FadeSoundClasses(final int soundClass, final float to, final float over) {
-            if ((soundClass < 0) || (soundClass >= SOUND_MAX_CLASSES)) {
+            if (soundClass < 0 || soundClass >= SOUND_MAX_CLASSES) {
                 common.Error("idSoundWorldLocal::FadeSoundClasses: bad soundClass %d", soundClass);
             }
 
-            final idSoundFade fade = this.soundClassFade[soundClass];
+            idSoundFade fade = soundClassFade[soundClass];
 
-            final int length44kHz = soundSystemLocal.MillisecondsToSamples((int) (over * 1000));
+            int length44kHz = soundSystemLocal.MillisecondsToSamples((int) (over * 1000));
 
             // if it is already fading to this volume at this rate, don't change it
-            if ((fade.fadeEndVolume == to)
-                    && ((fade.fadeEnd44kHz - fade.fadeStart44kHz) == length44kHz)) {
+            if (fade.fadeEndVolume == to
+                    && fade.fadeEnd44kHz - fade.fadeStart44kHz == length44kHz) {
                 return;
             }
 
             int start44kHz;
 
-            if (this.fpa[0] != null) {
+            if (fpa[0] != null) {
                 // if we are recording an AVI demo, don't use hardware time
-                start44kHz = this.lastAVI44kHz + MIXBUFFER_SAMPLES;
+                start44kHz = lastAVI44kHz + MIXBUFFER_SAMPLES;
             } else {
                 start44kHz = soundSystemLocal.GetCurrent44kHzTime() + MIXBUFFER_SAMPLES;
             }
@@ -409,13 +415,13 @@ public class snd_world {
          */
         @Override
         public void StartWritingDemo(idDemoFile demo) {
-            this.writeDemo = demo;
+            writeDemo = demo;
 
-            this.writeDemo.WriteInt(DS_SOUND);
-            this.writeDemo.WriteInt(SCMD_STATE);
+            writeDemo.WriteInt(DS_SOUND);
+            writeDemo.WriteInt(SCMD_STATE);
 
             // use the normal save game code to archive all the emitters
-            WriteToSaveGame(this.writeDemo);
+            WriteToSaveGame(writeDemo);
         }
 
         /*
@@ -427,7 +433,7 @@ public class snd_world {
          */
         @Override
         public void StopWritingDemo() {
-            this.writeDemo = null;//TODO:booleanize?
+            writeDemo = null;//TODO:booleanize?
         }
 
         /*
@@ -453,7 +459,7 @@ public class snd_world {
                 return;
             }
 
-            final soundDemoCommand_t dc = soundDemoCommand_t.values()[_dc];
+            soundDemoCommand_t dc = soundDemoCommand_t.values()[_dc];
             switch (dc) {
                 case SCMD_STATE:
                     // we need to protect this from the async thread
@@ -465,8 +471,8 @@ public class snd_world {
                     UnPause();
                     break;
                 case SCMD_PLACE_LISTENER: {
-                    final idVec3 origin = new idVec3();
-                    final idMat3 axis = new idMat3();
+                    idVec3 origin = new idVec3();
+                    idMat3 axis = new idMat3();
                     int listenerId;
                     int gameTime;
 
@@ -480,15 +486,15 @@ public class snd_world {
                 break;
                 case SCMD_ALLOC_EMITTER:
                     index = readDemo.ReadInt();
-                    if ((index < 1) || (index > this.emitters.Num())) {
+                    if (index < 1 || index > emitters.Num()) {
                         common.Error("idSoundWorldLocal::ProcessDemoCommand: bad emitter number");
                     }
-                    if (index == this.emitters.Num()) {
+                    if (index == emitters.Num()) {
                         // append a brand new one
                         def = new idSoundEmitterLocal();
-                        this.emitters.Append(def);
+                        emitters.Append(def);
                     }
-                    def = this.emitters.oGet(index);
+                    def = emitters.oGet(index);
                     def.Clear();
                     def.index = index;
                     def.removeStatus = REMOVE_STATUS_ALIVE;
@@ -503,9 +509,9 @@ public class snd_world {
                 }
                 break;
                 case SCMD_UPDATE: {
-                    final idVec3 origin = new idVec3();
+                    idVec3 origin = new idVec3();
                     int listenerId;
-                    final soundShaderParms_t parms = new soundShaderParms_t();
+                    soundShaderParms_t parms = new soundShaderParms_t();
 
                     index = readDemo.ReadInt();
                     readDemo.ReadVec3(origin);
@@ -535,7 +541,7 @@ public class snd_world {
                 break;
                 case SCMD_MODIFY: {
                     int channel;
-                    final soundShaderParms_t parms = new soundShaderParms_t();
+                    soundShaderParms_t parms = new soundShaderParms_t();
 
                     index = readDemo.ReadInt();
                     channel = readDemo.ReadInt();
@@ -585,10 +591,10 @@ public class snd_world {
         @Override
         public void PlayShaderDirectly(final String shaderName, int channel /*= -1*/) {
 
-            if ((this.localSound != null) && (channel == -1)) {
-                this.localSound.StopSound(SCHANNEL_ANY);
-            } else if (this.localSound != null) {
-                this.localSound.StopSound(channel);
+            if (localSound != null && channel == -1) {
+                localSound.StopSound(SCHANNEL_ANY);
+            } else if (localSound != null) {
+                localSound.StopSound(channel);
             }
 
             if (!isNotNullOrEmpty(shaderName)) {
@@ -601,13 +607,13 @@ public class snd_world {
                 return;
             }
 
-            if (null == this.localSound) {
-                this.localSound = AllocLocalSoundEmitter();
+            if (null == localSound) {
+                localSound = AllocLocalSoundEmitter();
             }
 
-            final float diversity = rnd.RandomFloat();
+            float diversity = rnd.RandomFloat();
 
-            this.localSound.StartSound(shader, (channel == -1) ? SCHANNEL_ONE : channel, diversity, SSF_GLOBAL);
+            localSound.StartSound(shader, (channel == -1) ? SCHANNEL_ONE : channel, diversity, SSF_GLOBAL);
 
             // in case we are at the console without a game doing updates, force an update
             ForegroundUpdate(soundSystemLocal.GetCurrent44kHzTime());
@@ -616,32 +622,32 @@ public class snd_world {
         // pause and unpause the sound world
         @Override
         public void Pause() {
-            if (this.pause44kHz >= 0) {
+            if (pause44kHz >= 0) {
                 common.Warning("idSoundWorldLocal::Pause: already paused");
                 return;
             }
 
-            this.pause44kHz = soundSystemLocal.GetCurrent44kHzTime();
+            pause44kHz = soundSystemLocal.GetCurrent44kHzTime();
         }
 
         @Override
         public void UnPause() {
             int offset44kHz;
 
-            if (this.pause44kHz < 0) {
+            if (pause44kHz < 0) {
                 common.Warning("idSoundWorldLocal::UnPause: not paused");
                 return;
             }
 
-            offset44kHz = soundSystemLocal.GetCurrent44kHzTime() - this.pause44kHz;
+            offset44kHz = soundSystemLocal.GetCurrent44kHzTime() - pause44kHz;
             OffsetSoundTime(offset44kHz);
 
-            this.pause44kHz = -1;
+            pause44kHz = -1;
         }
 
         @Override
         public boolean IsPaused() {
-            return (this.pause44kHz >= 0);
+            return (pause44kHz >= 0);
         }
 
         /*
@@ -654,21 +660,21 @@ public class snd_world {
         // avidump
         @Override
         public void AVIOpen(final String path, final String name) {
-            this.aviDemoPath.oSet(path);
-            this.aviDemoName.oSet(name);
+            aviDemoPath.oSet(path);
+            aviDemoName.oSet(name);
 
-            this.lastAVI44kHz = this.game44kHz - (this.game44kHz % MIXBUFFER_SAMPLES);
+            lastAVI44kHz = game44kHz - game44kHz % MIXBUFFER_SAMPLES;
 
             if (soundSystemLocal.snd_audio_hw.GetNumberOfSpeakers() == 6) {
-                this.fpa[0] = fileSystem.OpenFileWrite(this.aviDemoPath + "channel_51_left.raw");
-                this.fpa[1] = fileSystem.OpenFileWrite(this.aviDemoPath + "channel_51_right.raw");
-                this.fpa[2] = fileSystem.OpenFileWrite(this.aviDemoPath + "channel_51_center.raw");
-                this.fpa[3] = fileSystem.OpenFileWrite(this.aviDemoPath + "channel_51_lfe.raw");
-                this.fpa[4] = fileSystem.OpenFileWrite(this.aviDemoPath + "channel_51_backleft.raw");
-                this.fpa[5] = fileSystem.OpenFileWrite(this.aviDemoPath + "channel_51_backright.raw");
+                fpa[0] = fileSystem.OpenFileWrite(aviDemoPath + "channel_51_left.raw");
+                fpa[1] = fileSystem.OpenFileWrite(aviDemoPath + "channel_51_right.raw");
+                fpa[2] = fileSystem.OpenFileWrite(aviDemoPath + "channel_51_center.raw");
+                fpa[3] = fileSystem.OpenFileWrite(aviDemoPath + "channel_51_lfe.raw");
+                fpa[4] = fileSystem.OpenFileWrite(aviDemoPath + "channel_51_backleft.raw");
+                fpa[5] = fileSystem.OpenFileWrite(aviDemoPath + "channel_51_backright.raw");
             } else {
-                this.fpa[0] = fileSystem.OpenFileWrite(this.aviDemoPath + "channel_left.raw");
-                this.fpa[1] = fileSystem.OpenFileWrite(this.aviDemoPath + "channel_right.raw");
+                fpa[0] = fileSystem.OpenFileWrite(aviDemoPath + "channel_left.raw");
+                fpa[1] = fileSystem.OpenFileWrite(aviDemoPath + "channel_right.raw");
             }
 
             soundSystemLocal.SetMute(true);
@@ -678,19 +684,19 @@ public class snd_world {
         public void AVIClose() {
             int i;
 
-            if (null == this.fpa[0]) {
+            if (null == fpa[0]) {
                 return;
             }
 
             // make sure the final block is written
-            this.game44kHz += MIXBUFFER_SAMPLES;
+            game44kHz += MIXBUFFER_SAMPLES;
             AVIUpdate();
-            this.game44kHz -= MIXBUFFER_SAMPLES;
+            game44kHz -= MIXBUFFER_SAMPLES;
 
             for (i = 0; i < 6; i++) {
-                if (this.fpa[i] != null) {
-                    fileSystem.CloseFile(this.fpa[i]);
-                    this.fpa[i] = null;
+                if (fpa[i] != null) {
+                    fileSystem.CloseFile(fpa[i]);
+                    fpa[i] = null;
                 }
             }
             if (soundSystemLocal.snd_audio_hw.GetNumberOfSpeakers() == 2) {
@@ -698,31 +704,31 @@ public class snd_world {
                 idFile rL, lL, wO;
                 idStr name;
 
-                name = new idStr(this.aviDemoPath.getData() + this.aviDemoName + ".wav");
-                wO = fileSystem.OpenFileWrite(name.getData());
+                name = new idStr(aviDemoPath.toString() + aviDemoName + ".wav");
+                wO = fileSystem.OpenFileWrite(name.toString());
                 if (null == wO) {
-                    common.Error("Couldn't write %s", name.getData());
+                    common.Error("Couldn't write %s", name.c_str());
                 }
 
-                name.oSet(this.aviDemoPath + "channel_right.raw");
-                rL = fileSystem.OpenFileRead(name.getData());
+                name.oSet(aviDemoPath + "channel_right.raw");
+                rL = fileSystem.OpenFileRead(name.toString());
                 if (null == rL) {
-                    common.Error("Couldn't open %s", name.getData());
+                    common.Error("Couldn't open %s", name.c_str());
                 }
 
-                name.oSet(this.aviDemoPath + "channel_left.raw");
-                lL = fileSystem.OpenFileRead(name.getData());
+                name.oSet(aviDemoPath + "channel_left.raw");
+                lL = fileSystem.OpenFileRead(name.toString());
                 if (null == lL) {
-                    common.Error("Couldn't open %s", name.getData());
+                    common.Error("Couldn't open %s", name.c_str());
                 }
 
-                final int numSamples = rL.Length() / 2;
-                final mminfo_s info = new mminfo_s();
-                final pcmwaveformat_s format = new pcmwaveformat_s();
+                int numSamples = rL.Length() / 2;
+                mminfo_s info = new mminfo_s();
+                pcmwaveformat_s format = new pcmwaveformat_s();
 
                 info.ckid = fourcc_riff;
                 info.fccType = mmioFOURCC('W', 'A', 'V', 'E');
-                info.cksize = ((rL.Length() * 2) - 8) + 4 + 16 + 8 + 8;
+                info.cksize = (rL.Length() * 2) - 8 + 4 + 16 + 8 + 8;
                 info.dwDataOffset = 12;
 
                 wO.Write(info.Write(), 12);
@@ -758,8 +764,8 @@ public class snd_world {
                 fileSystem.CloseFile(lL);
                 fileSystem.CloseFile(rL);
 
-                fileSystem.RemoveFile(this.aviDemoPath + "channel_right.raw");
-                fileSystem.RemoveFile(this.aviDemoPath + "channel_left.raw");
+                fileSystem.RemoveFile(aviDemoPath + "channel_right.raw");
+                fileSystem.RemoveFile(aviDemoPath + "channel_left.raw");
             }
 
             soundSystemLocal.SetMute(false);
@@ -772,28 +778,28 @@ public class snd_world {
             String name;
 
             // the game soundworld is always paused at this point, save that time down
-            if (this.pause44kHz > 0) {
-                currentSoundTime = this.pause44kHz;
+            if (pause44kHz > 0) {
+                currentSoundTime = pause44kHz;
             } else {
                 currentSoundTime = soundSystemLocal.GetCurrent44kHzTime();
             }
 
             // write listener data
-            savefile.WriteVec3(this.listenerQU);
-            savefile.WriteMat3(this.listenerAxis);
-            savefile.WriteInt(this.listenerPrivateId);
-            savefile.WriteInt(this.gameMsec);
-            savefile.WriteInt(this.game44kHz);
+            savefile.WriteVec3(listenerQU);
+            savefile.WriteMat3(listenerAxis);
+            savefile.WriteInt(listenerPrivateId);
+            savefile.WriteInt(gameMsec);
+            savefile.WriteInt(game44kHz);
             savefile.WriteInt(currentSoundTime);
 
-            num = this.emitters.Num();
+            num = emitters.Num();
             savefile.WriteInt(num);
 
-            for (i = 1; i < this.emitters.Num(); i++) {
-                final idSoundEmitterLocal def = this.emitters.oGet(i);
+            for (i = 1; i < emitters.Num(); i++) {
+                idSoundEmitterLocal def = emitters.oGet(i);
 
                 if (def.removeStatus != REMOVE_STATUS_ALIVE) {
-                    final int skip = -1;
+                    int skip = -1;
 //                    savefile.Write(skip, sizeof(skip));
                     savefile.WriteInt(skip);
                     continue;
@@ -821,10 +827,10 @@ public class snd_world {
 
                 // write the channel data
                 for (j = 0; j < SOUND_MAX_CHANNELS; j++) {
-                    final idSoundChannel chan = def.channels[j];
+                    idSoundChannel chan = def.channels[j];
 
                     // Write out any sound commands for this def
-                    if (chan.triggerState && (chan.soundShader != null) && (chan.leadinSample != null)) {
+                    if (chan.triggerState && chan.soundShader != null && chan.leadinSample != null) {
 
                         savefile.WriteInt(j);
 
@@ -832,20 +838,20 @@ public class snd_world {
                         name = chan.soundShader.GetName();
                         savefile.WriteString(name);
 
-                        name = chan.leadinSample.name.getData();
+                        name = chan.leadinSample.name.toString();
                         savefile.WriteString(name);
                     }
                 }
 
                 // End active channels with -1
-                final int end = -1;
+                int end = -1;
                 savefile.WriteInt(end);
             }
 
             // new in Doom3 v1.2
-            savefile.WriteBool(this.slowmoActive);
-            savefile.WriteFloat(this.slowmoSpeed);
-            savefile.WriteBool(this.enviroSuitActive);
+            savefile.WriteBool(slowmoActive);
+            savefile.WriteFloat(slowmoSpeed);
+            savefile.WriteBool(enviroSuitActive);
         }
 
         @Override
@@ -853,9 +859,9 @@ public class snd_world {
             int i, num, handle, listenerId, gameTime, channel;
             int currentSoundTime, soundTimeOffset, savedSoundTime;
             idSoundEmitterLocal def;
-            final idVec3 origin = new idVec3();
-            final idMat3 axis = new idMat3();
-            final idStr soundShader = new idStr();
+            idVec3 origin = new idVec3();
+            idMat3 axis = new idMat3();
+            idStr soundShader = new idStr();
 
             ClearAllSoundEmitters();
 
@@ -863,7 +869,7 @@ public class snd_world {
             savefile.ReadMat3(axis);
             listenerId = savefile.ReadInt();
             gameTime = savefile.ReadInt();
-            this.game44kHz = savefile.ReadInt();
+            game44kHz = savefile.ReadInt();
             savedSoundTime = savefile.ReadInt();
 
             // we will adjust the sound starting times from those saved with the demo
@@ -871,7 +877,7 @@ public class snd_world {
             soundTimeOffset = currentSoundTime - savedSoundTime;
 
             // at the end of the level load we unpause the sound world and adjust the sound starting times once more
-            this.pause44kHz = currentSoundTime;
+            pause44kHz = currentSoundTime;
 
             // place listener
             PlaceListener(origin, axis, listenerId, gameTime, "Undefined");
@@ -881,9 +887,9 @@ public class snd_world {
             // if there are extras.
             num = savefile.ReadInt();
 
-            while (this.emitters.Num() < num) {
+            while (emitters.Num() < num) {
                 def = new idSoundEmitterLocal();
-                def.index = this.emitters.Append(def);
+                def.index = emitters.Append(def);
                 def.soundWorld = this;
             }
 
@@ -897,7 +903,7 @@ public class snd_world {
                 if (handle != i) {
                     common.Error("idSoundWorldLocal::ReadFromSaveGame: index mismatch");
                 }
-                def = this.emitters.oGet(i);
+                def = emitters.oGet(i);
 
                 def.removeStatus = REMOVE_STATUS_ALIVE;
                 def.playing = true;        // may be reset by the first UpdateListener
@@ -927,7 +933,7 @@ public class snd_world {
                         common.Error("idSoundWorldLocal::ReadFromSaveGame: channel > SOUND_MAX_CHANNELS");
                     }
 
-                    final idSoundChannel chan = def.channels[channel];
+                    idSoundChannel chan = def.channels[channel];
 
                     if (chan.decoder != null) {
                         // The pointer in the save file is not valid, so we grab a new one
@@ -964,13 +970,13 @@ public class snd_world {
             }
 
             if (session.GetSaveGameVersion() >= 17) {
-                this.slowmoActive = savefile.ReadBool(/*sizeof(slowmoActive)*/);
-                this.slowmoSpeed = savefile.ReadFloat(/*sizeof(slowmoSpeed)*/);
-                this.enviroSuitActive = savefile.ReadBool(/*sizeof(enviroSuitActive)*/);
+                slowmoActive = savefile.ReadBool(/*sizeof(slowmoActive)*/);
+                slowmoSpeed = savefile.ReadFloat(/*sizeof(slowmoSpeed)*/);
+                enviroSuitActive = savefile.ReadBool(/*sizeof(enviroSuitActive)*/);
             } else {
-                this.slowmoActive = false;
-                this.slowmoSpeed = 0;
-                this.enviroSuitActive = false;
+                slowmoActive = false;
+                slowmoSpeed = 0;
+                enviroSuitActive = false;
             }
         }
 
@@ -1043,17 +1049,17 @@ public class snd_world {
 
         @Override
         public void SetSlowmo(boolean active) {
-            this.slowmoActive = active;
+            slowmoActive = active;
         }
 
         @Override
         public void SetSlowmoSpeed(float speed) {
-            this.slowmoSpeed = speed;
+            slowmoSpeed = speed;
         }
 
         @Override
         public void SetEnviroSuit(boolean active) {
-            this.enviroSuitActive = active;
+            enviroSuitActive = active;
         }
 
         //=======================================
@@ -1073,51 +1079,51 @@ public class snd_world {
 
             AVIClose();
 
-            for (i = 0; i < this.emitters.Num(); i++) {
-                if (this.emitters.oGet(i) != null) {
+            for (i = 0; i < emitters.Num(); i++) {
+                if (emitters.oGet(i) != null) {
 //			delete emitters[i];
-                    this.emitters.oSet(i, null);
+                    emitters.oSet(i, null);
                 }
             }
-            this.localSound = null;
+            localSound = null;
         }
 
         public void Init(idRenderWorld rw) {
             this.rw = rw;
-            this.writeDemo = null;
+            writeDemo = null;
 
-            this.listenerAxis.Identity();
-            this.listenerPos.Zero();
-            this.listenerPrivateId = 0;
-            this.listenerQU.Zero();
-            this.listenerArea = 0;
-            this.listenerAreaName.oSet("Undefined");
-            this.listenerEnvironmentID = -2;
+            listenerAxis.Identity();
+            listenerPos.Zero();
+            listenerPrivateId = 0;
+            listenerQU.Zero();
+            listenerArea = 0;
+            listenerAreaName.oSet("Undefined");
+            listenerEnvironmentID = -2;
 
-            this.gameMsec = 0;
-            this.game44kHz = 0;
-            this.pause44kHz = -1;
-            this.lastAVI44kHz = 0;
+            gameMsec = 0;
+            game44kHz = 0;
+            pause44kHz = -1;
+            lastAVI44kHz = 0;
 
             for (int i = 0; i < SOUND_MAX_CLASSES; i++) {
-                this.soundClassFade[i] = new idSoundFade();
-                this.soundClassFade[i].Clear();
+                soundClassFade[i] = new idSoundFade();
+                soundClassFade[i].Clear();
             }
 
             // fill in the 0 index spot
-            final idSoundEmitterLocal placeHolder = new idSoundEmitterLocal();
-            this.emitters.Append(placeHolder);
+            idSoundEmitterLocal placeHolder = new idSoundEmitterLocal();
+            emitters.Append(placeHolder);
 
-            this.fpa[0] = this.fpa[1] = this.fpa[2] = this.fpa[3] = this.fpa[4] = this.fpa[5] = null;
+            fpa[0] = fpa[1] = fpa[2] = fpa[3] = fpa[4] = fpa[5] = null;
 
-            this.aviDemoPath.oSet("");
-            this.aviDemoName.oSet("");
+            aviDemoPath.oSet("");
+            aviDemoName.oSet("");
 
-            this.localSound = null;
+            localSound = null;
 
-            this.slowmoActive = false;
-            this.slowmoSpeed = 0;
-            this.enviroSuitActive = false;
+            slowmoActive = false;
+            slowmoSpeed = 0;
+            enviroSuitActive = false;
         }
 
         public void ClearBuffer() {
@@ -1153,8 +1159,8 @@ public class snd_world {
             Sys_EnterCriticalSection();
 
             // if we are recording an AVI demo, don't use hardware time
-            if (this.fpa[0] != null) {
-                current44kHzTime = this.lastAVI44kHz;
+            if (fpa[0] != null) {
+                current44kHzTime = lastAVI44kHz;
             }
 
             //
@@ -1163,8 +1169,8 @@ public class snd_world {
             // although the sound may still need to play if it has
             // just become occluded so it can ramp down to 0
             //
-            for (j = 1; j < this.emitters.Num(); j++) {
-                def = this.emitters.oGet(j);
+            for (j = 1; j < emitters.Num(); j++) {
+                def = emitters.oGet(j);
 
                 if (def.removeStatus >= REMOVE_STATUS_SAMPLEFINISHED) {
                     continue;
@@ -1178,34 +1184,34 @@ public class snd_world {
                 }
 
                 // update virtual origin / distance, etc
-                def.Spatialize(this.listenerPos, this.listenerArea, this.rw);
+                def.Spatialize(listenerPos, listenerArea, rw);
 
                 // per-sound debug options
-                if ((idSoundSystemLocal.s_drawSounds.GetInteger() != 0) && (this.rw != null)) {
-                    if ((def.distance < def.maxDistance) || (idSoundSystemLocal.s_drawSounds.GetInteger() > 1)) {
-                        final idBounds ref = new idBounds();
+                if (idSoundSystemLocal.s_drawSounds.GetInteger() != 0 && rw != null) {
+                    if (def.distance < def.maxDistance || idSoundSystemLocal.s_drawSounds.GetInteger() > 1) {
+                        idBounds ref = new idBounds();
                         ref.Clear();
                         ref.AddPoint(new idVec3(-10, -10, -10));
                         ref.AddPoint(new idVec3(10, 10, 10));
-                        final float vis = (1.0f - (def.distance / def.maxDistance));
+                        float vis = (1.0f - (def.distance / def.maxDistance));
 
                         // draw a box
-                        this.rw.DebugBounds(new idVec4(vis, 0.25f, vis, vis), ref, def.origin);
+                        rw.DebugBounds(new idVec4(vis, 0.25f, vis, vis), ref, def.origin);
 
                         // draw an arrow to the audible position, possible a portal center
                         if (def.origin != def.spatializedOrigin) {
-                            this.rw.DebugArrow(colorRed, def.origin, def.spatializedOrigin, 4);
+                            rw.DebugArrow(colorRed, def.origin, def.spatializedOrigin, 4);
                         }
 
                         // draw the index
-                        final idVec3 textPos = def.origin;
+                        idVec3 textPos = def.origin;
                         textPos.oMinSet(2, 8);
-                        this.rw.DrawText(va("%d", def.index), textPos, 0.1f, new idVec4(1, 0, 0, 1), this.listenerAxis);
+                        rw.DrawText(va("%d", def.index), textPos, 0.1f, new idVec4(1, 0, 0, 1), listenerAxis);
                         textPos.oPluSet(2, 8);
 
                         // run through all the channels
                         for (k = 0; k < SOUND_MAX_CHANNELS; k++) {
-                            final idSoundChannel chan = def.channels[k];
+                            idSoundChannel chan = def.channels[k];
 
                             // see if we have a sound triggered on this channel
                             if (!chan.triggerState) {
@@ -1214,11 +1220,11 @@ public class snd_world {
 
 //					char	[]text = new char[1024];
                             String text;
-                            final float min = chan.parms.minDistance;
-                            final float max = chan.parms.maxDistance;
+                            float min = chan.parms.minDistance;
+                            float max = chan.parms.maxDistance;
                             final String defaulted = chan.leadinSample.defaultSound ? "(DEFAULTED)" : "";
                             text = String.format("%s (%d/%d %d/%d)%s", chan.soundShader.GetName(), (int) def.distance, (int) def.realDistance, (int) min, (int) max, defaulted);
-                            this.rw.DrawText(text, textPos, 0.1f, new idVec4(1, 0, 0, 1), this.listenerAxis);
+                            rw.DrawText(text, textPos, 0.1f, new idVec4(1, 0, 0, 1), listenerAxis);
                             textPos.oPluSet(2, 8);
                         }
                     }
@@ -1243,7 +1249,7 @@ public class snd_world {
             //
             // optionally dump out the generated sound
             //
-            if (this.fpa[0] != null) {
+            if (fpa[0] != null) {
                 AVIUpdate();
             }
         }
@@ -1251,12 +1257,12 @@ public class snd_world {
         public void OffsetSoundTime(int offset44kHz) {
             int i, j;
 
-            for (i = 0; i < this.emitters.Num(); i++) {
-                if (this.emitters.oGet(i) == null) {
+            for (i = 0; i < emitters.Num(); i++) {
+                if (emitters.oGet(i) == null) {
                     continue;
                 }
                 for (j = 0; j < SOUND_MAX_CHANNELS; j++) {
-                    final idSoundChannel chan = this.emitters.oGet(i).channels[j];
+                    idSoundChannel chan = emitters.oGet(i).channels[j];
 
                     if (!chan.triggerState) {
                         continue;
@@ -1274,8 +1280,8 @@ public class snd_world {
             index = -1;
 
             // never use the 0 index spot
-            for (i = 1; i < this.emitters.Num(); i++) {
-                def = this.emitters.oGet(i);
+            for (i = 1; i < emitters.Num(); i++) {
+                def = emitters.oGet(i);
 
                 // check for a completed and freed spot
                 if (def.removeStatus >= REMOVE_STATUS_SAMPLEFINISHED) {
@@ -1293,7 +1299,7 @@ public class snd_world {
 
                 // we need to protect this from the async thread
                 Sys_EnterCriticalSection();
-                index = this.emitters.Append(def);
+                index = emitters.Append(def);
                 Sys_LeaveCriticalSection();
 
                 if (idSoundSystemLocal.s_showStartSound.GetInteger() != 0) {
@@ -1326,8 +1332,8 @@ public class snd_world {
         };
 
         public void CalcEars(int numSpeakers, idVec3 spatializedOrigin, idVec3 listenerPos, idMat3 listenerAxis, float[] ears/*[6]*/, float spatialize) {
-            final idVec3 svec = spatializedOrigin.oMinus(listenerPos);
-            final idVec3 ovec = new idVec3(svec.oMultiply(listenerAxis.oGet(0)), svec.oMultiply(listenerAxis.oGet(1)), svec.oMultiply(listenerAxis.oGet(2)));
+            idVec3 svec = spatializedOrigin.oMinus(listenerPos);
+            idVec3 ovec = new idVec3(svec.oMultiply(listenerAxis.oGet(0)), svec.oMultiply(listenerAxis.oGet(1)), svec.oMultiply(listenerAxis.oGet(2)));
 
             ovec.Normalize();
 
@@ -1337,14 +1343,14 @@ public class snd_world {
                         ears[i] = idSoundSystemLocal.s_subFraction.GetFloat();        // subwoofer
                         continue;
                     }
-                    final float dot = ovec.oMultiply(speakerVector[i]);
+                    float dot = ovec.oMultiply(speakerVector[i]);
                     ears[i] = (idSoundSystemLocal.s_dotbias6.GetFloat() + dot) / (1.0f + idSoundSystemLocal.s_dotbias6.GetFloat());
                     if (ears[i] < idSoundSystemLocal.s_minVolume6.GetFloat()) {
                         ears[i] = idSoundSystemLocal.s_minVolume6.GetFloat();
                     }
                 }
             } else {
-                final float dot = ovec.y;
+                float dot = ovec.y;
                 float dotBias = idSoundSystemLocal.s_dotbias2.GetFloat();
 
                 // when we are inside the minDistance, start reducing the amount of spatialization
@@ -1384,13 +1390,13 @@ public class snd_world {
             //
             // get the sound definition and parameters from the entity
             //
-            final soundShaderParms_t parms = chan.parms;
+            soundShaderParms_t parms = chan.parms;
 
             // assume we have a sound triggered on this channel
             assert (chan.triggerState);
 
             // fetch the actual wave file and see if it's valid
-            final idSoundSample sample = chan.leadinSample;
+            idSoundSample sample = chan.leadinSample;
             if (sample == null) {
                 return;
             }
@@ -1409,17 +1415,17 @@ public class snd_world {
             }
 
             float maxD = parms.maxDistance;
-            final float minD = parms.minDistance;
+            float minD = parms.minDistance;
 
             int mask = shader.speakerMask;
             boolean omni = (parms.soundShaderFlags & SSF_OMNIDIRECTIONAL) != 0;
-            final boolean looping = (parms.soundShaderFlags & SSF_LOOPING) != 0;
+            boolean looping = (parms.soundShaderFlags & SSF_LOOPING) != 0;
             boolean global = (parms.soundShaderFlags & SSF_GLOBAL) != 0;
-            final boolean noOcclusion = ((parms.soundShaderFlags & SSF_NO_OCCLUSION) != 0) || !idSoundSystemLocal.s_useOcclusion.GetBool();
+            boolean noOcclusion = ((parms.soundShaderFlags & SSF_NO_OCCLUSION) != 0) || !idSoundSystemLocal.s_useOcclusion.GetBool();
 
             // speed goes from 1 to 0.2
-            if (idSoundSystemLocal.s_slowAttenuate.GetBool() && this.slowmoActive && !chan.disallowSlow) {
-                maxD *= this.slowmoSpeed;
+            if (idSoundSystemLocal.s_slowAttenuate.GetBool() && slowmoActive && !chan.disallowSlow) {
+                maxD *= slowmoSpeed;
             }
 
             // stereo samples are always omni
@@ -1428,7 +1434,7 @@ public class snd_world {
             }
 
             // if the sound is playing from the current listener, it will not be spatialized at all
-            if (sound.listenerId == this.listenerPrivateId) {
+            if (sound.listenerId == listenerPrivateId) {
                 global = true;
             }
 
@@ -1440,7 +1446,7 @@ public class snd_world {
             // this isn't exactly correct, because the modified volume will get applied to
             // some initial chunk of the loop as well, because the volume is scaled for the
             // entire mix buffer
-            if ((shader.leadinVolume != 0) && ((current44kHz - chan.trigger44kHzTime) < sample.LengthIn44kHzSamples())) {
+            if (shader.leadinVolume != 0 && current44kHz - chan.trigger44kHzTime < sample.LengthIn44kHzSamples()) {
                 volume = soundSystemLocal.dB2Scale(shader.leadinVolume);
             } else {
                 volume = soundSystemLocal.dB2Scale(parms.volume);
@@ -1453,7 +1459,7 @@ public class snd_world {
             float fadeDb = chan.channelFade.FadeDbAt44kHz(current44kHz);
             volume *= soundSystemLocal.dB2Scale(fadeDb);
 
-            fadeDb = this.soundClassFade[parms.soundClass].FadeDbAt44kHz(current44kHz);
+            fadeDb = soundClassFade[parms.soundClass].FadeDbAt44kHz(current44kHz);
             volume *= soundSystemLocal.dB2Scale(fadeDb);
 
             //
@@ -1495,12 +1501,12 @@ public class snd_world {
             // unless we match the listenerId
             //
             if ((parms.soundShaderFlags & SSF_PRIVATE_SOUND) != 0) {
-                if (sound.listenerId != this.listenerPrivateId) {
+                if (sound.listenerId != listenerPrivateId) {
                     volume = 0;
                 }
             }
             if ((parms.soundShaderFlags & SSF_ANTI_PRIVATE_SOUND) != 0) {
-                if (sound.listenerId == this.listenerPrivateId) {
+                if (sound.listenerId == listenerPrivateId) {
                     volume = 0;
                 }
             }
@@ -1508,7 +1514,7 @@ public class snd_world {
             //
             // do we have anything to add?
             //
-            if ((volume < SND_EPSILON) && (chan.lastVolume < SND_EPSILON)) {
+            if (volume < SND_EPSILON && chan.lastVolume < SND_EPSILON) {
                 return;
             }
             chan.lastVolume = volume;
@@ -1516,15 +1522,15 @@ public class snd_world {
             //
             // fetch the sound from the cache as 44kHz, 16 bit samples
             //
-            final int offset = current44kHz - chan.trigger44kHzTime;
+            int offset = current44kHz - chan.trigger44kHzTime;
 //            float[] inputSamples = new float[MIXBUFFER_SAMPLES * 2 + 16];
 //            float[] alignedInputSamples = (float[]) ((((int) inputSamples) + 15) & ~15);
-            float[] alignedInputSamples = new float[(MIXBUFFER_SAMPLES * 2) + 16];
+            float[] alignedInputSamples = new float[MIXBUFFER_SAMPLES * 2 + 16];
 
             //
             // allocate and initialize hardware source
             //
-            if (idSoundSystemLocal.useOpenAL && (sound.removeStatus < REMOVE_STATUS_SAMPLEFINISHED)) {
+            if (idSoundSystemLocal.useOpenAL && sound.removeStatus < REMOVE_STATUS_SAMPLEFINISHED) {
                 if (!alIsSource(chan.openalSource)) {
                     chan.openalSource = soundSystemLocal.AllocOpenALSource(chan, !chan.leadinSample.hardwareBuffer || !chan.soundShader.entries[0].hardwareBuffer || looping, chan.leadinSample.objectInfo.nChannels == 2);
                 }
@@ -1551,7 +1557,7 @@ public class snd_world {
                         alSourcef(chan.openalSource, AL_REFERENCE_DISTANCE, minD);
                         alSourcef(chan.openalSource, AL_MAX_DISTANCE, maxD);
                     }
-                    alSourcef(chan.openalSource, AL_PITCH, (this.slowmoActive && !chan.disallowSlow) ? (this.slowmoSpeed) : (1.0f));
+                    alSourcef(chan.openalSource, AL_PITCH, (slowmoActive && !chan.disallowSlow) ? (slowmoSpeed) : (1.0f));
 //                    if (ID_OPENAL) {
 //                        long lOcclusion = (enviroSuitActive ? -1150 : 0);
 //                        if (soundSystemLocal.alEAXSet) {
@@ -1565,7 +1571,7 @@ public class snd_world {
                         }
                     } else {
                         final int/*ALint*/ finishedbuffers;
-                        final IntBuffer buffers = Nio.newIntBuffer(3);
+                        IntBuffer buffers = BufferUtils.createIntBuffer(3);
 
                         // handle streaming sounds (decode on the fly) both single shot AND looping
                         if (chan.triggered) {
@@ -1596,10 +1602,10 @@ public class snd_world {
 
                         final int length = MIXBUFFER_SAMPLES * sample.objectInfo.nChannels;
                         for (j = 0; j < finishedbuffers; j++) {
-                            final FloatBuffer samples = FloatBuffer.wrap(alignedInputSamples);
+                            FloatBuffer samples = FloatBuffer.wrap(alignedInputSamples);
                             chan.GatherChannelSamples(chan.openalStreamingOffset * sample.objectInfo.nChannels, length, samples);
-                            final ByteBuffer data = Nio.newByteBuffer(length * Short.BYTES);
-                            final ShortBuffer dataS = data.asShortBuffer();
+                            ByteBuffer data = BufferUtils.createByteBuffer(length * Short.BYTES);
+                            ShortBuffer dataS = data.asShortBuffer();
                             for (int i = 0; i < length; i++) {
                                 if (alignedInputSamples[i] < -32768.0f) {
                                     dataS.put(i, Short.MIN_VALUE);
@@ -1611,7 +1617,7 @@ public class snd_world {
 //                                    System.out.println("<<" + bla);
                                 }
                             }
-                            final ByteBuffer d = (ByteBuffer) data.duplicate().position(0);
+                            ByteBuffer d = (ByteBuffer) data.duplicate().position(0);
 //                            System.out.printf(">>\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n", d.get(), d.get(), d.get(), d.get(), d.get(), d.get(), d.get(), d.get(), d.get(), d.get());
 //                            System.out.printf(">>\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n", d.getFloat(), d.getFloat(), d.getFloat(), d.getFloat(), d.getFloat(), d.getFloat(), d.getFloat(), d.getFloat(), d.getFloat(), d.getFloat());
                             alBufferData(buffers.get(j), chan.leadinSample.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, data, 44100);
@@ -1633,8 +1639,8 @@ public class snd_world {
                 }
             } else {
 
-                if (this.slowmoActive && !chan.disallowSlow) {
-                    final idSlowChannel slow = sound.GetSlowChannel(chan);
+                if (slowmoActive && !chan.disallowSlow) {
+                    idSlowChannel slow = sound.GetSlowChannel(chan);
 
                     slow.AttachSoundChannel(chan);
 
@@ -1661,7 +1667,7 @@ public class snd_world {
                 //
                 // work out the left / right ear values
                 //
-                final float[] ears = new float[6];
+                float[] ears = new float[6];
                 if (global || omni) {
                     // same for all speakers
                     for (int i = 0; i < 6; i++) {
@@ -1670,7 +1676,7 @@ public class snd_world {
                     ears[3] = idSoundSystemLocal.s_subFraction.GetFloat() * volume;// subwoofer
 
                 } else {
-                    CalcEars(numSpeakers, spatializedOriginInMeters, this.listenerPos, this.listenerAxis, ears, spatialize);
+                    CalcEars(numSpeakers, spatializedOriginInMeters, listenerPos, listenerAxis, ears, spatialize);
 
                     for (int i = 0; i < 6; i++) {
                         ears[i] *= volume;
@@ -1691,7 +1697,7 @@ public class snd_world {
                 // if sounds are generally normalized, using a mixing volume over 1.0 will
                 // almost always cause clipping noise.  If samples aren't normalized, there
                 // is a good call to allow overvolumes
-                if (idSoundSystemLocal.s_clipVolumes.GetBool() && (0 == (parms.soundShaderFlags & SSF_UNCLAMPED))) {
+                if (idSoundSystemLocal.s_clipVolumes.GetBool() && 0 == (parms.soundShaderFlags & SSF_UNCLAMPED)) {
                     for (int i = 0; i < 6; i++) {
                         if (ears[i] > 1.0f) {
                             ears[i] = 1.0f;
@@ -1746,7 +1752,7 @@ public class snd_world {
             idSoundEmitterLocal sound;
 
             // if noclip flying outside the world, leave silence
-            if (this.listenerArea == -1) {
+            if (listenerArea == -1) {
                 if (idSoundSystemLocal.useOpenAL) {
                     alListenerf(AL_GAIN, 0.0f);
                 }
@@ -1755,21 +1761,21 @@ public class snd_world {
 
             // update the listener position and orientation
             if (idSoundSystemLocal.useOpenAL) {
-                final float/*ALfloat*/[] listenerPosition = new float[3];
+                float/*ALfloat*/[] listenerPosition = new float[3];
 
-                listenerPosition[0] = -this.listenerPos.y;
-                listenerPosition[1] = this.listenerPos.z;
-                listenerPosition[2] = -this.listenerPos.x;
+                listenerPosition[0] = -listenerPos.y;
+                listenerPosition[1] = listenerPos.z;
+                listenerPosition[2] = -listenerPos.x;
 
-                final FloatBuffer listenerOrientation = Nio.newFloatBuffer(6);
+                FloatBuffer listenerOrientation = BufferUtils.createFloatBuffer(6);
 
-                listenerOrientation.put(0, -this.listenerAxis.oGet(0).y);
-                listenerOrientation.put(1, +this.listenerAxis.oGet(0).z);
-                listenerOrientation.put(2, -this.listenerAxis.oGet(0).x);
+                listenerOrientation.put(0, -listenerAxis.oGet(0).y);
+                listenerOrientation.put(1, +listenerAxis.oGet(0).z);
+                listenerOrientation.put(2, -listenerAxis.oGet(0).x);
 
-                listenerOrientation.put(3, -this.listenerAxis.oGet(2).y);
-                listenerOrientation.put(4, +this.listenerAxis.oGet(2).z);
-                listenerOrientation.put(5, -this.listenerAxis.oGet(2).x);
+                listenerOrientation.put(3, -listenerAxis.oGet(2).y);
+                listenerOrientation.put(4, +listenerAxis.oGet(2).z);
+                listenerOrientation.put(5, -listenerAxis.oGet(2).x);
 
                 alListenerf(AL_GAIN, 1.0f);
                 alListener3f(AL_POSITION, listenerPosition[0], listenerPosition[1], listenerPosition[2]);
@@ -1808,13 +1814,13 @@ public class snd_world {
             }
 
             // debugging option to mute all but a single soundEmitter
-            if ((idSoundSystemLocal.s_singleEmitter.GetInteger() > 0) && (idSoundSystemLocal.s_singleEmitter.GetInteger() < this.emitters.Num())) {
-                sound = this.emitters.oGet(idSoundSystemLocal.s_singleEmitter.GetInteger());
+            if (idSoundSystemLocal.s_singleEmitter.GetInteger() > 0 && idSoundSystemLocal.s_singleEmitter.GetInteger() < emitters.Num()) {
+                sound = emitters.oGet(idSoundSystemLocal.s_singleEmitter.GetInteger());
 
-                if ((sound != null) && sound.playing) {
+                if (sound != null && sound.playing) {
                     // run through all the channels
                     for (j = 0; j < SOUND_MAX_CHANNELS; j++) {
-                        final idSoundChannel chan = sound.channels[j];
+                        idSoundChannel chan = sound.channels[j];
 
                         // see if we have a sound triggered on this channel
                         if (!chan.triggerState) {
@@ -1828,8 +1834,8 @@ public class snd_world {
                 return;
             }
 
-            for (i = 1; i < this.emitters.Num(); i++) {
-                sound = this.emitters.oGet(i);
+            for (i = 1; i < emitters.Num(); i++) {
+                sound = emitters.oGet(i);
 
                 if (null == sound) {
                     continue;
@@ -1840,7 +1846,7 @@ public class snd_world {
                 }
                 // run through all the channels
                 for (j = 0; j < SOUND_MAX_CHANNELS; j++) {
-                    final idSoundChannel chan = sound.channels[j];
+                    idSoundChannel chan = sound.channels[j];
 
                     // see if we have a sound triggered on this channel
                     if (!chan.triggerState) {
@@ -1852,7 +1858,7 @@ public class snd_world {
                 }
             }
 
-            if (!idSoundSystemLocal.useOpenAL && this.enviroSuitActive) {
+            if (!idSoundSystemLocal.useOpenAL && enviroSuitActive) {
                 soundSystemLocal.DoEnviroSuit(finalMixBuffer, MIXBUFFER_SAMPLES, numSpeakers);
             }
         }
@@ -1869,7 +1875,7 @@ public class snd_world {
         public void AVIUpdate() {
             int numSpeakers;
 
-            if ((this.game44kHz - this.lastAVI44kHz) < MIXBUFFER_SAMPLES) {
+            if (game44kHz - lastAVI44kHz < MIXBUFFER_SAMPLES) {
                 return;
             }
 
@@ -1881,17 +1887,17 @@ public class snd_world {
 
 //            float[] mix = new float[MIXBUFFER_SAMPLES * 6 + 16];
 //            float[] mix_p = (float[]) (((int) mix + 15) & ~15);	// SIMD align
-            final float[] mix_p = new float[(MIXBUFFER_SAMPLES * 6) + 16];
+            float[] mix_p = new float[MIXBUFFER_SAMPLES * 6 + 16];
 
 //            SIMDProcessor.Memset(mix_p, 0, MIXBUFFER_SAMPLES * sizeof(float) * numSpeakers);
 //
-            MixLoop(this.lastAVI44kHz, numSpeakers, mix_p);
+            MixLoop(lastAVI44kHz, numSpeakers, mix_p);
 
             for (int i = 0; i < numSpeakers; i++) {
-                final ByteBuffer outD = ByteBuffer.allocate(MIXBUFFER_SAMPLES * 2);
+                ByteBuffer outD = ByteBuffer.allocate(MIXBUFFER_SAMPLES * 2);
 
                 for (int j = 0; j < MIXBUFFER_SAMPLES; j++) {
-                    final float s = mix_p[(j * numSpeakers) + i];
+                    float s = mix_p[j * numSpeakers + i];
                     if (s < -32768.0f) {
                         outD.putShort(Short.MIN_VALUE);
                     } else if (s > 32767.0f) {
@@ -1901,10 +1907,10 @@ public class snd_world {
                     }
                 }
                 // write to file
-                this.fpa[i].Write(outD);//, MIXBUFFER_SAMPLES * sizeof(short));
+                fpa[i].Write(outD);//, MIXBUFFER_SAMPLES * sizeof(short));
             }
 
-            this.lastAVI44kHz += MIXBUFFER_SAMPLES;
+            lastAVI44kHz += MIXBUFFER_SAMPLES;
 
             return;
         }
@@ -1933,8 +1939,8 @@ public class snd_world {
                 return;
             }
 
-            if (soundArea == this.listenerArea) {
-                final float fullDist = dist + (soundOrigin.oMinus(this.listenerQU)).LengthFast();
+            if (soundArea == listenerArea) {
+                float fullDist = dist + (soundOrigin.oMinus(listenerQU)).LengthFast();
                 if (fullDist < def.distance) {
                     def.distance = fullDist;
                     def.spatializedOrigin = soundOrigin;
@@ -1947,13 +1953,13 @@ public class snd_world {
                 return;
             }
 
-            final soundPortalTrace_s newStack = new soundPortalTrace_s();
+            soundPortalTrace_s newStack = new soundPortalTrace_s();
             newStack.portalArea = soundArea;
             newStack.prevStack = prevStack;
 
-            final int numPortals = this.rw.NumPortalsInArea(soundArea);
+            int numPortals = rw.NumPortalsInArea(soundArea);
             for (int p = 0; p < numPortals; p++) {
-                final exitPortal_t re = this.rw.GetPortal(soundArea, p);
+                exitPortal_t re = rw.GetPortal(soundArea, p);
 
                 float occlusionDistance = 0;
 
@@ -1985,11 +1991,11 @@ public class snd_world {
 // #if 1
                 idVec3 source;
 
-                final idPlane pl = new idPlane();
+                idPlane pl = new idPlane();
                 re.w.GetPlane(pl);
 
-                final float[] scale = {0};
-                final idVec3 dir = this.listenerQU.oMinus(soundOrigin);
+                float[] scale = {0};
+                idVec3 dir = listenerQU.oMinus(soundOrigin);
                 if (!pl.RayIntersection(soundOrigin, dir, scale)) {
                     source = re.w.GetCenter();
                 } else {
@@ -1997,18 +2003,18 @@ public class snd_world {
 
                     // if this point isn't inside the portal edges, slide it in
                     for (int i = 0; i < re.w.GetNumPoints(); i++) {
-                        final int j = (i + 1) % re.w.GetNumPoints();
-                        final idVec3 edgeDir = re.w.oGet(j).ToVec3().oMinus(re.w.oGet(i).ToVec3());
-                        final idVec3 edgeNormal = new idVec3();
+                        int j = (i + 1) % re.w.GetNumPoints();
+                        idVec3 edgeDir = re.w.oGet(j).ToVec3().oMinus(re.w.oGet(i).ToVec3());
+                        idVec3 edgeNormal = new idVec3();
 
                         edgeNormal.Cross(pl.Normal(), edgeDir);
 
-                        final idVec3 fromVert = source.oMinus(re.w.oGet(j).ToVec3());
+                        idVec3 fromVert = source.oMinus(re.w.oGet(j).ToVec3());
 
                         float d = edgeNormal.oMultiply(fromVert);
                         if (d > 0) {
                             // move it in
-                            final float div = edgeNormal.Normalize();
+                            float div = edgeNormal.Normalize();
                             d /= div;
 
                             source.oMinSet(edgeNormal.oMultiply(d));
@@ -2056,8 +2062,8 @@ public class snd_world {
                 // source = soundOrigin;
                 // }
 // #endif
-                final idVec3 tlen = source.oMinus(soundOrigin);
-                final float tlenLength = tlen.LengthFast();
+                idVec3 tlen = source.oMinus(soundOrigin);
+                float tlenLength = tlen.LengthFast();
 
                 ResolveOrigin(stackDepth + 1, newStack, otherArea, dist + tlenLength + occlusionDistance, source, def);
             }
@@ -2084,8 +2090,8 @@ public class snd_world {
             soundShaderParms_t parms;
             float volume;
             int activeChannelCount;
-            final float[] sourceBuffer = new float[AMPLITUDE_SAMPLES];
-            final float[] sumBuffer = new float[AMPLITUDE_SAMPLES];
+            float[] sourceBuffer = new float[AMPLITUDE_SAMPLES];
+            float[] sumBuffer = new float[AMPLITUDE_SAMPLES];
             // work out the distance from the listener to the emitter
             float dlen;
 
@@ -2095,7 +2101,7 @@ public class snd_world {
 
             if (listenerPosition != null) {
                 // this doesn't do the portal spatialization
-                final idVec3 dist = sound.origin.oMinus(listenerPosition);
+                idVec3 dist = sound.origin.oMinus(listenerPosition);
                 dlen = dist.Length();
                 dlen *= DOOM_TO_METERS;
             } else {
@@ -2105,25 +2111,25 @@ public class snd_world {
             activeChannelCount = 0;
 
             for (i = 0; i < SOUND_MAX_CHANNELS; i++) {
-                final idSoundChannel chan = sound.channels[i];
+                idSoundChannel chan = sound.channels[i];
 
                 if (!chan.triggerState) {
                     continue;
                 }
 
-                if ((channel != SCHANNEL_ANY) && (chan.triggerChannel != channel)) {
+                if (channel != SCHANNEL_ANY && chan.triggerChannel != channel) {
                     continue;
                 }
 
                 parms = chan.parms;
 
-                final int localTriggerTimes = chan.trigger44kHzTime;
+                int localTriggerTimes = chan.trigger44kHzTime;
 
-                final boolean looping = (parms.soundShaderFlags & SSF_LOOPING) != 0;
+                boolean looping = (parms.soundShaderFlags & SSF_LOOPING) != 0;
 
                 // check for screen shakes
-                final float shakes = parms.shakes;
-                if (shakesOnly && (shakes <= 0.0f)) {
+                float shakes = parms.shakes;
+                if (shakesOnly && shakes <= 0.0f) {
                     continue;
                 }
 
@@ -2140,10 +2146,10 @@ public class snd_world {
                         volume *= shakes;
                     }
 
-                    if ((listenerPosition != null) && (0 == (parms.soundShaderFlags & SSF_GLOBAL))) {
+                    if (listenerPosition != null && 0 == (parms.soundShaderFlags & SSF_GLOBAL)) {
                         // check for overrides
-                        final float maxd = parms.maxDistance;
-                        final float mind = parms.minDistance;
+                        float maxd = parms.maxDistance;
+                        float mind = parms.minDistance;
 
                         if (dlen >= maxd) {
                             volume = 0.0f;
@@ -2165,7 +2171,7 @@ public class snd_world {
                 // fetch the sound from the cache
                 // this doesn't handle stereo samples correctly...
                 //
-                if ((null == listenerPosition) && ((chan.parms.soundShaderFlags != 0) & (SSF_NO_FLICKER != 0))) {
+                if (null == listenerPosition && chan.parms.soundShaderFlags != 0 & SSF_NO_FLICKER != 0) {
                     // the NO_FLICKER option is to allow a light to still play a sound, but
                     // not have it effect the intensity
                     for (j = 0; j < (AMPLITUDE_SAMPLES); j++) {
@@ -2173,11 +2179,11 @@ public class snd_world {
                     }
                 } else {
                     int offset = Math.abs(localTime - localTriggerTimes);    // offset in samples
-                    final int size = (looping ? chan.soundShader.entries[0].LengthIn44kHzSamples() : chan.leadinSample.LengthIn44kHzSamples());
-                    final ByteBuffer plitudeData = looping ? chan.soundShader.entries[0].amplitudeData : chan.leadinSample.amplitudeData;
+                    int size = (looping ? chan.soundShader.entries[0].LengthIn44kHzSamples() : chan.leadinSample.LengthIn44kHzSamples());
+                    ByteBuffer plitudeData = looping ? chan.soundShader.entries[0].amplitudeData : chan.leadinSample.amplitudeData;
 
                     if (plitudeData != null) {
-                        final ShortBuffer amplitudeData = plitudeData.asShortBuffer();
+                        ShortBuffer amplitudeData = plitudeData.asShortBuffer();
                         // when the amplitudeData is present use that fill a dummy sourceBuffer
                         // this is to allow for amplitude based effect on hardware audio solutions
                         if (looping) {
@@ -2185,7 +2191,7 @@ public class snd_world {
                         }
                         if (offset < size) {
                             for (j = 0; j < (AMPLITUDE_SAMPLES); j++) {
-                                sourceBuffer[j] = (j & 1) == 1 ? amplitudeData.get((offset / 512) * 2) : amplitudeData.get(((offset / 512) * 2) + 1);
+                                sourceBuffer[j] = (j & 1) == 1 ? amplitudeData.get((offset / 512) * 2) : amplitudeData.get((offset / 512) * 2 + 1);
                             }
                         }
                     } else {
@@ -2216,7 +2222,7 @@ public class snd_world {
 
             // use a 20th of a second
             for (i = 0; i < (AMPLITUDE_SAMPLES); i++) {
-                final float fabval = sumBuffer[i];
+                float fabval = sumBuffer[i];
                 if (high < fabval) {
                     high = fabval;
                 }
@@ -2232,4 +2238,6 @@ public class snd_world {
         }
 
     }
+
+    ;
 }

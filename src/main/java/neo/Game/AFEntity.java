@@ -53,7 +53,6 @@ import neo.Game.AF.idAF;
 import neo.Game.Entity.idAnimatedEntity;
 import neo.Game.Entity.idEntity;
 import neo.Game.Game_local.idEntityPtr;
-import neo.Game.Game_local.idGameLocal;
 import neo.Game.Item.idMoveableItem;
 import neo.Game.Player.idPlayer;
 import neo.Game.Animation.Anim_Blend.idDeclModelDef;
@@ -121,11 +120,7 @@ public class AFEntity {
     public static class idMultiModelAF extends idEntity {
 //        public CLASS_PROTOTYPE(idMultiModelAF );//TODO:include this?
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		protected idPhysics_AF physicsObj;
+        protected idPhysics_AF physicsObj;
         //
         private idList<idRenderModel> modelHandles;
         private idList<Integer> modelDefHandles;
@@ -134,7 +129,7 @@ public class AFEntity {
 
         @Override
         public void Spawn() {
-            this.physicsObj.SetSelf(this);
+            physicsObj.SetSelf(this);
         }
 
 //							~idMultiModelAF( void );
@@ -149,35 +144,35 @@ public class AFEntity {
             int i;
 
             // don't present to the renderer if the entity hasn't changed
-            if (0 == (this.thinkFlags & TH_UPDATEVISUALS)) {
+            if (0 == (thinkFlags & TH_UPDATEVISUALS)) {
                 return;
             }
             BecomeInactive(TH_UPDATEVISUALS);
 
-            for (i = 0; i < this.modelHandles.Num(); i++) {
+            for (i = 0; i < modelHandles.Num(); i++) {
 
-                if (null == this.modelHandles.oGet(i)) {
+                if (null == modelHandles.oGet(i)) {
                     continue;
                 }
 
-                this.renderEntity.origin.oSet(this.physicsObj.GetOrigin(i));
-                this.renderEntity.axis.oSet(this.physicsObj.GetAxis(i));
-                this.renderEntity.hModel = this.modelHandles.oGet(i);
-                this.renderEntity.bodyId = i;
+                renderEntity.origin.oSet(physicsObj.GetOrigin(i));
+                renderEntity.axis.oSet(physicsObj.GetAxis(i));
+                renderEntity.hModel = modelHandles.oGet(i);
+                renderEntity.bodyId = i;
 
                 // add to refresh list
-                if (this.modelDefHandles.oGet(i) == -1) {
-                    this.modelDefHandles.oSet(i, gameRenderWorld.AddEntityDef(this.renderEntity));
+                if (modelDefHandles.oGet(i) == -1) {
+                    modelDefHandles.oSet(i, gameRenderWorld.AddEntityDef(renderEntity));
                 } else {
-                    gameRenderWorld.UpdateEntityDef(this.modelDefHandles.oGet(i), this.renderEntity);
+                    gameRenderWorld.UpdateEntityDef(modelDefHandles.oGet(i), renderEntity);
                 }
             }
         }
 
         protected void SetModelForId(int id, final String modelName) {
-            this.modelHandles.AssureSize(id + 1, null);
-            this.modelDefHandles.AssureSize(id + 1, -1);
-            this.modelHandles.oSet(id, renderModelManager.FindModel(modelName));
+            modelHandles.AssureSize(id + 1, null);
+            modelDefHandles.AssureSize(id + 1, -1);
+            modelHandles.oSet(id, renderModelManager.FindModel(modelName));
         }
 
         @Override
@@ -186,10 +181,10 @@ public class AFEntity {
         }
 
         @Override
-        public java.lang.Class<?> /*idTypeInfo*/ GetType() {
+        public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     /*
      ===============================================================================
@@ -203,32 +198,27 @@ public class AFEntity {
     public static class idChain extends idMultiModelAF {
 //public	CLASS_PROTOTYPE( idChain );
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		@Override
+        @Override
         public void Spawn() {
-            final int[] numLinks = new int[1];
-            final float[] length = new float[1], linkWidth = new float[1], density = new float[1];
+            int[] numLinks = new int[1];
+            float[] length = new float[1], linkWidth = new float[1], density = new float[1];
             float linkLength;
-            final boolean[] drop = {false};
+            boolean[] drop = {false};
             idVec3 origin;
 
-            this.spawnArgs.GetBool("drop", "0", drop);
-            this.spawnArgs.GetInt("links", "3", numLinks);
-            this.spawnArgs.GetFloat("length", "" + (numLinks[0] * 32.0f), length);
-            this.spawnArgs.GetFloat("width", "8", linkWidth);
-            this.spawnArgs.GetFloat("density", "0.2", density);
+            spawnArgs.GetBool("drop", "0", drop);
+            spawnArgs.GetInt("links", "3", numLinks);
+            spawnArgs.GetFloat("length", "" + (numLinks[0] * 32.0f), length);
+            spawnArgs.GetFloat("width", "8", linkWidth);
+            spawnArgs.GetFloat("density", "0.2", density);
             linkLength = length[0] / numLinks[0];
             origin = GetPhysics().GetOrigin();
 
             // initialize physics
-            this.physicsObj.SetSelf(this);
-            this.physicsObj.SetGravity(gameLocal.GetGravity());
-            this.physicsObj.SetClipMask(MASK_SOLID | CONTENTS_BODY);
-            SetPhysics(this.physicsObj);
+            physicsObj.SetSelf(this);
+            physicsObj.SetGravity(gameLocal.GetGravity());
+            physicsObj.SetClipMask(MASK_SOLID | CONTENTS_BODY);
+            SetPhysics(physicsObj);
 
             BuildChain("link", origin, linkLength, linkWidth[0], density[0], numLinks[0], !drop[0]);
         }
@@ -244,7 +234,7 @@ public class AFEntity {
          */
         protected void BuildChain(final String name, final idVec3 origin, float linkLength, float linkWidth, float density, int numLinks, boolean bindToWorld /*= true*/) {
             int i;
-            final float halfLinkLength = linkLength * 0.5f;
+            float halfLinkLength = linkLength * 0.5f;
             idTraceModel trm;
             idClipModel clip;
             idAFBody body, lastBody;
@@ -266,10 +256,10 @@ public class AFEntity {
                 clip.SetContents(CONTENTS_SOLID);
                 clip.Link(gameLocal.clip, this, 0, org, getMat3_identity());
                 body = new idAFBody(new idStr(name + i), clip, density);
-                this.physicsObj.AddBody(body);
+                physicsObj.AddBody(body);
 
                 // visual model for body
-                SetModelForId(this.physicsObj.GetBodyId(body), this.spawnArgs.GetString("model"));
+                SetModelForId(physicsObj.GetBodyId(body), spawnArgs.GetString("model"));
 
                 // add constraint
                 if (bindToWorld) {
@@ -285,13 +275,13 @@ public class AFEntity {
                     }
                     uj.SetAnchor(org.oPlus(new idVec3(0, 0, halfLinkLength)));
                     uj.SetFriction(0.9f);
-                    this.physicsObj.AddConstraint(uj);
+                    physicsObj.AddConstraint(uj);
                 } else {
                     if (lastBody != null) {
                         bsj = new idAFConstraint_BallAndSocketJoint(new idStr("joint" + i), lastBody, body);
                         bsj.SetAnchor(org.oPlus(new idVec3(0, 0, halfLinkLength)));
                         bsj.SetConeLimit(new idVec3(0, 0, 1), 60, new idVec3(0, 0, 1));
-                        this.physicsObj.AddConstraint(bsj);
+                        physicsObj.AddConstraint(bsj);
                     }
                 }
 
@@ -300,7 +290,7 @@ public class AFEntity {
                 lastBody = body;
             }
         }
-    }
+    };
 
     /*
      ===============================================================================
@@ -312,11 +302,7 @@ public class AFEntity {
     public static class idAFAttachment extends idAnimatedEntity {
 // public	CLASS_PROTOTYPE( idAFAttachment );
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		protected idEntity body;
+        protected idEntity body;
         protected idClipModel combatModel;	// render model for hit detection of head
         protected int idleAnim;
         protected int/*jointHandle_t*/ attachJoint;
@@ -324,10 +310,10 @@ public class AFEntity {
         //
 
         public idAFAttachment() {
-            this.body = null;
-            this.combatModel = null;
-            this.idleAnim = 0;
-            this.attachJoint = INVALID_JOINT;
+            body = null;
+            combatModel = null;
+            idleAnim = 0;
+            attachJoint = INVALID_JOINT;
         }
         // virtual					~idAFAttachment( void );
 
@@ -335,7 +321,7 @@ public class AFEntity {
         public void Spawn() {
             super.Spawn();
             
-            this.idleAnim = this.animator.GetAnim("idle");
+            idleAnim = animator.GetAnim("idle");
         }
 
         /*
@@ -347,9 +333,9 @@ public class AFEntity {
          */
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteObject(this.body);
-            savefile.WriteInt(this.idleAnim);
-            savefile.WriteJoint(this.attachJoint);
+            savefile.WriteObject(body);
+            savefile.WriteInt(idleAnim);
+            savefile.WriteJoint(attachJoint);
         }
 
         /*
@@ -361,9 +347,9 @@ public class AFEntity {
          */
         @Override
         public void Restore(idRestoreGame savefile) {
-            savefile.ReadObject(this./*reinterpret_cast<idClass*&>*/body);
-            this.idleAnim = savefile.ReadInt();
-            this.attachJoint = savefile.ReadJoint();
+            savefile.ReadObject(/*reinterpret_cast<idClass*&>*/body);
+            idleAnim = savefile.ReadInt();
+            attachJoint = savefile.ReadJoint();
 
             SetCombatModel();
             LinkCombat();
@@ -372,29 +358,29 @@ public class AFEntity {
         public void SetBody(idEntity bodyEnt, final String headModel, int/*jointHandle_t*/ attachJoint) {
             boolean bleed;
 
-            this.body = bodyEnt;
+            body = bodyEnt;
             this.attachJoint = attachJoint;
             SetModel(headModel);
-            this.fl.takedamage = true;
+            fl.takedamage = true;
 
-            bleed = this.body.spawnArgs.GetBool("bleed");
-            this.spawnArgs.SetBool("bleed", bleed);
+            bleed = body.spawnArgs.GetBool("bleed");
+            spawnArgs.SetBool("bleed", bleed);
         }
 
         public void ClearBody() {
-            this.body = null;
-            this.attachJoint = INVALID_JOINT;
+            body = null;
+            attachJoint = INVALID_JOINT;
             Hide();
         }
 
         public idEntity GetBody() {
-            return this.body;
+            return body;
         }
 
         @Override
         public void Think() {
             super.Think();
-            if ((this.thinkFlags & TH_UPDATEPARTICLES) != 0) {
+            if ((thinkFlags & TH_UPDATEPARTICLES) != 0) {
                 UpdateDamageEffects();
             }
         }
@@ -412,15 +398,15 @@ public class AFEntity {
         }
 
         public void PlayIdleAnim(int blendTime) {
-            if ((this.idleAnim != 0) && (this.idleAnim != this.animator.CurrentAnim(ANIMCHANNEL_ALL).AnimNum())) {
-                this.animator.CycleAnim(ANIMCHANNEL_ALL, this.idleAnim, gameLocal.time, blendTime);
+            if (idleAnim != 0 && (idleAnim != animator.CurrentAnim(ANIMCHANNEL_ALL).AnimNum())) {
+                animator.CycleAnim(ANIMCHANNEL_ALL, idleAnim, gameLocal.time, blendTime);
             }
         }
 
         @Override
         public impactInfo_s GetImpactInfo(idEntity ent, int id, final idVec3 point) {
-            if (this.body != null) {
-               return  this.body.GetImpactInfo(ent, JOINT_HANDLE_TO_CLIPMODEL_ID(this.attachJoint), point);
+            if (body != null) {
+               return  body.GetImpactInfo(ent, JOINT_HANDLE_TO_CLIPMODEL_ID(attachJoint), point);
             } else {
                 return idEntity_GetImpactInfo(ent, id, point);
             }
@@ -428,8 +414,8 @@ public class AFEntity {
 
         @Override
         public void ApplyImpulse(idEntity ent, int id, final idVec3 point, final idVec3 impulse) {
-            if (this.body != null) {
-                this.body.ApplyImpulse(ent, JOINT_HANDLE_TO_CLIPMODEL_ID(this.attachJoint), point, impulse);
+            if (body != null) {
+                body.ApplyImpulse(ent, JOINT_HANDLE_TO_CLIPMODEL_ID(attachJoint), point, impulse);
             } else {
                 idEntity_ApplyImpulse(ent, id, point, impulse);
             }
@@ -437,8 +423,8 @@ public class AFEntity {
 
         @Override
         public void AddForce(idEntity ent, int id, final idVec3 point, final idVec3 force) {
-            if (this.body != null) {
-                this.body.AddForce(ent, JOINT_HANDLE_TO_CLIPMODEL_ID(this.attachJoint), point, force);
+            if (body != null) {
+                body.AddForce(ent, JOINT_HANDLE_TO_CLIPMODEL_ID(attachJoint), point, force);
             } else {
                 idEntity_AddForce(ent, id, point, force);
             }
@@ -454,50 +440,50 @@ public class AFEntity {
         @Override
         public void Damage(idEntity inflictor, idEntity attacker, final idVec3 dir, final String damageDefName, final float damageScale, final int location) {
 
-            if (this.body != null) {
-                this.body.Damage(inflictor, attacker, dir, damageDefName, damageScale, this.attachJoint);
+            if (body != null) {
+                body.Damage(inflictor, attacker, dir, damageDefName, damageScale, attachJoint);
             }
         }
 
         @Override
         public void AddDamageEffect(final trace_s collision, final idVec3 velocity, final String damageDefName) {
-            if (this.body != null) {
-                final trace_s c = collision;
-                c.c.id = JOINT_HANDLE_TO_CLIPMODEL_ID(this.attachJoint);
-                this.body.AddDamageEffect(c, velocity, damageDefName);
+            if (body != null) {
+                trace_s c = collision;
+                c.c.id = JOINT_HANDLE_TO_CLIPMODEL_ID(attachJoint);
+                body.AddDamageEffect(c, velocity, damageDefName);
             }
         }
 
         public void SetCombatModel() {
-            if (this.combatModel != null) {
-                this.combatModel.Unlink();
-                this.combatModel.LoadModel(this.modelDefHandle);
+            if (combatModel != null) {
+                combatModel.Unlink();
+                combatModel.LoadModel(modelDefHandle);
             } else {
-                this.combatModel = new idClipModel(this.modelDefHandle);
+                combatModel = new idClipModel(modelDefHandle);
             }
-            this.combatModel.SetOwner(this.body);
+            combatModel.SetOwner(body);
         }
 
         public idClipModel GetCombatModel() {
-            return this.combatModel;
+            return combatModel;
         }
 
         public void LinkCombat() {
-            if (this.fl.hidden) {
+            if (fl.hidden) {
                 return;
             }
 
-            if (this.combatModel != null) {
-                this.combatModel.Link(gameLocal.clip, this, 0, this.renderEntity.origin, this.renderEntity.axis, this.modelDefHandle);
+            if (combatModel != null) {
+                combatModel.Link(gameLocal.clip, this, 0, renderEntity.origin, renderEntity.axis, modelDefHandle);
             }
         }
 
         public void UnlinkCombat() {
-            if (this.combatModel != null) {
-                this.combatModel.Unlink();
+            if (combatModel != null) {
+                combatModel.Unlink();
             }
         }
-    }
+    };
 
     /*
      ===============================================================================
@@ -512,11 +498,7 @@ public class AFEntity {
 //
 
     public static class idAFEntity_Base extends idAnimatedEntity {
-/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// public	CLASS_PROTOTYPE( idAFEntity_Base );
+// public	CLASS_PROTOTYPE( idAFEntity_Base );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -534,12 +516,12 @@ public class AFEntity {
         //
 
         public idAFEntity_Base() {
-            this.af = new idAF();
-            this.combatModel = null;
-            this.combatModelContents = 0;
-            this.nextSoundTime = 0;
-            this.spawnOrigin = new idVec3();
-            this.spawnAxis = getMat3_identity();
+            af = new idAF();
+            combatModel = null;
+            combatModelContents = 0;
+            nextSoundTime = 0;
+            spawnOrigin = new idVec3();
+            spawnAxis = getMat3_identity();
         }
         // virtual					~idAFEntity_Base( void );
 
@@ -547,38 +529,38 @@ public class AFEntity {
         public void Spawn() {
             super.Spawn();
             
-            this.spawnOrigin.oSet(GetPhysics().GetOrigin());
-            this.spawnAxis.oSet(GetPhysics().GetAxis());
-            this.nextSoundTime = 0;
+            spawnOrigin.oSet(GetPhysics().GetOrigin());
+            spawnAxis.oSet(GetPhysics().GetAxis());
+            nextSoundTime = 0;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteInt(this.combatModelContents);
-            savefile.WriteClipModel(this.combatModel);
-            savefile.WriteVec3(this.spawnOrigin);
-            savefile.WriteMat3(this.spawnAxis);
-            savefile.WriteInt(this.nextSoundTime);
-            this.af.Save(savefile);
+            savefile.WriteInt(combatModelContents);
+            savefile.WriteClipModel(combatModel);
+            savefile.WriteVec3(spawnOrigin);
+            savefile.WriteMat3(spawnAxis);
+            savefile.WriteInt(nextSoundTime);
+            af.Save(savefile);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            this.combatModelContents = savefile.ReadInt();
-            savefile.ReadClipModel(this.combatModel);
-            savefile.ReadVec3(this.spawnOrigin);
-            savefile.ReadMat3(this.spawnAxis);
-            this.nextSoundTime = savefile.ReadInt();
+            combatModelContents = savefile.ReadInt();
+            savefile.ReadClipModel(combatModel);
+            savefile.ReadVec3(spawnOrigin);
+            savefile.ReadMat3(spawnAxis);
+            nextSoundTime = savefile.ReadInt();
             LinkCombat();
 
-            this.af.Restore(savefile);
+            af.Restore(savefile);
         }
 
         @Override
         public void Think() {
             RunPhysics();
             UpdateAnimation();
-            if ((this.thinkFlags & TH_UPDATEVISUALS) != 0) {
+            if ((thinkFlags & TH_UPDATEVISUALS) != 0) {
                 Present();
                 LinkCombat();
             }
@@ -586,8 +568,8 @@ public class AFEntity {
 
         @Override
         public impactInfo_s GetImpactInfo(idEntity ent, int id, final idVec3 point) {
-            if (this.af.IsActive()) {
-                return this.af.GetImpactInfo(ent, id, point);
+            if (af.IsActive()) {
+                return af.GetImpactInfo(ent, id, point);
             } else {
                 return idEntity_GetImpactInfo(ent, id, point);
             }
@@ -595,20 +577,20 @@ public class AFEntity {
 
         @Override
         public void ApplyImpulse(idEntity ent, int id, final idVec3 point, final idVec3 impulse) {
-            if (this.af.IsLoaded()) {
-                this.af.ApplyImpulse(ent, id, point, impulse);
+            if (af.IsLoaded()) {
+                af.ApplyImpulse(ent, id, point, impulse);
             }
-            if (!this.af.IsActive()) {
+            if (!af.IsActive()) {
                 idEntity_ApplyImpulse(ent, id, point, impulse);
             }
         }
 
         @Override
         public void AddForce(idEntity ent, int id, final idVec3 point, final idVec3 force) {
-            if (this.af.IsLoaded()) {
-                this.af.AddForce(ent, id, point, force);
+            if (af.IsLoaded()) {
+                af.AddForce(ent, id, point, force);
             }
-            if (!this.af.IsActive()) {
+            if (!af.IsActive()) {
                 idEntity_AddForce(ent, id, point, force);
             }
         }
@@ -617,16 +599,16 @@ public class AFEntity {
         public boolean Collide(final trace_s collision, final idVec3 velocity) {
             float v, f;
 
-            if (this.af.IsActive()) {
+            if (af.IsActive()) {
                 v = -(velocity.oMultiply(collision.c.normal));
-                if ((v > BOUNCE_SOUND_MIN_VELOCITY) && (gameLocal.time > this.nextSoundTime)) {
+                if (v > BOUNCE_SOUND_MIN_VELOCITY && gameLocal.time > nextSoundTime) {
                     f = v > BOUNCE_SOUND_MAX_VELOCITY ? 1.0f : idMath.Sqrt(v - BOUNCE_SOUND_MIN_VELOCITY) * (1.0f / idMath.Sqrt(BOUNCE_SOUND_MAX_VELOCITY - BOUNCE_SOUND_MIN_VELOCITY));
                     if (StartSound("snd_bounce", SND_CHANNEL_ANY, 0, false, null)) {
                         // don't set the volume unless there is a bounce sound as it overrides the entire channel
                         // which causes footsteps on ai's to not honor their shader parms
                         SetSoundVolume(f);
                     }
-                    this.nextSoundTime = gameLocal.time + 500;
+                    nextSoundTime = gameLocal.time + 500;
                 }
             }
 
@@ -635,8 +617,8 @@ public class AFEntity {
 
         @Override
         public boolean GetPhysicsToVisualTransform(idVec3 origin, idMat3 axis) {
-            if (this.af.IsActive()) {
-                this.af.GetPhysicsToVisualTransform(origin, axis);
+            if (af.IsActive()) {
+                af.GetPhysicsToVisualTransform(origin, axis);
                 return true;
             }
             return idEntity_GetPhysicsToVisualTransform(origin, axis);
@@ -644,8 +626,8 @@ public class AFEntity {
 
         @Override
         public boolean UpdateAnimationControllers() {
-            if (this.af.IsActive()) {
-                if (this.af.UpdateAnimation()) {
+            if (af.IsActive()) {
+                if (af.UpdateAnimation()) {
                     return true;
                 }
             }
@@ -659,140 +641,140 @@ public class AFEntity {
         }
 
         public boolean LoadAF() {
-            final String[] fileName = new String[1];
+            String[] fileName = new String[1];
 
-            if (!this.spawnArgs.GetString("articulatedFigure", "*unknown*", fileName)) {
+            if (!spawnArgs.GetString("articulatedFigure", "*unknown*", fileName)) {
                 return false;
             }
 
-            this.af.SetAnimator(GetAnimator());
-            if (!this.af.Load(this, fileName[0])) {
-                idGameLocal.Error("idAFEntity_Base::LoadAF: Couldn't load af file '%s' on entity '%s'", fileName[0], this.name);
+            af.SetAnimator(GetAnimator());
+            if (!af.Load(this, fileName[0])) {
+                gameLocal.Error("idAFEntity_Base::LoadAF: Couldn't load af file '%s' on entity '%s'", fileName[0], name);
             }
 
-            this.af.Start();
+            af.Start();
 
-            this.af.GetPhysics().Rotate(this.spawnAxis.ToRotation());
-            this.af.GetPhysics().Translate(this.spawnOrigin);
+            af.GetPhysics().Rotate(spawnAxis.ToRotation());
+            af.GetPhysics().Translate(spawnOrigin);
 
-            LoadState(this.spawnArgs);
+            LoadState(spawnArgs);
 
-            this.af.UpdateAnimation();
-            this.animator.CreateFrame(gameLocal.time, true);
+            af.UpdateAnimation();
+            animator.CreateFrame(gameLocal.time, true);
             UpdateVisuals();
 
             return true;
         }
 
         public boolean IsActiveAF() {
-            return this.af.IsActive();
+            return af.IsActive();
         }
 
         public String GetAFName() {
-            return this.af.GetName();
+            return af.GetName();
         }
 
         public idPhysics_AF GetAFPhysics() {
-            return this.af.GetPhysics();
+            return af.GetPhysics();
         }
 
         public void SetCombatModel() {
-            if (this.combatModel != null) {
-                this.combatModel.Unlink();
-                this.combatModel.LoadModel(this.modelDefHandle);
+            if (combatModel != null) {
+                combatModel.Unlink();
+                combatModel.LoadModel(modelDefHandle);
             } else {
-                this.combatModel = new idClipModel(this.modelDefHandle);
+                combatModel = new idClipModel(modelDefHandle);
             }
         }
 
         public idClipModel GetCombatModel() {
-            return this.combatModel;
+            return combatModel;
         }
 
         // contents of combatModel can be set to 0 or re-enabled (mp)
         public void SetCombatContents(boolean enable) {
-            assert (this.combatModel != null);
-            if (enable && (this.combatModelContents != 0)) {
-                assert (0 == this.combatModel.GetContents());
-                this.combatModel.SetContents(this.combatModelContents);
-                this.combatModelContents = 0;
-            } else if (!enable && (this.combatModel.GetContents() != 0)) {
-                assert (0 == this.combatModelContents);
-                this.combatModelContents = this.combatModel.GetContents();
-                this.combatModel.SetContents(0);
+            assert (combatModel != null);
+            if (enable && combatModelContents != 0) {
+                assert (0 == combatModel.GetContents());
+                combatModel.SetContents(combatModelContents);
+                combatModelContents = 0;
+            } else if (!enable && combatModel.GetContents() != 0) {
+                assert (0 == combatModelContents);
+                combatModelContents = combatModel.GetContents();
+                combatModel.SetContents(0);
             }
         }
 
         public void LinkCombat() {
-            if (this.fl.hidden) {
+            if (fl.hidden) {
                 return;
             }
-            if (this.combatModel != null) {
-                this.combatModel.Link(gameLocal.clip, this, 0, this.renderEntity.origin, this.renderEntity.axis, this.modelDefHandle);
+            if (combatModel != null) {
+                combatModel.Link(gameLocal.clip, this, 0, renderEntity.origin, renderEntity.axis, modelDefHandle);
             }
         }
 
         public void UnlinkCombat() {
-            if (this.combatModel != null) {
-                this.combatModel.Unlink();
+            if (combatModel != null) {
+                combatModel.Unlink();
             }
         }
 
         public int BodyForClipModelId(int id) {
-            return this.af.BodyForClipModelId(id);
+            return af.BodyForClipModelId(id);
         }
 
         public void SaveState(idDict args) {
             idKeyValue kv;
 
             // save the ragdoll pose
-            this.af.SaveState(args);
+            af.SaveState(args);
 
             // save all the bind constraints
-            kv = this.spawnArgs.MatchPrefix("bindConstraint ", null);
+            kv = spawnArgs.MatchPrefix("bindConstraint ", null);
             while (kv != null) {
                 args.Set(kv.GetKey(), kv.GetValue());
-                kv = this.spawnArgs.MatchPrefix("bindConstraint ", kv);
+                kv = spawnArgs.MatchPrefix("bindConstraint ", kv);
             }
 
             // save the bind if it exists
-            kv = this.spawnArgs.FindKey("bind");
+            kv = spawnArgs.FindKey("bind");
             if (kv != null) {
                 args.Set(kv.GetKey(), kv.GetValue());
             }
-            kv = this.spawnArgs.FindKey("bindToJoint");
+            kv = spawnArgs.FindKey("bindToJoint");
             if (kv != null) {
                 args.Set(kv.GetKey(), kv.GetValue());
             }
-            kv = this.spawnArgs.FindKey("bindToBody");
+            kv = spawnArgs.FindKey("bindToBody");
             if (kv != null) {
                 args.Set(kv.GetKey(), kv.GetValue());
             }
         }
 
         public void LoadState(final idDict args) {
-            this.af.LoadState(args);
+            af.LoadState(args);
         }
 
         public void AddBindConstraints() {
-            this.af.AddBindConstraints();
+            af.AddBindConstraints();
         }
 
         public void RemoveBindConstraints() {
-            this.af.RemoveBindConstraints();
+            af.RemoveBindConstraints();
         }
 
         @Override
         public void ShowEditingDialog() {
-            common.InitTool(EDITOR_AF, this.spawnArgs);
+            common.InitTool(EDITOR_AF, spawnArgs);
         }
 
         public static void DropAFs(idEntity ent, final String type, idList<idEntity> list) {
             idKeyValue kv;
             String skinName;
-            final idEntity[] newEnt = {null};
+            idEntity[] newEnt = {null};
             idAFEntity_Base af;
-            final idDict args = new idDict();
+            idDict args = new idDict();
             idDeclSkin skin;
 
             // drop the articulated figures
@@ -802,7 +784,7 @@ public class AFEntity {
                 args.Set("classname", kv.GetValue());
                 gameLocal.SpawnEntityDef(args, newEnt);
 
-                if ((newEnt[0] != null) && newEnt[0].IsType(idAFEntity_Base.class)) {
+                if (newEnt[0] != null && newEnt[0].IsType(idAFEntity_Base.class)) {
                     af = (idAFEntity_Base) newEnt[0];
                     af.GetPhysics().SetOrigin(ent.GetPhysics().GetOrigin());
                     af.GetPhysics().SetAxis(ent.GetPhysics().GetAxis());
@@ -824,18 +806,18 @@ public class AFEntity {
         }
 
         protected void Event_SetConstraintPosition(final idEventArg<String> name, final idEventArg<idVec3> pos) {
-            this.af.SetConstraintPosition(name.value, pos.value);
+            af.SetConstraintPosition(name.value, pos.value);
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
         public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
             return eventCallbacks;
         }
-    }
+    };
     /*
      ===============================================================================
 
@@ -845,11 +827,7 @@ public class AFEntity {
      */
 
     public static class idAFEntity_Gibbable extends idAFEntity_Base {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// CLASS_PROTOTYPE( idAFEntity_Gibbable );
+        // CLASS_PROTOTYPE( idAFEntity_Gibbable );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -865,9 +843,9 @@ public class AFEntity {
         //
 
         public idAFEntity_Gibbable() {
-            this.skeletonModel = null;
-            this.skeletonModelDefHandle = -1;
-            this.gibbed = false;
+            skeletonModel = null;
+            skeletonModelDefHandle = -1;
+            gibbed = false;
         }
         // ~idAFEntity_Gibbable( void );
 
@@ -877,19 +855,19 @@ public class AFEntity {
             
             InitSkeletonModel();
 
-            this.gibbed = false;
+            gibbed = false;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteBool(this.gibbed);
-            savefile.WriteBool(this.combatModel != null);
+            savefile.WriteBool(gibbed);
+            savefile.WriteBool(combatModel != null);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            final boolean[] hasCombatModel = {false};
-            final boolean[] gibbed = {false};
+            boolean[] hasCombatModel = {false};
+            boolean[] gibbed = {false};
 
             savefile.ReadBool(gibbed);
             savefile.ReadBool(hasCombatModel);
@@ -912,19 +890,19 @@ public class AFEntity {
             }
 
             // don't present to the renderer if the entity hasn't changed
-            if (0 == (this.thinkFlags & TH_UPDATEVISUALS)) {
+            if (0 == (thinkFlags & TH_UPDATEVISUALS)) {
                 return;
             }
 
             // update skeleton model
-            if (this.gibbed && !IsHidden() && (this.skeletonModel != null)) {
-                skeleton = this.renderEntity;
-                skeleton.hModel = this.skeletonModel;
+            if (gibbed && !IsHidden() && skeletonModel != null) {
+                skeleton = renderEntity;
+                skeleton.hModel = skeletonModel;
                 // add to refresh list
-                if (this.skeletonModelDefHandle == -1) {
-                    this.skeletonModelDefHandle = gameRenderWorld.AddEntityDef(skeleton);
+                if (skeletonModelDefHandle == -1) {
+                    skeletonModelDefHandle = gameRenderWorld.AddEntityDef(skeleton);
                 } else {
-                    gameRenderWorld.UpdateEntityDef(this.skeletonModelDefHandle, skeleton);
+                    gameRenderWorld.UpdateEntityDef(skeletonModelDefHandle, skeleton);
                 }
             }
 
@@ -933,11 +911,11 @@ public class AFEntity {
 
         @Override
         public void Damage(idEntity inflictor, idEntity attacker, final idVec3 dir, final String damageDefName, final float damageScale, final int location) {
-            if (!this.fl.takedamage) {
+            if (!fl.takedamage) {
                 return;
             }
             super.Damage(inflictor, attacker, dir, damageDefName, damageScale, location);
-            if ((this.health < -20) && this.spawnArgs.GetBool("gib")) {
+            if (health < -20 && spawnArgs.GetBool("gib")) {
                 Gib(dir, damageDefName);
             }
         }
@@ -946,13 +924,13 @@ public class AFEntity {
             int i;
             boolean gibNonSolid;
             idVec3 entityCenter, velocity;
-            final idList<idEntity> list = new idList<>();
+            idList<idEntity> list = new idList<>();
 
             assert (!gameLocal.isClient);
 
-            final idDict damageDef = gameLocal.FindEntityDefDict(damageDefName);
+            idDict damageDef = gameLocal.FindEntityDefDict(damageDefName);
             if (null == damageDef) {
-                idGameLocal.Error("Unknown damageDef '%s'", damageDefName);
+                gameLocal.Error("Unknown damageDef '%s'", damageDefName);
             }
 
             // spawn gib articulated figures
@@ -986,13 +964,13 @@ public class AFEntity {
 
         protected void Gib(final idVec3 dir, final String damageDefName) {
             // only gib once
-            if (this.gibbed) {
+            if (gibbed) {
                 return;
             }
 
             final idDict damageDef = gameLocal.FindEntityDefDict(damageDefName);
             if (null == damageDef) {
-                idGameLocal.Error("Unknown damageDef '%s'", damageDefName);
+                gameLocal.Error("Unknown damageDef '%s'", damageDefName);
             }
 
             if (damageDef.GetBool("gibNonSolid")) {
@@ -1011,13 +989,13 @@ public class AFEntity {
                 if (gameLocal.time > gameLocal.GetGibTime()) {
                     gameLocal.SetGibTime(gameLocal.time + GIB_DELAY);
                     SpawnGibs(dir, damageDefName);
-                    this.renderEntity.noShadow = true;
-                    this.renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH] = gameLocal.time * 0.001f;
+                    renderEntity.noShadow = true;
+                    renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH] = gameLocal.time * 0.001f;
                     StartSound("snd_gibbed", SND_CHANNEL_ANY, 0, false, null);
-                    this.gibbed = true;
+                    gibbed = true;
                 }
             } else {
-                this.gibbed = true;
+                gibbed = true;
             }
 
             PostEventSec(EV_Gibbed, 4.0f);
@@ -1027,22 +1005,22 @@ public class AFEntity {
             String modelName;
             idDeclModelDef modelDef;
 
-            this.skeletonModel = null;
-            this.skeletonModelDefHandle = -1;
+            skeletonModel = null;
+            skeletonModelDefHandle = -1;
 
-            modelName = this.spawnArgs.GetString("model_gib");
+            modelName = spawnArgs.GetString("model_gib");
 
             if (!modelName.isEmpty()) {//[0] != '\0' ) {
                 modelDef = (idDeclModelDef) declManager.FindType(DECL_MODELDEF, modelName, false);
                 if (modelDef != null) {
-                    this.skeletonModel = modelDef.ModelHandle();
+                    skeletonModel = modelDef.ModelHandle();
                 } else {
-                    this.skeletonModel = renderModelManager.FindModel(modelName);
+                    skeletonModel = renderModelManager.FindModel(modelName);
                 }
-                if ((this.skeletonModel != null) && (this.renderEntity.hModel != null)) {
-                    if (this.skeletonModel.NumJoints() != this.renderEntity.hModel.NumJoints()) {
-                        idGameLocal.Error("gib model '%s' has different number of joints than model '%s'",
-                                this.skeletonModel.Name(), this.renderEntity.hModel.Name());
+                if (skeletonModel != null && renderEntity.hModel != null) {
+                    if (skeletonModel.NumJoints() != renderEntity.hModel.NumJoints()) {
+                        gameLocal.Error("gib model '%s' has different number of joints than model '%s'",
+                                skeletonModel.Name(), renderEntity.hModel.Name());
                     }
                 }
             }
@@ -1076,7 +1054,7 @@ public class AFEntity {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1086,14 +1064,14 @@ public class AFEntity {
 
         @Override
         protected void _deconstructor() {
-            if (this.skeletonModelDefHandle != -1) {
-                gameRenderWorld.FreeEntityDef(this.skeletonModelDefHandle);
-                this.skeletonModelDefHandle = -1;
+            if (skeletonModelDefHandle != -1) {
+                gameRenderWorld.FreeEntityDef(skeletonModelDefHandle);
+                skeletonModelDefHandle = -1;
             }
 
             super._deconstructor();
         }
-    }
+    };
 
     /*
      ===============================================================================
@@ -1103,11 +1081,7 @@ public class AFEntity {
      ===============================================================================
      */
     public static class idAFEntity_Generic extends idAFEntity_Gibbable {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// CLASS_PROTOTYPE( idAFEntity_Generic );
+        // CLASS_PROTOTYPE( idAFEntity_Generic );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -1120,7 +1094,7 @@ public class AFEntity {
         //
 
         public idAFEntity_Generic() {
-            this.keepRunningPhysics[0] = false;
+            keepRunningPhysics[0] = false;
         }
         // ~idAFEntity_Generic( void );
 
@@ -1129,73 +1103,73 @@ public class AFEntity {
             super.Spawn();
             
             if (!LoadAF()) {
-                idGameLocal.Error("Couldn't load af file on entity '%s'", this.name);
+                gameLocal.Error("Couldn't load af file on entity '%s'", name);
             }
 
             SetCombatModel();
 
-            SetPhysics(this.af.GetPhysics());
+            SetPhysics(af.GetPhysics());
 
-            this.af.GetPhysics().PutToRest();
-            if (!this.spawnArgs.GetBool("nodrop", "0")) {
-                this.af.GetPhysics().Activate();
+            af.GetPhysics().PutToRest();
+            if (!spawnArgs.GetBool("nodrop", "0")) {
+                af.GetPhysics().Activate();
             }
 
-            this.fl.takedamage = true;
+            fl.takedamage = true;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteBool(this.keepRunningPhysics[0]);
+            savefile.WriteBool(keepRunningPhysics[0]);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            savefile.ReadBool(this.keepRunningPhysics);
+            savefile.ReadBool(keepRunningPhysics);
         }
 
         @Override
         public void Think() {
             idAFEntity_Base_Think();
 
-            if (this.keepRunningPhysics[0]) {
+            if (keepRunningPhysics[0]) {
                 BecomeActive(TH_PHYSICS);
             }
         }
 
         public void KeepRunningPhysics() {
-            this.keepRunningPhysics[0] = true;
+            keepRunningPhysics[0] = true;
         }
 
         private void Event_Activate(idEventArg<idEntity> activator) {
             float delay;
-            final idVec3 init_velocity = new idVec3(), init_avelocity = new idVec3();
+            idVec3 init_velocity = new idVec3(), init_avelocity = new idVec3();
 
             Show();
 
-            this.af.GetPhysics().EnableImpact();
-            this.af.GetPhysics().Activate();
+            af.GetPhysics().EnableImpact();
+            af.GetPhysics().Activate();
 
-            this.spawnArgs.GetVector("init_velocity", "0 0 0", init_velocity);
-            this.spawnArgs.GetVector("init_avelocity", "0 0 0", init_avelocity);
+            spawnArgs.GetVector("init_velocity", "0 0 0", init_velocity);
+            spawnArgs.GetVector("init_avelocity", "0 0 0", init_avelocity);
 
-            delay = this.spawnArgs.GetFloat("init_velocityDelay", "0");
+            delay = spawnArgs.GetFloat("init_velocityDelay", "0");
             if (delay == 0) {
-                this.af.GetPhysics().SetLinearVelocity(init_velocity);
+                af.GetPhysics().SetLinearVelocity(init_velocity);
             } else {
                 PostEventMS(EV_SetLinearVelocity, delay, init_velocity);
             }
 
-            delay = this.spawnArgs.GetFloat("init_avelocityDelay", "0");
+            delay = spawnArgs.GetFloat("init_avelocityDelay", "0");
             if (delay == 0) {
-                this.af.GetPhysics().SetAngularVelocity(init_avelocity);
+                af.GetPhysics().SetAngularVelocity(init_avelocity);
             } else {
                 PostEventSec(EV_SetAngularVelocity, delay, init_avelocity);
             }
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1203,7 +1177,7 @@ public class AFEntity {
             return eventCallbacks;
         }
 
-    }
+    };
 
     /*
      ===============================================================================
@@ -1213,11 +1187,7 @@ public class AFEntity {
      ===============================================================================
      */
     public static class idAFEntity_WithAttachedHead extends idAFEntity_Gibbable {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// CLASS_PROTOTYPE( idAFEntity_WithAttachedHead );
+        // CLASS_PROTOTYPE( idAFEntity_WithAttachedHead );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -1226,20 +1196,20 @@ public class AFEntity {
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idAFEntity_WithAttachedHead>) idAFEntity_WithAttachedHead::Event_Activate);
         }
 
-        private final idEntityPtr<idAFAttachment> head;
+        private idEntityPtr<idAFAttachment> head;
         //
         //
 
         public idAFEntity_WithAttachedHead() {
-            this.head = new idEntityPtr<>(null);
+            head = new idEntityPtr<>(null);
         }
 
         // ~idAFEntity_WithAttachedHead();
         @Override
         protected void _deconstructor() {
-            if (this.head.GetEntity() != null) {
-                this.head.GetEntity().ClearBody();
-                this.head.GetEntity().PostEventMS(EV_Remove, 0);
+            if (head.GetEntity() != null) {
+                head.GetEntity().ClearBody();
+                head.GetEntity().PostEventMS(EV_Remove, 0);
             }
             super._deconstructor();
         }
@@ -1254,32 +1224,32 @@ public class AFEntity {
 
             SetCombatModel();
 
-            SetPhysics(this.af.GetPhysics());
+            SetPhysics(af.GetPhysics());
 
-            this.af.GetPhysics().PutToRest();
-            if (!this.spawnArgs.GetBool("nodrop", "0")) {
-                this.af.GetPhysics().Activate();
+            af.GetPhysics().PutToRest();
+            if (!spawnArgs.GetBool("nodrop", "0")) {
+                af.GetPhysics().Activate();
             }
 
-            this.fl.takedamage = true;
+            fl.takedamage = true;
 
-            if (this.head.GetEntity() != null) {
-                final int anim = this.head.GetEntity().GetAnimator().GetAnim("dead");
+            if (head.GetEntity() != null) {
+                int anim = head.GetEntity().GetAnimator().GetAnim("dead");
 
                 if (anim != 0) {
-                    this.head.GetEntity().GetAnimator().SetFrame(ANIMCHANNEL_ALL, anim, 0, gameLocal.time, 0);
+                    head.GetEntity().GetAnimator().SetFrame(ANIMCHANNEL_ALL, anim, 0, gameLocal.time, 0);
                 }
             }
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            this.head.Save(savefile);
+            head.Save(savefile);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            this.head.Restore(savefile);
+            head.Restore(savefile);
         }
 
         public void SetupHead() {
@@ -1288,26 +1258,26 @@ public class AFEntity {
             final String headModel;
             int/*jointHandle_t*/ joint;
             idVec3 origin = new idVec3();
-            final idMat3 axis = new idMat3();
+            idMat3 axis = new idMat3();
 
-            headModel = this.spawnArgs.GetString("def_head", "");
+            headModel = spawnArgs.GetString("def_head", "");
             if (!headModel.isEmpty()) {//[ 0 ] ) {
-                jointName = this.spawnArgs.GetString("head_joint");
-                joint = this.animator.GetJointHandle(jointName);
+                jointName = spawnArgs.GetString("head_joint");
+                joint = animator.GetJointHandle(jointName);
                 if (joint == INVALID_JOINT) {
-                    idGameLocal.Error("Joint '%s' not found for 'head_joint' on '%s'", jointName, this.name.getData());
+                    gameLocal.Error("Joint '%s' not found for 'head_joint' on '%s'", jointName, name.toString());
                 }
 
                 headEnt = (idAFAttachment) gameLocal.SpawnEntityType(idAFAttachment.class, null);
-                headEnt.SetName(va("%s_head", this.name));
+                headEnt.SetName(va("%s_head", name));
                 headEnt.SetBody(this, headModel, joint);
                 headEnt.SetCombatModel();
-                this.head.oSet(headEnt);
+                head.oSet(headEnt);
 
-                this.animator.GetJointTransform(joint, gameLocal.time, origin, axis);
-                origin = this.renderEntity.origin.oPlus(origin.oMultiply(this.renderEntity.axis));
+                animator.GetJointTransform(joint, gameLocal.time, origin, axis);
+                origin = renderEntity.origin.oPlus(origin.oMultiply(renderEntity.axis));
                 headEnt.SetOrigin(origin);
-                headEnt.SetAxis(this.renderEntity.axis);
+                headEnt.SetAxis(renderEntity.axis);
                 headEnt.BindToJoint(this, joint, true);
             }
         }
@@ -1320,8 +1290,8 @@ public class AFEntity {
         @Override
         public void Hide() {
             idAFEntity_Base_Hide();
-            if (this.head.GetEntity() != null) {
-                this.head.GetEntity().Hide();
+            if (head.GetEntity() != null) {
+                head.GetEntity().Hide();
             }
             UnlinkCombat();
         }
@@ -1329,8 +1299,8 @@ public class AFEntity {
         @Override
         public void Show() {
             idAFEntity_Base_Show();
-            if (this.head.GetEntity() != null) {
-                this.head.GetEntity().Show();
+            if (head.GetEntity() != null) {
+                head.GetEntity().Show();
             }
             LinkCombat();
         }
@@ -1340,8 +1310,8 @@ public class AFEntity {
 
             idEntity_ProjectOverlay(origin, dir, size, material);
 
-            if (this.head.GetEntity() != null) {
-                this.head.GetEntity().ProjectOverlay(origin, dir, size, material);
+            if (head.GetEntity() != null) {
+                head.GetEntity().ProjectOverlay(origin, dir, size, material);
             }
         }
 
@@ -1349,14 +1319,14 @@ public class AFEntity {
         public void LinkCombat() {
             idAFAttachment headEnt;
 
-            if (this.fl.hidden) {
+            if (fl.hidden) {
                 return;
             }
 
-            if (this.combatModel != null) {
-                this.combatModel.Link(gameLocal.clip, this, 0, this.renderEntity.origin, this.renderEntity.axis, this.modelDefHandle);
+            if (combatModel != null) {
+                combatModel.Link(gameLocal.clip, this, 0, renderEntity.origin, renderEntity.axis, modelDefHandle);
             }
-            headEnt = this.head.GetEntity();
+            headEnt = head.GetEntity();
             if (headEnt != null) {
                 headEnt.LinkCombat();
             }
@@ -1366,10 +1336,10 @@ public class AFEntity {
         public void UnlinkCombat() {
             idAFAttachment headEnt;
 
-            if (this.combatModel != null) {
-                this.combatModel.Unlink();
+            if (combatModel != null) {
+                combatModel.Unlink();
             }
-            headEnt = this.head.GetEntity();
+            headEnt = head.GetEntity();
             if (headEnt != null) {
                 headEnt.UnlinkCombat();
             }
@@ -1378,12 +1348,12 @@ public class AFEntity {
         @Override
         protected void Gib(final idVec3 dir, final String damageDefName) {
             // only gib once
-            if (this.gibbed) {
+            if (gibbed) {
                 return;
             }
             super.Gib(dir, damageDefName);
-            if (this.head.GetEntity() != null) {
-                this.head.GetEntity().Hide();
+            if (head.GetEntity() != null) {
+                head.GetEntity().Hide();
             }
         }
 
@@ -1394,33 +1364,33 @@ public class AFEntity {
 
         private void Event_Activate(idEventArg<idEntity> activator) {
             float delay;
-            final idVec3 init_velocity = new idVec3(), init_avelocity = new idVec3();
+            idVec3 init_velocity = new idVec3(), init_avelocity = new idVec3();
 
             Show();
 
-            this.af.GetPhysics().EnableImpact();
-            this.af.GetPhysics().Activate();
+            af.GetPhysics().EnableImpact();
+            af.GetPhysics().Activate();
 
-            this.spawnArgs.GetVector("init_velocity", "0 0 0", init_velocity);
-            this.spawnArgs.GetVector("init_avelocity", "0 0 0", init_avelocity);
+            spawnArgs.GetVector("init_velocity", "0 0 0", init_velocity);
+            spawnArgs.GetVector("init_avelocity", "0 0 0", init_avelocity);
 
-            delay = this.spawnArgs.GetFloat("init_velocityDelay", "0");
+            delay = spawnArgs.GetFloat("init_velocityDelay", "0");
             if (delay == 0) {
-                this.af.GetPhysics().SetLinearVelocity(init_velocity);
+                af.GetPhysics().SetLinearVelocity(init_velocity);
             } else {
                 PostEventSec(EV_SetLinearVelocity, delay, init_velocity);
             }
 
-            delay = this.spawnArgs.GetFloat("init_avelocityDelay", "0");
+            delay = spawnArgs.GetFloat("init_avelocityDelay", "0");
             if (delay == 0) {
-                this.af.GetPhysics().SetAngularVelocity(init_avelocity);
+                af.GetPhysics().SetAngularVelocity(init_avelocity);
             } else {
                 PostEventSec(EV_SetAngularVelocity, delay, init_avelocity);
             }
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1428,7 +1398,7 @@ public class AFEntity {
             return eventCallbacks;
         }
 
-    }
+    };
 
     /*
      ===============================================================================
@@ -1440,11 +1410,7 @@ public class AFEntity {
     public static class idAFEntity_Vehicle extends idAFEntity_Base {
         // CLASS_PROTOTYPE( idAFEntity_Vehicle );
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		protected idPlayer player;
+        protected idPlayer player;
         protected int/*jointHandle_t*/ eyesJoint;
         protected int/*jointHandle_t*/ steeringWheelJoint;
         protected float wheelRadius;
@@ -1455,94 +1421,94 @@ public class AFEntity {
         //
 
         public idAFEntity_Vehicle() {
-            this.player = null;
-            this.eyesJoint = INVALID_JOINT;
-            this.steeringWheelJoint = INVALID_JOINT;
-            this.wheelRadius = 0;
-            this.steerAngle = 0;
-            this.steerSpeed = 0;
-            this.dustSmoke = null;
+            player = null;
+            eyesJoint = INVALID_JOINT;
+            steeringWheelJoint = INVALID_JOINT;
+            wheelRadius = 0;
+            steerAngle = 0;
+            steerSpeed = 0;
+            dustSmoke = null;
         }
 
         @Override
         public void Spawn() {
-            final String eyesJointName = this.spawnArgs.GetString("eyesJoint", "eyes");
-            final String steeringWheelJointName = this.spawnArgs.GetString("steeringWheelJoint", "steeringWheel");
-            final float[] wheel = new float[1], steer = new float[1];
+            final String eyesJointName = spawnArgs.GetString("eyesJoint", "eyes");
+            final String steeringWheelJointName = spawnArgs.GetString("steeringWheelJoint", "steeringWheel");
+            float[] wheel = new float[1], steer = new float[1];
 
             LoadAF();
 
             SetCombatModel();
 
-            SetPhysics(this.af.GetPhysics());
+            SetPhysics(af.GetPhysics());
 
-            this.fl.takedamage = true;
+            fl.takedamage = true;
 
 //	if ( !eyesJointName[0] ) {
             if (eyesJointName.isEmpty()) {
-                idGameLocal.Error("idAFEntity_Vehicle '%s' no eyes joint specified", this.name);
+                gameLocal.Error("idAFEntity_Vehicle '%s' no eyes joint specified", name);
             }
-            this.eyesJoint = this.animator.GetJointHandle(eyesJointName);
+            eyesJoint = animator.GetJointHandle(eyesJointName);
 //	if ( !steeringWheelJointName[0] ) {
             if (steeringWheelJointName.isEmpty()) {
-                idGameLocal.Error("idAFEntity_Vehicle '%s' no steering wheel joint specified", this.name);
+                gameLocal.Error("idAFEntity_Vehicle '%s' no steering wheel joint specified", name);
             }
-            this.steeringWheelJoint = this.animator.GetJointHandle(steeringWheelJointName);
+            steeringWheelJoint = animator.GetJointHandle(steeringWheelJointName);
 
-            this.spawnArgs.GetFloat("wheelRadius", "20", wheel);
-            this.spawnArgs.GetFloat("steerSpeed", "5", steer);
-            this.wheelRadius = wheel[0];
-            this.steerSpeed = steer[0];
+            spawnArgs.GetFloat("wheelRadius", "20", wheel);
+            spawnArgs.GetFloat("steerSpeed", "5", steer);
+            wheelRadius = wheel[0];
+            steerSpeed = steer[0];
 
-            this.player = null;
-            this.steerAngle = 0;
+            player = null;
+            steerAngle = 0;
 
-            final String smokeName = this.spawnArgs.GetString("smoke_vehicle_dust", "muzzlesmoke");
+            final String smokeName = spawnArgs.GetString("smoke_vehicle_dust", "muzzlesmoke");
             if (!smokeName.isEmpty()) {// != '\0' ) {
-                this.dustSmoke = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
+                dustSmoke = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
             }
         }
 
         public void Use(idPlayer other) {
             idVec3 origin = new idVec3();
-            final idMat3 axis = new idMat3();
+            idMat3 axis = new idMat3();
 
-            if (this.player != null) {
-                if (this.player.equals(other)) {
+            if (player != null) {
+                if (player.equals(other)) {
                     other.Unbind();
-                    this.player = null;
+                    player = null;
 
-                    this.af.GetPhysics().SetComeToRest(true);
+                    af.GetPhysics().SetComeToRest(true);
                 }
             } else {
-                this.player = other;
-                this.animator.GetJointTransform(this.eyesJoint, gameLocal.time, origin, axis);
-                origin = this.renderEntity.origin.oPlus(origin.oMultiply(this.renderEntity.axis));
-                this.player.GetPhysics().SetOrigin(origin);
-                this.player.BindToBody(this, 0, true);
+                player = other;
+                animator.GetJointTransform(eyesJoint, gameLocal.time, origin, axis);
+                origin = renderEntity.origin.oPlus(origin.oMultiply(renderEntity.axis));
+                player.GetPhysics().SetOrigin(origin);
+                player.BindToBody(this, 0, true);
 
-                this.af.GetPhysics().SetComeToRest(false);
-                this.af.GetPhysics().Activate();
+                af.GetPhysics().SetComeToRest(false);
+                af.GetPhysics().Activate();
             }
         }
 
         protected float GetSteerAngle() {
             final float idealSteerAngle, angleDelta;
 
-            idealSteerAngle = this.player.usercmd.rightmove * (30 / 128.0f);
-            angleDelta = idealSteerAngle - this.steerAngle;
+            idealSteerAngle = player.usercmd.rightmove * (30 / 128.0f);
+            angleDelta = idealSteerAngle - steerAngle;
 
-            if (angleDelta > this.steerSpeed) {
-                this.steerAngle += this.steerSpeed;
-            } else if (angleDelta < -this.steerSpeed) {
-                this.steerAngle -= this.steerSpeed;
+            if (angleDelta > steerSpeed) {
+                steerAngle += steerSpeed;
+            } else if (angleDelta < -steerSpeed) {
+                steerAngle -= steerSpeed;
             } else {
-                this.steerAngle = idealSteerAngle;
+                steerAngle = idealSteerAngle;
             }
 
-            return this.steerAngle;
+            return steerAngle;
         }
-    }
+    };
 
     /*
      ===============================================================================
@@ -1551,11 +1517,7 @@ public class AFEntity {
      */
     public static class idAFEntity_VehicleSimple extends idAFEntity_Vehicle {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		protected idClipModel wheelModel;
+        protected idClipModel wheelModel;
         protected final idAFConstraint_Suspension[] suspension = new idAFConstraint_Suspension[4];
         protected final int/*jointHandle_t*/[] wheelJoints = new int[4];
         protected final float[] wheelAngles = new float[4];
@@ -1567,7 +1529,7 @@ public class AFEntity {
         public idAFEntity_VehicleSimple() {
             int i;
             for (i = 0; i < 4; i++) {
-                this.suspension[i] = null;
+                suspension[i] = null;
             }
         }
         // ~idAFEntity_VehicleSimple();
@@ -1589,41 +1551,41 @@ public class AFEntity {
 
             int i;
             idVec3 origin = new idVec3();
-            final idMat3 axis = new idMat3();
-            final idTraceModel trm = new idTraceModel();
+            idMat3 axis = new idMat3();
+            idTraceModel trm = new idTraceModel();
 
             trm.SetupPolygon(wheelPoly, 4);
-            trm.Translate(new idVec3(0, 0, -this.wheelRadius));
-            this.wheelModel = new idClipModel(trm);
+            trm.Translate(new idVec3(0, 0, -wheelRadius));
+            wheelModel = new idClipModel(trm);
 
             for (i = 0; i < 4; i++) {
-                final String wheelJointName = this.spawnArgs.GetString(wheelJointKeys[i], "");
+                final String wheelJointName = spawnArgs.GetString(wheelJointKeys[i], "");
 //		if ( !wheelJointName[0] ) {
                 if (wheelJointName.isEmpty()) {
-                    idGameLocal.Error("idAFEntity_VehicleSimple '%s' no '%s' specified", this.name, wheelJointKeys[i]);
+                    gameLocal.Error("idAFEntity_VehicleSimple '%s' no '%s' specified", name, wheelJointKeys[i]);
                 }
-                this.wheelJoints[i] = this.animator.GetJointHandle(wheelJointName);
-                if (this.wheelJoints[i] == INVALID_JOINT) {
-                    idGameLocal.Error("idAFEntity_VehicleSimple '%s' can't find wheel joint '%s'", this.name, wheelJointName);
+                wheelJoints[i] = animator.GetJointHandle(wheelJointName);
+                if (wheelJoints[i] == INVALID_JOINT) {
+                    gameLocal.Error("idAFEntity_VehicleSimple '%s' can't find wheel joint '%s'", name, wheelJointName);
                 }
 
-                GetAnimator().GetJointTransform(this.wheelJoints[i], 0, origin, axis);
-                origin = this.renderEntity.origin.oPlus(origin.oMultiply(this.renderEntity.axis));
+                GetAnimator().GetJointTransform(wheelJoints[i], 0, origin, axis);
+                origin = renderEntity.origin.oPlus(origin.oMultiply(renderEntity.axis));
 
-                this.suspension[i] = new idAFConstraint_Suspension();
-                this.suspension[i].Setup(va("suspension%d", i), this.af.GetPhysics().GetBody(0), origin, this.af.GetPhysics().GetAxis(0), this.wheelModel);
-                this.suspension[i].SetSuspension(
+                suspension[i] = new idAFConstraint_Suspension();
+                suspension[i].Setup(va("suspension%d", i), af.GetPhysics().GetBody(0), origin, af.GetPhysics().GetAxis(0), wheelModel);
+                suspension[i].SetSuspension(
                         g_vehicleSuspensionUp.GetFloat(),
                         g_vehicleSuspensionDown.GetFloat(),
                         g_vehicleSuspensionKCompress.GetFloat(),
                         g_vehicleSuspensionDamping.GetFloat(),
                         g_vehicleTireFriction.GetFloat());
 
-                this.af.GetPhysics().AddConstraint(this.suspension[i]);
+                af.GetPhysics().AddConstraint(suspension[i]);
             }
 
 //            memset(wheelAngles, 0, sizeof(wheelAngles));
-            Arrays.fill(this.wheelAngles, 0);
+            Arrays.fill(wheelAngles, 0);
             BecomeActive(TH_THINK);
         }
 
@@ -1632,18 +1594,18 @@ public class AFEntity {
             int i;
             float force = 0, velocity = 0, steerAngle = 0;
             idVec3 origin;
-            final idMat3 axis = new idMat3();
-            final idRotation wheelRotation = new idRotation(), steerRotation = new idRotation();
+            idMat3 axis = new idMat3();
+            idRotation wheelRotation = new idRotation(), steerRotation = new idRotation();
 
-            if ((this.thinkFlags & TH_THINK) != 0) {
+            if ((thinkFlags & TH_THINK) != 0) {
 
-                if (this.player != null) {
+                if (player != null) {
                     // capture the input from a player
                     velocity = g_vehicleVelocity.GetFloat();
-                    if (this.player.usercmd.forwardmove < 0) {
+                    if (player.usercmd.forwardmove < 0) {
                         velocity = -velocity;
                     }
-                    force = idMath.Fabs(this.player.usercmd.forwardmove * g_vehicleForce.GetFloat()) * (1.0f / 128.0f);
+                    force = idMath.Fabs(player.usercmd.forwardmove * g_vehicleForce.GetFloat()) * (1.0f / 128.0f);
                     steerAngle = GetSteerAngle();
                 }
 
@@ -1652,27 +1614,27 @@ public class AFEntity {
 
                     // front wheel drive
                     if (velocity != 0) {
-                        this.suspension[i].EnableMotor(true);
+                        suspension[i].EnableMotor(true);
                     } else {
-                        this.suspension[i].EnableMotor(false);
+                        suspension[i].EnableMotor(false);
                     }
-                    this.suspension[i].SetMotorVelocity(velocity);
-                    this.suspension[i].SetMotorForce(force);
+                    suspension[i].SetMotorVelocity(velocity);
+                    suspension[i].SetMotorForce(force);
 
                     // update the wheel steering
-                    this.suspension[i].SetSteerAngle(steerAngle);
+                    suspension[i].SetSteerAngle(steerAngle);
                 }
 
                 // adjust wheel velocity for better steering because there are no differentials between the wheels
                 if (steerAngle < 0) {
-                    this.suspension[0].SetMotorVelocity(velocity * 0.5f);
+                    suspension[0].SetMotorVelocity(velocity * 0.5f);
                 } else if (steerAngle > 0) {
-                    this.suspension[1].SetMotorVelocity(velocity * 0.5f);
+                    suspension[1].SetMotorVelocity(velocity * 0.5f);
                 }
 
                 // update suspension with latest cvar settings
                 for (i = 0; i < 4; i++) {
-                    this.suspension[i].SetSuspension(
+                    suspension[i].SetSuspension(
                             g_vehicleSuspensionUp.GetFloat(),
                             g_vehicleSuspensionDown.GetFloat(),
                             g_vehicleSuspensionKCompress.GetFloat(),
@@ -1685,14 +1647,14 @@ public class AFEntity {
 
                 // move and rotate the wheels visually
                 for (i = 0; i < 4; i++) {
-                    final idAFBody body = this.af.GetPhysics().GetBody(0);
+                    idAFBody body = af.GetPhysics().GetBody(0);
 
-                    origin = this.suspension[i].GetWheelOrigin();
+                    origin = suspension[i].GetWheelOrigin();
                     velocity = body.GetPointVelocity(origin).oMultiply(body.GetWorldAxis().oGet(0));
-                    this.wheelAngles[i] += (velocity * MS2SEC(idGameLocal.msec)) / this.wheelRadius;
+                    wheelAngles[i] += velocity * MS2SEC(gameLocal.msec) / wheelRadius;
 
                     // additional rotation about the wheel axis
-                    wheelRotation.SetAngle(RAD2DEG(this.wheelAngles[i]));
+                    wheelRotation.SetAngle(RAD2DEG(wheelAngles[i]));
                     wheelRotation.SetVec(0, -1, 0);
 
                     if (i < 2) {
@@ -1700,15 +1662,15 @@ public class AFEntity {
                         steerRotation.SetAngle(steerAngle);
                         steerRotation.SetVec(0, 0, 1);
                         // set wheel rotation
-                        this.animator.SetJointAxis(this.wheelJoints[i], JOINTMOD_WORLD, wheelRotation.ToMat3().oMultiply(steerRotation.ToMat3()));
+                        animator.SetJointAxis(wheelJoints[i], JOINTMOD_WORLD, wheelRotation.ToMat3().oMultiply(steerRotation.ToMat3()));
                     } else {
                         // set wheel rotation
-                        this.animator.SetJointAxis(this.wheelJoints[i], JOINTMOD_WORLD, wheelRotation.ToMat3());
+                        animator.SetJointAxis(wheelJoints[i], JOINTMOD_WORLD, wheelRotation.ToMat3());
                     }
 
                     // set wheel position for suspension
-                    origin = (origin.oMinus(this.renderEntity.origin)).oMultiply(this.renderEntity.axis.Transpose());
-                    GetAnimator().SetJointPos(this.wheelJoints[i], JOINTMOD_WORLD_OVERRIDE, origin);
+                    origin = (origin.oMinus(renderEntity.origin)).oMultiply(renderEntity.axis.Transpose());
+                    GetAnimator().SetJointPos(wheelJoints[i], JOINTMOD_WORLD_OVERRIDE, origin);
                 }
                 /*
                  // spawn dust particle effects
@@ -1726,13 +1688,13 @@ public class AFEntity {
             }
 
             UpdateAnimation();
-            if ((this.thinkFlags & TH_UPDATEVISUALS) != 0) {
+            if ((thinkFlags & TH_UPDATEVISUALS) != 0) {
                 Present();
                 LinkCombat();
             }
         }
 
-    }
+    };
 
     /*
      ===============================================================================
@@ -1741,11 +1703,7 @@ public class AFEntity {
      */
     public static class idAFEntity_VehicleFourWheels extends idAFEntity_Vehicle {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		protected final idAFBody[] wheels = new idAFBody[4];
+        protected final idAFBody[] wheels = new idAFBody[4];
         protected final idAFConstraint_Hinge[] steering = new idAFConstraint_Hinge[2];
         protected final int/*jointHandle_t*/[] wheelJoints = new int[4];
         protected final float[] wheelAngles = new float[4];
@@ -1758,12 +1716,12 @@ public class AFEntity {
             int i;
 
             for (i = 0; i < 4; i++) {
-                this.wheels[i] = null;
-                this.wheelJoints[i] = INVALID_JOINT;
-                this.wheelAngles[i] = 0;
+                wheels[i] = null;
+                wheelJoints[i] = INVALID_JOINT;
+                wheelAngles[i] = 0;
             }
-            this.steering[0] = null;
-            this.steering[1] = null;
+            steering[0] = null;
+            steering[1] = null;
         }
         private static final String[] wheelBodyKeys = {
             "wheelBodyFrontLeft",
@@ -1788,40 +1746,40 @@ public class AFEntity {
             String wheelBodyName, wheelJointName, steeringHingeName;
 
             for (i = 0; i < 4; i++) {
-                wheelBodyName = this.spawnArgs.GetString(wheelBodyKeys[i], "");
+                wheelBodyName = spawnArgs.GetString(wheelBodyKeys[i], "");
 //		if ( !wheelBodyName[0] ) {
                 if (wheelBodyName.isEmpty()) {
-                    idGameLocal.Error("idAFEntity_VehicleFourWheels '%s' no '%s' specified", this.name, wheelBodyKeys[i]);
+                    gameLocal.Error("idAFEntity_VehicleFourWheels '%s' no '%s' specified", name, wheelBodyKeys[i]);
                 }
-                this.wheels[i] = this.af.GetPhysics().GetBody(wheelBodyName);
-                if (null == this.wheels[i]) {
-                    idGameLocal.Error("idAFEntity_VehicleFourWheels '%s' can't find wheel body '%s'", this.name, wheelBodyName);
+                wheels[i] = af.GetPhysics().GetBody(wheelBodyName);
+                if (null == wheels[i]) {
+                    gameLocal.Error("idAFEntity_VehicleFourWheels '%s' can't find wheel body '%s'", name, wheelBodyName);
                 }
-                wheelJointName = this.spawnArgs.GetString(wheelJointKeys[i], "");
+                wheelJointName = spawnArgs.GetString(wheelJointKeys[i], "");
 //		if ( !wheelJointName[0] ) {
                 if (wheelJointName.isEmpty()) {
-                    idGameLocal.Error("idAFEntity_VehicleFourWheels '%s' no '%s' specified", this.name, wheelJointKeys[i]);
+                    gameLocal.Error("idAFEntity_VehicleFourWheels '%s' no '%s' specified", name, wheelJointKeys[i]);
                 }
-                this.wheelJoints[i] = this.animator.GetJointHandle(wheelJointName);
-                if (this.wheelJoints[i] == INVALID_JOINT) {
-                    idGameLocal.Error("idAFEntity_VehicleFourWheels '%s' can't find wheel joint '%s'", this.name, wheelJointName);
+                wheelJoints[i] = animator.GetJointHandle(wheelJointName);
+                if (wheelJoints[i] == INVALID_JOINT) {
+                    gameLocal.Error("idAFEntity_VehicleFourWheels '%s' can't find wheel joint '%s'", name, wheelJointName);
                 }
             }
 
             for (i = 0; i < 2; i++) {
-                steeringHingeName = this.spawnArgs.GetString(steeringHingeKeys[i], "");
+                steeringHingeName = spawnArgs.GetString(steeringHingeKeys[i], "");
 //		if ( !steeringHingeName[0] ) {
                 if (steeringHingeName.isEmpty()) {
-                    idGameLocal.Error("idAFEntity_VehicleFourWheels '%s' no '%s' specified", this.name, steeringHingeKeys[i]);
+                    gameLocal.Error("idAFEntity_VehicleFourWheels '%s' no '%s' specified", name, steeringHingeKeys[i]);
                 }
-                this.steering[i] = (idAFConstraint_Hinge) this.af.GetPhysics().GetConstraint(steeringHingeName);
-                if (NOT(this.steering[i])) {
-                    idGameLocal.Error("idAFEntity_VehicleFourWheels '%s': can't find steering hinge '%s'", this.name, steeringHingeName);
+                steering[i] = (idAFConstraint_Hinge) af.GetPhysics().GetConstraint(steeringHingeName);
+                if (NOT(steering[i])) {
+                    gameLocal.Error("idAFEntity_VehicleFourWheels '%s': can't find steering hinge '%s'", name, steeringHingeName);
                 }
             }
 
 //	memset( wheelAngles, 0, sizeof( wheelAngles ) );
-            Arrays.fill(this.wheelAngles, 0);
+            Arrays.fill(wheelAngles, 0);
             BecomeActive(TH_THINK);
         }
 
@@ -1829,47 +1787,47 @@ public class AFEntity {
         public void Think() {
             int i;
             float force = 0, velocity = 0, steerAngle = 0;
-            final idVec3 origin = new idVec3();
+            idVec3 origin = new idVec3();
             idMat3 axis = new idMat3();
-            final idRotation rotation = new idRotation();
+            idRotation rotation = new idRotation();
 
-            if ((this.thinkFlags & TH_THINK) != 0) {
+            if ((thinkFlags & TH_THINK) != 0) {
 
-                if (this.player != null) {
+                if (player != null) {
                     // capture the input from a player
                     velocity = g_vehicleVelocity.GetFloat();
-                    if (this.player.usercmd.forwardmove < 0) {
+                    if (player.usercmd.forwardmove < 0) {
                         velocity = -velocity;
                     }
-                    force = idMath.Fabs(this.player.usercmd.forwardmove * g_vehicleForce.GetFloat()) * (1.0f / 128.0f);
+                    force = idMath.Fabs(player.usercmd.forwardmove * g_vehicleForce.GetFloat()) * (1.0f / 128.0f);
                     steerAngle = GetSteerAngle();
                 }
 
                 // update the wheel motor force
                 for (i = 0; i < 2; i++) {
-                    this.wheels[2 + i].SetContactMotorVelocity(velocity);
-                    this.wheels[2 + i].SetContactMotorForce(force);
+                    wheels[2 + i].SetContactMotorVelocity(velocity);
+                    wheels[2 + i].SetContactMotorForce(force);
                 }
 
                 // adjust wheel velocity for better steering because there are no differentials between the wheels
                 if (steerAngle < 0) {
-                    this.wheels[2].SetContactMotorVelocity(velocity * 0.5f);
+                    wheels[2].SetContactMotorVelocity(velocity * 0.5f);
                 } else if (steerAngle > 0) {
-                    this.wheels[3].SetContactMotorVelocity(velocity * 0.5f);
+                    wheels[3].SetContactMotorVelocity(velocity * 0.5f);
                 }
 
                 // update the wheel steering
-                this.steering[0].SetSteerAngle(steerAngle);
-                this.steering[1].SetSteerAngle(steerAngle);
+                steering[0].SetSteerAngle(steerAngle);
+                steering[1].SetSteerAngle(steerAngle);
                 for (i = 0; i < 2; i++) {
-                    this.steering[i].SetSteerSpeed(3.0f);
+                    steering[i].SetSteerSpeed(3.0f);
                 }
 
                 // update the steering wheel
-                this.animator.GetJointTransform(this.steeringWheelJoint, gameLocal.time, origin, axis);
+                animator.GetJointTransform(steeringWheelJoint, gameLocal.time, origin, axis);
                 rotation.SetVec(axis.oGet(2));
                 rotation.SetAngle(-steerAngle);
-                this.animator.SetJointAxis(this.steeringWheelJoint, JOINTMOD_WORLD, rotation.ToMat3());
+                animator.SetJointAxis(steeringWheelJoint, JOINTMOD_WORLD, rotation.ToMat3());
 
                 // run the physics
                 RunPhysics();
@@ -1877,36 +1835,36 @@ public class AFEntity {
                 // rotate the wheels visually
                 for (i = 0; i < 4; i++) {
                     if (force == 0) {
-                        velocity = this.wheels[i].GetLinearVelocity().oMultiply(this.wheels[i].GetWorldAxis().oGet(0));
+                        velocity = wheels[i].GetLinearVelocity().oMultiply(wheels[i].GetWorldAxis().oGet(0));
                     }
-                    this.wheelAngles[i] += (velocity * MS2SEC(idGameLocal.msec)) / this.wheelRadius;
+                    wheelAngles[i] += velocity * MS2SEC(gameLocal.msec) / wheelRadius;
                     // give the wheel joint an additional rotation about the wheel axis
-                    rotation.SetAngle(RAD2DEG(this.wheelAngles[i]));
-                    axis = this.af.GetPhysics().GetAxis(0);
-                    rotation.SetVec((this.wheels[i].GetWorldAxis().oMultiply(axis.Transpose())).oGet(2));
-                    this.animator.SetJointAxis(this.wheelJoints[i], JOINTMOD_WORLD, rotation.ToMat3());
+                    rotation.SetAngle(RAD2DEG(wheelAngles[i]));
+                    axis = af.GetPhysics().GetAxis(0);
+                    rotation.SetVec((wheels[i].GetWorldAxis().oMultiply(axis.Transpose())).oGet(2));
+                    animator.SetJointAxis(wheelJoints[i], JOINTMOD_WORLD, rotation.ToMat3());
                 }
 
                 // spawn dust particle effects
-                if ((force != 0) && (0 == (gameLocal.framenum & 7))) {
+                if (force != 0 && (0 == (gameLocal.framenum & 7))) {
                     int numContacts;
-                    final idAFConstraint_Contact[] contacts = new idAFConstraint_Contact[2];
+                    idAFConstraint_Contact[] contacts = new idAFConstraint_Contact[2];
                     for (i = 0; i < 4; i++) {
-                        numContacts = this.af.GetPhysics().GetBodyContactConstraints(this.wheels[i].GetClipModel().GetId(), contacts, 2);
+                        numContacts = af.GetPhysics().GetBodyContactConstraints(wheels[i].GetClipModel().GetId(), contacts, 2);
                         for (int j = 0; j < numContacts; j++) {
-                            gameLocal.smokeParticles.EmitSmoke(this.dustSmoke, gameLocal.time, gameLocal.random.RandomFloat(), contacts[j].GetContact().point, contacts[j].GetContact().normal.ToMat3());
+                            gameLocal.smokeParticles.EmitSmoke(dustSmoke, gameLocal.time, gameLocal.random.RandomFloat(), contacts[j].GetContact().point, contacts[j].GetContact().normal.ToMat3());
                         }
                     }
                 }
             }
 
             UpdateAnimation();
-            if ((this.thinkFlags & TH_UPDATEVISUALS) != 0) {
+            if ((thinkFlags & TH_UPDATEVISUALS) != 0) {
                 Present();
                 LinkCombat();
             }
         }
-    }
+    };
 
     /*
      ===============================================================================
@@ -1915,11 +1873,7 @@ public class AFEntity {
      */
     public static class idAFEntity_VehicleSixWheels extends idAFEntity_Vehicle {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private final idAFBody[] wheels = new idAFBody[6];
+        private final idAFBody[] wheels = new idAFBody[6];
         private final idAFConstraint_Hinge[] steering = new idAFConstraint_Hinge[4];
         private final int/*jointHandle_t*/[] wheelJoints = new int[6];
         private final float[] wheelAngles = new float[6];
@@ -1932,14 +1886,14 @@ public class AFEntity {
             int i;
 
             for (i = 0; i < 6; i++) {
-                this.wheels[i] = null;
-                this.wheelJoints[i] = INVALID_JOINT;
-                this.wheelAngles[i] = 0;
+                wheels[i] = null;
+                wheelJoints[i] = INVALID_JOINT;
+                wheelAngles[i] = 0;
             }
-            this.steering[0] = null;
-            this.steering[1] = null;
-            this.steering[2] = null;
-            this.steering[3] = null;
+            steering[0] = null;
+            steering[1] = null;
+            steering[2] = null;
+            steering[3] = null;
         }
         private static final String[] wheelBodyKeys = {
             "wheelBodyFrontLeft",
@@ -1971,40 +1925,40 @@ public class AFEntity {
             String wheelBodyName, wheelJointName, steeringHingeName;
 
             for (i = 0; i < 6; i++) {
-                wheelBodyName = this.spawnArgs.GetString(wheelBodyKeys[i], "");
+                wheelBodyName = spawnArgs.GetString(wheelBodyKeys[i], "");
 //		if ( !wheelBodyName[0] ) {
                 if (wheelBodyName.isEmpty()) {
-                    idGameLocal.Error("idAFEntity_VehicleSixWheels '%s' no '%s' specified", this.name, wheelBodyKeys[i]);
+                    gameLocal.Error("idAFEntity_VehicleSixWheels '%s' no '%s' specified", name, wheelBodyKeys[i]);
                 }
-                this.wheels[i] = this.af.GetPhysics().GetBody(wheelBodyName);
-                if (NOT(this.wheels[i])) {
-                    idGameLocal.Error("idAFEntity_VehicleSixWheels '%s' can't find wheel body '%s'", this.name, wheelBodyName);
+                wheels[i] = af.GetPhysics().GetBody(wheelBodyName);
+                if (NOT(wheels[i])) {
+                    gameLocal.Error("idAFEntity_VehicleSixWheels '%s' can't find wheel body '%s'", name, wheelBodyName);
                 }
-                wheelJointName = this.spawnArgs.GetString(wheelJointKeys[i], "");
+                wheelJointName = spawnArgs.GetString(wheelJointKeys[i], "");
 //		if ( !wheelJointName[0] ) {
                 if (wheelJointName.isEmpty()) {
-                    idGameLocal.Error("idAFEntity_VehicleSixWheels '%s' no '%s' specified", this.name, wheelJointKeys[i]);
+                    gameLocal.Error("idAFEntity_VehicleSixWheels '%s' no '%s' specified", name, wheelJointKeys[i]);
                 }
-                this.wheelJoints[i] = this.animator.GetJointHandle(wheelJointName);
-                if (this.wheelJoints[i] == INVALID_JOINT) {
-                    idGameLocal.Error("idAFEntity_VehicleSixWheels '%s' can't find wheel joint '%s'", this.name, wheelJointName);
+                wheelJoints[i] = animator.GetJointHandle(wheelJointName);
+                if (wheelJoints[i] == INVALID_JOINT) {
+                    gameLocal.Error("idAFEntity_VehicleSixWheels '%s' can't find wheel joint '%s'", name, wheelJointName);
                 }
             }
 
             for (i = 0; i < 4; i++) {
-                steeringHingeName = this.spawnArgs.GetString(steeringHingeKeys[i], "");
+                steeringHingeName = spawnArgs.GetString(steeringHingeKeys[i], "");
 //		if ( !steeringHingeName[0] ) {
                 if (steeringHingeName.isEmpty()) {
-                    idGameLocal.Error("idAFEntity_VehicleSixWheels '%s' no '%s' specified", this.name, steeringHingeKeys[i]);
+                    gameLocal.Error("idAFEntity_VehicleSixWheels '%s' no '%s' specified", name, steeringHingeKeys[i]);
                 }
-                this.steering[i] = (idAFConstraint_Hinge) this.af.GetPhysics().GetConstraint(steeringHingeName);
-                if (NOT(this.steering[i])) {
-                    idGameLocal.Error("idAFEntity_VehicleSixWheels '%s': can't find steering hinge '%s'", this.name, steeringHingeName);
+                steering[i] = (idAFConstraint_Hinge) af.GetPhysics().GetConstraint(steeringHingeName);
+                if (NOT(steering[i])) {
+                    gameLocal.Error("idAFEntity_VehicleSixWheels '%s': can't find steering hinge '%s'", name, steeringHingeName);
                 }
             }
 
 //	memset( wheelAngles, 0, sizeof( wheelAngles ) );
-            Arrays.fill(this.wheelAngles, 0);
+            Arrays.fill(wheelAngles, 0);
             BecomeActive(TH_THINK);
         }
 
@@ -2012,53 +1966,53 @@ public class AFEntity {
         public void Think() {
             int i;
             float force = 0, velocity = 0, steerAngle = 0;
-            final idVec3 origin = new idVec3();
+            idVec3 origin = new idVec3();
             idMat3 axis = new idMat3();
-            final idRotation rotation = new idRotation();
+            idRotation rotation = new idRotation();
 
-            if ((this.thinkFlags & TH_THINK) != 0) {
+            if ((thinkFlags & TH_THINK) != 0) {
 
-                if (this.player != null) {
+                if (player != null) {
                     // capture the input from a player
                     velocity = g_vehicleVelocity.GetFloat();
-                    if (this.player.usercmd.forwardmove < 0) {
+                    if (player.usercmd.forwardmove < 0) {
                         velocity = -velocity;
                     }
-                    force = idMath.Fabs(this.player.usercmd.forwardmove * g_vehicleForce.GetFloat()) * (1.0f / 128.0f);
+                    force = idMath.Fabs(player.usercmd.forwardmove * g_vehicleForce.GetFloat()) * (1.0f / 128.0f);
                     steerAngle = GetSteerAngle();
                 }
 
                 // update the wheel motor force
                 for (i = 0; i < 6; i++) {
-                    this.wheels[i].SetContactMotorVelocity(velocity);
-                    this.wheels[i].SetContactMotorForce(force);
+                    wheels[i].SetContactMotorVelocity(velocity);
+                    wheels[i].SetContactMotorForce(force);
                 }
 
                 // adjust wheel velocity for better steering because there are no differentials between the wheels
                 if (steerAngle < 0) {
                     for (i = 0; i < 3; i++) {
-                        this.wheels[(i << 1)].SetContactMotorVelocity(velocity * 0.5f);
+                        wheels[(i << 1)].SetContactMotorVelocity(velocity * 0.5f);
                     }
                 } else if (steerAngle > 0) {
                     for (i = 0; i < 3; i++) {
-                        this.wheels[1 + (i << 1)].SetContactMotorVelocity(velocity * 0.5f);
+                        wheels[1 + (i << 1)].SetContactMotorVelocity(velocity * 0.5f);
                     }
                 }
 
                 // update the wheel steering
-                this.steering[0].SetSteerAngle(steerAngle);
-                this.steering[1].SetSteerAngle(steerAngle);
-                this.steering[2].SetSteerAngle(-steerAngle);
-                this.steering[3].SetSteerAngle(-steerAngle);
+                steering[0].SetSteerAngle(steerAngle);
+                steering[1].SetSteerAngle(steerAngle);
+                steering[2].SetSteerAngle(-steerAngle);
+                steering[3].SetSteerAngle(-steerAngle);
                 for (i = 0; i < 4; i++) {
-                    this.steering[i].SetSteerSpeed(3.0f);
+                    steering[i].SetSteerSpeed(3.0f);
                 }
 
                 // update the steering wheel
-                this.animator.GetJointTransform(this.steeringWheelJoint, gameLocal.time, origin, axis);
+                animator.GetJointTransform(steeringWheelJoint, gameLocal.time, origin, axis);
                 rotation.SetVec(axis.oGet(2));
                 rotation.SetAngle(-steerAngle);
-                this.animator.SetJointAxis(this.steeringWheelJoint, JOINTMOD_WORLD, rotation.ToMat3());
+                animator.SetJointAxis(steeringWheelJoint, JOINTMOD_WORLD, rotation.ToMat3());
 
                 // run the physics
                 RunPhysics();
@@ -2066,36 +2020,36 @@ public class AFEntity {
                 // rotate the wheels visually
                 for (i = 0; i < 6; i++) {
                     if (force == 0) {
-                        velocity = this.wheels[i].GetLinearVelocity().oMultiply(this.wheels[i].GetWorldAxis().oGet(0));
+                        velocity = wheels[i].GetLinearVelocity().oMultiply(wheels[i].GetWorldAxis().oGet(0));
                     }
-                    this.wheelAngles[i] += (velocity * MS2SEC(idGameLocal.msec)) / this.wheelRadius;
+                    wheelAngles[i] += velocity * MS2SEC(gameLocal.msec) / wheelRadius;
                     // give the wheel joint an additional rotation about the wheel axis
-                    rotation.SetAngle(RAD2DEG(this.wheelAngles[i]));
-                    axis = this.af.GetPhysics().GetAxis(0);
-                    rotation.SetVec((this.wheels[i].GetWorldAxis().oMultiply(axis.Transpose()).oGet(2)));
-                    this.animator.SetJointAxis(this.wheelJoints[i], JOINTMOD_WORLD, rotation.ToMat3());
+                    rotation.SetAngle(RAD2DEG(wheelAngles[i]));
+                    axis = af.GetPhysics().GetAxis(0);
+                    rotation.SetVec((wheels[i].GetWorldAxis().oMultiply(axis.Transpose()).oGet(2)));
+                    animator.SetJointAxis(wheelJoints[i], JOINTMOD_WORLD, rotation.ToMat3());
                 }
 
                 // spawn dust particle effects
-                if ((force != 0) && (0 == (gameLocal.framenum & 7))) {
+                if (force != 0 && (0 == (gameLocal.framenum & 7))) {
                     int numContacts;
-                    final idAFConstraint_Contact[] contacts = new idAFConstraint_Contact[2];
+                    idAFConstraint_Contact[] contacts = new idAFConstraint_Contact[2];
                     for (i = 0; i < 6; i++) {
-                        numContacts = this.af.GetPhysics().GetBodyContactConstraints(this.wheels[i].GetClipModel().GetId(), contacts, 2);
+                        numContacts = af.GetPhysics().GetBodyContactConstraints(wheels[i].GetClipModel().GetId(), contacts, 2);
                         for (int j = 0; j < numContacts; j++) {
-                            gameLocal.smokeParticles.EmitSmoke(this.dustSmoke, gameLocal.time, gameLocal.random.RandomFloat(), contacts[j].GetContact().point, contacts[j].GetContact().normal.ToMat3());
+                            gameLocal.smokeParticles.EmitSmoke(dustSmoke, gameLocal.time, gameLocal.random.RandomFloat(), contacts[j].GetContact().point, contacts[j].GetContact().normal.ToMat3());
                         }
                     }
                 }
             }
 
             UpdateAnimation();
-            if ((this.thinkFlags & TH_UPDATEVISUALS) != 0) {
+            if ((thinkFlags & TH_UPDATEVISUALS) != 0) {
                 Present();
                 LinkCombat();
             }
         }
-    }
+    };
 
     /*
      ===============================================================================
@@ -2105,11 +2059,7 @@ public class AFEntity {
     public static class idAFEntity_SteamPipe extends idAFEntity_Base {
         // CLASS_PROTOTYPE( idAFEntity_SteamPipe );
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private int steamBody;
+        private int steamBody;
         private float steamForce;
         private float steamUpForce;
         private idForce_Constant force;
@@ -2119,12 +2069,12 @@ public class AFEntity {
         //
 
         public idAFEntity_SteamPipe() {
-            this.steamBody = 0;
-            this.steamForce = 0;
-            this.steamUpForce = 0;
-            this.steamModelDefHandle = -1;
+            steamBody = 0;
+            steamForce = 0;
+            steamUpForce = 0;
+            steamModelDefHandle = -1;
 //	memset( &steamRenderEntity, 0, sizeof( steamRenderEntity ) );
-            this.steamRenderEntity = new renderEntity_s();
+            steamRenderEntity = new renderEntity_s();
         }
         // ~idAFEntity_SteamPipe();
 
@@ -2137,17 +2087,17 @@ public class AFEntity {
 
             SetCombatModel();
 
-            SetPhysics(this.af.GetPhysics());
+            SetPhysics(af.GetPhysics());
 
-            this.fl.takedamage = true;
+            fl.takedamage = true;
 
-            steamBodyName = this.spawnArgs.GetString("steamBody", "");
-            this.steamForce = this.spawnArgs.GetFloat("steamForce", "2000");
-            this.steamUpForce = this.spawnArgs.GetFloat("steamUpForce", "10");
-            steamDir = this.af.GetPhysics().GetAxis(this.steamBody).oGet(2);//[2];
-            this.steamBody = this.af.GetPhysics().GetBodyId(steamBodyName);
-            this.force.SetPosition(this.af.GetPhysics(), this.steamBody, this.af.GetPhysics().GetOrigin(this.steamBody));
-            this.force.SetForce(steamDir.oMultiply(-this.steamForce));
+            steamBodyName = spawnArgs.GetString("steamBody", "");
+            steamForce = spawnArgs.GetFloat("steamForce", "2000");
+            steamUpForce = spawnArgs.GetFloat("steamUpForce", "10");
+            steamDir = af.GetPhysics().GetAxis(steamBody).oGet(2);//[2];
+            steamBody = af.GetPhysics().GetBodyId(steamBodyName);
+            force.SetPosition(af.GetPhysics(), steamBody, af.GetPhysics().GetOrigin(steamBody));
+            force.SetForce(steamDir.oMultiply(-steamForce));
 
             InitSteamRenderEntity();
 
@@ -2165,21 +2115,21 @@ public class AFEntity {
 
         @Override
         public void Think() {
-            final idVec3 steamDir = new idVec3();
+            idVec3 steamDir = new idVec3();
 
-            if ((this.thinkFlags & TH_THINK) != 0) {
-                steamDir.x = gameLocal.random.CRandomFloat() * this.steamForce;
-                steamDir.y = gameLocal.random.CRandomFloat() * this.steamForce;
-                steamDir.z = this.steamUpForce;
-                this.force.SetForce(steamDir);
-                this.force.Evaluate(gameLocal.time);
+            if ((thinkFlags & TH_THINK) != 0) {
+                steamDir.x = gameLocal.random.CRandomFloat() * steamForce;
+                steamDir.y = gameLocal.random.CRandomFloat() * steamForce;
+                steamDir.z = steamUpForce;
+                force.SetForce(steamDir);
+                force.Evaluate(gameLocal.time);
                 //gameRenderWorld.DebugArrow( colorWhite, af.GetPhysics().GetOrigin( steamBody ), af.GetPhysics().GetOrigin( steamBody ) - 10 * steamDir, 4 );
             }
 
-            if (this.steamModelDefHandle >= 0) {
-                this.steamRenderEntity.origin.oSet(this.af.GetPhysics().GetOrigin(this.steamBody));
-                this.steamRenderEntity.axis.oSet(this.af.GetPhysics().GetAxis(this.steamBody));
-                gameRenderWorld.UpdateEntityDef(this.steamModelDefHandle, this.steamRenderEntity);
+            if (steamModelDefHandle >= 0) {
+                steamRenderEntity.origin.oSet(af.GetPhysics().GetOrigin(steamBody));
+                steamRenderEntity.axis.oSet(af.GetPhysics().GetAxis(steamBody));
+                gameRenderWorld.UpdateEntityDef(steamModelDefHandle, steamRenderEntity);
             }
 
             super.Think();
@@ -2190,36 +2140,36 @@ public class AFEntity {
             idDeclModelDef modelDef;
 
 //	memset( steamRenderEntity, 0, sizeof( steamRenderEntity ) );
-            this.steamRenderEntity = new renderEntity_s();
-            this.steamRenderEntity.shaderParms[SHADERPARM_RED] = 1.0f;
-            this.steamRenderEntity.shaderParms[SHADERPARM_GREEN] = 1.0f;
-            this.steamRenderEntity.shaderParms[SHADERPARM_BLUE] = 1.0f;
+            steamRenderEntity = new renderEntity_s();
+            steamRenderEntity.shaderParms[SHADERPARM_RED] = 1.0f;
+            steamRenderEntity.shaderParms[SHADERPARM_GREEN] = 1.0f;
+            steamRenderEntity.shaderParms[SHADERPARM_BLUE] = 1.0f;
 //            modelDef = null;
-            temp = this.spawnArgs.GetString("model_steam");
+            temp = spawnArgs.GetString("model_steam");
             if (!temp.isEmpty()) {// != '\0' ) {
 //		if ( !strstr( temp, "." ) ) {
                 if (!temp.contains(".")) {
                     modelDef = (idDeclModelDef) declManager.FindType(DECL_MODELDEF, temp, false);
                     if (modelDef != null) {
-                        this.steamRenderEntity.hModel = modelDef.ModelHandle();
+                        steamRenderEntity.hModel = modelDef.ModelHandle();
                     }
                 }
 
-                if (null == this.steamRenderEntity.hModel) {
-                    this.steamRenderEntity.hModel = renderModelManager.FindModel(temp);
+                if (null == steamRenderEntity.hModel) {
+                    steamRenderEntity.hModel = renderModelManager.FindModel(temp);
                 }
 
-                if (this.steamRenderEntity.hModel != null) {
-                    this.steamRenderEntity.bounds.oSet(this.steamRenderEntity.hModel.Bounds(this.steamRenderEntity));
+                if (steamRenderEntity.hModel != null) {
+                    steamRenderEntity.bounds.oSet(steamRenderEntity.hModel.Bounds(steamRenderEntity));
                 } else {
-                    this.steamRenderEntity.bounds.Zero();
+                    steamRenderEntity.bounds.Zero();
                 }
-                this.steamRenderEntity.origin.oSet(this.af.GetPhysics().GetOrigin(this.steamBody));
-                this.steamRenderEntity.axis.oSet(this.af.GetPhysics().GetAxis(this.steamBody));
-                this.steamModelDefHandle = gameRenderWorld.AddEntityDef(this.steamRenderEntity);
+                steamRenderEntity.origin.oSet(af.GetPhysics().GetOrigin(steamBody));
+                steamRenderEntity.axis.oSet(af.GetPhysics().GetAxis(steamBody));
+                steamModelDefHandle = gameRenderWorld.AddEntityDef(steamRenderEntity);
             }
         }
-    }
+    };
 
 //
     public static final String[] clawConstraintNames = {
@@ -2232,11 +2182,7 @@ public class AFEntity {
      ===============================================================================
      */
     public static class idAFEntity_ClawFourFingers extends idAFEntity_Base {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// public:
+        // public:
         // CLASS_PROTOTYPE( idAFEntity_ClawFourFingers );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
@@ -2247,10 +2193,10 @@ public class AFEntity {
         }
 
         public idAFEntity_ClawFourFingers() {
-            this.fingers[0] = null;
-            this.fingers[1] = null;
-            this.fingers[2] = null;
-            this.fingers[3] = null;
+            fingers[0] = null;
+            fingers[1] = null;
+            fingers[2] = null;
+            fingers[3] = null;
         }
 
         @Override
@@ -2261,16 +2207,16 @@ public class AFEntity {
 
             SetCombatModel();
 
-            this.af.GetPhysics().LockWorldConstraints(true);
-            this.af.GetPhysics().SetForcePushable(true);
-            SetPhysics(this.af.GetPhysics());
+            af.GetPhysics().LockWorldConstraints(true);
+            af.GetPhysics().SetForcePushable(true);
+            SetPhysics(af.GetPhysics());
 
-            this.fl.takedamage = true;
+            fl.takedamage = true;
 
             for (i = 0; i < 4; i++) {
-                this.fingers[i] = (idAFConstraint_Hinge) this.af.GetPhysics().GetConstraint(clawConstraintNames[i]);
-                if (NOT(this.fingers[i])) {
-                    idGameLocal.Error("idClaw_FourFingers '%s': can't find claw constraint '%s'", this.name, clawConstraintNames[i]);
+                fingers[i] = (idAFConstraint_Hinge) af.GetPhysics().GetConstraint(clawConstraintNames[i]);
+                if (NOT(fingers[i])) {
+                    gameLocal.Error("idClaw_FourFingers '%s': can't find claw constraint '%s'", name, clawConstraintNames[i]);
                 }
             }
         }
@@ -2280,7 +2226,7 @@ public class AFEntity {
             int i;
 
             for (i = 0; i < 4; i++) {
-                this.fingers[i].Save(savefile);
+                fingers[i].Save(savefile);
             }
         }
 
@@ -2289,8 +2235,8 @@ public class AFEntity {
             int i;
 
             for (i = 0; i < 4; i++) {
-                this.fingers[i] = (idAFConstraint_Hinge) this.af.GetPhysics().GetConstraint(clawConstraintNames[i]);
-                this.fingers[i].Restore(savefile);
+                fingers[i] = (idAFConstraint_Hinge) af.GetPhysics().GetConstraint(clawConstraintNames[i]);
+                fingers[i].Restore(savefile);
             }
 
             SetCombatModel();
@@ -2306,22 +2252,22 @@ public class AFEntity {
             int i;
 
             for (i = 0; i < 4; i++) {
-                this.fingers[i].SetSteerAngle(angle.value);
-                this.fingers[i].SetSteerSpeed(0.5f);
+                fingers[i].SetSteerAngle(angle.value);
+                fingers[i].SetSteerSpeed(0.5f);
             }
-            this.af.GetPhysics().Activate();
+            af.GetPhysics().Activate();
         }
 
         private void Event_StopFingers() {
             int i;
 
             for (i = 0; i < 4; i++) {
-                this.fingers[i].SetSteerAngle(this.fingers[i].GetAngle());
+                fingers[i].SetSteerAngle(fingers[i].GetAngle());
             }
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -2329,7 +2275,7 @@ public class AFEntity {
             return eventCallbacks;
         }
 
-    }
+    };
 
     /*
      ===============================================================================
@@ -2347,7 +2293,7 @@ public class AFEntity {
 
         renderEntity_s ent;
         idMD5Joint[] joints;
-    }
+    };
 
     static class GetJointTransform extends getJointTransform_t {
 
@@ -2366,7 +2312,7 @@ public class AFEntity {
 
             int i;
 //        jointTransformData_t *data = reinterpret_cast<jointTransformData_t *>(model);
-            final jointTransformData_t data = (jointTransformData_t) model;
+            jointTransformData_t data = (jointTransformData_t) model;
 
             for (i = 0; i < data.ent.numJoints; i++) {
                 if (data.joints[i].name.Icmp(jointName) == 0) {
@@ -2380,7 +2326,7 @@ public class AFEntity {
             axis.oSet(frame[i].ToMat3());
             return true;
         }
-    }
+    };
 
     /*
      ================
@@ -2392,7 +2338,7 @@ public class AFEntity {
 
         s = args.GetString(key);
 //	if ( !s[0] && defArgs ) {
-        if (s.isEmpty() && (defArgs != null)) {
+        if (s.isEmpty() && defArgs != null) {
             s = defArgs.GetString(key);
         }
         return s;

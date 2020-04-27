@@ -32,9 +32,9 @@ public class CollisionModel_load {
      */
     static boolean CM_FindSplitter(final cm_node_s node, final idBounds bounds, int[] planeType, float[] planeDist) {
         int i, j, type, polyCount;
-        final int[] axis = new int[3];
+        int[] axis = new int[3];
         float dist, t, bestt;
-        final float[] size = new float[3];
+        float[] size = new float[3];
         cm_brushRef_s bref;
         cm_polygonRef_s pref;
         cm_node_s n;
@@ -72,7 +72,7 @@ public class CollisionModel_load {
             type = axis[i];
             bestt = size[i];
             // if the node is small anough in this axis direction
-            if (!forceSplit && (bestt < MIN_NODE_SIZE)) {
+            if (!forceSplit && bestt < MIN_NODE_SIZE) {
                 break;
             }
             // find an axial splitter from the brush bounding boxes
@@ -82,7 +82,7 @@ public class CollisionModel_load {
                     for (j = 0; j < 2; j++) {
                         dist = bref.b.bounds.oGet(j, type);
                         // if the splitter is already used or outside node bounds
-                        if ((dist >= bounds.oGet(1, type)) || (dist <= bounds.oGet(0, type))) {
+                        if (dist >= bounds.oGet(1, type) || dist <= bounds.oGet(0, type)) {
                             continue;
                         }
                         // find the most centered splitter
@@ -102,7 +102,7 @@ public class CollisionModel_load {
                     for (j = 0; j < 2; j++) {
                         dist = pref.p.bounds.oGet(j, type);
                         // if the splitter is already used or outside node bounds
-                        if ((dist >= bounds.oGet(1, type)) || (dist <= bounds.oGet(0, type))) {
+                        if (dist >= bounds.oGet(1, type) || dist <= bounds.oGet(0, type)) {
                             continue;
                         }
                         // find the most centered splitter
@@ -122,8 +122,8 @@ public class CollisionModel_load {
                     return true;
                 }
                 // don't create splitters real close to the bounds
-                if (((bounds.oGet(1, type) - planeDist[0]) > (MIN_NODE_SIZE * 0.5f))
-                        && ((planeDist[0] - bounds.oGet(0, type)) > (MIN_NODE_SIZE * 0.5f))) {
+                if (bounds.oGet(1, type) - planeDist[0] > (MIN_NODE_SIZE * 0.5f)
+                        && planeDist[0] - bounds.oGet(0, type) > (MIN_NODE_SIZE * 0.5f)) {
                     return true;
                 }
             }
@@ -179,7 +179,7 @@ public class CollisionModel_load {
                 width = ((idMapPatch) mapPrim).GetWidth();
                 height = ((idMapPatch) mapPrim).GetHeight();
                 numVerts[0] += width * height;
-                numEdges[0] += ((width - 1) * height) + (width * (height - 1)) + ((width - 1) * (height - 1));
+                numEdges[0] += (width - 1) * height + width * (height - 1) + (width - 1) * (height - 1);
                 continue;
             }
             if (mapPrim.GetType() == idMapPrimitive.TYPE_BRUSH) {

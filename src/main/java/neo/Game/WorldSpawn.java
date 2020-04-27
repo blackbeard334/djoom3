@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import neo.Game.Entity.idEntity;
-import neo.Game.Game_local.idGameLocal;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
 import neo.Game.GameSys.Class.idClass;
@@ -42,11 +41,7 @@ public class WorldSpawn {
      ===============================================================================
      */
     public static class idWorldspawn extends idEntity {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		//	CLASS_PROTOTYPE( idWorldspawn );
+        //	CLASS_PROTOTYPE( idWorldspawn );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -69,18 +64,18 @@ public class WorldSpawn {
             assert (gameLocal.world == null);
             gameLocal.world = this;
 
-            g_gravity.SetFloat(this.spawnArgs.GetFloat("gravity", va("%f", DEFAULT_GRAVITY)));
+            g_gravity.SetFloat(spawnArgs.GetFloat("gravity", va("%f", DEFAULT_GRAVITY)));
 
             // disable stamina on hell levels
-            if (this.spawnArgs.GetBool("no_stamina")) {
+            if (spawnArgs.GetBool("no_stamina")) {
                 pm_stamina.SetFloat(0.0f);
             }
 
             // load script
             scriptname = new idStr(gameLocal.GetMapName());
             scriptname.SetFileExtension(".script");
-            if (fileSystem.ReadFile(scriptname.getData(), null, null) > 0) {
-                gameLocal.program.CompileFile(scriptname.getData());
+            if (fileSystem.ReadFile(scriptname.toString(), null, null) > 0) {
+                gameLocal.program.CompileFile(scriptname.toString());
 
                 // call the main function by default
                 func = gameLocal.program.FindFunction("main");
@@ -91,16 +86,16 @@ public class WorldSpawn {
             }
 
             // call any functions specified in worldspawn
-            kv = this.spawnArgs.MatchPrefix("call");
+            kv = spawnArgs.MatchPrefix("call");
             while (kv != null) {
-                func = gameLocal.program.FindFunction(kv.GetValue().getData());
+                func = gameLocal.program.FindFunction(kv.GetValue().toString());
                 if (func == null) {
-                    idGameLocal.Error("Function '%s' not found in script for '%s' key on worldspawn", kv.GetValue(), kv.GetKey());
+                    gameLocal.Error("Function '%s' not found in script for '%s' key on worldspawn", kv.GetValue(), kv.GetKey());
                 }
 
                 thread = new idThread(func);
                 thread.DelayedStart(0);
-                kv = this.spawnArgs.MatchPrefix("call", kv);
+                kv = spawnArgs.MatchPrefix("call", kv);
             }
         }
 
@@ -111,21 +106,21 @@ public class WorldSpawn {
         public void Restore(idRestoreGame savefile) {
             assert (gameLocal.world.equals(this));
 
-            g_gravity.SetFloat(this.spawnArgs.GetFloat("gravity", va("%f", DEFAULT_GRAVITY)));
+            g_gravity.SetFloat(spawnArgs.GetFloat("gravity", va("%f", DEFAULT_GRAVITY)));
 
             // disable stamina on hell levels
-            if (this.spawnArgs.GetBool("no_stamina")) {
+            if (spawnArgs.GetBool("no_stamina")) {
                 pm_stamina.SetFloat(0.0f);
             }
         }
 
         @Override
         public void Event_Remove() {
-            idGameLocal.Error("Tried to remove world");
+            gameLocal.Error("Tried to remove world");
         }
 
         @Override
-        public java.lang.Class<?>/*idTypeInfo*/ GetType() {
+        public java.lang.Class/*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
@@ -140,7 +135,7 @@ public class WorldSpawn {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -148,5 +143,5 @@ public class WorldSpawn {
             return eventCallbacks;
         }
 
-    }
+    };
 }

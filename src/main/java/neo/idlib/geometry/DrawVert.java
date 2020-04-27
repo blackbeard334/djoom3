@@ -3,12 +3,12 @@ package neo.idlib.geometry;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.lwjgl.BufferUtils;
+
 import neo.TempDump;
 import neo.TempDump.SERiAL;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
-import neo.open.ColorUtil;
-import neo.open.Nio;
 
 /**
  *
@@ -24,11 +24,7 @@ public class DrawVert {
      */
     public static class idDrawVert implements SERiAL {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		public static final transient int SIZE
+        public static final transient int SIZE
                 = idVec3.SIZE
                 + idVec2.SIZE
                 + idVec3.SIZE
@@ -42,8 +38,7 @@ public class DrawVert {
         public idVec2   st;
         public idVec3   normal;
         public idVec3[] tangents;
-        //public byte[] color = new byte[4];
-        private ByteBuffer color = Nio.newByteBuffer(4);
+        public byte[] color = new byte[4];
 ////#if 0 // was MACOS_X see comments concerning DRAWVERT_PADDED in Simd_Altivec.h 
 ////	float			padding;
 ////#endif
@@ -102,62 +97,63 @@ public class DrawVert {
                 case 0:
                 case 1:
                 case 2:
-                    return this.xyz.oGet(index);
+                    return xyz.oGet(index);
                 case 3:
                 case 4:
-                    return this.st.oGet(index - 3);
+                    return st.oGet(index - 3);
                 case 5:
                 case 6:
                 case 7:
-                    return this.normal.oGet(index - 5);
+                    return normal.oGet(index - 5);
                 case 8:
                 case 9:
                 case 10:
-                    return this.tangents[0].oGet(index - 8);
+                    return tangents[0].oGet(index - 8);
                 case 11:
                 case 12:
                 case 13:
-                    return this.tangents[1].oGet(index - 11);
+                    return tangents[1].oGet(index - 11);
                 case 14:
                 case 15:
                 case 16:
                 case 17:
-                    return this.getColor().get(index - 14);
+                    return color[index - 14];
             }
             return -1;
         }
 
         public void Clear() {
-            this.xyz.Zero();
-            this.st.Zero();
-            this.normal.Zero();
-            this.tangents[0].Zero();
-            this.tangents[1].Zero();
-            ColorUtil.setElements(this.getColor(), (byte) 0);
+            xyz.Zero();
+            st.Zero();
+            normal.Zero();
+            tangents[0].Zero();
+            tangents[1].Zero();
+            color[0] = color[1] = color[2] = color[3] = 0;
         }
 
         public void Lerp(final idDrawVert a, final idDrawVert b, final float f) {
-            this.xyz.oSet(a.xyz.oPlus((b.xyz.oMinus(a.xyz)).oMultiply(f)));
-            this.st.oSet(a.st.oPlus((b.st.oMinus(a.st)).oMultiply(f)));
+            xyz.oSet(a.xyz.oPlus((b.xyz.oMinus(a.xyz)).oMultiply(f)));
+            st.oSet(a.st.oPlus((b.st.oMinus(a.st)).oMultiply(f)));
         }
 
         public void LerpAll(final idDrawVert a, final idDrawVert b, final float f) {
-            this.xyz.oSet(a.xyz.oPlus((b.xyz.oMinus(a.xyz)).oMultiply(f)));
-            this.st.oSet(a.st.oPlus((b.st.oMinus(a.st)).oMultiply(f)));
-            this.normal.oSet(a.normal.oPlus((b.normal.oMinus(a.normal)).oMultiply(f)));
-            this.tangents[0].oSet(a.tangents[0].oPlus((b.tangents[0].oMinus(a.tangents[0])).oMultiply(f)));
-            this.tangents[1].oSet(a.tangents[1].oPlus((b.tangents[1].oMinus(a.tangents[1])).oMultiply(f)));
-    		for (int i = 0; i < 4; i++) {
-    			this.getColor().put((byte) (a.getColor().get(i) + (f * (b.getColor().get(i) - a.getColor().get(i)))));
-    		}
+            xyz.oSet(a.xyz.oPlus((b.xyz.oMinus(a.xyz)).oMultiply(f)));
+            st.oSet(a.st.oPlus((b.st.oMinus(a.st)).oMultiply(f)));
+            normal.oSet(a.normal.oPlus((b.normal.oMinus(a.normal)).oMultiply(f)));
+            tangents[0].oSet(a.tangents[0].oPlus((b.tangents[0].oMinus(a.tangents[0])).oMultiply(f)));
+            tangents[1].oSet(a.tangents[1].oPlus((b.tangents[1].oMinus(a.tangents[1])).oMultiply(f)));
+            color[0] = (byte) (a.color[0] + f * (b.color[0] - a.color[0]));
+            color[1] = (byte) (a.color[1] + f * (b.color[1] - a.color[1]));
+            color[2] = (byte) (a.color[2] + f * (b.color[2] - a.color[2]));
+            color[3] = (byte) (a.color[3] + f * (b.color[3] - a.color[3]));
         }
 
         public void Normalize() {
-            this.normal.Normalize();
-            this.tangents[1].Cross(this.normal, this.tangents[0]);
-            this.tangents[1].Normalize();
-            this.tangents[0].Cross(this.tangents[1], this.normal);
-            this.tangents[0].Normalize();
+            normal.Normalize();
+            tangents[1].Cross(normal, tangents[0]);
+            tangents[1].Normalize();
+            tangents[0].Cross(tangents[1], normal);
+            tangents[0].Normalize();
         }
 
         public void SetColor(long color) {
@@ -171,10 +167,10 @@ public class DrawVert {
         }
 
         private long get_reinterpret_cast() {
-            return (this.getColor().get(0) & 0x0000_00FF)
-                    | (this.getColor().get(1) & 0x0000_FF00)
-                    | (this.getColor().get(2) & 0x00FF_0000)
-                    | (this.getColor().get(3) & 0xFF00_0000);
+            return color[0] & 0x0000_00FF
+                    | color[1] & 0x0000_FF00
+                    | color[2] & 0x00FF_0000
+                    | color[3] & 0xFF00_0000;
         }
 
         private short[] set_reinterpret_cast(long color) {
@@ -197,60 +193,64 @@ public class DrawVert {
                 return;
             }
 
-            if (buffer.capacity() == (Integer.SIZE / Byte.SIZE)) {
-                this.VBO_OFFSET = buffer.getInt(0);
+            if (buffer.capacity() == Integer.SIZE / Byte.SIZE) {
+                VBO_OFFSET = buffer.getInt(0);
                 return;
             }
 
-            this.xyz.oSet(0, buffer.getFloat());
-            this.xyz.oSet(1, buffer.getFloat());
-            this.xyz.oSet(2, buffer.getFloat());
+            xyz.oSet(0, buffer.getFloat());
+            xyz.oSet(1, buffer.getFloat());
+            xyz.oSet(2, buffer.getFloat());
 
-            this.st.oSet(0, buffer.getFloat());
-            this.st.oSet(1, buffer.getFloat());
+            st.oSet(0, buffer.getFloat());
+            st.oSet(1, buffer.getFloat());
 
-            this.normal.oSet(0, buffer.getFloat());
-            this.normal.oSet(1, buffer.getFloat());
-            this.normal.oSet(2, buffer.getFloat());
+            normal.oSet(0, buffer.getFloat());
+            normal.oSet(1, buffer.getFloat());
+            normal.oSet(2, buffer.getFloat());
 
-            for (final idVec3 tan : this.tangents) {
+            for (idVec3 tan : tangents) {
                 tan.oSet(0, buffer.getFloat());
                 tan.oSet(1, buffer.getFloat());
                 tan.oSet(2, buffer.getFloat());
             }
 
-            ColorUtil.setElements(this.getColor(), buffer.get());
+            for (int c = 0; c < color.length; c++) {
+                color[c] = buffer.get();
+            }
         }
 
         @Override
         public ByteBuffer Write() {
-            final ByteBuffer data = ByteBuffer.allocate(idDrawVert.BYTES);
+            ByteBuffer data = ByteBuffer.allocate(idDrawVert.BYTES);
             data.order(ByteOrder.LITTLE_ENDIAN);//very importante.
 
-            data.putFloat(this.xyz.oGet(0));
-            data.putFloat(this.xyz.oGet(1));
-            data.putFloat(this.xyz.oGet(2));
+            data.putFloat(xyz.oGet(0));
+            data.putFloat(xyz.oGet(1));
+            data.putFloat(xyz.oGet(2));
 
-            data.putFloat(this.st.oGet(0));
-            data.putFloat(this.st.oGet(1));
+            data.putFloat(st.oGet(0));
+            data.putFloat(st.oGet(1));
 
-            data.putFloat(this.normal.oGet(0));
-            data.putFloat(this.normal.oGet(1));
-            data.putFloat(this.normal.oGet(2));
+            data.putFloat(normal.oGet(0));
+            data.putFloat(normal.oGet(1));
+            data.putFloat(normal.oGet(2));
 
-            for (final idVec3 tan : this.tangents) {
+            for (idVec3 tan : tangents) {
                 data.putFloat(tan.oGet(0));
                 data.putFloat(tan.oGet(1));
                 data.putFloat(tan.oGet(2));
             }
 
-            ColorUtil.setElements(this.getColor(), data);
+            for (short colour : color) {
+                data.put((byte) colour);
+            }
 
             return data;
         }
 
         public int xyzOffset() {
-            return this.VBO_OFFSET;
+            return VBO_OFFSET;
         }
 
         public int stOffset() {
@@ -272,21 +272,12 @@ public class DrawVert {
         public int colorOffset() {
             return tangentsOffset_1() + idVec3.BYTES;//+xyz+st+normal+tangents
         }
-
-		public ByteBuffer getColor() {
-			return color;
-		}
-
-		public void setColor(ByteBuffer color) {
-			this.color.clear();
-			this.color.put(color);
-		}
-    }
+    };
 
     public static ByteBuffer toByteBuffer(idDrawVert[] verts) {
-        final ByteBuffer data = Nio.newByteBuffer(idDrawVert.BYTES * verts.length);
+        ByteBuffer data = BufferUtils.createByteBuffer(idDrawVert.BYTES * verts.length);
 
-        for (final idDrawVert vert : verts) {
+        for (idDrawVert vert : verts) {
             data.put((ByteBuffer) vert.Write().rewind());
         }
 //        System.out.printf("%d %d %d %d\n", data.get(0) & 0xff, data.get(1) & 0xff, data.get(2) & 0xff, data.get(3) & 0xff);

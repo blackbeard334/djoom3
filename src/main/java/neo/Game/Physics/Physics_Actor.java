@@ -52,22 +52,22 @@ public class Physics_Actor {
         //
 
         public idPhysics_Actor() {
-            this.clipModel = null;
-            this.clipModelAxis = new idMat3();
+            clipModel = null;
+            clipModelAxis = new idMat3();
             SetClipModelAxis();
-            this.mass = 100.0f;
-            this.invMass = 1.0f / this.mass;
-            this.masterEntity = null;
-            this.masterYaw = 0.0f;
-            this.masterDeltaYaw = 0.0f;
-            this.groundEntityPtr = new idEntityPtr<>(null);
+            mass = 100.0f;
+            invMass = 1.0f / mass;
+            masterEntity = null;
+            masterYaw = 0.0f;
+            masterDeltaYaw = 0.0f;
+            groundEntityPtr = new idEntityPtr<>(null);
         }
 
         // ~idPhysics_Actor();
         @Override
         protected void _deconstructor(){
-            idClipModel.delete(this.clipModel);
-            this.clipModel = null;
+            idClipModel.delete(clipModel);
+            clipModel = null;
 
             super._deconstructor();
         }
@@ -75,79 +75,79 @@ public class Physics_Actor {
         @Override
         public void Save(idSaveGame savefile) {
 
-            savefile.WriteClipModel(this.clipModel);
-            savefile.WriteMat3(this.clipModelAxis);
+            savefile.WriteClipModel(clipModel);
+            savefile.WriteMat3(clipModelAxis);
 
-            savefile.WriteFloat(this.mass);
-            savefile.WriteFloat(this.invMass);
+            savefile.WriteFloat(mass);
+            savefile.WriteFloat(invMass);
 
-            savefile.WriteObject(this.masterEntity);
-            savefile.WriteFloat(this.masterYaw);
-            savefile.WriteFloat(this.masterDeltaYaw);
+            savefile.WriteObject(masterEntity);
+            savefile.WriteFloat(masterYaw);
+            savefile.WriteFloat(masterDeltaYaw);
 
-            this.groundEntityPtr.Save(savefile);
+            groundEntityPtr.Save(savefile);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
 
-            savefile.ReadClipModel(this.clipModel);
-            savefile.ReadMat3(this.clipModelAxis);
+            savefile.ReadClipModel(clipModel);
+            savefile.ReadMat3(clipModelAxis);
 
-            this.mass = savefile.ReadFloat();
-            this.invMass = savefile.ReadFloat();
+            mass = savefile.ReadFloat();
+            invMass = savefile.ReadFloat();
 
-            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/masterEntity);
-            this.masterYaw = savefile.ReadFloat();
-            this.masterDeltaYaw = savefile.ReadFloat();
+            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/masterEntity);
+            masterYaw = savefile.ReadFloat();
+            masterDeltaYaw = savefile.ReadFloat();
 
-            this.groundEntityPtr.Restore(savefile);
+            groundEntityPtr.Restore(savefile);
         }
 
         // get delta yaw of master
         public float GetMasterDeltaYaw() {
-            return this.masterDeltaYaw;
+            return masterDeltaYaw;
         }
 
         // returns the ground entity
         public idEntity GetGroundEntity() {
-            return this.groundEntityPtr.GetEntity();
+            return groundEntityPtr.GetEntity();
         }
 
         // align the clip model with the gravity direction
         public void SetClipModelAxis() {
             // align clip model to gravity direction
-            if ((this.gravityNormal.oGet(2) == -1.0f) || (this.gravityNormal.equals(getVec3_zero()))) {
-                this.clipModelAxis.Identity();
+            if ((gravityNormal.oGet(2) == -1.0f) || (gravityNormal.equals(getVec3_zero()))) {
+                clipModelAxis.Identity();
             } else {
-                this.clipModelAxis.oSet(2, this.gravityNormal.oNegative());
-                this.clipModelAxis.oGet(2).NormalVectors(this.clipModelAxis.oGet(0), this.clipModelAxis.oGet(1));
-                this.clipModelAxis.oSet(1, this.clipModelAxis.oGet(1).oNegative());
+                clipModelAxis.oSet(2, gravityNormal.oNegative());
+                clipModelAxis.oGet(2).NormalVectors(clipModelAxis.oGet(0), clipModelAxis.oGet(1));
+                clipModelAxis.oSet(1, clipModelAxis.oGet(1).oNegative());
             }
 
-            if (this.clipModel != null) {
-                this.clipModel.Link(gameLocal.clip, this.self, 0, this.clipModel.GetOrigin(), this.clipModelAxis);
+            if (clipModel != null) {
+                clipModel.Link(gameLocal.clip, self, 0, clipModel.GetOrigin(), clipModelAxis);
             }
         }
 
         // common physics interface
         @Override
         public void SetClipModel(idClipModel model, float density, int id /*= 0*/, boolean freeOld /*= true*/) {
-            assert (this.self != null);
+            assert (self != null);
             assert (model != null);           // a clip model is required
             assert (model.IsTraceModel());    // and it should be a trace model
             assert (density > 0.0f);          // density should be valid
 
-            if ((this.clipModel != null) && (this.clipModel != model) && freeOld) {
-                idClipModel.delete(this.clipModel);
+            if (clipModel != null && clipModel != model && freeOld) {
+                idClipModel.delete(clipModel);
             }
-            this.clipModel = model;
-            this.clipModel.Link(gameLocal.clip, this.self, 0, this.clipModel.GetOrigin(), this.clipModelAxis);
+            clipModel = model;
+            clipModel.Link(gameLocal.clip, self, 0, clipModel.GetOrigin(), clipModelAxis);
         }
 
         @Override
         public idClipModel GetClipModel(int id /*= 0*/) {
-            return this.clipModel;
+            return clipModel;
         }
 
         @Override
@@ -158,111 +158,111 @@ public class Physics_Actor {
         @Override
         public void SetMass(float _mass, int id /*= -1*/) {
             assert (_mass > 0.0f);
-            this.mass = _mass;
-            this.invMass = 1.0f / _mass;
+            mass = _mass;
+            invMass = 1.0f / _mass;
         }
 
         @Override
         public float GetMass(int id /*= -1*/) {
-            return this.mass;
+            return mass;
         }
 
         @Override
         public void SetContents(int contents, int id /*= -1*/) {
-            this.clipModel.SetContents(contents);
+            clipModel.SetContents(contents);
         }
 
         @Override
         public int GetContents(int id /*= -1*/) {
-            return this.clipModel.GetContents();
+            return clipModel.GetContents();
         }
 
         @Override
         public idBounds GetBounds(int id /*= -1*/) {
-            return this.clipModel.GetBounds();
+            return clipModel.GetBounds();
         }
 
         @Override
         public idBounds GetAbsBounds(int id /*= -1*/) {
-            return this.clipModel.GetAbsBounds();
+            return clipModel.GetAbsBounds();
         }
 
         @Override
         public boolean IsPushable() {
-            return (this.masterEntity == null);
+            return (masterEntity == null);
         }
 
         @Override
         public idVec3 GetOrigin(int id /*= 0*/) {
-            return this.clipModel.GetOrigin();
+            return clipModel.GetOrigin();
         }
 
         @Override
         public idMat3 GetAxis(int id /*= 0*/) {
-            return this.clipModel.GetAxis();
+            return clipModel.GetAxis();
         }
 
         @Override
         public void SetGravity(final idVec3 newGravity) {
-            if (!newGravity.equals(this.gravityVector)) {
+            if (!newGravity.equals(gravityVector)) {
                 super.SetGravity(newGravity);
                 SetClipModelAxis();
             }
         }
 
         public idMat3 GetGravityAxis() {
-            return this.clipModelAxis;
+            return clipModelAxis;
         }
 
         @Override
         public void ClipTranslation(trace_s[] results, final idVec3 translation, final idClipModel model) {
             if (model != null) {
-                gameLocal.clip.TranslationModel(results, this.clipModel.GetOrigin(), this.clipModel.GetOrigin().oPlus(translation),
-                        this.clipModel, this.clipModel.GetAxis(), this.clipMask, model.Handle(), model.GetOrigin(), model.GetAxis());
+                gameLocal.clip.TranslationModel(results, clipModel.GetOrigin(), clipModel.GetOrigin().oPlus(translation),
+                        clipModel, clipModel.GetAxis(), clipMask, model.Handle(), model.GetOrigin(), model.GetAxis());
             } else {
-                gameLocal.clip.Translation(results, this.clipModel.GetOrigin(), this.clipModel.GetOrigin().oPlus(translation),
-                        this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
+                gameLocal.clip.Translation(results, clipModel.GetOrigin(), clipModel.GetOrigin().oPlus(translation),
+                        clipModel, clipModel.GetAxis(), clipMask, self);
             }
         }
 
         @Override
         public void ClipRotation(trace_s[] results, final idRotation rotation, final idClipModel model) {
             if (model != null) {
-                gameLocal.clip.RotationModel(results, this.clipModel.GetOrigin(), rotation,
-                        this.clipModel, this.clipModel.GetAxis(), this.clipMask, model.Handle(), model.GetOrigin(), model.GetAxis());
+                gameLocal.clip.RotationModel(results, clipModel.GetOrigin(), rotation,
+                        clipModel, clipModel.GetAxis(), clipMask, model.Handle(), model.GetOrigin(), model.GetAxis());
             } else {
-                gameLocal.clip.Rotation(results, this.clipModel.GetOrigin(), rotation,
-                        this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
+                gameLocal.clip.Rotation(results, clipModel.GetOrigin(), rotation,
+                        clipModel, clipModel.GetAxis(), clipMask, self);
             }
         }
 
         @Override
         public int ClipContents(final idClipModel model) {
             if (model != null) {
-                return gameLocal.clip.ContentsModel(this.clipModel.GetOrigin(), this.clipModel, this.clipModel.GetAxis(), -1, model.Handle(), model.GetOrigin(), model.GetAxis());
+                return gameLocal.clip.ContentsModel(clipModel.GetOrigin(), clipModel, clipModel.GetAxis(), -1, model.Handle(), model.GetOrigin(), model.GetAxis());
             } else {
-                return gameLocal.clip.Contents(this.clipModel.GetOrigin(), this.clipModel, this.clipModel.GetAxis(), -1, null);
+                return gameLocal.clip.Contents(clipModel.GetOrigin(), clipModel, clipModel.GetAxis(), -1, null);
             }
         }
 
         @Override
         public void DisableClip() {
-            this.clipModel.Disable();
+            clipModel.Disable();
         }
 
         @Override
         public void EnableClip() {
-            this.clipModel.Enable();
+            clipModel.Enable();
         }
 
         @Override
         public void UnlinkClip() {
-            this.clipModel.Unlink();
+            clipModel.Unlink();
         }
 
         @Override
         public void LinkClip() {
-            this.clipModel.Link(gameLocal.clip, this.self, 0, this.clipModel.GetOrigin(), this.clipModel.GetAxis());
+            clipModel.Link(gameLocal.clip, self, 0, clipModel.GetOrigin(), clipModel.GetAxis());
         }
 
         @Override
@@ -270,11 +270,11 @@ public class Physics_Actor {
 
             // get all the ground contacts
             ClearContacts();
-            AddGroundContacts(this.clipModel);
+            AddGroundContacts(clipModel);
             AddContactEntitiesForContacts();
 
-            return (this.contacts.Num() != 0);
+            return (contacts.Num() != 0);
         }
 
-    }
+    };
 }

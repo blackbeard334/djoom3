@@ -33,12 +33,7 @@ public class sound {
     public static abstract class idSoundEmitter implements SERiAL {
         // virtual					~idSoundEmitter() {}
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		// a non-immediate free will let all currently playing sounds complete
+        // a non-immediate free will let all currently playing sounds complete
         // soundEmitters are not actually deleted, they are just marked as
         // reusable by the soundWorld
         public abstract void Free(boolean immediate);
@@ -74,7 +69,7 @@ public class sound {
 
         // for save games.  Index will always be > 0
         public abstract int Index();
-    }
+    };
 
     /*
      ===============================================================================
@@ -162,7 +157,7 @@ public class sound {
         public abstract void SetSlowmoSpeed(float speed);
 
         public abstract void SetEnviroSuit(boolean active);
-    }
+    };
 
     /*
      ===============================================================================
@@ -183,7 +178,7 @@ public class sound {
         public float lastVolume;
         public int start44kHzTime;
         public int current44kHzTime;
-    }
+    };
 
     public static abstract class idSoundSystem {
         // virtual					~idSoundSystem( void ) {}
@@ -248,5 +243,5 @@ public class sound {
 
         // is EAX support present - -1: disabled at compile time, 0: no suitable hardware, 1: ok, 2: failed to load OpenAL DLL
         public abstract int IsEAXAvailable();
-    }
+    };
 }

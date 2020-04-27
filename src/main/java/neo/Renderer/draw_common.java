@@ -41,6 +41,48 @@ import static neo.Renderer.RenderSystem_init.r_useShadowVertexProgram;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.draw_arb.RB_ARB_DrawInteractions;
 import static neo.Renderer.draw_arb2.RB_ARB2_DrawInteractions;
+//import static neo.Renderer.draw_nv10.RB_NV10_DrawInteractions;
+//import static neo.Renderer.draw_nv20.RB_NV20_DrawInteractions;
+//import static neo.Renderer.draw_r200.RB_R200_DrawInteractions;
+import static neo.Renderer.qgl.qglAlphaFunc;
+import static neo.Renderer.qgl.qglBegin;
+import static neo.Renderer.qgl.qglBindProgramARB;
+import static neo.Renderer.qgl.qglColor3f;
+import static neo.Renderer.qgl.qglColor3fv;
+import static neo.Renderer.qgl.qglColor4f;
+import static neo.Renderer.qgl.qglColor4fv;
+import static neo.Renderer.qgl.qglColorPointer;
+import static neo.Renderer.qgl.qglDepthBoundsEXT;
+import static neo.Renderer.qgl.qglDisable;
+import static neo.Renderer.qgl.qglDisableClientState;
+import static neo.Renderer.qgl.qglDisableVertexAttribArrayARB;
+import static neo.Renderer.qgl.qglEnable;
+import static neo.Renderer.qgl.qglEnableClientState;
+import static neo.Renderer.qgl.qglEnableVertexAttribArrayARB;
+import static neo.Renderer.qgl.qglEnd;
+import static neo.Renderer.qgl.qglGetError;
+import static neo.Renderer.qgl.qglLoadIdentity;
+import static neo.Renderer.qgl.qglLoadMatrixf;
+import static neo.Renderer.qgl.qglMatrixMode;
+import static neo.Renderer.qgl.qglNormalPointer;
+import static neo.Renderer.qgl.qglOrtho;
+import static neo.Renderer.qgl.qglPolygonOffset;
+import static neo.Renderer.qgl.qglPopMatrix;
+import static neo.Renderer.qgl.qglProgramEnvParameter4fvARB;
+import static neo.Renderer.qgl.qglProgramLocalParameter4fvARB;
+import static neo.Renderer.qgl.qglPushMatrix;
+import static neo.Renderer.qgl.qglScissor;
+import static neo.Renderer.qgl.qglStencilFunc;
+import static neo.Renderer.qgl.qglStencilOp;
+import static neo.Renderer.qgl.qglTexCoord2f;
+import static neo.Renderer.qgl.qglTexCoordPointer;
+import static neo.Renderer.qgl.qglTexEnvfv;
+import static neo.Renderer.qgl.qglTexEnvi;
+import static neo.Renderer.qgl.qglTexGenf;
+import static neo.Renderer.qgl.qglTexGenfv;
+import static neo.Renderer.qgl.qglVertex2f;
+import static neo.Renderer.qgl.qglVertexAttribPointerARB;
+import static neo.Renderer.qgl.qglVertexPointer;
 import static neo.Renderer.tr_backend.GL_Cull;
 import static neo.Renderer.tr_backend.GL_SelectTexture;
 import static neo.Renderer.tr_backend.GL_State;
@@ -94,105 +136,67 @@ import static neo.Renderer.tr_render.RB_RenderDrawSurfListWithFunction;
 import static neo.Renderer.tr_rendertools.RB_RenderDebugTools;
 import static neo.TempDump.NOT;
 import static neo.framework.Common.common;
-import static neo.open.gl.QGL.qglAlphaFunc;
-import static neo.open.gl.QGL.qglBegin;
-import static neo.open.gl.QGL.qglBindProgramARB;
-import static neo.open.gl.QGL.qglColor3f;
-import static neo.open.gl.QGL.qglColor3fv;
-import static neo.open.gl.QGL.qglColor4f;
-import static neo.open.gl.QGL.qglColor4fv;
-import static neo.open.gl.QGL.qglColorPointer;
-import static neo.open.gl.QGL.qglDepthBoundsEXT;
-import static neo.open.gl.QGL.qglDisable;
-import static neo.open.gl.QGL.qglDisableClientState;
-import static neo.open.gl.QGL.qglDisableVertexAttribArrayARB;
-import static neo.open.gl.QGL.qglEnable;
-import static neo.open.gl.QGL.qglEnableClientState;
-import static neo.open.gl.QGL.qglEnableVertexAttribArrayARB;
-import static neo.open.gl.QGL.qglEnd;
-import static neo.open.gl.QGL.qglGetError;
-import static neo.open.gl.QGL.qglLoadIdentity;
-import static neo.open.gl.QGL.qglLoadMatrixf;
-import static neo.open.gl.QGL.qglMatrixMode;
-import static neo.open.gl.QGL.qglNormalPointer;
-import static neo.open.gl.QGL.qglOrtho;
-import static neo.open.gl.QGL.qglPolygonOffset;
-import static neo.open.gl.QGL.qglPopMatrix;
-import static neo.open.gl.QGL.qglProgramEnvParameter4fvARB;
-import static neo.open.gl.QGL.qglProgramLocalParameter4fvARB;
-import static neo.open.gl.QGL.qglPushMatrix;
-import static neo.open.gl.QGL.qglScissor;
-import static neo.open.gl.QGL.qglStencilFunc;
-import static neo.open.gl.QGL.qglStencilOp;
-import static neo.open.gl.QGL.qglTexCoord2f;
-import static neo.open.gl.QGL.qglTexCoordPointer;
-import static neo.open.gl.QGL.qglTexEnvfv;
-import static neo.open.gl.QGL.qglTexEnvi;
-import static neo.open.gl.QGL.qglTexGenf;
-import static neo.open.gl.QGL.qglTexGenfv;
-import static neo.open.gl.QGL.qglVertex2f;
-import static neo.open.gl.QGL.qglVertexAttribPointerARB;
-import static neo.open.gl.QGL.qglVertexPointer;
-import static neo.open.gl.QGLConstantsIfc.GL_ALPHA_SCALE;
-import static neo.open.gl.QGLConstantsIfc.GL_ALPHA_TEST;
-import static neo.open.gl.QGLConstantsIfc.GL_ALWAYS;
-import static neo.open.gl.QGLConstantsIfc.GL_COLOR_ARRAY;
-import static neo.open.gl.QGLConstantsIfc.GL_COMBINE_ALPHA_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_COMBINE_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_COMBINE_RGB_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_CONSTANT_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_BOUNDS_TEST_EXT;
-import static neo.open.gl.QGLConstantsIfc.GL_DEPTH_TEST;
-import static neo.open.gl.QGLConstantsIfc.GL_FLOAT;
-import static neo.open.gl.QGLConstantsIfc.GL_FRAGMENT_PROGRAM_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_GEQUAL;
-import static neo.open.gl.QGLConstantsIfc.GL_GREATER;
-import static neo.open.gl.QGLConstantsIfc.GL_KEEP;
-import static neo.open.gl.QGLConstantsIfc.GL_MODELVIEW;
-import static neo.open.gl.QGLConstantsIfc.GL_MODULATE;
-import static neo.open.gl.QGLConstantsIfc.GL_NORMAL_ARRAY;
-import static neo.open.gl.QGLConstantsIfc.GL_OBJECT_LINEAR;
-import static neo.open.gl.QGLConstantsIfc.GL_OBJECT_PLANE;
-import static neo.open.gl.QGLConstantsIfc.GL_ONE_MINUS_SRC_COLOR;
-import static neo.open.gl.QGLConstantsIfc.GL_OPERAND0_ALPHA_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_OPERAND0_RGB_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_OPERAND1_ALPHA_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_OPERAND1_RGB_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_POLYGON_OFFSET_FILL;
-import static neo.open.gl.QGLConstantsIfc.GL_PREVIOUS_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_PRIMARY_COLOR_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_PROJECTION;
-import static neo.open.gl.QGLConstantsIfc.GL_Q;
-import static neo.open.gl.QGLConstantsIfc.GL_QUADS;
-import static neo.open.gl.QGLConstantsIfc.GL_R;
-import static neo.open.gl.QGLConstantsIfc.GL_REFLECTION_MAP;
-import static neo.open.gl.QGLConstantsIfc.GL_RGB_SCALE_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_S;
-import static neo.open.gl.QGLConstantsIfc.GL_SOURCE0_ALPHA_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_SOURCE0_RGB_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_SOURCE1_ALPHA_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_SOURCE1_RGB_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_SRC_ALPHA;
-import static neo.open.gl.QGLConstantsIfc.GL_SRC_COLOR;
-import static neo.open.gl.QGLConstantsIfc.GL_STENCIL_TEST;
-import static neo.open.gl.QGLConstantsIfc.GL_T;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_COORD_ARRAY;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_ENV;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_ENV_COLOR;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_MODE;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_Q;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_R;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_S;
-import static neo.open.gl.QGLConstantsIfc.GL_TEXTURE_GEN_T;
-import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
-import static neo.open.gl.QGLConstantsIfc.GL_VERTEX_PROGRAM_ARB;
+import static org.lwjgl.opengl.ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_COMBINE_ALPHA_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_COMBINE_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_COMBINE_RGB_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_CONSTANT_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_OPERAND0_ALPHA_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_OPERAND0_RGB_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_OPERAND1_ALPHA_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_OPERAND1_RGB_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_PREVIOUS_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_PRIMARY_COLOR_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_RGB_SCALE_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_SOURCE0_ALPHA_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_SOURCE0_RGB_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_SOURCE1_ALPHA_ARB;
+import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_SOURCE1_RGB_ARB;
+import static org.lwjgl.opengl.ARBVertexProgram.GL_VERTEX_PROGRAM_ARB;
+import static org.lwjgl.opengl.EXTDepthBoundsTest.GL_DEPTH_BOUNDS_TEST_EXT;
+import static org.lwjgl.opengl.GL11.GL_ALPHA_SCALE;
+import static org.lwjgl.opengl.GL11.GL_ALPHA_TEST;
+import static org.lwjgl.opengl.GL11.GL_ALWAYS;
+import static org.lwjgl.opengl.GL11.GL_COLOR_ARRAY;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.GL_GEQUAL;
+import static org.lwjgl.opengl.GL11.GL_GREATER;
+import static org.lwjgl.opengl.GL11.GL_KEEP;
+import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
+import static org.lwjgl.opengl.GL11.GL_MODULATE;
+import static org.lwjgl.opengl.GL11.GL_NORMAL_ARRAY;
+import static org.lwjgl.opengl.GL11.GL_OBJECT_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_OBJECT_PLANE;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_COLOR;
+import static org.lwjgl.opengl.GL11.GL_POLYGON_OFFSET_FILL;
+import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import static org.lwjgl.opengl.GL11.GL_Q;
+import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.GL_R;
+import static org.lwjgl.opengl.GL11.GL_S;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_SRC_COLOR;
+import static org.lwjgl.opengl.GL11.GL_STENCIL_TEST;
+import static org.lwjgl.opengl.GL11.GL_T;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_ENV;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_ENV_COLOR;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_GEN_MODE;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_GEN_Q;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_GEN_R;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_GEN_S;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_GEN_T;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL13.GL_REFLECTION_MAP;
 
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import neo.TempDump.NeoFixStrings;
+import org.lwjgl.BufferUtils;
+
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Material.newShaderStage_t;
 import neo.Renderer.Material.shaderStage_t;
@@ -209,8 +213,6 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.open.MatrixUtil;
-import neo.open.Nio;
 
 /**
  *
@@ -222,9 +224,9 @@ public class draw_common {
      =====================
      */
 
-    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/) {
-        final float[] genMatrix = new float[16];
-        final float[] finale = new float[16];
+    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/, final float[] textureMatrix) {
+        float[] genMatrix = new float[16];
+        float[] finale = new float[16];
 
         genMatrix[ 0] = lightProject[0].oGet(0);
         genMatrix[ 4] = lightProject[0].oGet(1);
@@ -246,7 +248,7 @@ public class draw_common {
         genMatrix[11] = lightProject[2].oGet(2);
         genMatrix[15] = lightProject[2].oGet(3);
 
-        myGlMultMatrix(genMatrix, backEnd.getLightTextureMatrix(), finale);
+        myGlMultMatrix(genMatrix, backEnd.lightTextureMatrix, finale);
 
         lightProject[0].oSet(0, finale[0]);
         lightProject[0].oSet(1, finale[4]);
@@ -257,17 +259,6 @@ public class draw_common {
         lightProject[1].oSet(1, finale[5]);
         lightProject[1].oSet(2, finale[9]);
         lightProject[1].oSet(3, finale[13]);
-    }
-
-    /**
-     * 
-     * @param lightProject
-     * @param textureMatrix - why this ???
-     * 
-     * @deprecated use public static void RB_BakeTextureMatrixIntoTexgen(idVec4[] lightProject) instead
-     */
-    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/, final FloatBuffer textureMatrix) {
-    	RB_BakeTextureMatrixIntoTexgen(lightProject);
     }
 
     /*
@@ -291,15 +282,61 @@ public class draw_common {
         if (pStage.texture.texgen == TG_DIFFUSE_CUBE) {
             qglTexCoordPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.normalOffset());
         }
-        if ((pStage.texture.texgen == TG_SKYBOX_CUBE) || (pStage.texture.texgen == TG_WOBBLESKY_CUBE)) {
+        if (pStage.texture.texgen == TG_SKYBOX_CUBE || pStage.texture.texgen == TG_WOBBLESKY_CUBE) {
             qglTexCoordPointer(3, GL_FLOAT, 0, vertexCache.Position(surf.dynamicTexCoords));
         }
         if (pStage.texture.texgen == TG_SCREEN) {
-        	RB_PrepareStageTexturing(surf);
+            qglEnable(GL_TEXTURE_GEN_S);
+            qglEnable(GL_TEXTURE_GEN_T);
+            qglEnable(GL_TEXTURE_GEN_Q);
+
+            float[] mat = new float[16], plane = new float[4];
+            myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.projectionMatrix, mat);
+
+            plane[0] = mat[0];
+            plane[1] = mat[4];
+            plane[2] = mat[8];
+            plane[3] = mat[12];
+            qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
+
+            plane[0] = mat[1];
+            plane[1] = mat[5];
+            plane[2] = mat[9];
+            plane[3] = mat[13];
+            qglTexGenfv(GL_T, GL_OBJECT_PLANE, plane);
+
+            plane[0] = mat[3];
+            plane[1] = mat[7];
+            plane[2] = mat[11];
+            plane[3] = mat[15];
+            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, plane);
         }
 
         if (pStage.texture.texgen == TG_SCREEN2) {
-        	RB_PrepareStageTexturing(surf);
+            qglEnable(GL_TEXTURE_GEN_S);
+            qglEnable(GL_TEXTURE_GEN_T);
+            qglEnable(GL_TEXTURE_GEN_Q);
+
+            float[] mat = new float[16], plane = new float[4];
+            myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.projectionMatrix, mat);
+
+            plane[0] = mat[0];
+            plane[1] = mat[4];
+            plane[2] = mat[8];
+            plane[3] = mat[12];
+            qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
+
+            plane[0] = mat[1];
+            plane[1] = mat[5];
+            plane[2] = mat[9];
+            plane[3] = mat[13];
+            qglTexGenfv(GL_T, GL_OBJECT_PLANE, plane);
+
+            plane[0] = mat[3];
+            plane[1] = mat[7];
+            plane[2] = mat[11];
+            plane[3] = mat[15];
+            qglTexGenfv(GL_Q, GL_OBJECT_PLANE, plane);
         }
 
         if (pStage.texture.texgen == TG_GLASSWARP) {
@@ -313,7 +350,30 @@ public class draw_common {
                 GL_SelectTexture(1);
                 globalImages.scratchImage2.Bind();
 
-                RB_PrepareStageTexturing(surf);
+                qglEnable(GL_TEXTURE_GEN_S);
+                qglEnable(GL_TEXTURE_GEN_T);
+                qglEnable(GL_TEXTURE_GEN_Q);
+
+                float[] mat = new float[16], plane = new float[4];
+                myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.projectionMatrix, mat);
+
+                plane[0] = mat[ 0];
+                plane[1] = mat[ 4];
+                plane[2] = mat[ 8];
+                plane[3] = mat[12];
+                qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
+
+                plane[0] = mat[ 1];
+                plane[1] = mat[ 5];
+                plane[2] = mat[ 9];
+                plane[3] = mat[13];
+                qglTexGenfv(GL_T, GL_OBJECT_PLANE, plane);
+
+                plane[0] = mat[ 3];
+                plane[1] = mat[ 7];
+                plane[2] = mat[11];
+                plane[3] = mat[15];
+                qglTexGenfv(GL_Q, GL_OBJECT_PLANE, plane);
 
                 GL_SelectTexture(0);
             }
@@ -362,49 +422,18 @@ public class draw_common {
                 qglEnableClientState(GL_NORMAL_ARRAY);
                 qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, ac.normalOffset());
 
-                MatrixUtil.loadTextureMatrix(R_TransposeGLMatrix(backEnd.viewDef.worldSpace.getModelViewMatrix()));
+                qglMatrixMode(GL_TEXTURE);
+                float[] mat = new float[16];
+
+                R_TransposeGLMatrix(backEnd.viewDef.worldSpace.modelViewMatrix, mat);
+
+                qglLoadMatrixf(mat);
+                qglMatrixMode(GL_MODELVIEW);
             }
         }
     }
 
-    private static void RB_PrepareStageTexturing(final drawSurf_s surf) {
-        qglEnable(GL_TEXTURE_GEN_S);
-        qglEnable(GL_TEXTURE_GEN_T);
-        qglEnable(GL_TEXTURE_GEN_Q);
-
-        final float[] mat = new float[16]; //, plane = new float[4];
-        myGlMultMatrix(surf.space.getModelViewMatrix(), backEnd.viewDef.getProjectionMatrix(), mat);
-
-//        plane[0] = mat[0];
-//        plane[1] = mat[4];
-//        plane[2] = mat[8];
-//        plane[3] = mat[12];
-//        qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
-        qglTexGenfv(GL_S, GL_OBJECT_PLANE, toFloatBuffer(mat[0], mat[4], mat[8], mat[12]));
-
-//        plane[0] = mat[1];
-//        plane[1] = mat[5];
-//        plane[2] = mat[9];
-//        plane[3] = mat[13];
-//        qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
-        qglTexGenfv(GL_T, GL_OBJECT_PLANE, toFloatBuffer(mat[1], mat[5], mat[6], mat[13]));
-
-//        plane[0] = mat[3];
-//        plane[1] = mat[7];
-//        plane[2] = mat[11];
-//        plane[3] = mat[15];
-//        qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
-        qglTexGenfv(GL_Q, GL_OBJECT_PLANE, toFloatBuffer(mat[3], mat[7], mat[11], mat[15]));
-    }
-
-    private static FloatBuffer toFloatBuffer(float x, float y, float z, float d) {
-        return (FloatBuffer) Nio.newFloatBuffer(4).put(x)
-            	.put(y)
-            	.put(z)
-            	.put(d).flip();
-    }
-
-   /*
+    /*
      ================
      RB_FinishStageTexturing
      ================
@@ -412,12 +441,12 @@ public class draw_common {
     public static void RB_FinishStageTexturing(final shaderStage_t pStage, final drawSurf_s surf, idDrawVert ac) {
         DBG_RB_FinishStageTexturing++;
         // unset privatePolygonOffset if necessary
-        if ((pStage.privatePolygonOffset != 0) && !surf.material.TestMaterialFlag(MF_POLYGONOFFSET)) {
+        if (pStage.privatePolygonOffset != 0 && !surf.material.TestMaterialFlag(MF_POLYGONOFFSET)) {
             qglDisable(GL_POLYGON_OFFSET_FILL);
         }
 
-        if ((pStage.texture.texgen == TG_DIFFUSE_CUBE) || (pStage.texture.texgen == TG_SKYBOX_CUBE)
-                || (pStage.texture.texgen == TG_WOBBLESKY_CUBE)) {
+        if (pStage.texture.texgen == TG_DIFFUSE_CUBE || pStage.texture.texgen == TG_SKYBOX_CUBE
+                || pStage.texture.texgen == TG_WOBBLESKY_CUBE) {
             qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, ac.stOffset());
         }
 
@@ -493,7 +522,7 @@ public class draw_common {
             qglLoadIdentity();
             qglMatrixMode(GL_MODELVIEW);
             if(qglGetError()!=0){
-            	System.err.println(NeoFixStrings.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA);
+                System.err.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
             }
         }
     }
@@ -524,21 +553,21 @@ public class draw_common {
             idMaterial shader;
             shaderStage_t pStage;
             float[] regs;
-            final FloatBuffer color = Nio.newFloatBuffer(4);
+            float[] color = new float[4];
             srfTriangles_s tri;
 
             tri = surf.geo;
             shader = surf.material;
 
             // update the clip plane if needed
-            if ((backEnd.viewDef.numClipPlanes != 0) && (surf.space != backEnd.currentSpace)) {
+            if (backEnd.viewDef.numClipPlanes != 0 && surf.space != backEnd.currentSpace) {
                 GL_SelectTexture(1);
 
-                final idPlane plane = new idPlane();
+                idPlane plane = new idPlane();
 
                 R_GlobalPlaneToLocal(surf.space.modelMatrix, backEnd.viewDef.clipPlanes[0], plane);
                 plane.oPluSet(3, 0.5f);	// the notch is in the middle
-                qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane.toFloatBuffer());
+                qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane.ToFloatPtr());
                 GL_SelectTexture(0);
             }
 
@@ -547,7 +576,7 @@ public class draw_common {
             }
 
             // some deforms may disable themselves by setting numIndexes = 0
-            if (0 == tri.getIndexes().getNumValues()) {
+            if (0 == tri.numIndexes) {
                 return;
             }
 
@@ -583,23 +612,18 @@ public class draw_common {
                 qglPolygonOffset(r_offsetFactor.GetFloat(), r_offsetUnits.GetFloat() * shader.GetPolygonOffset());
             }
 
-            {
-                float colorValue;
-            	// subviews will just down-modulate the color buffer by overbright
-                if (shader.GetSort() == SS_SUBVIEW) {
-                    GL_State(GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO | GLS_DEPTHFUNC_LESS);
-                    colorValue = (1.0f / backEnd.overBright);
-                } else {
-                    // others just draw black
-                    colorValue = 0;
-                }
-                color.put(0, colorValue)
-                .put(1, colorValue)
-                .put(2, colorValue)
-                .put(3, 1);
+            // subviews will just down-modulate the color buffer by overbright
+            if (shader.GetSort() == SS_SUBVIEW) {
+                GL_State(GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO | GLS_DEPTHFUNC_LESS);
+                color[0] = color[1] = color[2] = (1.0f / backEnd.overBright);
+                color[3] = 1;
+            } else {
+                // others just draw black
+                color[0] = color[1] = color[2] = 0;
+                color[3] = 1;
             }
 
-            final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
+            idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
             qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
             qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, /*reinterpret_cast<void *>*/ ac.stOffset());
 
@@ -634,10 +658,10 @@ public class draw_common {
                     didDraw = true;
 
                     // set the alpha modulate
-                    color.put(3, regs[ pStage.color.registers[3]]);
+                    color[3] = regs[ pStage.color.registers[3]];
 
                     // skip the entire stage if alpha would be black
-                    if (color.get(3) <= 0) {
+                    if (color[3] <= 0) {
                         continue;
                     }
                     qglColor4fv(color);
@@ -663,7 +687,7 @@ public class draw_common {
 
             // draw the entire surface solid
             if (drawSolid) {
-            	qglColor4fv(color);
+                qglColor4fv(color);
                 globalImages.whiteImage.Bind();
 
                 // draw it
@@ -680,7 +704,7 @@ public class draw_common {
                 GL_State(GLS_DEPTHFUNC_LESS);
             }
         }
-    }
+    };
 
     /*
      =====================
@@ -748,7 +772,7 @@ public class draw_common {
      ==================
      */
     public static void RB_SetProgramEnvironment() {
-        final FloatBuffer parm = Nio.newFloatBuffer(4);
+        FloatBuffer parm = BufferUtils.createFloatBuffer(4);
         int pot;
 
         if (!glConfig.ARBVertexProgramAvailable) {
@@ -780,11 +804,11 @@ public class draw_common {
 //}else{
         // screen power of two correction factor, assuming the copy to _currentRender
         // also copied an extra row and column for the bilerp
-        final int w = (backEnd.viewDef.viewport.x2 - backEnd.viewDef.viewport.x1) + 1;
+        int w = backEnd.viewDef.viewport.x2 - backEnd.viewDef.viewport.x1 + 1;
         pot = globalImages.currentRenderImage.uploadWidth;
         parm.put(0, (float) w / pot);
 
-        final int h = (backEnd.viewDef.viewport.y2 - backEnd.viewDef.viewport.y1) + 1;
+        int h = backEnd.viewDef.viewport.y2 - backEnd.viewDef.viewport.y1 + 1;
         pot = globalImages.currentRenderImage.uploadHeight;
         parm.put(1, (float) h / pot);
 
@@ -826,7 +850,7 @@ public class draw_common {
         }
 
         final viewEntity_s space = backEnd.currentSpace;
-        final FloatBuffer parm = Nio.newFloatBuffer(4);
+        FloatBuffer parm = BufferUtils.createFloatBuffer(4);
 
         // set eye position in local space
         R_GlobalPointToLocal(space.modelMatrix, backEnd.viewDef.renderView.vieworg, /*(idVec3 *)*/ parm);
@@ -864,7 +888,7 @@ public class draw_common {
         idMaterial shader;
         shaderStage_t pStage;
         final float[] regs;
-        final FloatBuffer color = Nio.newFloatBuffer(4);
+        FloatBuffer color = BufferUtils.createFloatBuffer(4);
         srfTriangles_s tri;
 
         tri = surf.geo;
@@ -880,7 +904,7 @@ public class draw_common {
 
         // change the matrix if needed
         if (surf.space != backEnd.currentSpace) {
-            MatrixUtil.loadModelViewMatrix(surf.space.getModelViewMatrix());
+            qglLoadMatrixf(surf.space.modelViewMatrix);
             backEnd.currentSpace = surf.space;
             RB_SetProgramEnvironmentSpace();
         }
@@ -890,12 +914,12 @@ public class draw_common {
             backEnd.currentScissor = surf.scissorRect;
             qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
                     backEnd.viewDef.viewport.y1 + backEnd.currentScissor.y1,
-                    (backEnd.currentScissor.x2 + 1) - backEnd.currentScissor.x1,
-                    (backEnd.currentScissor.y2 + 1) - backEnd.currentScissor.y1);
+                    backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
+                    backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1);
         }
 
         // some deforms may disable themselves by setting numIndexes = 0
-        if (0 == tri.getIndexes().getNumValues()) {
+        if (0 == tri.numIndexes) {
             return;
         }
 
@@ -924,12 +948,12 @@ public class draw_common {
             RB_EnterModelDepthHack(surf.space.modelDepthHack);
         }
 
-        final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts. EDIT:easy peasy.
+        idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts. EDIT:easy peasy.
         qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
         qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, ac.stOffset());
 
         for (stage = 0; stage < shader.GetNumStages(); stage++) {
-            if ((stage == 2) || (stage == 3)) {
+            if (stage == 2 || stage == 3) {
 //                System.out.printf("RB_STD_T_RenderShaderPasses(%d)\n", DBG_RB_STD_T_RenderShaderPasses++);
 //                continue;//HACKME::4:our blending doesn't seem to work properly.
             }
@@ -953,7 +977,7 @@ public class draw_common {
             }
 
             // see if we are a new-style stage
-            final newShaderStage_t newStage = pStage.newStage;
+            newShaderStage_t newStage = pStage.newStage;
             if (newStage != null) {
                 //--------------------------
                 //
@@ -986,13 +1010,13 @@ public class draw_common {
                 // megaTextures bind a lot of images and set a lot of parameters
                 if (newStage.megaTexture != null) {
                     newStage.megaTexture.SetMappingForSurface(tri);
-                    final idVec3 localViewer = new idVec3();
+                    idVec3 localViewer = new idVec3();
                     R_GlobalPointToLocal(surf.space.modelMatrix, backEnd.viewDef.renderView.vieworg, localViewer);
                     newStage.megaTexture.BindForViewOrigin(localViewer);
                 }
 
                 for (int i = 0; i < newStage.numVertexParms; i++) {
-                    final FloatBuffer parm = Nio.newFloatBuffer(4);
+                    FloatBuffer parm = BufferUtils.createFloatBuffer(4);
                     parm.put(0, regs[ newStage.vertexParms[i][0]]);
                     parm.put(1, regs[ newStage.vertexParms[i][1]]);
                     parm.put(2, regs[ newStage.vertexParms[i][2]]);
@@ -1048,14 +1072,14 @@ public class draw_common {
             color.put(3, regs[ pStage.color.registers[3]]);
 
             // skip the entire stage if an add would be black
-            if (((pStage.drawStateBits & (GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS)) == (GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE))
-                    && (color.get(0) <= 0) && (color.get(1) <= 0) && (color.get(2) <= 0)) {
+            if ((pStage.drawStateBits & (GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS)) == (GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE)
+                    && color.get(0) <= 0 && color.get(1) <= 0 && color.get(2) <= 0) {
                 continue;
             }
 
             // skip the entire stage if a blend would be completely transparent
-            if (((pStage.drawStateBits & (GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS)) == (GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA))
-                    && (color.get(3) <= 0)) {
+            if ((pStage.drawStateBits & (GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS)) == (GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA)
+                    && color.get(3) <= 0) {
                 continue;
             }
 
@@ -1079,7 +1103,7 @@ public class draw_common {
 
                 // for vertex color and modulated color, we need to enable a second
                 // texture stage
-                if ((color.get(0) != 1) || (color.get(1) != 1) || (color.get(2) != 1) || (color.get(3) != 1)) {
+                if (color.get(0) != 1 || color.get(1) != 1 || color.get(2) != 1 || color.get(3) != 1) {
                     GL_SelectTexture(1);
 
                     globalImages.whiteImage.Bind();
@@ -1133,7 +1157,7 @@ public class draw_common {
         if (shader.TestMaterialFlag(MF_POLYGONOFFSET)) {
             qglDisable(GL_POLYGON_OFFSET_FILL);
         }
-        if (surf.space.weaponDepthHack || (surf.space.modelDepthHack != 0.0f)) {
+        if (surf.space.weaponDepthHack || surf.space.modelDepthHack != 0.0f) {
             RB_LeaveDepthHack();
         }
     }
@@ -1149,7 +1173,7 @@ public class draw_common {
         int i;
 
         // only obey skipAmbient if we are rendering a view
-        if ((backEnd.viewDef.viewEntitys != null) && r_skipAmbient.GetBool()) {
+        if (backEnd.viewDef.viewEntitys != null && r_skipAmbient.GetBool()) {
             return numDrawSurfs;
         }
 
@@ -1163,9 +1187,9 @@ public class draw_common {
             }
 
             // only dump if in a 3d view
-            if ((backEnd.viewDef.viewEntitys != null) && (tr.backEndRenderer == BE_ARB2)) {
-                final int[] imageWidth = {(backEnd.viewDef.viewport.x2 - backEnd.viewDef.viewport.x1) + 1};
-                final int[] imageHeight = {(backEnd.viewDef.viewport.y2 - backEnd.viewDef.viewport.y1) + 1};
+            if (backEnd.viewDef.viewEntitys != null && tr.backEndRenderer == BE_ARB2) {
+                int[] imageWidth = {backEnd.viewDef.viewport.x2 - backEnd.viewDef.viewport.x1 + 1};
+                int[] imageHeight = {backEnd.viewDef.viewport.y2 - backEnd.viewDef.viewport.y1 + 1};
                 globalImages.currentRenderImage.CopyFramebuffer(backEnd.viewDef.viewport.x1, backEnd.viewDef.viewport.y1,
                         imageWidth, imageHeight, true);
             }
@@ -1189,14 +1213,14 @@ public class draw_common {
                 continue;
             }
 
-            if (backEnd.viewDef.isXraySubview && (drawSurfs[i].space.entityDef != null)) {
+            if (backEnd.viewDef.isXraySubview && drawSurfs[i].space.entityDef != null) {
                 if (drawSurfs[i].space.entityDef.parms.xrayIndex != 2) {
                     continue;
                 }
             }
 
             // we need to draw the post process shaders after we have drawn the fog lights
-            if ((drawSurfs[i].material.GetSort() >= SS_POST_PROCESS)
+            if (drawSurfs[i].material.GetSort() >= SS_POST_PROCESS
                     && !backEnd.currentRenderCopied) {
                 break;
             }
@@ -1238,12 +1262,12 @@ public class draw_common {
 
             // set the light position if we are using a vertex program to project the rear surfaces
             if (tr.backEndRendererHasVertexPrograms && r_useShadowVertexProgram.GetBool()
-                    && (surf.space != backEnd.currentSpace)) {
-                final idVec4 localLight = new idVec4();
-                final FloatBuffer lightBuffer = Nio.newFloatBuffer(4);
+                    && surf.space != backEnd.currentSpace) {
+                idVec4 localLight = new idVec4();
+                FloatBuffer lightBuffer = BufferUtils.createFloatBuffer(4);
 
                 R_GlobalPointToLocal(surf.space.modelMatrix, backEnd.vLight.globalLightOrigin, localLight);
-                lightBuffer.put(localLight.toFloatBuffer()).rewind();//localLight.w = 0.0f;
+                lightBuffer.put(localLight.ToFloatPtr()).rewind();//localLight.w = 0.0f;
                 qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_ORIGIN, lightBuffer);
             }
 
@@ -1260,7 +1284,7 @@ public class draw_common {
             boolean external = false;
 
             if (0 == r_useExternalShadows.GetInteger()) {
-                numIndexes = tri.getIndexes().getNumValues();
+                numIndexes = tri.numIndexes;
             } else if (r_useExternalShadows.GetInteger() == 2) { // force to no caps for testing
                 numIndexes = tri.numShadowIndexesNoCaps;
             } else if (0 == (surf.dsFlags & DSF_VIEW_INSIDE_SHADOW)) {
@@ -1281,7 +1305,7 @@ public class draw_common {
                 external = true;
             } else {
                 // must draw everything
-                numIndexes = tri.getIndexes().getNumValues();
+                numIndexes = tri.numIndexes;
             }
 
             // set depth bounds
@@ -1301,13 +1325,13 @@ public class draw_common {
                 } else {
                     // draw different color for turboshadows
                     if ((surf.geo.shadowCapPlaneBits & SHADOW_CAP_INFINITE) != 0) {
-                        if (numIndexes == tri.getIndexes().getNumValues()) {
+                        if (numIndexes == tri.numIndexes) {
                             qglColor3f(1 / backEnd.overBright, 0.1f / backEnd.overBright, 0.1f / backEnd.overBright);
                         } else {
                             qglColor3f(1 / backEnd.overBright, 0.4f / backEnd.overBright, 0.1f / backEnd.overBright);
                         }
                     } else {
-                        if (numIndexes == tri.getIndexes().getNumValues()) {
+                        if (numIndexes == tri.numIndexes) {
                             qglColor3f(0.1f / backEnd.overBright, 1 / backEnd.overBright, 0.1f / backEnd.overBright);
                         } else if (numIndexes == tri.numShadowIndexesNoFrontCaps) {
                             qglColor3f(0.1f / backEnd.overBright, 1 / backEnd.overBright, 0.6f / backEnd.overBright);
@@ -1348,7 +1372,7 @@ public class draw_common {
             GL_Cull(CT_BACK_SIDED);
             RB_DrawShadowElementsWithCounters(tri, numIndexes);
         }
-    }
+    };
 
     /*
      =====================
@@ -1386,7 +1410,7 @@ public class draw_common {
             GL_State(GLS_DEPTHMASK | GLS_COLORMASK | GLS_ALPHAMASK | GLS_DEPTHFUNC_LESS);
         }
 
-        if ((r_shadowPolygonFactor.GetFloat() != 0) || (r_shadowPolygonOffset.GetFloat() != 0)) {
+        if (r_shadowPolygonFactor.GetFloat() != 0 || r_shadowPolygonOffset.GetFloat() != 0) {
             qglPolygonOffset(r_shadowPolygonFactor.GetFloat(), -r_shadowPolygonOffset.GetFloat());
             qglEnable(GL_POLYGON_OFFSET_FILL);
         }
@@ -1401,7 +1425,7 @@ public class draw_common {
 
         GL_Cull(CT_FRONT_SIDED);
 
-        if ((r_shadowPolygonFactor.GetFloat() != 0) || (r_shadowPolygonOffset.GetFloat() != 0)) {
+        if (r_shadowPolygonFactor.GetFloat() != 0 || r_shadowPolygonOffset.GetFloat() != 0) {
             qglDisable(GL_POLYGON_OFFSET_FILL);
         }
 
@@ -1443,7 +1467,7 @@ public class draw_common {
             tri = surf.geo;
 
             if (backEnd.currentSpace != surf.space) {
-                final idPlane[] lightProject = new idPlane[4];
+                idPlane[] lightProject = new idPlane[4];
                 int i;
 
                 for (i = 0; i < 4; i++) {
@@ -1452,26 +1476,26 @@ public class draw_common {
                 }
 
                 GL_SelectTexture(0);
-                qglTexGenfv(GL_S, GL_OBJECT_PLANE, lightProject[0].toFloatBuffer());
-                qglTexGenfv(GL_T, GL_OBJECT_PLANE, lightProject[1].toFloatBuffer());
-                qglTexGenfv(GL_Q, GL_OBJECT_PLANE, lightProject[2].toFloatBuffer());
+                qglTexGenfv(GL_S, GL_OBJECT_PLANE, lightProject[0].ToFloatPtr());
+                qglTexGenfv(GL_T, GL_OBJECT_PLANE, lightProject[1].ToFloatPtr());
+                qglTexGenfv(GL_Q, GL_OBJECT_PLANE, lightProject[2].ToFloatPtr());
 
                 GL_SelectTexture(1);
-                qglTexGenfv(GL_S, GL_OBJECT_PLANE, lightProject[3].toFloatBuffer());
+                qglTexGenfv(GL_S, GL_OBJECT_PLANE, lightProject[3].ToFloatPtr());
             }
 
             // this gets used for both blend lights and shadow draws
             if (tri.ambientCache != null) {
-                final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
+                idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
                 qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
             } else if (tri.shadowCache != null) {
-                final shadowCache_s sc = new shadowCache_s(vertexCache.Position(tri.shadowCache));//TODO:figure out how to work these damn casts.
-                qglVertexPointer(3, GL_FLOAT, shadowCache_s.BYTES, sc.xyz.toFloatBuffer());
+                shadowCache_s sc = new shadowCache_s(vertexCache.Position(tri.shadowCache));//TODO:figure out how to work these damn casts.
+                qglVertexPointer(3, GL_FLOAT, shadowCache_s.BYTES, sc.xyz.ToFloatPtr());
             }
 
             RB_DrawElementsWithCounters(tri);
         }
-    }
+    };
 
 
     /*
@@ -1530,11 +1554,11 @@ public class draw_common {
             }
 
             // get the modulate values from the light, including alpha, unlike normal lights
-            backEnd.getLightColor().put(0, regs[ stage.color.registers[0]]);
-            backEnd.getLightColor().put(1, regs[ stage.color.registers[1]]);
-            backEnd.getLightColor().put(2, regs[ stage.color.registers[2]]);
-            backEnd.getLightColor().put(3, regs[ stage.color.registers[3]]);
-            qglColor4fv(backEnd.getLightColor());
+            backEnd.lightColor[0] = regs[ stage.color.registers[0]];
+            backEnd.lightColor[1] = regs[ stage.color.registers[1]];
+            backEnd.lightColor[2] = regs[ stage.color.registers[2]];
+            backEnd.lightColor[3] = regs[ stage.color.registers[3]];
+            qglColor4fv(backEnd.lightColor);
 
             RB_RenderDrawSurfChainWithFunction(drawSurfs, RB_T_BlendLight.INSTANCE);
             RB_RenderDrawSurfChainWithFunction(drawSurfs2, RB_T_BlendLight.INSTANCE);
@@ -1575,33 +1599,33 @@ public class draw_common {
         @Override
         void run(final drawSurf_s surf) {
             if (backEnd.currentSpace != surf.space) {
-                final idPlane local = new idPlane();
+                idPlane local = new idPlane();
 
                 GL_SelectTexture(0);
 
                 R_GlobalPlaneToLocal(surf.space.modelMatrix, fogPlanes[0], local);
                 local.oPluSet(3, 0.5f);
-                qglTexGenfv(GL_S, GL_OBJECT_PLANE, local.toFloatBuffer());
+                qglTexGenfv(GL_S, GL_OBJECT_PLANE, local.ToFloatPtr());
 
 //		R_GlobalPlaneToLocal( surf.space.modelMatrix, fogPlanes[1], local );
 //		local[3] += 0.5;
                 local.oSet(0, local.oSet(1, local.oSet(2, local.oSet(3, 0.5f))));
-                qglTexGenfv(GL_T, GL_OBJECT_PLANE, local.toFloatBuffer());
+                qglTexGenfv(GL_T, GL_OBJECT_PLANE, local.ToFloatPtr());
 
                 GL_SelectTexture(1);
 
                 // GL_S is constant per viewer
                 R_GlobalPlaneToLocal(surf.space.modelMatrix, fogPlanes[2], local);
                 local.oPluSet(3, FOG_ENTER);
-                qglTexGenfv(GL_T, GL_OBJECT_PLANE, local.toFloatBuffer());
+                qglTexGenfv(GL_T, GL_OBJECT_PLANE, local.ToFloatPtr());
 
                 R_GlobalPlaneToLocal(surf.space.modelMatrix, fogPlanes[3], local);
-                qglTexGenfv(GL_S, GL_OBJECT_PLANE, local.toFloatBuffer());
+                qglTexGenfv(GL_S, GL_OBJECT_PLANE, local.ToFloatPtr());
             }
 
             RB_T_RenderTriangleSurface.INSTANCE.run(surf);
         }
-    }
+    };
 
     /*
      ==================
@@ -1610,7 +1634,7 @@ public class draw_common {
      */
     public static void RB_FogPass(final drawSurf_s drawSurfs, final drawSurf_s drawSurfs2) {
         srfTriangles_s frustumTris;
-        final drawSurf_s ds = new drawSurf_s();//memset( &ds, 0, sizeof( ds ) );
+        drawSurf_s ds = new drawSurf_s();//memset( &ds, 0, sizeof( ds ) );
         idMaterial lightShader;
         shaderStage_t stage;
         final float[] regs;
@@ -1634,22 +1658,22 @@ public class draw_common {
         // assume fog shaders have only a single stage
         stage = lightShader.GetStage(0);
 
-        backEnd.getLightColor().put(0, regs[ stage.color.registers[0]]);
-        backEnd.getLightColor().put(1, regs[ stage.color.registers[1]]);
-        backEnd.getLightColor().put(2, regs[ stage.color.registers[2]]);
-        backEnd.getLightColor().put(3, regs[ stage.color.registers[3]]);
+        backEnd.lightColor[0] = regs[ stage.color.registers[0]];
+        backEnd.lightColor[1] = regs[ stage.color.registers[1]];
+        backEnd.lightColor[2] = regs[ stage.color.registers[2]];
+        backEnd.lightColor[3] = regs[ stage.color.registers[3]];
 
-        qglColor3fv(backEnd.getLightColor());
+        qglColor3fv(backEnd.lightColor);
 
         // calculate the falloff planes
         float a;
 
         // if they left the default value on, set a fog distance of 500
-        if (backEnd.getLightColor().get(3) <= 1.0) {
+        if (backEnd.lightColor[3] <= 1.0) {
             a = -0.5f / DEFAULT_FOG_DISTANCE;
         } else {
             // otherwise, distance = alpha color
-            a = -0.5f / backEnd.getLightColor().get(3);
+            a = -0.5f / backEnd.lightColor[3];
         }
 
         GL_State(GLS_DEPTHMASK | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_DEPTHFUNC_EQUAL);
@@ -1663,16 +1687,15 @@ public class draw_common {
         qglEnable(GL_TEXTURE_GEN_T);
         qglTexCoord2f(0.5f, 0.5f);		// make sure Q is set
 
-        FloatBuffer modelViewMatrix = backEnd.viewDef.worldSpace.getModelViewMatrix();
-        fogPlanes[0].oSet(0, a * modelViewMatrix.get(2));
-        fogPlanes[0].oSet(1, a * modelViewMatrix.get(6));
-        fogPlanes[0].oSet(2, a * modelViewMatrix.get(10));
-        fogPlanes[0].oSet(3, a * modelViewMatrix.get(14));
+        fogPlanes[0].oSet(0, a * backEnd.viewDef.worldSpace.modelViewMatrix[2]);
+        fogPlanes[0].oSet(1, a * backEnd.viewDef.worldSpace.modelViewMatrix[6]);
+        fogPlanes[0].oSet(2, a * backEnd.viewDef.worldSpace.modelViewMatrix[10]);
+        fogPlanes[0].oSet(3, a * backEnd.viewDef.worldSpace.modelViewMatrix[14]);
 
-        fogPlanes[1].oSet(0, a * modelViewMatrix.get(0));
-        fogPlanes[1].oSet(1, a * modelViewMatrix.get(4));
-        fogPlanes[1].oSet(2, a * modelViewMatrix.get(8));
-        fogPlanes[1].oSet(3, a * modelViewMatrix.get(12));
+        fogPlanes[1].oSet(0, a * backEnd.viewDef.worldSpace.modelViewMatrix[0]);
+        fogPlanes[1].oSet(1, a * backEnd.viewDef.worldSpace.modelViewMatrix[4]);
+        fogPlanes[1].oSet(2, a * backEnd.viewDef.worldSpace.modelViewMatrix[8]);
+        fogPlanes[1].oSet(3, a * backEnd.viewDef.worldSpace.modelViewMatrix[12]);
 
         // texture 1 is the entering plane fade correction
         GL_SelectTexture(1);
@@ -1688,7 +1711,7 @@ public class draw_common {
         fogPlanes[2].oSet(3, 0.001f * backEnd.vLight.fogPlane.oGet(3));
 
         // S is based on the view origin
-        final float s = backEnd.viewDef.renderView.vieworg.oMultiply(fogPlanes[2].Normal()) + fogPlanes[2].oGet(3);
+        float s = backEnd.viewDef.renderView.vieworg.oMultiply(fogPlanes[2].Normal()) + fogPlanes[2].oGet(3);
 
         fogPlanes[3].oSet(0, 0);
         fogPlanes[3].oSet(1, 0);
@@ -1727,7 +1750,7 @@ public class draw_common {
     public static void RB_STD_FogAllLights() {
         viewLight_s vLight;
 
-        if (r_skipFogLights.GetBool() || (r_showOverDraw.GetInteger() != 0)
+        if (r_skipFogLights.GetBool() || r_showOverDraw.GetInteger() != 0
                 || backEnd.viewDef.isXraySubview /* dont fog in xray mode*/) {
             return;
         }
@@ -1805,8 +1828,8 @@ public class draw_common {
         if (r_useScissor.GetBool()) {
             qglScissor(backEnd.viewDef.viewport.x1 + backEnd.viewDef.scissor.x1,
                     backEnd.viewDef.viewport.y1 + backEnd.viewDef.scissor.y1,
-                    (backEnd.viewDef.scissor.x2 - backEnd.viewDef.scissor.x1) + 1,
-                    (backEnd.viewDef.scissor.y2 - backEnd.viewDef.scissor.y1) + 1);
+                    backEnd.viewDef.scissor.x2 - backEnd.viewDef.scissor.x1 + 1,
+                    backEnd.viewDef.scissor.y2 - backEnd.viewDef.scissor.y1 + 1);
             backEnd.currentScissor = backEnd.viewDef.scissor;
         }
 
@@ -1893,9 +1916,6 @@ public class draw_common {
 //            case BE_R200:
 //                RB_R200_DrawInteractions();
 //                break;
-            default:
-				// TODO check unused Enum case labels
-                break;
         }
 
         // disable stencil shadow test
@@ -1905,7 +1925,7 @@ public class draw_common {
         RB_STD_LightScale();
 
         // now draw any non-light dependent shading passes
-        final int processed = RB_STD_DrawShaderPasses(drawSurfs, numDrawSurfs);
+        int processed = RB_STD_DrawShaderPasses(drawSurfs, numDrawSurfs);
 
         // fob and blend lights
         RB_STD_FogAllLights();

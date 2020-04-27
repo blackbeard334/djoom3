@@ -26,7 +26,6 @@ import java.util.Map;
 
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
-import neo.Game.Game_local.idGameLocal;
 import neo.Game.Player.idPlayer;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
@@ -67,11 +66,7 @@ public class Trigger {
     public static final idEventDef EV_Timer         = new idEventDef("<timer>", null);
 
     public static class idTrigger extends idEntity {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// CLASS_PROTOTYPE( idTrigger );
+        // CLASS_PROTOTYPE( idTrigger );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -86,15 +81,15 @@ public class Trigger {
         //
 
         public idTrigger() {
-            this.scriptFunction = null;
+            scriptFunction = null;
         }
         
         public static void DrawDebugInfo(){
-            final idMat3 axis = gameLocal.GetLocalPlayer().viewAngles.ToMat3();
-            final idVec3 up = axis.oGet(2).oMultiply(5.0f);
-            final idBounds viewTextBounds = new idBounds(gameLocal.GetLocalPlayer().GetPhysics().GetOrigin());
-            final idBounds viewBounds = new idBounds(gameLocal.GetLocalPlayer().GetPhysics().GetOrigin());
-            final idBounds box = new idBounds(new idVec3(-4.0f, -4.0f, -4.0f), new idVec3(4.0f, 4.0f, 4.0f));
+            idMat3 axis = gameLocal.GetLocalPlayer().viewAngles.ToMat3();
+            idVec3 up = axis.oGet(2).oMultiply(5.0f);
+            idBounds viewTextBounds = new idBounds(gameLocal.GetLocalPlayer().GetPhysics().GetOrigin());
+            idBounds viewBounds = new idBounds(gameLocal.GetLocalPlayer().GetPhysics().GetOrigin());
+            idBounds box = new idBounds(new idVec3(-4.0f, -4.0f, -4.0f), new idVec3(4.0f, 4.0f, 4.0f));
             idEntity ent;
             idEntity target;
             int i;
@@ -109,7 +104,7 @@ public class Trigger {
                     if (!show) {
                         for (i = 0; i < ent.targets.Num(); i++) {
                             target = ent.targets.oGet(i).GetEntity();
-                            if ((target != null) && viewBounds.IntersectsBounds(target.GetPhysics().GetAbsBounds())) {
+                            if (target != null && viewBounds.IntersectsBounds(target.GetPhysics().GetAbsBounds())) {
                                 show = true;
                                 break;
                             }
@@ -122,7 +117,7 @@ public class Trigger {
 
                     gameRenderWorld.DebugBounds(colorOrange, ent.GetPhysics().GetAbsBounds());
                     if (viewTextBounds.IntersectsBounds(ent.GetPhysics().GetAbsBounds())) {
-                        gameRenderWorld.DrawText(ent.name.getData(), ent.GetPhysics().GetAbsBounds().GetCenter(), 0.1f, colorWhite, axis, 1);
+                        gameRenderWorld.DrawText(ent.name.toString(), ent.GetPhysics().GetAbsBounds().GetCenter(), 0.1f, colorWhite, axis, 1);
                         gameRenderWorld.DrawText(ent.GetEntityDefName(), ent.GetPhysics().GetAbsBounds().GetCenter().oPlus(up), 0.1f, colorWhite, axis, 1);
                         if (ent.IsType(idTrigger.class)) {
                             func = ((idTrigger) ent).GetScriptFunction();
@@ -141,7 +136,7 @@ public class Trigger {
                             gameRenderWorld.DebugArrow(colorYellow, ent.GetPhysics().GetAbsBounds().GetCenter(), target.GetPhysics().GetOrigin(), 10, 0);
                             gameRenderWorld.DebugBounds(colorGreen, box, target.GetPhysics().GetOrigin());
                             if (viewTextBounds.IntersectsBounds(target.GetPhysics().GetAbsBounds())) {
-                                gameRenderWorld.DrawText(target.name.getData(), target.GetPhysics().GetAbsBounds().GetCenter(), 0.1f, colorWhite, axis, 1);
+                                gameRenderWorld.DrawText(target.name.toString(), target.GetPhysics().GetAbsBounds().GetCenter(), 0.1f, colorWhite, axis, 1);
                             }
                         }
                     }
@@ -154,25 +149,25 @@ public class Trigger {
             super.Spawn();
             GetPhysics().SetContents(CONTENTS_TRIGGER);
 
-            final String funcname = this.spawnArgs.GetString("call", "");
+            String funcname = spawnArgs.GetString("call", "");
             if (funcname.length() != 0) {
-                this.scriptFunction = gameLocal.program.FindFunction(funcname);
-                if (this.scriptFunction == null) {
-                    gameLocal.Warning("trigger '%s' at (%s) calls unknown function '%s'", this.name, GetPhysics().GetOrigin().ToString(0), funcname);
+                scriptFunction = gameLocal.program.FindFunction(funcname);
+                if (scriptFunction == null) {
+                    gameLocal.Warning("trigger '%s' at (%s) calls unknown function '%s'", name, GetPhysics().GetOrigin().ToString(0), funcname);
                 }
             } else {
-                this.scriptFunction = null;
+                scriptFunction = null;
             }
         }
 
         public function_t GetScriptFunction() {
-            return this.scriptFunction;
+            return scriptFunction;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            if (this.scriptFunction != null) {
-                savefile.WriteString(this.scriptFunction.Name());
+            if (scriptFunction != null) {
+                savefile.WriteString(scriptFunction.Name());
             } else {
                 savefile.WriteString("");
             }
@@ -180,15 +175,15 @@ public class Trigger {
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            final idStr funcname = new idStr();
+            idStr funcname = new idStr();
             savefile.ReadString(funcname);
             if (!funcname.IsEmpty()) {
-                this.scriptFunction = gameLocal.program.FindFunction(funcname.getData());
-                if (this.scriptFunction == null) {
-                    gameLocal.Warning("idTrigger_Multi '%s' at (%s) calls unknown function '%s'", this.name, GetPhysics().GetOrigin().ToString(0), funcname.getData());
+                scriptFunction = gameLocal.program.FindFunction(funcname.toString());
+                if (scriptFunction == null) {
+                    gameLocal.Warning("idTrigger_Multi '%s' at (%s) calls unknown function '%s'", name, GetPhysics().GetOrigin().ToString(0), funcname.toString());
                 }
             } else {
-                this.scriptFunction = null;
+                scriptFunction = null;
             }
         }
 
@@ -206,8 +201,8 @@ public class Trigger {
         protected void CallScript() {
             idThread thread;
 
-            if (this.scriptFunction != null) {
-                thread = new idThread(this.scriptFunction);
+            if (scriptFunction != null) {
+                thread = new idThread(scriptFunction);
                 thread.DelayedStart(0);
             }
         }
@@ -225,7 +220,7 @@ public class Trigger {
         }
 
         @Override
-        public java.lang.Class<?>/*idTypeInfo*/ GetType() {
+        public java.lang.Class/*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
@@ -240,7 +235,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -248,7 +243,7 @@ public class Trigger {
             return eventCallbacks;
         }
 
-    }
+    };
 
     /*
      ===============================================================================
@@ -258,11 +253,7 @@ public class Trigger {
      ===============================================================================
      */
     public static class idTrigger_Multi extends idTrigger {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// CLASS_PROTOTYPE( idTrigger_Multi );
+        // CLASS_PROTOTYPE( idTrigger_Multi );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTrigger.getEventCallBacks());
@@ -277,7 +268,7 @@ public class Trigger {
         private float   delay;
         private float   random_delay;
         private int     nextTriggerTime;
-        private final idStr   requires = new idStr();
+        private idStr   requires = new idStr();
         private int     removeItem;
         private boolean touchClient;
         private boolean touchOther;
@@ -287,16 +278,16 @@ public class Trigger {
         //
 
         public idTrigger_Multi() {
-            this.wait = 0.0f;
-            this.random = 0.0f;
-            this.delay = 0.0f;
-            this.random_delay = 0.0f;
-            this.nextTriggerTime = 0;
-            this.removeItem = 0;
-            this.touchClient = false;
-            this.touchOther = false;
-            this.triggerFirst = false;
-            this.triggerWithSelf = false;
+            wait = 0.0f;
+            random = 0.0f;
+            delay = 0.0f;
+            random_delay = 0.0f;
+            nextTriggerTime = 0;
+            removeItem = 0;
+            touchClient = false;
+            touchOther = false;
+            triggerFirst = false;
+            triggerWithSelf = false;
         }
 
         /*
@@ -315,43 +306,43 @@ public class Trigger {
         public void Spawn() {
             super.Spawn();
             
-            this.wait = this.spawnArgs.GetFloat("wait", "0.5");
-            this.random = this.spawnArgs.GetFloat("random", "0");
-            this.delay = this.spawnArgs.GetFloat("delay", "0");
-            this.random_delay = this.spawnArgs.GetFloat("random_delay", "0");
+            wait = spawnArgs.GetFloat("wait", "0.5");
+            random = spawnArgs.GetFloat("random", "0");
+            delay = spawnArgs.GetFloat("delay", "0");
+            random_delay = spawnArgs.GetFloat("random_delay", "0");
 
-            if ((this.random != 0) && (this.random >= this.wait) && (this.wait >= 0)) {
-                this.random = this.wait - 1;
-                gameLocal.Warning("idTrigger_Multi '%s' at (%s) has random >= wait", this.name, GetPhysics().GetOrigin().ToString(0));
+            if (random != 0 && (random >= wait) && (wait >= 0)) {
+                random = wait - 1;
+                gameLocal.Warning("idTrigger_Multi '%s' at (%s) has random >= wait", name, GetPhysics().GetOrigin().ToString(0));
             }
 
-            if ((this.random_delay != 0) && (this.random_delay >= this.delay) && (this.delay >= 0)) {
-                this.random_delay = this.delay - 1;
-                gameLocal.Warning("idTrigger_Multi '%s' at (%s) has random_delay >= delay", this.name, GetPhysics().GetOrigin().ToString(0));
+            if (random_delay != 0 && (random_delay >= delay) && (delay >= 0)) {
+                random_delay = delay - 1;
+                gameLocal.Warning("idTrigger_Multi '%s' at (%s) has random_delay >= delay", name, GetPhysics().GetOrigin().ToString(0));
             }
 
-            this.spawnArgs.GetString("requires", "", this.requires);
-            this.removeItem = this.spawnArgs.GetInt("removeItem", "0");
-            this.triggerFirst = this.spawnArgs.GetBool("triggerFirst", "0");
-            this.triggerWithSelf = this.spawnArgs.GetBool("triggerWithSelf", "0");
+            spawnArgs.GetString("requires", "", requires);
+            removeItem = spawnArgs.GetInt("removeItem", "0");
+            triggerFirst = spawnArgs.GetBool("triggerFirst", "0");
+            triggerWithSelf = spawnArgs.GetBool("triggerWithSelf", "0");
 
-            if (this.spawnArgs.GetBool("anyTouch")) {
-                this.touchClient = true;
-                this.touchOther = true;
-            } else if (this.spawnArgs.GetBool("noTouch")) {
-                this.touchClient = false;
-                this.touchOther = false;
-            } else if (this.spawnArgs.GetBool("noClient")) {
-                this.touchClient = false;
-                this.touchOther = true;
+            if (spawnArgs.GetBool("anyTouch")) {
+                touchClient = true;
+                touchOther = true;
+            } else if (spawnArgs.GetBool("noTouch")) {
+                touchClient = false;
+                touchOther = false;
+            } else if (spawnArgs.GetBool("noClient")) {
+                touchClient = false;
+                touchOther = true;
             } else {
-                this.touchClient = true;
-                this.touchOther = false;
+                touchClient = true;
+                touchOther = false;
             }
 
-            this.nextTriggerTime = 0;
+            nextTriggerTime = 0;
 
-            if (this.spawnArgs.GetBool("flashlight_trigger")) {
+            if (spawnArgs.GetBool("flashlight_trigger")) {
                 GetPhysics().SetContents(CONTENTS_FLASHLIGHT_TRIGGER);
             } else {
                 GetPhysics().SetContents(CONTENTS_TRIGGER);
@@ -360,43 +351,43 @@ public class Trigger {
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteFloat(this.wait);
-            savefile.WriteFloat(this.random);
-            savefile.WriteFloat(this.delay);
-            savefile.WriteFloat(this.random_delay);
-            savefile.WriteInt(this.nextTriggerTime);
-            savefile.WriteString(this.requires);
-            savefile.WriteInt(this.removeItem);
-            savefile.WriteBool(this.touchClient);
-            savefile.WriteBool(this.touchOther);
-            savefile.WriteBool(this.triggerFirst);
-            savefile.WriteBool(this.triggerWithSelf);
+            savefile.WriteFloat(wait);
+            savefile.WriteFloat(random);
+            savefile.WriteFloat(delay);
+            savefile.WriteFloat(random_delay);
+            savefile.WriteInt(nextTriggerTime);
+            savefile.WriteString(requires);
+            savefile.WriteInt(removeItem);
+            savefile.WriteBool(touchClient);
+            savefile.WriteBool(touchOther);
+            savefile.WriteBool(triggerFirst);
+            savefile.WriteBool(triggerWithSelf);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            this.wait = savefile.ReadFloat();
-            this.random = savefile.ReadFloat();
-            this.delay = savefile.ReadFloat();
-            this.random_delay = savefile.ReadFloat();
-            this.nextTriggerTime = savefile.ReadInt();
-            savefile.ReadString(this.requires);
-            this.removeItem = savefile.ReadInt();
-            this.touchClient = savefile.ReadBool();
-            this.touchOther = savefile.ReadBool();
-            this.triggerFirst = savefile.ReadBool();
-            this.triggerWithSelf = savefile.ReadBool();
+            wait = savefile.ReadFloat();
+            random = savefile.ReadFloat();
+            delay = savefile.ReadFloat();
+            random_delay = savefile.ReadFloat();
+            nextTriggerTime = savefile.ReadInt();
+            savefile.ReadString(requires);
+            removeItem = savefile.ReadInt();
+            touchClient = savefile.ReadBool();
+            touchOther = savefile.ReadBool();
+            triggerFirst = savefile.ReadBool();
+            triggerWithSelf = savefile.ReadBool();
         }
 
         private boolean CheckFacing(idEntity activator) {
-            if (this.spawnArgs.GetBool("facing")) {
+            if (spawnArgs.GetBool("facing")) {
                 if (!activator.IsType(idPlayer.class)) {
                     return true;
                 }
-                final idPlayer player = (idPlayer) activator;
-                final float dot = player.viewAngles.ToForward().oMultiply(GetPhysics().GetAxis().oGet(0));
-                final float angle = RAD2DEG(idMath.ACos(dot));
-                if (angle > this.spawnArgs.GetFloat("angleLimit", "30")) {
+                idPlayer player = (idPlayer) activator;
+                float dot = player.viewAngles.ToForward().oMultiply(GetPhysics().GetAxis().oGet(0));
+                float angle = RAD2DEG(idMath.ACos(dot));
+                if (angle > spawnArgs.GetFloat("angleLimit", "30")) {
                     return false;
                 }
             }
@@ -404,15 +395,15 @@ public class Trigger {
         }
 
         private void TriggerAction(idEntity activator) {
-            ActivateTargets(this.triggerWithSelf ? this : activator);
+            ActivateTargets(triggerWithSelf ? this : activator);
             CallScript();
 
-            if (this.wait >= 0) {
-                this.nextTriggerTime = (int) (gameLocal.time + SEC2MS(this.wait + (this.random * gameLocal.random.CRandomFloat())));
+            if (wait >= 0) {
+                nextTriggerTime = (int) (gameLocal.time + SEC2MS(wait + random * gameLocal.random.CRandomFloat()));
             } else {
                 // we can't just remove (this) here, because this is a touch function
                 // called while looping through area links...
-                this.nextTriggerTime = gameLocal.time + 1;
+                nextTriggerTime = gameLocal.time + 1;
                 PostEventMS(EV_Remove, 0);
             }
         }
@@ -432,14 +423,14 @@ public class Trigger {
          ================
          */
         private void Event_Trigger(idEventArg<idEntity> _activator) {
-            final idEntity activator = _activator.value;
-            if (this.nextTriggerTime > gameLocal.time) {
+            idEntity activator = _activator.value;
+            if (nextTriggerTime > gameLocal.time) {
                 // can't retrigger until the wait is over
                 return;
             }
 
             // see if this trigger requires an item
-            if (!gameLocal.RequirementMet(activator, this.requires, this.removeItem)) {
+            if (!gameLocal.RequirementMet(activator, requires, removeItem)) {
                 return;
             }
 
@@ -447,48 +438,48 @@ public class Trigger {
                 return;
             }
 
-            if (this.triggerFirst) {
-                this.triggerFirst = false;
+            if (triggerFirst) {
+                triggerFirst = false;
                 return;
             }
 
             // don't allow it to trigger twice in a single frame
-            this.nextTriggerTime = gameLocal.time + 1;
+            nextTriggerTime = gameLocal.time + 1;
 
-            if (this.delay > 0) {
+            if (delay > 0) {
                 // don't allow it to trigger again until our delay has passed
-                this.nextTriggerTime += SEC2MS(this.delay + (this.random_delay * gameLocal.random.CRandomFloat()));
-                PostEventSec(EV_TriggerAction, this.delay, _activator);
+                nextTriggerTime += SEC2MS(delay + random_delay * gameLocal.random.CRandomFloat());
+                PostEventSec(EV_TriggerAction, delay, _activator);
             } else {
                 TriggerAction(activator);
             }
         }
 
         private void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> trace) {
-            final idEntity other = _other.value;
-            if (this.triggerFirst) {
+            idEntity other = _other.value;
+            if (triggerFirst) {
                 return;
             }
 
-            final boolean player = other.IsType(idPlayer.class);
+            boolean player = other.IsType(idPlayer.class);
             if (player) {
-                if (!this.touchClient) {
+                if (!touchClient) {
                     return;
                 }
                 if (((idPlayer) other).spectating) {
                     return;
                 }
-            } else if (!this.touchOther) {
+            } else if (!touchOther) {
                 return;
             }
 
-            if (this.nextTriggerTime > gameLocal.time) {
+            if (nextTriggerTime > gameLocal.time) {
                 // can't retrigger until the wait is over
                 return;
             }
 
             // see if this trigger requires an item
-            if (!gameLocal.RequirementMet(other, this.requires, this.removeItem)) {
+            if (!gameLocal.RequirementMet(other, requires, removeItem)) {
                 return;
             }
 
@@ -496,15 +487,15 @@ public class Trigger {
                 return;
             }
 
-            if (this.spawnArgs.GetBool("toggleTriggerFirst")) {
-                this.triggerFirst = true;
+            if (spawnArgs.GetBool("toggleTriggerFirst")) {
+                triggerFirst = true;
             }
 
-            this.nextTriggerTime = gameLocal.time + 1;
-            if (this.delay > 0) {
+            nextTriggerTime = gameLocal.time + 1;
+            if (delay > 0) {
                 // don't allow it to trigger again until our delay has passed
-                this.nextTriggerTime += SEC2MS(this.delay + (this.random_delay * gameLocal.random.CRandomFloat()));
-                PostEventSec(EV_TriggerAction, this.delay, other);
+                nextTriggerTime += SEC2MS(delay + random_delay * gameLocal.random.CRandomFloat());
+                PostEventSec(EV_TriggerAction, delay, other);
             } else {
                 TriggerAction(other);
             }
@@ -516,7 +507,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -524,7 +515,7 @@ public class Trigger {
             return eventCallbacks;
         }
 
-    }
+    };
 
 
     /*
@@ -535,11 +526,7 @@ public class Trigger {
      ===============================================================================
      */
     public static class idTrigger_EntityName extends idTrigger {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		//CLASS_PROTOTYPE(idTrigger_EntityName );
+        //CLASS_PROTOTYPE(idTrigger_EntityName );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTrigger.getEventCallBacks());
@@ -555,68 +542,68 @@ public class Trigger {
         private float   random_delay;
         private int     nextTriggerTime;
         private boolean triggerFirst;
-        private final idStr   entityName = new idStr();
+        private idStr   entityName = new idStr();
         //
         //
 
         public idTrigger_EntityName() {
-            this.wait = 0.0f;
-            this.random = 0.0f;
-            this.delay = 0.0f;
-            this.random_delay = 0.0f;
-            this.nextTriggerTime = 0;
-            this.triggerFirst = false;
+            wait = 0.0f;
+            random = 0.0f;
+            delay = 0.0f;
+            random_delay = 0.0f;
+            nextTriggerTime = 0;
+            triggerFirst = false;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteFloat(this.wait);
-            savefile.WriteFloat(this.random);
-            savefile.WriteFloat(this.delay);
-            savefile.WriteFloat(this.random_delay);
-            savefile.WriteInt(this.nextTriggerTime);
-            savefile.WriteBool(this.triggerFirst);
-            savefile.WriteString(this.entityName);
+            savefile.WriteFloat(wait);
+            savefile.WriteFloat(random);
+            savefile.WriteFloat(delay);
+            savefile.WriteFloat(random_delay);
+            savefile.WriteInt(nextTriggerTime);
+            savefile.WriteBool(triggerFirst);
+            savefile.WriteString(entityName);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            this.wait = savefile.ReadFloat();
-            this.random = savefile.ReadFloat();
-            this.delay = savefile.ReadFloat();
-            this.random_delay = savefile.ReadFloat();
-            this.nextTriggerTime = savefile.ReadInt();
-            this.triggerFirst = savefile.ReadBool();
-            savefile.ReadString(this.entityName);
+            wait = savefile.ReadFloat();
+            random = savefile.ReadFloat();
+            delay = savefile.ReadFloat();
+            random_delay = savefile.ReadFloat();
+            nextTriggerTime = savefile.ReadInt();
+            triggerFirst = savefile.ReadBool();
+            savefile.ReadString(entityName);
         }
 
         @Override
         public void Spawn() {
-            this.wait = this.spawnArgs.GetFloat("wait", "0.5");
-            this.random = this.spawnArgs.GetFloat("random", "0");
-            this.delay = this.spawnArgs.GetFloat("delay", "0");
-            this.random_delay = this.spawnArgs.GetFloat("random_delay", "0");
+            wait = spawnArgs.GetFloat("wait", "0.5");
+            random = spawnArgs.GetFloat("random", "0");
+            delay = spawnArgs.GetFloat("delay", "0");
+            random_delay = spawnArgs.GetFloat("random_delay", "0");
 
-            if ((this.random != 0) && (this.random >= this.wait) && (this.wait >= 0)) {
-                this.random = this.wait - 1;
-                gameLocal.Warning("idTrigger_EntityName '%s' at (%s) has random >= wait", this.name, GetPhysics().GetOrigin().ToString(0));
+            if (random != 0 && (random >= wait) && (wait >= 0)) {
+                random = wait - 1;
+                gameLocal.Warning("idTrigger_EntityName '%s' at (%s) has random >= wait", name, GetPhysics().GetOrigin().ToString(0));
             }
 
-            if ((this.random_delay != 0) && (this.random_delay >= this.delay) && (this.delay >= 0)) {
-                this.random_delay = this.delay - 1;
-                gameLocal.Warning("idTrigger_EntityName '%s' at (%s) has random_delay >= delay", this.name, GetPhysics().GetOrigin().ToString(0));
+            if (random_delay != 0 && (random_delay >= delay) && (delay >= 0)) {
+                random_delay = delay - 1;
+                gameLocal.Warning("idTrigger_EntityName '%s' at (%s) has random_delay >= delay", name, GetPhysics().GetOrigin().ToString(0));
             }
 
-            this.triggerFirst = this.spawnArgs.GetBool("triggerFirst", "0");
+            triggerFirst = spawnArgs.GetBool("triggerFirst", "0");
 
-            this.entityName.oSet(this.spawnArgs.GetString("entityname"));
-            if (NOT(this.entityName.Length())) {
-                idGameLocal.Error("idTrigger_EntityName '%s' at (%s) doesn't have 'entityname' key specified", this.name, GetPhysics().GetOrigin().ToString(0));
+            entityName.oSet(spawnArgs.GetString("entityname"));
+            if (NOT(entityName.Length())) {
+                gameLocal.Error("idTrigger_EntityName '%s' at (%s) doesn't have 'entityname' key specified", name, GetPhysics().GetOrigin().ToString(0));
             }
 
-            this.nextTriggerTime = 0;
+            nextTriggerTime = 0;
 
-            if (!this.spawnArgs.GetBool("noTouch")) {
+            if (!spawnArgs.GetBool("noTouch")) {
                 GetPhysics().SetContents(CONTENTS_TRIGGER);
             }
         }
@@ -625,12 +612,12 @@ public class Trigger {
             ActivateTargets(activator);
             CallScript();
 
-            if (this.wait >= 0) {
-                this.nextTriggerTime = (int) (gameLocal.time + SEC2MS(this.wait + (this.random * gameLocal.random.CRandomFloat())));
+            if (wait >= 0) {
+                nextTriggerTime = (int) (gameLocal.time + SEC2MS(wait + random * gameLocal.random.CRandomFloat()));
             } else {
                 // we can't just remove (this) here, because this is a touch function
                 // called while looping through area links...
-                this.nextTriggerTime = gameLocal.time + 1;
+                nextTriggerTime = gameLocal.time + 1;
                 PostEventMS(EV_Remove, 0);
             }
         }
@@ -650,53 +637,53 @@ public class Trigger {
          so wait for the delay time before firing
          ================
          */ private void Event_Trigger(idEventArg<idEntity> _activator) {
-            final idEntity activator = _activator.value;
-            if (this.nextTriggerTime > gameLocal.time) {
+            idEntity activator = _activator.value;
+            if (nextTriggerTime > gameLocal.time) {
                 // can't retrigger until the wait is over
                 return;
             }
 
-            if ((null == activator) || (!activator.name.equals(this.entityName))) {
+            if (null == activator || (!activator.name.equals(entityName))) {
                 return;
             }
 
-            if (this.triggerFirst) {
-                this.triggerFirst = false;
+            if (triggerFirst) {
+                triggerFirst = false;
                 return;
             }
 
             // don't allow it to trigger twice in a single frame
-            this.nextTriggerTime = gameLocal.time + 1;
+            nextTriggerTime = gameLocal.time + 1;
 
-            if (this.delay > 0) {
+            if (delay > 0) {
                 // don't allow it to trigger again until our delay has passed
-                this.nextTriggerTime += SEC2MS(this.delay + (this.random_delay * gameLocal.random.CRandomFloat()));
-                PostEventSec(EV_TriggerAction, this.delay, activator);
+                nextTriggerTime += SEC2MS(delay + random_delay * gameLocal.random.CRandomFloat());
+                PostEventSec(EV_TriggerAction, delay, activator);
             } else {
                 TriggerAction(activator);
             }
         }
 
         private void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> trace) {
-            final idEntity other = _other.value;
-            if (this.triggerFirst) {
+            idEntity other = _other.value;
+            if (triggerFirst) {
                 return;
             }
 
-            if (this.nextTriggerTime > gameLocal.time) {
+            if (nextTriggerTime > gameLocal.time) {
                 // can't retrigger until the wait is over
                 return;
             }
 
-            if ((null == other) || (other.name != this.entityName)) {
+            if (null == other || (other.name != entityName)) {
                 return;
             }
 
-            this.nextTriggerTime = gameLocal.time + 1;
-            if (this.delay > 0) {
+            nextTriggerTime = gameLocal.time + 1;
+            if (delay > 0) {
                 // don't allow it to trigger again until our delay has passed
-                this.nextTriggerTime += SEC2MS(this.delay + (this.random_delay * gameLocal.random.CRandomFloat()));
-                PostEventSec(EV_TriggerAction, this.delay, other);
+                nextTriggerTime += SEC2MS(delay + random_delay * gameLocal.random.CRandomFloat());
+                PostEventSec(EV_TriggerAction, delay, other);
             } else {
                 TriggerAction(other);
             }
@@ -708,7 +695,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -716,7 +703,7 @@ public class Trigger {
             return eventCallbacks;
         }
 
-    }
+    };
 
 
     /*
@@ -727,11 +714,7 @@ public class Trigger {
      ===============================================================================
      */
     public static class idTrigger_Timer extends idTrigger {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		//	CLASS_PROTOTYPE(idTrigger_Timer );
+        //	CLASS_PROTOTYPE(idTrigger_Timer );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTrigger.getEventCallBacks());
@@ -744,36 +727,36 @@ public class Trigger {
         private float   wait;
         private boolean on;
         private float   delay;
-        private final idStr   onName  = new idStr();
-        private final idStr   offName = new idStr();
+        private idStr   onName  = new idStr();
+        private idStr   offName = new idStr();
         //
         //
 
         public idTrigger_Timer() {
-            this.random = 0.0f;
-            this.wait = 0.0f;
-            this.on = false;
-            this.delay = 0.0f;
+            random = 0.0f;
+            wait = 0.0f;
+            on = false;
+            delay = 0.0f;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteFloat(this.random);
-            savefile.WriteFloat(this.wait);
-            savefile.WriteBool(this.on);
-            savefile.WriteFloat(this.delay);
-            savefile.WriteString(this.onName);
-            savefile.WriteString(this.offName);
+            savefile.WriteFloat(random);
+            savefile.WriteFloat(wait);
+            savefile.WriteBool(on);
+            savefile.WriteFloat(delay);
+            savefile.WriteString(onName);
+            savefile.WriteString(offName);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            this.random = savefile.ReadFloat();
-            this.wait = savefile.ReadFloat();
-            this.on = savefile.ReadBool();
-            this.delay = savefile.ReadFloat();
-            savefile.ReadString(this.onName);
-            savefile.ReadString(this.offName);
+            random = savefile.ReadFloat();
+            wait = savefile.ReadFloat();
+            on = savefile.ReadBool();
+            delay = savefile.ReadFloat();
+            savefile.ReadString(onName);
+            savefile.ReadString(offName);
         }
 
         /*
@@ -788,37 +771,37 @@ public class Trigger {
         public void Spawn() {
             super.Spawn();
 
-            this.random = this.spawnArgs.GetFloat("random", "1");
-            this.wait = this.spawnArgs.GetFloat("wait", "1");
-            this.on = this.spawnArgs.GetBool("start_on", "0");
-            this.delay = this.spawnArgs.GetFloat("delay", "0");
-            this.onName.oSet(this.spawnArgs.GetString("onName"));
-            this.offName.oSet(this.spawnArgs.GetString("offName"));
+            random = spawnArgs.GetFloat("random", "1");
+            wait = spawnArgs.GetFloat("wait", "1");
+            on = spawnArgs.GetBool("start_on", "0");
+            delay = spawnArgs.GetFloat("delay", "0");
+            onName.oSet(spawnArgs.GetString("onName"));
+            offName.oSet(spawnArgs.GetString("offName"));
 
-            if ((this.random >= this.wait) && (this.wait >= 0)) {
-                this.random = this.wait - 0.001f;
-                gameLocal.Warning("idTrigger_Timer '%s' at (%s) has random >= wait", this.name, GetPhysics().GetOrigin().ToString(0));
+            if (random >= wait && wait >= 0) {
+                random = wait - 0.001f;
+                gameLocal.Warning("idTrigger_Timer '%s' at (%s) has random >= wait", name, GetPhysics().GetOrigin().ToString(0));
             }
 
-            if (this.on) {
-                PostEventSec(EV_Timer, this.delay);
+            if (on) {
+                PostEventSec(EV_Timer, delay);
             }
         }
 
         @Override
         public void Enable() {
             // if off, turn it on
-            if (!this.on) {
-                this.on = true;
-                PostEventSec(EV_Timer, this.delay);
+            if (!on) {
+                on = true;
+                PostEventSec(EV_Timer, delay);
             }
         }
 
         @Override
         public void Disable() {
             // if on, turn it off
-            if (this.on) {
-                this.on = false;
+            if (on) {
+                on = false;
                 CancelEvents(EV_Timer);
             }
         }
@@ -827,27 +810,27 @@ public class Trigger {
             ActivateTargets(this);
 
             // set time before next firing
-            if (this.wait >= 0.0f) {
-                PostEventSec(EV_Timer, this.wait + (gameLocal.random.CRandomFloat() * this.random));
+            if (wait >= 0.0f) {
+                PostEventSec(EV_Timer, wait + gameLocal.random.CRandomFloat() * random);
             }
         }
 
         private void Event_Use(idEventArg<idEntity> _activator) {
-            final idEntity activator = _activator.value;
+            idEntity activator = _activator.value;
             // if on, turn it off
-            if (this.on) {
-                if ((this.offName.Length() != 0) && (this.offName.Icmp(activator.GetName()) != 0)) {
+            if (on) {
+                if (offName.Length() != 0 && offName.Icmp(activator.GetName()) != 0) {
                     return;
                 }
-                this.on = false;
+                on = false;
                 CancelEvents(EV_Timer);
             } else {
                 // turn it on
-                if ((this.onName.Length() != 0) && (this.onName.Icmp(activator.GetName()) != 0)) {
+                if (onName.Length() != 0 && onName.Icmp(activator.GetName()) != 0) {
                     return;
                 }
-                this.on = true;
-                PostEventSec(EV_Timer, this.delay);
+                on = true;
+                PostEventSec(EV_Timer, delay);
             }
         }
 
@@ -857,7 +840,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -865,7 +848,7 @@ public class Trigger {
             return eventCallbacks;
         }
 
-    }
+    };
 
 
     /*
@@ -876,11 +859,7 @@ public class Trigger {
      ===============================================================================
      */
     public static class idTrigger_Count extends idTrigger {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		//	CLASS_PROTOTYPE(idTrigger_Count );
+        //	CLASS_PROTOTYPE(idTrigger_Count );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTrigger.getEventCallBacks());
@@ -896,45 +875,45 @@ public class Trigger {
         //
 
         public idTrigger_Count() {
-            this.goal = 0;
-            this.count = 0;
-            this.delay = 0.0f;
+            goal = 0;
+            count = 0;
+            delay = 0.0f;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteInt(this.goal);
-            savefile.WriteInt(this.count);
-            savefile.WriteFloat(this.delay);
+            savefile.WriteInt(goal);
+            savefile.WriteInt(count);
+            savefile.WriteFloat(delay);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            this.goal = savefile.ReadInt();
-            this.count = savefile.ReadInt();
-            this.delay = savefile.ReadFloat();
+            goal = savefile.ReadInt();
+            count = savefile.ReadInt();
+            delay = savefile.ReadFloat();
         }
 
         @Override
         public void Spawn() {
             super.Spawn();
             
-            this.goal = this.spawnArgs.GetInt("count", "1");
-            this.delay = this.spawnArgs.GetFloat("delay", "0");
-            this.count = 0;
+            goal = spawnArgs.GetInt("count", "1");
+            delay = spawnArgs.GetFloat("delay", "0");
+            count = 0;
         }
 
         private void Event_Trigger(idEventArg<idEntity> activator) {
             // goal of -1 means trigger has been exhausted
-            if (this.goal >= 0) {
-                this.count++;
-                if (this.count >= this.goal) {
-                    if (this.spawnArgs.GetBool("repeat")) {
-                        this.count = 0;
+            if (goal >= 0) {
+                count++;
+                if (count >= goal) {
+                    if (spawnArgs.GetBool("repeat")) {
+                        count = 0;
                     } else {
-                        this.goal = -1;
+                        goal = -1;
                     }
-                    PostEventSec(EV_TriggerAction, this.delay, activator.value);
+                    PostEventSec(EV_TriggerAction, delay, activator.value);
                 }
             }
         }
@@ -942,7 +921,7 @@ public class Trigger {
         private void Event_TriggerAction(idEventArg<idEntity> activator) {
             ActivateTargets(activator.value);
             CallScript();
-            if (this.goal == -1) {
+            if (goal == -1) {
                 PostEventMS(EV_Remove, 0);
             }
         }
@@ -953,7 +932,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -961,7 +940,7 @@ public class Trigger {
             return eventCallbacks;
         }
 
-    }
+    };
 
 
     /*
@@ -972,11 +951,7 @@ public class Trigger {
      ===============================================================================
      */
     static class idTrigger_Hurt extends idTrigger {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		//	CLASS_PROTOTYPE(idTrigger_Hurt );
+        //	CLASS_PROTOTYPE(idTrigger_Hurt );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTrigger.getEventCallBacks());
@@ -992,23 +967,23 @@ public class Trigger {
         //
 
         public idTrigger_Hurt() {
-            this.on = false;
-            this.delay = 0.0f;
-            this.nextTime = 0;
+            on = false;
+            delay = 0.0f;
+            nextTime = 0;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteBool(this.on);
-            savefile.WriteFloat(this.delay);
-            savefile.WriteInt(this.nextTime);
+            savefile.WriteBool(on);
+            savefile.WriteFloat(delay);
+            savefile.WriteInt(nextTime);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            this.on = savefile.ReadBool();
-            this.delay = savefile.ReadFloat();
-            this.nextTime = savefile.ReadInt();
+            on = savefile.ReadBool();
+            delay = savefile.ReadFloat();
+            nextTime = savefile.ReadInt();
         }
 
         /*
@@ -1023,29 +998,29 @@ public class Trigger {
         public void Spawn() {
             super.Spawn();
             
-            this.on = this.spawnArgs.GetBool("on", "1");
-            this.delay = this.spawnArgs.GetFloat("delay", "1.0");
-            this.nextTime = gameLocal.time;
+            on = spawnArgs.GetBool("on", "1");
+            delay = spawnArgs.GetFloat("delay", "1.0");
+            nextTime = gameLocal.time;
             Enable();
         }
 
         private void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> trace) {
-            final idEntity other = _other.value;
+            idEntity other = _other.value;
             final String damage;
 
-            if (this.on && (other != null) && (gameLocal.time >= this.nextTime)) {
-                damage = this.spawnArgs.GetString("def_damage", "damage_painTrigger");
+            if (on && other != null && gameLocal.time >= nextTime) {
+                damage = spawnArgs.GetString("def_damage", "damage_painTrigger");
                 other.Damage(null, null, getVec3_origin(), damage, 1.0f, INVALID_JOINT);
 
                 ActivateTargets(other);
                 CallScript();
 
-                this.nextTime = (int) (gameLocal.time + SEC2MS(this.delay));
+                nextTime = (int) (gameLocal.time + SEC2MS(delay));
             }
         }
 
         private void Event_Toggle(idEventArg<idEntity> activator) {
-            this.on = !this.on;
+            on = !on;
         }
 
         @Override
@@ -1054,7 +1029,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1062,7 +1037,7 @@ public class Trigger {
             return eventCallbacks;
         }
 
-    }
+    };
 
 
     /*
@@ -1073,11 +1048,7 @@ public class Trigger {
      ===============================================================================
      */
     public static class idTrigger_Fade extends idTrigger {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// CLASS_PROTOTYPE( idTrigger_Fade );
+        // CLASS_PROTOTYPE( idTrigger_Fade );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTrigger.getEventCallBacks());
@@ -1092,8 +1063,8 @@ public class Trigger {
 
             player = gameLocal.GetLocalPlayer();
             if (player != null) {
-                fadeColor = this.spawnArgs.GetVec4("fadeColor", "0, 0, 0, 1");
-                fadeTime = (int) SEC2MS(this.spawnArgs.GetFloat("fadeTime", "0.5"));
+                fadeColor = spawnArgs.GetVec4("fadeColor", "0, 0, 0, 1");
+                fadeTime = (int) SEC2MS(spawnArgs.GetFloat("fadeTime", "0.5"));
                 player.playerView.Fade(fadeColor, fadeTime);
                 PostEventMS(EV_ActivateTargets, fadeTime, activator.value);
             }
@@ -1105,7 +1076,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1113,7 +1084,7 @@ public class Trigger {
             return eventCallbacks;
         }
 
-    }
+    };
 
 
     /*
@@ -1124,11 +1095,7 @@ public class Trigger {
      ===============================================================================
      */
     public static class idTrigger_Touch extends idTrigger {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		// CLASS_PROTOTYPE( idTrigger_Touch );
+        // CLASS_PROTOTYPE( idTrigger_Touch );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTrigger.getEventCallBacks());
@@ -1141,25 +1108,25 @@ public class Trigger {
         //
 
         public idTrigger_Touch() {
-            this.clipModel = null;
+            clipModel = null;
         }
 
         @Override
         public void Spawn() {
             // get the clip model
-            this.clipModel = new idClipModel(GetPhysics().GetClipModel());
+            clipModel = new idClipModel(GetPhysics().GetClipModel());
 
             // remove the collision model from the physics object
             GetPhysics().SetClipModel(null, 1.0f);
 
-            if (this.spawnArgs.GetBool("start_on")) {
+            if (spawnArgs.GetBool("start_on")) {
                 BecomeActive(TH_THINK);
             }
         }
 
         @Override
         public void Think() {
-            if ((this.thinkFlags & TH_THINK) != 0) {
+            if ((thinkFlags & TH_THINK) != 0) {
                 TouchEntities();
             }
             idEntity_Think();
@@ -1167,12 +1134,12 @@ public class Trigger {
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteClipModel(this.clipModel);
+            savefile.WriteClipModel(clipModel);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            savefile.ReadClipModel(this.clipModel);
+            savefile.ReadClipModel(clipModel);
         }
 
         @Override
@@ -1187,15 +1154,15 @@ public class Trigger {
 
         public void TouchEntities() {
             int numClipModels, i;
-            final idBounds bounds = new idBounds();
+            idBounds bounds = new idBounds();
             idClipModel cm;
-            final idClipModel[] clipModelList = new idClipModel[MAX_GENTITIES];
+            idClipModel[] clipModelList = new idClipModel[MAX_GENTITIES];
 
-            if ((this.clipModel == null) || (this.scriptFunction == null)) {
+            if (clipModel == null || scriptFunction == null) {
                 return;
             }
 
-            bounds.FromTransformedBounds(this.clipModel.GetBounds(), this.clipModel.GetOrigin(), this.clipModel.GetAxis());
+            bounds.FromTransformedBounds(clipModel.GetBounds(), clipModel.GetOrigin(), clipModel.GetAxis());
             numClipModels = gameLocal.clip.ClipModelsTouchingBounds(bounds, -1, clipModelList, MAX_GENTITIES);
 
             for (i = 0; i < numClipModels; i++) {
@@ -1205,27 +1172,27 @@ public class Trigger {
                     continue;
                 }
 
-                final idEntity entity = cm.GetEntity();
+                idEntity entity = cm.GetEntity();
 
                 if (null == entity) {
                     continue;
                 }
 
                 if (NOT(gameLocal.clip.ContentsModel(cm.GetOrigin(), cm, cm.GetAxis(), -1,
-                        this.clipModel.Handle(), this.clipModel.GetOrigin(), this.clipModel.GetAxis()))) {
+                        clipModel.Handle(), clipModel.GetOrigin(), clipModel.GetAxis()))) {
                     continue;
                 }
 
                 ActivateTargets(entity);
 
-                final idThread thread = new idThread();
-                thread.CallFunction(entity, this.scriptFunction, false);
+                idThread thread = new idThread();
+                thread.CallFunction(entity, scriptFunction, false);
                 thread.DelayedStart(0);
             }
         }
 
         private void Event_Trigger(idEventArg<idEntity> activator) {
-            if ((this.thinkFlags & TH_THINK) != 0) {
+            if ((thinkFlags & TH_THINK) != 0) {
                 BecomeInactive(TH_THINK);
             } else {
                 BecomeActive(TH_THINK);
@@ -1238,7 +1205,7 @@ public class Trigger {
         }
 
         @Override
-        public eventCallback_t<?> getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -1246,5 +1213,5 @@ public class Trigger {
             return eventCallbacks;
         }
 
-    }
+    };
 }

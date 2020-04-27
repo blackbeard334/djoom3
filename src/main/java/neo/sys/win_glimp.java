@@ -8,8 +8,29 @@ import static neo.TempDump.atobb;
 import static neo.TempDump.fopenOptions;
 import static neo.framework.FileSystem_h.MAX_OSPATH;
 import static neo.framework.FileSystem_h.fileSystem;
+import static neo.framework.UsercmdGen.usercmdGen;
 import static neo.idlib.Lib.idLib.common;
 import static neo.idlib.Lib.idLib.cvarSystem;
+import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
+import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
+import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
+import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
+import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
+import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
+import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
+import static org.lwjgl.glfw.GLFW.glfwShowWindow;
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
+import static org.lwjgl.glfw.GLFW.glfwTerminate;
+import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 
 import java.io.IOException;
 import java.nio.channels.FileChannel;
@@ -18,14 +39,25 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
+
 import neo.TempDump.TODO_Exception;
 import neo.idlib.Text.Str.idStr;
-import neo.open.gl.QUser;
+
+//import org.lwjgl.LWJGLException;
+//import org.lwjgl.opengl.Display;
+//import org.lwjgl.opengl.DisplayMode;
 
 /**
  *
  */
 public class win_glimp {
+
+    static long window;
+    static GLFWErrorCallback errorCallback;
 
     /*
      ====================================================================
@@ -44,13 +76,138 @@ public class win_glimp {
         public int     multiSamples;
     }
 
+    ;
+
     /*
      ===================
      GLW_SetFullScreen
      ===================
      */
     static boolean GLW_SetFullScreen(glimpParms_t parms) {
-        return QUser.setFullScreen(parms);
+////#if 0
+////	// for some reason, bounds checker claims that windows is
+////	// writing past the bounds of dm in the get display frequency call
+////	union {
+////		DEVMODE dm;
+////		byte	filler[1024];
+////	} hack;
+////#endif
+//        DisplayMode dm = null;
+////	int		cdsRet;
+//
+////	DisplayMode		devmode;
+////	int			modeNum;
+//        boolean matched;
+//
+//        // first make sure the user is not trying to select a mode that his card/monitor can't handle
+//        matched = false;
+//        DisplayMode[] displayModes = Display.getAvailableDisplayModes();
+//        Arrays.sort(displayModes, Comparator.comparingInt(DisplayMode::getWidth));
+//        for (DisplayMode devmode : displayModes) {
+////		if ( !EnumDisplaySettings( NULL, modeNum, &devmode ) ) {
+//            if (matched) {
+//                // we got a resolution match, but not a frequency match
+//                // so disable the frequency requirement
+//                common.Printf("...^3%dhz is unsupported at %dx%d^0\n", parms.displayHz, parms.width, parms.height);
+//                parms.displayHz = 0;
+//                break;
+//            }
+////			common.Printf( "...^3%dx%d is unsupported in 32 bit^0\n", parms.width, parms.height );
+////			return false;
+////		}
+//            if (devmode.getWidth() >= parms.width
+//                    && devmode.getHeight() >= parms.height
+//                    && devmode.getBitsPerPixel() == 32) {
+//
+//                matched = true;
+//
+//                if (parms.displayHz == 0 || devmode.getFrequency() == parms.displayHz) {
+//                    dm = devmode;
+//                    break;
+//                }
+//            }
+//        }
+//
+////	memset( &dm, 0, sizeof( dm ) );
+////	dm.dmSize = sizeof( dm );
+////
+////	dm.dmPelsWidth  = parms.width;
+////	dm.dmPelsHeight = parms.height;
+////	dm.dmBitsPerPel = 32;
+////	dm.dmFields     = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
+////
+////	if ( parms.displayHz != 0 ) {
+////		dm.dmDisplayFrequency = parms.displayHz;
+////		dm.dmFields |= DM_DISPLAYFREQUENCY;
+////	}
+////
+//        common.Printf("...calling CDS: ");
+//	
+        // try setting the exact mode requested, because some drivers don't report
+        // the low res modes in EnumDisplaySettings, but still work
+//        if (dm != null) {
+//            Display.setDisplayModeAndFullscreen(dm);
+//            Display.setDisplayModeAndFullscreen(dm);
+//            Display.setDisplayMode(dm);
+//            Display.setVSyncEnabled(true);
+//            Display.setTitle("BLAAAAAAAAAAAAAAAAAArrrGGGGHH!!");
+
+        glfwInit();
+        glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
+
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+//        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+//        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+//        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+//        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+//        window = GLFW.glfwCreateWindow(parms.width, parms.height, "BLAAAAAAAAAAAAAAAAAArrrGGGGHH!!", glfwGetPrimaryMonitor(), 0);//HACKME::0 change this back to setDisplayModeAndFullscreen.
+        window = GLFW.glfwCreateWindow(parms.width, parms.height, "BLAAAAAAAAAAAAAAAAAArrrGGGGHH!!", 0, 0);
+        GLFWVidMode currentMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        glfwSetWindowPos(window, currentMode.width() / 2 - parms.width / 2, currentMode.height() / 2 - parms.height / 2);
+        if (window != 0) {
+            glfwMakeContextCurrent(window);
+            GL.createCapabilities();
+//                win32.cdsFullscreen = true;
+            glfwShowWindow(window);
+            glfwSetInputMode(window, GLFW.GLFW_LOCK_KEY_MODS, GLFW_TRUE);
+            glfwSetKeyCallback(window, usercmdGen.keyboardCallback);
+            glfwSetCursorPosCallback(window, usercmdGen.mouseCursorCallback);
+            glfwSetScrollCallback(window, usercmdGen.mouseScrollCallback);
+            glfwSetMouseButtonCallback(window, usercmdGen.mouseButtonCallback);
+            common.Printf("ok\n");
+            return true;
+        }
+//        }
+//
+//	//
+//	// the exact mode failed, so scan EnumDisplaySettings for the next largest mode
+//	//
+//	common.Printf( "^3failed^0, " );
+//	
+//	PrintCDSError( cdsRet );
+//
+//	common.Printf( "...trying next higher resolution:" );
+//	
+//	// we could do a better matching job here...
+//	for ( modeNum = 0 ; ; modeNum++ ) {
+//		if ( !EnumDisplaySettings( null, modeNum, &devmode ) ) {
+//			break;
+//		}
+//		if ( (int)devmode.dmPelsWidth >= parms.width
+//			&& (int)devmode.dmPelsHeight >= parms.height
+//			&& devmode.dmBitsPerPel == 32 ) {
+//
+//			if ( ( cdsRet = ChangeDisplaySettings( &devmode, CDS_FULLSCREEN ) ) == DISP_CHANGE_SUCCESSFUL ) {
+//				common.Printf( "ok\n" );
+//				win32.cdsFullscreen = true;
+//
+//				return true;
+//			}
+//			break;
+//		}
+//	}
+//        common.Printf("\n...^3no high res mode found^0\n");
+        return false;
     }
 
     /*
@@ -235,9 +392,10 @@ public class win_glimp {
 ////        // restore gamma
 ////        GLimp_RestoreGamma();//TODO:check if our java opengl requires restoring gamma.
 ////
-////        // shutdown qgl subsystem
+////        // shutdown QGL subsystem
 ////        QGL_Shutdown();//not necessary.
-        QUser.shutdown();
+        glfwDestroyWindow(window);
+        glfwTerminate();
     }
 
     // Destroys the rendering context, closes the window, resets the resolution,
@@ -255,8 +413,8 @@ public class win_glimp {
 //        }
         }
 //            Display.swapBuffers();//qwglSwapBuffers(win32.hDC);
-        QUser.update();
-        QUser.endFrame();
+        glfwPollEvents();
+        glfwSwapBuffers(window);
 
         //Sys_DebugPrintf( "*** SwapBuffers() ***\n" );
     }
@@ -405,7 +563,7 @@ public class win_glimp {
                     tr.logFile.write(atobb(String.format("// %s\n\n", cvarSystem.GetCVarString("si_version"))));
                 }
             }
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             Logger.getLogger(win_glimp.class.getName()).log(Level.SEVERE, null, ex);
             common.Warning("---GLimp_EnableLogging---\n%s\n---", ex.getMessage());
         }

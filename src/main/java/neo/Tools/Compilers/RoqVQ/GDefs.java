@@ -23,9 +23,9 @@ public class GDefs {
 //								((src0[2]-src1[2])*(src0[2]-src1[2])) )
     static int RGBDIST(final int[] src0, final int[] src1, final int i0, final int i1) {
 
-        return (((src0[i0 + 0] - src1[i1 + 0]) * (src0[i0 + 0] - src1[i1 + 0]))
-                + ((src0[i0 + 1] - src1[i1 + 1]) * (src0[i0 + 1] - src1[i1 + 1]))
-                + ((src0[i0 + 2] - src1[i1 + 2]) * (src0[i0 + 2] - src1[i1 + 2])));
+        return ((src0[i0 + 0] - src1[i1 + 0]) * (src0[i0 + 0] - src1[i1 + 0])
+                + (src0[i0 + 1] - src1[i1 + 1]) * (src0[i0 + 1] - src1[i1 + 1])
+                + (src0[i0 + 2] - src1[i1 + 2]) * (src0[i0 + 2] - src1[i1 + 2]));
     }
 
     //
@@ -35,10 +35,10 @@ public class GDefs {
 //								 ((src0[3]-src1[3])*(src0[3]-src1[3])) )
     static int RGBADIST(final byte[] src0, final byte[] src1, final int i0, final int i1) {
 
-        return (((src0[i0 + 0] - src1[i1 + 0]) * (src0[i0 + 0] - src1[i1 + 0]))
-                + ((src0[i0 + 1] - src1[i1 + 1]) * (src0[i0 + 1] - src1[i1 + 1]))
-                + ((src0[i0 + 2] - src1[i1 + 2]) * (src0[i0 + 2] - src1[i1 + 2]))
-                + ((src0[i0 + 3] - src1[i1 + 3]) * (src0[i0 + 3] - src1[i1 + 3])));
+        return ((src0[i0 + 0] - src1[i1 + 0]) * (src0[i0 + 0] - src1[i1 + 0])
+                + (src0[i0 + 1] - src1[i1 + 1]) * (src0[i0 + 1] - src1[i1 + 1])
+                + (src0[i0 + 2] - src1[i1 + 2]) * (src0[i0 + 2] - src1[i1 + 2])
+                + (src0[i0 + 3] - src1[i1 + 3]) * (src0[i0 + 3] - src1[i1 + 3]));
     }
 
     //

@@ -80,25 +80,25 @@ public class AASFile_local {
 
         public idAASFileLocal() {
             super();
-            this.planeList.SetGranularity(AAS_PLANE_GRANULARITY);
-            this.vertices.SetGranularity(AAS_VERTEX_GRANULARITY);
-            this.edges.SetGranularity(AAS_EDGE_GRANULARITY);
-            this.edgeIndex.SetGranularity(AAS_INDEX_GRANULARITY);
-            this.faces.SetGranularity(AAS_LIST_GRANULARITY);
-            this.faceIndex.SetGranularity(AAS_INDEX_GRANULARITY);
-            this.areas.SetGranularity(AAS_LIST_GRANULARITY);
-            this.nodes.SetGranularity(AAS_LIST_GRANULARITY);
-            this.portals.SetGranularity(AAS_LIST_GRANULARITY);
-            this.portalIndex.SetGranularity(AAS_INDEX_GRANULARITY);
-            this.clusters.SetGranularity(AAS_LIST_GRANULARITY);
+            planeList.SetGranularity(AAS_PLANE_GRANULARITY);
+            vertices.SetGranularity(AAS_VERTEX_GRANULARITY);
+            edges.SetGranularity(AAS_EDGE_GRANULARITY);
+            edgeIndex.SetGranularity(AAS_INDEX_GRANULARITY);
+            faces.SetGranularity(AAS_LIST_GRANULARITY);
+            faceIndex.SetGranularity(AAS_INDEX_GRANULARITY);
+            areas.SetGranularity(AAS_LIST_GRANULARITY);
+            nodes.SetGranularity(AAS_LIST_GRANULARITY);
+            portals.SetGranularity(AAS_LIST_GRANULARITY);
+            portalIndex.SetGranularity(AAS_INDEX_GRANULARITY);
+            clusters.SetGranularity(AAS_LIST_GRANULARITY);
         }
         // virtual 					~idAASFileLocal();
 
         @Override
         public idVec3 EdgeCenter(int edgeNum) {
             final aasEdge_s edge;
-            edge = this.edges.oGet(edgeNum);
-            return (this.vertices.oGet(edge.vertexNum[0]).oPlus(this.vertices.oGet(edge.vertexNum[1]))).oMultiply(0.5f);
+            edge = edges.oGet(edgeNum);
+            return (vertices.oGet(edge.vertexNum[0]).oPlus(vertices.oGet(edge.vertexNum[1]))).oMultiply(0.5f);
         }
 
         @Override
@@ -110,12 +110,12 @@ public class AASFile_local {
 
             center = getVec3_origin();
 
-            face = this.faces.oGet(faceNum);
+            face = faces.oGet(faceNum);
             if (face.numEdges > 0) {
                 for (i = 0; i < face.numEdges; i++) {
-                    edgeNum = this.edgeIndex.oGet(face.firstEdge + i);
-                    edge = this.edges.oGet(abs(edgeNum));
-                    center.oPluSet(this.vertices.oGet(edge.vertexNum[INTSIGNBITSET(edgeNum)]));
+                    edgeNum = edgeIndex.oGet(face.firstEdge + i);
+                    edge = edges.oGet(abs(edgeNum));
+                    center.oPluSet(vertices.oGet(edge.vertexNum[INTSIGNBITSET(edgeNum)]));
                 }
                 center.oDivSet(face.numEdges);
             }
@@ -130,10 +130,10 @@ public class AASFile_local {
 
             center = getVec3_origin();
 
-            area = this.areas.oGet(areaNum);
+            area = areas.oGet(areaNum);
             if (area.numFaces > 0) {
                 for (i = 0; i < area.numFaces; i++) {
-                    faceNum = this.faceIndex.oGet(area.firstFace + i);
+                    faceNum = faceIndex.oGet(area.firstFace + i);
                     center.oPluSet(FaceCenter(abs(faceNum)));
                 }
                 center.oDivSet(area.numFaces);
@@ -144,11 +144,11 @@ public class AASFile_local {
         @Override
         public idBounds EdgeBounds(int edgeNum) {
             final aasEdge_s edge;
-            final idBounds bounds = new idBounds();
+            idBounds bounds = new idBounds();
 
-            edge = this.edges.oGet(abs(edgeNum));
-            bounds.oSet(0, bounds.oSet(1, this.vertices.oGet(edge.vertexNum[0])));
-            bounds.oPluSet(this.vertices.oGet(edge.vertexNum[1]));
+            edge = edges.oGet(abs(edgeNum));
+            bounds.oSet(0, bounds.oSet(1, vertices.oGet(edge.vertexNum[0])));
+            bounds.oPluSet(vertices.oGet(edge.vertexNum[1]));
             return bounds;
         }
 
@@ -157,15 +157,15 @@ public class AASFile_local {
             int i, edgeNum;
             final aasFace_s face;
             aasEdge_s edge;
-            final idBounds bounds = new idBounds();
+            idBounds bounds = new idBounds();
 
-            face = this.faces.oGet(faceNum);
+            face = faces.oGet(faceNum);
             bounds.Clear();
 
             for (i = 0; i < face.numEdges; i++) {
-                edgeNum = this.edgeIndex.oGet(face.firstEdge + i);
-                edge = this.edges.oGet(abs(edgeNum));
-                bounds.AddPoint(this.vertices.oGet(edge.vertexNum[ INTSIGNBITSET(edgeNum)]));
+                edgeNum = edgeIndex.oGet(face.firstEdge + i);
+                edge = edges.oGet(abs(edgeNum));
+                bounds.AddPoint(vertices.oGet(edge.vertexNum[ INTSIGNBITSET(edgeNum)]));
             }
             return bounds;
         }
@@ -174,13 +174,13 @@ public class AASFile_local {
         public idBounds AreaBounds(int areaNum) {
             int i, faceNum;
             final aasArea_s area;
-            final idBounds bounds = new idBounds();
+            idBounds bounds = new idBounds();
 
-            area = this.areas.oGet(areaNum);
+            area = areas.oGet(areaNum);
             bounds.Clear();
 
             for (i = 0; i < area.numFaces; i++) {
-                faceNum = this.faceIndex.oGet(area.firstFace + i);
+                faceNum = faceIndex.oGet(area.firstFace + i);
                 bounds.oPluSet(FaceBounds(abs(faceNum)));
             }
             return bounds;
@@ -193,8 +193,8 @@ public class AASFile_local {
 
             nodeNum = 1;
             do {
-                node = this.nodes.oGet(nodeNum);
-                if (this.planeList.oGet(node.planeNum).Side(origin) == PLANESIDE_BACK) {
+                node = nodes.oGet(nodeNum);
+                if (planeList.oGet(node.planeNum).Side(origin) == PLANESIDE_BACK) {
                     nodeNum = node.children[1];
                 } else {
                     nodeNum = node.children[0];
@@ -211,8 +211,8 @@ public class AASFile_local {
         public int PointReachableAreaNum(final idVec3 origin, final idBounds searchBounds, final int areaFlags, final int excludeTravelFlags) {
             int areaNum, i;
             idVec3 start, end;
-            final aasTrace_s trace = new aasTrace_s();
-            final idBounds bounds = new idBounds();
+            aasTrace_s trace = new aasTrace_s();
+            idBounds bounds = new idBounds();
             float frak;
             final int[] areaList = new int[32];
             final idVec3[] pointList = new idVec3[32];
@@ -226,7 +226,7 @@ public class AASFile_local {
 
             areaNum = PointAreaNum(start);
             if (areaNum != 0) {
-                if (((this.areas.oGet(areaNum).flags & areaFlags) != 0) && ((this.areas.oGet(areaNum).travelFlags & excludeTravelFlags) == 0)) {
+                if (((areas.oGet(areaNum).flags & areaFlags) != 0) && ((areas.oGet(areaNum).travelFlags & excludeTravelFlags) == 0)) {
                     return areaNum;
                 }
             } else {
@@ -235,7 +235,7 @@ public class AASFile_local {
                 end.oPluSet(2, 32.0f);
                 Trace(trace, start, end);
                 if (trace.numAreas >= 1) {
-                    if (((this.areas.oGet(0).flags & areaFlags) != 0) && ((this.areas.oGet(0).travelFlags & excludeTravelFlags) == 0)) {
+                    if (((areas.oGet(0).flags & areaFlags) != 0) && ((areas.oGet(0).travelFlags & excludeTravelFlags) == 0)) {
                         return areaList[0];
                     }
                     start.oSet(pointList[0]);
@@ -248,7 +248,7 @@ public class AASFile_local {
             end.oMinSet(2, 32.0f);
             Trace(trace, start, end);
             if (trace.lastAreaNum != 0) {
-                if (((this.areas.oGet(trace.lastAreaNum).flags & areaFlags) != 0) && ((this.areas.oGet(trace.lastAreaNum).travelFlags & excludeTravelFlags) == 0)) {
+                if (((areas.oGet(trace.lastAreaNum).flags & areaFlags) != 0) && ((areas.oGet(trace.lastAreaNum).travelFlags & excludeTravelFlags) == 0)) {
                     return trace.lastAreaNum;
                 }
                 start.oSet(trace.endpos);
@@ -260,7 +260,7 @@ public class AASFile_local {
                 bounds.oSet(0, origin.oPlus(searchBounds.oGet(0).oMultiply(frak)));
                 bounds.oSet(1, origin.oPlus(searchBounds.oGet(1).oMultiply(frak)));
                 areaNum = BoundsReachableAreaNum(bounds, areaFlags, excludeTravelFlags);
-                if ((areaNum != 0) && ((this.areas.oGet(areaNum).flags & areaFlags) != 0) && ((this.areas.oGet(areaNum).travelFlags & excludeTravelFlags) == 0)) {
+                if (areaNum != 0 && ((areas.oGet(areaNum).flags & areaFlags) != 0) && ((areas.oGet(areaNum).travelFlags & excludeTravelFlags) == 0)) {
                     return areaNum;
                 }
             }
@@ -279,15 +279,15 @@ public class AASFile_local {
             final aasArea_s area;
             aasFace_s face;
 
-            area = this.areas.oGet(areaNum);
+            area = areas.oGet(areaNum);
 
             // push the point to the right side of all area face planes
             for (i = 0; i < area.numFaces; i++) {
-                faceNum = this.faceIndex.oGet(area.firstFace + i);
-                face = this.faces.oGet(abs(faceNum));
+                faceNum = faceIndex.oGet(area.firstFace + i);
+                face = faces.oGet(abs(faceNum));
 
-                final idPlane plane = this.planeList.oGet(face.planeNum ^ INTSIGNBITSET(faceNum));
-                final float dist = plane.Distance(point);
+                final idPlane plane = planeList.oGet(face.planeNum ^ INTSIGNBITSET(faceNum));
+                float dist = plane.Distance(point);
 
                 // project the point onto the face plane if it is on the wrong side
                 if (dist < 0.0f) {
@@ -301,7 +301,7 @@ public class AASFile_local {
             int side, nodeNum, tmpPlaneNum;
             double front, back, frac;
             idVec3 cur_start, cur_end, cur_mid, v1, v2;
-            final aasTraceStack_s[] tracestack = TempDump.allocArray(aasTraceStack_s.class, MAX_AAS_TREE_DEPTH);
+            aasTraceStack_s[] tracestack = TempDump.allocArray(aasTraceStack_s.class, MAX_AAS_TREE_DEPTH);
             int tstack_p;
             aasNode_s node;
             idPlane plane;
@@ -341,7 +341,7 @@ public class AASFile_local {
                 // if it is an area
                 if (nodeNum < 0) {
                     // if can't enter the area
-                    if (((this.areas.oGet(-nodeNum).flags & trace.flags) != 0) || ((this.areas.oGet(-nodeNum).travelFlags & trace.travelFlags) != 0)) {
+                    if (((areas.oGet(-nodeNum).flags & trace.flags) != 0) || ((areas.oGet(-nodeNum).travelFlags & trace.travelFlags) != 0)) {
                         if (NOT(trace.lastAreaNum)) {
                             trace.fraction = 0.0f;
                             v1 = getVec3_origin();
@@ -354,7 +354,7 @@ public class AASFile_local {
                         trace.blockingAreaNum = -nodeNum;
                         trace.planeNum = tracestack[tstack_p].planeNum;
                         // always take the plane with normal facing towards the trace start
-                        plane = this.planeList.oGet(trace.planeNum);
+                        plane = planeList.oGet(trace.planeNum);
                         if (v1.oMultiply(plane.Normal()) > 0.0f) {
                             trace.planeNum ^= 1;
                         }
@@ -387,11 +387,11 @@ public class AASFile_local {
                     trace.blockingAreaNum = 0;	// hit solid leaf
                     trace.planeNum = tracestack[tstack_p].planeNum;
                     // always take the plane with normal facing towards the trace start
-                    plane = this.planeList.oGet(trace.planeNum);
+                    plane = planeList.oGet(trace.planeNum);
                     if (v1.oMultiply(plane.Normal()) > 0.0f) {
                         trace.planeNum ^= 1;
                     }
-                    if ((0 == trace.lastAreaNum) && (trace.getOutOfSolid != 0)) {
+                    if (0 == trace.lastAreaNum && trace.getOutOfSolid != 0) {
                         continue;
                     } else {
                         return true;
@@ -399,20 +399,20 @@ public class AASFile_local {
                 }
 
                 // the node to test against
-                node = this.nodes.oGet(nodeNum);
+                node = nodes.oGet(nodeNum);
                 // start point of current line to test against node
                 cur_start = tracestack[tstack_p].start;
                 // end point of the current line to test against node
                 cur_end = tracestack[tstack_p].end;
                 // the current node plane
-                plane = this.planeList.oGet(node.planeNum);
+                plane = planeList.oGet(node.planeNum);
 
                 front = plane.Distance(cur_start);
                 back = plane.Distance(cur_end);
 
                 // if the whole to be traced line is totally at the front of this node
                 // only go down the tree with the front child
-                if ((front >= -ON_EPSILON) && (back >= -ON_EPSILON)) {
+                if (front >= -ON_EPSILON && back >= -ON_EPSILON) {
                     // keep the current start and end point on the stack and go down the tree with the front child
                     tracestack[tstack_p].nodeNum = node.children[0];
                     tstack_p++;
@@ -422,7 +422,7 @@ public class AASFile_local {
                     }
                 } // if the whole to be traced line is totally at the back of this node
                 // only go down the tree with the back child
-                else if ((front < ON_EPSILON) && (back < ON_EPSILON)) {
+                else if (front < ON_EPSILON && back < ON_EPSILON) {
                     // keep the current start and end point on the stack and go down the tree with the back child
                     tracestack[tstack_p].nodeNum = node.children[1];
                     tstack_p++;
@@ -480,45 +480,45 @@ public class AASFile_local {
         @Override
         public void PrintInfo() {
             common.Printf("%6d KB file size\n", MemorySize() >> 10);
-            common.Printf("%6d areas\n", this.areas.Num());
+            common.Printf("%6d areas\n", areas.Num());
             common.Printf("%6d max tree depth\n", MaxTreeDepth());
             ReportRoutingEfficiency();
         }
 
         public boolean Load(final idStr fileName, long/*unsigned int*/ mapFileCRC) {
-            final idLexer src = new idLexer(LEXFL_NOFATALERRORS | LEXFL_NOSTRINGESCAPECHARS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWPATHNAMES);
-            final idToken token = new idToken();
+            idLexer src = new idLexer(LEXFL_NOFATALERRORS | LEXFL_NOSTRINGESCAPECHARS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWPATHNAMES);
+            idToken token = new idToken();
             final int depth;
             final int c;
 
-            this.name = fileName;
-            this.crc = mapFileCRC;
+            name = fileName;
+            crc = mapFileCRC;
 
             common.Printf("[Load AAS]\n");
-            common.Printf("loading %s\n", this.name);
+            common.Printf("loading %s\n", name);
 
-            if (!src.LoadFile(this.name)) {
+            if (!src.LoadFile(name)) {
                 return false;
             }
 
             if (!src.ExpectTokenString(AAS_FILEID)) {
-                common.Warning("Not an AAS file: '%s'", this.name);
+                common.Warning("Not an AAS file: '%s'", name);
                 return false;
             }
 
             if (!src.ReadToken(token) || !token.equals(AAS_FILEVERSION)) {
-                common.Warning("AAS file '%s' has version %s instead of %s", this.name, token, AAS_FILEVERSION);
+                common.Warning("AAS file '%s' has version %s instead of %s", name, token, AAS_FILEVERSION);
                 return false;
             }
 
             if (0 == src.ExpectTokenType(TT_NUMBER, TT_INTEGER, token)) {
-                common.Warning("AAS file '%s' has no map file CRC", this.name);
+                common.Warning("AAS file '%s' has no map file CRC", name);
                 return false;
             }
 
             c = (int) token.GetUnsignedLongValue();
-            if ((mapFileCRC != 0) && (c != mapFileCRC)) {
-                common.Warning("AAS file '%s' is out of date", this.name);
+            if (mapFileCRC != 0 && c != mapFileCRC) {
+                common.Warning("AAS file '%s' is out of date", name);
                 return false;
             }
 
@@ -532,7 +532,7 @@ public class AASFile_local {
                 }
 
                 if (token.equals("settings")) {
-                    if (!this.settings.FromParser(src)) {
+                    if (!settings.FromParser(src)) {
                         return false;
                     }
                 } else if (token.equals("planes")) {
@@ -548,7 +548,7 @@ public class AASFile_local {
                         return false;
                     }
                 } else if (token.equals("edgeIndex")) {
-                    if (!ParseIndex(src, this.edgeIndex)) {
+                    if (!ParseIndex(src, edgeIndex)) {
                         return false;
                     }
                 } else if (token.equals("faces")) {
@@ -556,7 +556,7 @@ public class AASFile_local {
                         return false;
                     }
                 } else if (token.equals("faceIndex")) {
-                    if (!ParseIndex(src, this.faceIndex)) {
+                    if (!ParseIndex(src, faceIndex)) {
                         return false;
                     }
                 } else if (token.equals("areas")) {
@@ -572,7 +572,7 @@ public class AASFile_local {
                         return false;
                     }
                 } else if (token.equals("portalIndex")) {
-                    if (!ParseIndex(src, this.portalIndex)) {
+                    if (!ParseIndex(src, portalIndex)) {
                         return false;
                     }
                 } else if (token.equals("clusters")) {
@@ -605,10 +605,10 @@ public class AASFile_local {
             common.Printf("[Write AAS]\n");
             common.Printf("writing %s\n", fileName);
 
-            this.name = fileName;
-            this.crc = mapFileCRC;
+            name = fileName;
+            crc = mapFileCRC;
 
-            aasFile = fileSystem.OpenFileWrite(fileName.getData(), "fs_devpath");
+            aasFile = fileSystem.OpenFileWrite(fileName.toString(), "fs_devpath");
             if (NOT(aasFile)) {
                 common.Error("Error opening %s", fileName);
                 return false;
@@ -619,61 +619,61 @@ public class AASFile_local {
 
             // write out the settings
             aasFile.WriteFloatString("settings\n");
-            this.settings.WriteToFile(aasFile);
+            settings.WriteToFile(aasFile);
 
             // write out planes
-            aasFile.WriteFloatString("planes %d {\n", this.planeList.Num());
-            for (i = 0; i < this.planeList.Num(); i++) {
+            aasFile.WriteFloatString("planes %d {\n", planeList.Num());
+            for (i = 0; i < planeList.Num(); i++) {
                 aasFile.WriteFloatString("\t%d ( %f %f %f %f )\n", i,
-                        this.planeList.oGet(i).Normal().x, this.planeList.oGet(i).Normal().y, this.planeList.oGet(i).Normal().z, this.planeList.oGet(i).Dist());
+                        planeList.oGet(i).Normal().x, planeList.oGet(i).Normal().y, planeList.oGet(i).Normal().z, planeList.oGet(i).Dist());
             }
             aasFile.WriteFloatString("}\n");
 
             // write out vertices
-            aasFile.WriteFloatString("vertices %d {\n", this.vertices.Num());
-            for (i = 0; i < this.vertices.Num(); i++) {
-                aasFile.WriteFloatString("\t%d ( %f %f %f )\n", i, this.vertices.oGet(i).x, this.vertices.oGet(i).y, this.vertices.oGet(i).z);
+            aasFile.WriteFloatString("vertices %d {\n", vertices.Num());
+            for (i = 0; i < vertices.Num(); i++) {
+                aasFile.WriteFloatString("\t%d ( %f %f %f )\n", i, vertices.oGet(i).x, vertices.oGet(i).y, vertices.oGet(i).z);
             }
             aasFile.WriteFloatString("}\n");
 
             // write out edges
-            aasFile.WriteFloatString("edges %d {\n", this.edges.Num());
-            for (i = 0; i < this.edges.Num(); i++) {
-                aasFile.WriteFloatString("\t%d ( %d %d )\n", i, this.edges.oGet(i).vertexNum[0], this.edges.oGet(i).vertexNum[1]);
+            aasFile.WriteFloatString("edges %d {\n", edges.Num());
+            for (i = 0; i < edges.Num(); i++) {
+                aasFile.WriteFloatString("\t%d ( %d %d )\n", i, edges.oGet(i).vertexNum[0], edges.oGet(i).vertexNum[1]);
             }
             aasFile.WriteFloatString("}\n");
 
             // write out edgeIndex
-            aasFile.WriteFloatString("edgeIndex %d {\n", this.edgeIndex.Num());
-            for (i = 0; i < this.edgeIndex.Num(); i++) {
-                aasFile.WriteFloatString("\t%d ( %d )\n", i, this.edgeIndex.oGet(i));
+            aasFile.WriteFloatString("edgeIndex %d {\n", edgeIndex.Num());
+            for (i = 0; i < edgeIndex.Num(); i++) {
+                aasFile.WriteFloatString("\t%d ( %d )\n", i, edgeIndex.oGet(i));
             }
             aasFile.WriteFloatString("}\n");
 
             // write out faces
-            aasFile.WriteFloatString("faces %d {\n", this.faces.Num());
-            for (i = 0; i < this.faces.Num(); i++) {
-                aasFile.WriteFloatString("\t%d ( %d %d %d %d %d %d )\n", i, this.faces.oGet(i).planeNum, this.faces.oGet(i).flags,
-                        this.faces.oGet(i).areas[0], this.faces.oGet(i).areas[1], this.faces.oGet(i).firstEdge, this.faces.oGet(i).numEdges);
+            aasFile.WriteFloatString("faces %d {\n", faces.Num());
+            for (i = 0; i < faces.Num(); i++) {
+                aasFile.WriteFloatString("\t%d ( %d %d %d %d %d %d )\n", i, faces.oGet(i).planeNum, faces.oGet(i).flags,
+                        faces.oGet(i).areas[0], faces.oGet(i).areas[1], faces.oGet(i).firstEdge, faces.oGet(i).numEdges);
             }
             aasFile.WriteFloatString("}\n");
 
             // write out faceIndex
-            aasFile.WriteFloatString("faceIndex %d {\n", this.faceIndex.Num());
-            for (i = 0; i < this.faceIndex.Num(); i++) {
-                aasFile.WriteFloatString("\t%d ( %d )\n", i, this.faceIndex.oGet(i));
+            aasFile.WriteFloatString("faceIndex %d {\n", faceIndex.Num());
+            for (i = 0; i < faceIndex.Num(); i++) {
+                aasFile.WriteFloatString("\t%d ( %d )\n", i, faceIndex.oGet(i));
             }
             aasFile.WriteFloatString("}\n");
 
             // write out areas
-            aasFile.WriteFloatString("areas %d {\n", this.areas.Num());
-            for (i = 0; i < this.areas.Num(); i++) {
-                for (num = 0, reach = this.areas.oGet(i).reach; reach != null; reach = reach.next) {
+            aasFile.WriteFloatString("areas %d {\n", areas.Num());
+            for (i = 0; i < areas.Num(); i++) {
+                for (num = 0, reach = areas.oGet(i).reach; reach != null; reach = reach.next) {
                     num++;
                 }
-                aasFile.WriteFloatString("\t%d ( %d %d %d %d %d %d ) %d {\n", i, this.areas.oGet(i).flags, this.areas.oGet(i).contents,
-                        this.areas.oGet(i).firstFace, this.areas.oGet(i).numFaces, this.areas.oGet(i).cluster, this.areas.oGet(i).clusterAreaNum, num);
-                for (reach = this.areas.oGet(i).reach; reach != null; reach = reach.next) {
+                aasFile.WriteFloatString("\t%d ( %d %d %d %d %d %d ) %d {\n", i, areas.oGet(i).flags, areas.oGet(i).contents,
+                        areas.oGet(i).firstFace, areas.oGet(i).numFaces, areas.oGet(i).cluster, areas.oGet(i).clusterAreaNum, num);
+                for (reach = areas.oGet(i).reach; reach != null; reach = reach.next) {
                     Reachability_Write(aasFile, reach);
 //                    switch (reach.travelType) {
 //                        case TFL_SPECIAL:
@@ -690,32 +690,32 @@ public class AASFile_local {
             aasFile.WriteFloatString("}\n");
 
             // write out nodes
-            aasFile.WriteFloatString("nodes %d {\n", this.nodes.Num());
-            for (i = 0; i < this.nodes.Num(); i++) {
-                aasFile.WriteFloatString("\t%d ( %d %d %d )\n", i, this.nodes.oGet(i).planeNum, this.nodes.oGet(i).children[0], this.nodes.oGet(i).children[1]);
+            aasFile.WriteFloatString("nodes %d {\n", nodes.Num());
+            for (i = 0; i < nodes.Num(); i++) {
+                aasFile.WriteFloatString("\t%d ( %d %d %d )\n", i, nodes.oGet(i).planeNum, nodes.oGet(i).children[0], nodes.oGet(i).children[1]);
             }
             aasFile.WriteFloatString("}\n");
 
             // write out portals
-            aasFile.WriteFloatString("portals %d {\n", this.portals.Num());
-            for (i = 0; i < this.portals.Num(); i++) {
-                aasFile.WriteFloatString("\t%d ( %d %d %d %d %d )\n", i, this.portals.oGet(i).areaNum, this.portals.oGet(i).clusters[0],
-                        this.portals.oGet(i).clusters[1], this.portals.oGet(i).clusterAreaNum[0], this.portals.oGet(i).clusterAreaNum[1]);
+            aasFile.WriteFloatString("portals %d {\n", portals.Num());
+            for (i = 0; i < portals.Num(); i++) {
+                aasFile.WriteFloatString("\t%d ( %d %d %d %d %d )\n", i, portals.oGet(i).areaNum, portals.oGet(i).clusters[0],
+                        portals.oGet(i).clusters[1], portals.oGet(i).clusterAreaNum[0], portals.oGet(i).clusterAreaNum[1]);
             }
             aasFile.WriteFloatString("}\n");
 
             // write out portalIndex
-            aasFile.WriteFloatString("portalIndex %d {\n", this.portalIndex.Num());
-            for (i = 0; i < this.portalIndex.Num(); i++) {
-                aasFile.WriteFloatString("\t%d ( %d )\n", i, this.portalIndex.oGet(i));
+            aasFile.WriteFloatString("portalIndex %d {\n", portalIndex.Num());
+            for (i = 0; i < portalIndex.Num(); i++) {
+                aasFile.WriteFloatString("\t%d ( %d )\n", i, portalIndex.oGet(i));
             }
             aasFile.WriteFloatString("}\n");
 
             // write out clusters
-            aasFile.WriteFloatString("clusters %d {\n", this.clusters.Num());
-            for (i = 0; i < this.clusters.Num(); i++) {
-                aasFile.WriteFloatString("\t%d ( %d %d %d %d )\n", i, this.clusters.oGet(i).numAreas, this.clusters.oGet(i).numReachableAreas,
-                        this.clusters.oGet(i).firstPortal, this.clusters.oGet(i).numPortals);
+            aasFile.WriteFloatString("clusters %d {\n", clusters.Num());
+            for (i = 0; i < clusters.Num(); i++) {
+                aasFile.WriteFloatString("\t%d ( %d %d %d %d )\n", i, clusters.oGet(i).numAreas, clusters.oGet(i).numReachableAreas,
+                        clusters.oGet(i).firstPortal, clusters.oGet(i).numPortals);
             }
             aasFile.WriteFloatString("}\n");
 
@@ -730,17 +730,17 @@ public class AASFile_local {
         public int MemorySize() {
             int size;
 
-            size = this.planeList.Size();
-            size += this.vertices.Size();
-            size += this.edges.Size();
-            size += this.edgeIndex.Size();
-            size += this.faces.Size();
-            size += this.faceIndex.Size();
-            size += this.areas.Size();
-            size += this.nodes.Size();
-            size += this.portals.Size();
-            size += this.portalIndex.Size();
-            size += this.clusters.Size();
+            size = planeList.Size();
+            size += vertices.Size();
+            size += edges.Size();
+            size += edgeIndex.Size();
+            size += faces.Size();
+            size += faceIndex.Size();
+            size += areas.Size();
+            size += nodes.Size();
+            size += portals.Size();
+            size += portalIndex.Size();
+            size += clusters.Size();
 //	size += sizeof( idReachability_Walk ) * NumReachabilities();
             size += NumReachabilities();
 
@@ -752,12 +752,12 @@ public class AASFile_local {
 
             numReachableAreas = 0;
             total = 0;
-            for (i = 0; i < this.clusters.Num(); i++) {
-                n = this.clusters.oGet(i).numReachableAreas;
+            for (i = 0; i < clusters.Num(); i++) {
+                n = clusters.oGet(i).numReachableAreas;
                 numReachableAreas += n;
                 total += n * n;
             }
-            total += numReachableAreas * this.portals.Num();
+            total += numReachableAreas * portals.Num();
 
             common.Printf("%6d reachable areas\n", numReachableAreas);
             common.Printf("%6d reachabilities\n", NumReachabilities());
@@ -770,34 +770,34 @@ public class AASFile_local {
             aasFace_s face;
             aasEdge_s edge;
             idReachability reach;
-            final idList<Integer> vertexRemap = new idList<>();
-            final idList<Integer> edgeRemap = new idList<>();
-            final idList<Integer> faceRemap = new idList<>();
-            final idList<idVec3/*aasVertex_t*/> newVertices = new idList<>();
-            final idList<aasEdge_s> newEdges = new idList<>();
-            final idList<Integer/*aasIndex_t*/> newEdgeIndex = new idList<>();
-            final idList<aasFace_s> newFaces = new idList<>();
-            final idList<Integer/*aasIndex_t*/> newFaceIndex = new idList<>();
+            idList<Integer> vertexRemap = new idList<>();
+            idList<Integer> edgeRemap = new idList<>();
+            idList<Integer> faceRemap = new idList<>();
+            idList<idVec3/*aasVertex_t*/> newVertices = new idList<>();
+            idList<aasEdge_s> newEdges = new idList<>();
+            idList<Integer/*aasIndex_t*/> newEdgeIndex = new idList<>();
+            idList<aasFace_s> newFaces = new idList<>();
+            idList<Integer/*aasIndex_t*/> newFaceIndex = new idList<>();
 
-            vertexRemap.AssureSize(this.vertices.Num(), -1);
-            edgeRemap.AssureSize(this.edges.Num(), 0);
-            faceRemap.AssureSize(this.faces.Num(), 0);
+            vertexRemap.AssureSize(vertices.Num(), -1);
+            edgeRemap.AssureSize(edges.Num(), 0);
+            faceRemap.AssureSize(faces.Num(), 0);
 
-            newVertices.Resize(this.vertices.Num());
-            newEdges.Resize(this.edges.Num());
+            newVertices.Resize(vertices.Num());
+            newEdges.Resize(edges.Num());
             newEdges.SetNum(1, false);
-            newEdgeIndex.Resize(this.edgeIndex.Num());
-            newFaces.Resize(this.faces.Num());
+            newEdgeIndex.Resize(edgeIndex.Num());
+            newFaces.Resize(faces.Num());
             newFaces.SetNum(1, false);
-            newFaceIndex.Resize(this.faceIndex.Num());
+            newFaceIndex.Resize(faceIndex.Num());
 
-            for (i = 0; i < this.areas.Num(); i++) {
-                area = this.areas.oGet(i);
+            for (i = 0; i < areas.Num(); i++) {
+                area = areas.oGet(i);
 
                 areaFirstFace = newFaceIndex.Num();
                 for (j = 0; j < area.numFaces; j++) {
-                    faceNum = this.faceIndex.oGet(area.firstFace + j);
-                    face = this.faces.oGet(abs(faceNum));
+                    faceNum = faceIndex.oGet(area.firstFace + j);
+                    face = faces.oGet(abs(faceNum));
 
                     // store face
                     if (NOT(faceRemap.oGet(abs(faceNum)))) {
@@ -815,8 +815,8 @@ public class AASFile_local {
                             // store edges
                             faceFirstEdge = newEdgeIndex.Num();
                             for (k = 0; k < face.numEdges; k++) {
-                                edgeNum = this.edgeIndex.oGet(face.firstEdge + k);
-                                edge = this.edges.oGet(abs(edgeNum));
+                                edgeNum = edgeIndex.oGet(face.firstEdge + k);
+                                edge = edges.oGet(abs(edgeNum));
 
                                 if (NOT(edgeRemap.oGet(abs(edgeNum)))) {
                                     if (edgeNum < 0) {
@@ -828,11 +828,11 @@ public class AASFile_local {
                                     // remap vertices if not yet remapped
                                     if (vertexRemap.oGet(edge.vertexNum[0]) == -1) {
                                         vertexRemap.oSet(edge.vertexNum[0], newVertices.Num());
-                                        newVertices.Append(this.vertices.oGet(edge.vertexNum[0]));
+                                        newVertices.Append(vertices.oGet(edge.vertexNum[0]));
                                     }
                                     if (vertexRemap.oGet(edge.vertexNum[1]) == -1) {
                                         vertexRemap.oSet(edge.vertexNum[1], newVertices.Num());
-                                        newVertices.Append(this.vertices.oGet(edge.vertexNum[1]));
+                                        newVertices.Append(vertices.oGet(edge.vertexNum[1]));
                                     }
 
                                     newEdges.Append(edge);
@@ -865,11 +865,11 @@ public class AASFile_local {
             }
 
             // store new list
-            this.vertices = newVertices;
-            this.edges = newEdges;
-            this.edgeIndex = newEdgeIndex;
-            this.faces = newFaces;
-            this.faceIndex = newFaceIndex;
+            vertices = newVertices;
+            edges = newEdges;
+            edgeIndex = newEdgeIndex;
+            faces = newFaces;
+            faceIndex = newFaceIndex;
         }
 
         public void LinkReversedReachability() {
@@ -877,10 +877,10 @@ public class AASFile_local {
             idReachability reach;
 
             // link reversed reachabilities
-            for (i = 0; i < this.areas.Num(); i++) {
-                for (reach = this.areas.oGet(i).reach; reach != null; reach = reach.next) {
-                    reach.rev_next = this.areas.oGet(reach.toAreaNum).rev_reach;
-                    this.areas.oGet(reach.toAreaNum).rev_reach = reach;
+            for (i = 0; i < areas.Num(); i++) {
+                for (reach = areas.oGet(i).reach; reach != null; reach = reach.next) {
+                    reach.rev_next = areas.oGet(reach.toAreaNum).rev_reach;
+                    areas.oGet(reach.toAreaNum).rev_reach = reach;
                 }
             }
         }
@@ -888,38 +888,38 @@ public class AASFile_local {
         public void FinishAreas() {
             int i;
 
-            for (i = 0; i < this.areas.Num(); i++) {
-                this.areas.oGet(i).center = AreaReachableGoal(i);
-                this.areas.oGet(i).bounds = AreaBounds(i);
+            for (i = 0; i < areas.Num(); i++) {
+                areas.oGet(i).center = AreaReachableGoal(i);
+                areas.oGet(i).bounds = AreaBounds(i);
             }
         }
 
         public void Clear() {
-            this.planeList.Clear();
-            this.vertices.Clear();
-            this.edges.Clear();
-            this.edgeIndex.Clear();
-            this.faces.Clear();
-            this.faceIndex.Clear();
-            this.areas.Clear();
-            this.nodes.Clear();
-            this.portals.Clear();
-            this.portalIndex.Clear();
-            this.clusters.Clear();
+            planeList.Clear();
+            vertices.Clear();
+            edges.Clear();
+            edgeIndex.Clear();
+            faces.Clear();
+            faceIndex.Clear();
+            areas.Clear();
+            nodes.Clear();
+            portals.Clear();
+            portalIndex.Clear();
+            clusters.Clear();
         }
 
         public void DeleteReachabilities() {
             int i;
             idReachability reach, nextReach;
 
-            for (i = 0; i < this.areas.Num(); i++) {
-                for (reach = this.areas.oGet(i).reach; reach != null; reach = nextReach) {
+            for (i = 0; i < areas.Num(); i++) {
+                for (reach = areas.oGet(i).reach; reach != null; reach = nextReach) {
                     nextReach = reach.next;
 //			delete reach;
 //                    reach = null;
                 }
-                this.areas.oGet(i).reach = null;
-                this.areas.oGet(i).rev_reach = null;
+                areas.oGet(i).reach = null;
+                areas.oGet(i).rev_reach = null;
             }
         }
 
@@ -927,19 +927,19 @@ public class AASFile_local {
             aasPortal_s portal;
             aasCluster_s cluster;
 
-            this.portals.Clear();
-            this.portalIndex.Clear();
-            this.clusters.Clear();
+            portals.Clear();
+            portalIndex.Clear();
+            clusters.Clear();
 
             // first portal is a dummy
 //	memset( &portal, 0, sizeof( portal ) );
             portal = new aasPortal_s();
-            this.portals.Append(portal);
+            portals.Append(portal);
 
             // first cluster is a dummy
 //	memset( &cluster, 0, sizeof( portal ) );
             cluster = new aasCluster_s();
-            this.clusters.Append(cluster);
+            clusters.Append(cluster);
         }
 
         private boolean ParseIndex(idLexer src, idList<Integer/*aasIndex_t*/> indexes) {
@@ -965,20 +965,20 @@ public class AASFile_local {
 
         private boolean ParsePlanes(idLexer src) {
             final int numPlanes = src.ParseInt();
-            this.planeList.Resize(numPlanes);
+            planeList.Resize(numPlanes);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
             for (int i = 0; i < numPlanes; i++) {
-                final idPlane plane = new idPlane();
-                final idVec4 vec = new idVec4();
+                idPlane plane = new idPlane();
+                idVec4 vec = new idVec4();
                 src.ParseInt();
                 if (!src.Parse1DMatrix(4, vec)) {
                     return false;
                 }
                 plane.SetNormal(vec.ToVec3());
                 plane.SetDist(vec.oGet(3));
-                this.planeList.Append(plane);
+                planeList.Append(plane);
             }
             if (!src.ExpectTokenString("}")) {
                 return false;
@@ -988,17 +988,17 @@ public class AASFile_local {
 
         private boolean ParseVertices(idLexer src) {
             final int numVertices = src.ParseInt();
-            this.vertices.Resize(numVertices);
+            vertices.Resize(numVertices);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
             for (int i = 0; i < numVertices; i++) {
-                final idVec3 vec = new idVec3();
+                idVec3 vec = new idVec3();
                 src.ParseInt();
                 if (!src.Parse1DMatrix(3, vec)) {
                     return false;
                 }
-                this.vertices.Append(vec);
+                vertices.Append(vec);
             }
             if (!src.ExpectTokenString("}")) {
                 return false;
@@ -1008,18 +1008,18 @@ public class AASFile_local {
 
         private boolean ParseEdges(idLexer src) {
             final int numEdges = src.ParseInt();
-            this.edges.Resize(numEdges);
+            edges.Resize(numEdges);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
             for (int i = 0; i < numEdges; i++) {
-                final aasEdge_s edge = new aasEdge_s();
+                aasEdge_s edge = new aasEdge_s();
                 src.ParseInt();
                 src.ExpectTokenString("(");
                 edge.vertexNum[0] = src.ParseInt();
                 edge.vertexNum[1] = src.ParseInt();
                 src.ExpectTokenString(")");
-                this.edges.Append(edge);
+                edges.Append(edge);
             }
             if (!src.ExpectTokenString("}")) {
                 return false;
@@ -1029,12 +1029,12 @@ public class AASFile_local {
 
         private boolean ParseFaces(idLexer src) {
             final int numFaces = src.ParseInt();
-            this.faces.Resize(numFaces);
+            faces.Resize(numFaces);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
             for (int i = 0; i < numFaces; i++) {
-                final aasFace_s face = new aasFace_s();
+                aasFace_s face = new aasFace_s();
                 src.ParseInt();
                 src.ExpectTokenString("(");
                 face.planeNum = src.ParseInt();
@@ -1044,7 +1044,7 @@ public class AASFile_local {
                 face.firstEdge = src.ParseInt();
                 face.numEdges = src.ParseInt();
                 src.ExpectTokenString(")");
-                this.faces.Append(face);
+                faces.Append(face);
             }
             if (!src.ExpectTokenString("}")) {
                 return false;
@@ -1053,7 +1053,7 @@ public class AASFile_local {
         }
 
         private boolean ParseReachabilities(idLexer src, int areaNum) {
-            final aasArea_s area = this.areas.oGet(areaNum);
+            aasArea_s area = areas.oGet(areaNum);
 
             final int num = src.ParseInt();
             src.ExpectTokenString("{");
@@ -1061,8 +1061,7 @@ public class AASFile_local {
             area.rev_reach = null;
             area.travelFlags = AreaContentsTravelFlags(areaNum);
             for (int j = 0; j < num; j++) {
-                final idReachability reach = new idReachability();
-				idReachability newReach;
+                idReachability reach = new idReachability(), newReach;
                 idReachability_Special special;
                 Reachability_Read(src, reach);
 //		switch( reach.travelType ) {
@@ -1091,12 +1090,12 @@ public class AASFile_local {
 
         private boolean ParseAreas(idLexer src) {
             final int numAreas = src.ParseInt();
-            this.areas.Resize(numAreas);
+            areas.Resize(numAreas);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
             for (int i = 0; i < numAreas; i++) {
-                final aasArea_s area = new aasArea_s();
+                aasArea_s area = new aasArea_s();
                 src.ParseInt();
                 src.ExpectTokenString("(");
                 area.flags = src.ParseInt();
@@ -1106,7 +1105,7 @@ public class AASFile_local {
                 area.cluster = (short) src.ParseInt();
                 area.clusterAreaNum = (short) src.ParseInt();
                 src.ExpectTokenString(")");
-                this.areas.Append(area);
+                areas.Append(area);
                 ParseReachabilities(src, i);
             }
             if (!src.ExpectTokenString("}")) {
@@ -1120,19 +1119,19 @@ public class AASFile_local {
 
         private boolean ParseNodes(idLexer src) {
             final int numNodes = src.ParseInt();
-            this.nodes.Resize(numNodes);
+            nodes.Resize(numNodes);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
             for (int i = 0; i < numNodes; i++) {
-                final aasNode_s node = new aasNode_s();
+                aasNode_s node = new aasNode_s();
                 src.ParseInt();
                 src.ExpectTokenString("(");
                 node.planeNum = src.ParseInt();
                 node.children[0] = src.ParseInt();
                 node.children[1] = src.ParseInt();
                 src.ExpectTokenString(")");
-                this.nodes.Append(node);
+                nodes.Append(node);
             }
             if (!src.ExpectTokenString("}")) {
                 return false;
@@ -1142,12 +1141,12 @@ public class AASFile_local {
 
         private boolean ParsePortals(idLexer src) {
             final int numPortals = src.ParseInt();
-            this.portals.Resize(numPortals);
+            portals.Resize(numPortals);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
             for (int i = 0; i < numPortals; i++) {
-                final aasPortal_s portal = new aasPortal_s();
+                aasPortal_s portal = new aasPortal_s();
                 src.ParseInt();
                 src.ExpectTokenString("(");
                 portal.areaNum = (short) src.ParseInt();
@@ -1156,7 +1155,7 @@ public class AASFile_local {
                 portal.clusterAreaNum[0] = (short) src.ParseInt();
                 portal.clusterAreaNum[1] = (short) src.ParseInt();
                 src.ExpectTokenString(")");
-                this.portals.Append(portal);
+                portals.Append(portal);
             }
             if (!src.ExpectTokenString("}")) {
                 return false;
@@ -1166,12 +1165,12 @@ public class AASFile_local {
 
         private boolean ParseClusters(idLexer src) {
             final int numClusters = src.ParseInt();
-            this.clusters.Resize(numClusters);
+            clusters.Resize(numClusters);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
             for (int i = 0; i < numClusters; i++) {
-                final aasCluster_s cluster = new aasCluster_s();
+                aasCluster_s cluster = new aasCluster_s();
                 src.ParseInt();
                 src.ExpectTokenString("(");
                 cluster.numAreas = src.ParseInt();
@@ -1179,7 +1178,7 @@ public class AASFile_local {
                 cluster.firstPortal = src.ParseInt();
                 cluster.numPortals = src.ParseInt();
                 src.ExpectTokenString(")");
-                this.clusters.Append(cluster);
+                clusters.Append(cluster);
             }
             if (!src.ExpectTokenString("}")) {
                 return false;
@@ -1193,13 +1192,13 @@ public class AASFile_local {
 
             while (nodeNum != 0) {
                 if (nodeNum < 0) {
-                    if (((this.areas.oGet(-nodeNum).flags & areaFlags) != 0) && ((this.areas.oGet(-nodeNum).travelFlags & excludeTravelFlags) == 0)) {
+                    if (((areas.oGet(-nodeNum).flags & areaFlags) != 0) && ((areas.oGet(-nodeNum).travelFlags & excludeTravelFlags) == 0)) {
                         return -nodeNum;
                     }
                     return 0;
                 }
-                node = this.nodes.oGet(nodeNum);
-                res = bounds.PlaneSide(this.planeList.oGet(node.planeNum));
+                node = nodes.oGet(nodeNum);
+                res = bounds.PlaneSide(planeList.oGet(node.planeNum));
                 if (res == PLANESIDE_BACK) {
                     nodeNum = node.children[1];
                 } else if (res == PLANESIDE_FRONT) {
@@ -1228,7 +1227,7 @@ public class AASFile_local {
                 maxDepth = depth;
             }
 
-            node = this.nodes.oGet(nodeNum);
+            node = nodes.oGet(nodeNum);
             MaxTreeDepth_r(node.children[0], depth, maxDepth);
             MaxTreeDepth_r(node.children[1], depth, maxDepth);
 
@@ -1236,7 +1235,7 @@ public class AASFile_local {
         }
 
         private int MaxTreeDepth() {
-            final int[] depth = new int[1], maxDepth = new int[1];
+            int[] depth = new int[1], maxDepth = new int[1];
 
 //	depth = maxDepth = 0;
             MaxTreeDepth_r(1, depth, maxDepth);
@@ -1244,7 +1243,7 @@ public class AASFile_local {
         }
 
         private int AreaContentsTravelFlags(int areaNum) {
-            if ((this.areas.oGet(areaNum).contents & AREACONTENTS_WATER) != 0) {
+            if ((areas.oGet(areaNum).contents & AREACONTENTS_WATER) != 0) {
                 return TFL_WATER;
             }
             return TFL_AIR;
@@ -1254,13 +1253,12 @@ public class AASFile_local {
             int i, faceNum, numFaces;
             final aasArea_s area;
             idVec3 center;
-            final idVec3 start;
-			idVec3 end;
-            final aasTrace_s trace = new aasTrace_s();
+            idVec3 start, end;
+            aasTrace_s trace = new aasTrace_s();
 
-            area = this.areas.oGet(areaNum);
+            area = areas.oGet(areaNum);
 
-            if ((0 == (area.flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY))) || ((area.flags & AREA_LIQUID) != 0)) {
+            if (0 == (area.flags & (AREA_REACHABLE_WALK | AREA_REACHABLE_FLY)) || (area.flags & AREA_LIQUID) != 0) {
                 return AreaCenter(areaNum);
             }
 
@@ -1268,8 +1266,8 @@ public class AASFile_local {
 
             numFaces = 0;
             for (i = 0; i < area.numFaces; i++) {
-                faceNum = this.faceIndex.oGet(area.firstFace + i);
-                if (0 == (this.faces.oGet(abs(faceNum)).flags & FACE_FLOOR)) {
+                faceNum = faceIndex.oGet(area.firstFace + i);
+                if (0 == (faces.oGet(abs(faceNum)).flags & FACE_FLOOR)) {
                     continue;
                 }
                 center.oPluSet(FaceCenter(abs(faceNum)));
@@ -1291,14 +1289,14 @@ public class AASFile_local {
             idReachability reach;
 
             num = 0;
-            for (i = 0; i < this.areas.Num(); i++) {
-                for (reach = this.areas.oGet(i).reach; reach != null; reach = reach.next) {
+            for (i = 0; i < areas.Num(); i++) {
+                for (reach = areas.oGet(i).reach; reach != null; reach = reach.next) {
                     num++;
                 }
             }
             return num;
         }
-    }
+    };
 
     public static class aasTraceStack_s {
 
@@ -1308,8 +1306,8 @@ public class AASFile_local {
         int    nodeNum;
 
         public aasTraceStack_s() {
-            this.start = new idVec3();
-            this.end = new idVec3();
+            start = new idVec3();
+            end = new idVec3();
         }
-    }
+    };
 }

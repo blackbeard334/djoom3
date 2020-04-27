@@ -18,7 +18,7 @@ public class Timer {
 
         TS_STARTED,
         TS_STOPPED
-    }
+    };
 
     /*
      ===============================================================================
@@ -37,73 +37,73 @@ public class Timer {
         //
 
         public idTimer() {
-            this.state = TS_STOPPED;
-            this.clockTicks = 0.0;
+            state = TS_STOPPED;
+            clockTicks = 0.0;
         }
 
         public idTimer(double _clockTicks) {
-            this.state = TS_STOPPED;
-            this.clockTicks = _clockTicks;
+            state = TS_STOPPED;
+            clockTicks = _clockTicks;
         }
 //public					~idTimer( void );
 //
 
         public idTimer oPlus(final idTimer t) {
-            assert ((this.state == TS_STOPPED) && (t.state == TS_STOPPED));
-            return new idTimer(this.clockTicks + t.clockTicks);
+            assert (state == TS_STOPPED && t.state == TS_STOPPED);
+            return new idTimer(clockTicks + t.clockTicks);
         }
 
         public idTimer oMinus(final idTimer t) {
-            assert ((this.state == TS_STOPPED) && (t.state == TS_STOPPED));
-            return new idTimer(this.clockTicks - t.clockTicks);
+            assert (state == TS_STOPPED && t.state == TS_STOPPED);
+            return new idTimer(clockTicks - t.clockTicks);
         }
 
         public idTimer oPluSet(final idTimer t) {
-            assert ((this.state == TS_STOPPED) && (t.state == TS_STOPPED));
-            this.clockTicks += t.clockTicks;
+            assert (state == TS_STOPPED && t.state == TS_STOPPED);
+            clockTicks += t.clockTicks;
             return this;
         }
 
         public idTimer oMinSet(final idTimer t) {
-            assert ((this.state == TS_STOPPED) && (t.state == TS_STOPPED));
-            this.clockTicks -= t.clockTicks;
+            assert (state == TS_STOPPED && t.state == TS_STOPPED);
+            clockTicks -= t.clockTicks;
             return this;
         }
 
         public void Start() {
-            assert (this.state == TS_STOPPED);
-            this.state = TS_STARTED;
-            this.start = idLib.sys.GetClockTicks();
+            assert (state == TS_STOPPED);
+            state = TS_STARTED;
+            start = idLib.sys.GetClockTicks();
         }
 
         public void Stop() {
-            assert (this.state == TS_STARTED);
-            this.clockTicks += idLib.sys.GetClockTicks() - this.start;
+            assert (state == TS_STARTED);
+            clockTicks += idLib.sys.GetClockTicks() - start;
             if (base < 0.0) {
                 InitBaseClockTicks();
             }
-            if (this.clockTicks > base) {
-                this.clockTicks -= base;
+            if (clockTicks > base) {
+                clockTicks -= base;
             }
-            this.state = TS_STOPPED;
+            state = TS_STOPPED;
         }
 
         public void Clear() {
-            this.clockTicks = 0.0;
+            clockTicks = 0.0;
         }
 
         public double ClockTicks() {
-            assert (this.state == TS_STOPPED);
-            return this.clockTicks;
+            assert (state == TS_STOPPED);
+            return clockTicks;
         }
 
         public double Milliseconds() {
-            assert (this.state == TS_STOPPED);
-            return this.clockTicks / (idLib.sys.ClockTicksPerSecond() * 0.001);
+            assert (state == TS_STOPPED);
+            return clockTicks / (idLib.sys.ClockTicksPerSecond() * 0.001);
         }
 
         private void InitBaseClockTicks() {
-            final idTimer timer = new idTimer();
+            idTimer timer = new idTimer();
             double ct, b;
             int i;
 
@@ -114,13 +114,13 @@ public class Timer {
                 timer.Start();
                 timer.Stop();
                 ct = timer.ClockTicks();
-                if ((b < 0.0) || (ct < b)) {
+                if (b < 0.0 || ct < b) {
                     b = ct;
                 }
             }
             base = b;
         }
-    }
+    };
 
     /*
      ===============================================================================
@@ -143,58 +143,58 @@ public class Timer {
 //
 
         public void SetReportName(final String name) {
-            this.reportName = new idStr((name != null) ? name : "Timer Report");
+            reportName = new idStr((name != null) ? name : "Timer Report");
         }
 
         public int AddReport(final String name) {
             if (name != null) {
-                this.names.Append(new idStr(name));
-                return this.timers.Append(new idTimer());
+                names.Append(new idStr(name));
+                return timers.Append(new idTimer());
             }
             return -1;
         }
 
         public void Clear() {
-            this.timers.DeleteContents(true);
-            this.names.Clear();
-            this.reportName.Clear();
+            timers.DeleteContents(true);
+            names.Clear();
+            reportName.Clear();
         }
 
         public void Reset() {
-            assert (this.timers.Num() == this.names.Num());
-            for (int i = 0; i < this.timers.Num(); i++) {
-                this.timers.oGet(i).Clear();
+            assert (timers.Num() == names.Num());
+            for (int i = 0; i < timers.Num(); i++) {
+                timers.oGet(i).Clear();
             }
         }
 
         public void PrintReport() throws idException {
-            assert (this.timers.Num() == this.names.Num());
-            idLib.common.Printf("Timing Report for %s\n", this.reportName);
+            assert (timers.Num() == names.Num());
+            idLib.common.Printf("Timing Report for %s\n", reportName);
             idLib.common.Printf("-------------------------------\n");
             float total = 0.0f;
-            for (int i = 0; i < this.names.Num(); i++) {
-                idLib.common.Printf("%s consumed %5.2f seconds\n", this.names.oGet(i), this.timers.oGet(i).Milliseconds() * 0.001f);
-                total += this.timers.oGet(i).Milliseconds();
+            for (int i = 0; i < names.Num(); i++) {
+                idLib.common.Printf("%s consumed %5.2f seconds\n", names.oGet(i), timers.oGet(i).Milliseconds() * 0.001f);
+                total += timers.oGet(i).Milliseconds();
             }
-            idLib.common.Printf("Total time for report %s was %5.2f\n\n", this.reportName, total * 0.001f);//TODO:char[] OR string
+            idLib.common.Printf("Total time for report %s was %5.2f\n\n", reportName, total * 0.001f);//TODO:char[] OR string
         }
 
         public void AddTime(final String name, idTimer time) {
-            assert (this.timers.Num() == this.names.Num());
+            assert (timers.Num() == names.Num());
             int i;
-            for (i = 0; i < this.names.Num(); i++) {
-                if (this.names.oGet(i).Icmp(name) == 0) {
-                    this.timers.oPluSet(i, time);
+            for (i = 0; i < names.Num(); i++) {
+                if (names.oGet(i).Icmp(name) == 0) {
+                    timers.oPluSet(i, time);
                     break;
                 }
             }
-            if (i == this.names.Num()) {
-                final int index = AddReport(name);
+            if (i == names.Num()) {
+                int index = AddReport(name);
                 if (index >= 0) {
-                    this.timers.oGet(index).Clear();
-                    this.timers.oPluSet(index, time);
+                    timers.oGet(index).Clear();
+                    timers.oPluSet(index, time);
                 }
             }
         }
-    }
+    };
 }

@@ -24,7 +24,6 @@ import neo.Renderer.tr_local.viewDef_s;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
-import neo.open.ColorUtil;
 
 /**
  *
@@ -47,12 +46,7 @@ public class Model_sprite {
      */
     public static class idRenderModelSprite extends idRenderModelStatic {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		@Override
+        @Override
         public dynamicModel_t IsDynamicModel() {
             return DM_CONTINUOUS;
         }
@@ -68,12 +62,12 @@ public class Model_sprite {
             srfTriangles_s tri;
             modelSurface_s surf = new modelSurface_s();
 
-            if ((cachedModel != null) && !RenderSystem_init.r_useCachedDynamicModels.GetBool()) {
+            if (cachedModel != null && !RenderSystem_init.r_useCachedDynamicModels.GetBool()) {
 //		delete cachedModel;
                 cachedModel = null;
             }
 
-            if ((renderEntity == null) || (viewDef == null)) {
+            if (renderEntity == null || viewDef == null) {
 //		delete cachedModel;
                 return null;
             }
@@ -123,15 +117,15 @@ public class Model_sprite {
                 tri.verts[ 3].st.oSet(0, 0.0f);
                 tri.verts[ 3].st.oSet(1, 1.0f);
 
-                tri.getIndexes().getValues().put( 0, 0);
-                tri.getIndexes().getValues().put( 1, 1);
-                tri.getIndexes().getValues().put( 2, 3);
-                tri.getIndexes().getValues().put( 3, 1);
-                tri.getIndexes().getValues().put( 4, 2);
-                tri.getIndexes().getValues().put( 5, 3);
+                tri.indexes[ 0] = 0;
+                tri.indexes[ 1] = 1;
+                tri.indexes[ 2] = 3;
+                tri.indexes[ 3] = 1;
+                tri.indexes[ 4] = 2;
+                tri.indexes[ 5] = 3;
 
                 tri.numVerts = 4;
-                tri.getIndexes().setNumValues(6);
+                tri.numIndexes = 6;
 
                 surf.geometry = tri;
                 surf.id = 0;
@@ -144,20 +138,32 @@ public class Model_sprite {
             final byte blue = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_BLUE] * 255.0f);
             final byte alpha = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_ALPHA] * 255.0f);
 
-            final idVec3 right = new idVec3(0.0f, renderEntity.shaderParms[SHADERPARM_SPRITE_WIDTH] * 0.5f, 0.0f);
-            final idVec3 up = new idVec3(0.0f, 0.0f, renderEntity.shaderParms[SHADERPARM_SPRITE_HEIGHT] * 0.5f);
+            idVec3 right = new idVec3(0.0f, renderEntity.shaderParms[SHADERPARM_SPRITE_WIDTH] * 0.5f, 0.0f);
+            idVec3 up = new idVec3(0.0f, 0.0f, renderEntity.shaderParms[SHADERPARM_SPRITE_HEIGHT] * 0.5f);
 
             tri.verts[ 0].xyz = up.oPlus(right);
+            tri.verts[ 0].color[ 0] = red;
+            tri.verts[ 0].color[ 1] = green;
+            tri.verts[ 0].color[ 2] = blue;
+            tri.verts[ 0].color[ 3] = alpha;
 
             tri.verts[ 1].xyz = up.oMinus(right);
+            tri.verts[ 1].color[ 0] = red;
+            tri.verts[ 1].color[ 1] = green;
+            tri.verts[ 1].color[ 2] = blue;
+            tri.verts[ 1].color[ 3] = alpha;
 
             tri.verts[ 2].xyz = right.oMinus(up).oNegative();
+            tri.verts[ 2].color[ 0] = red;
+            tri.verts[ 2].color[ 1] = green;
+            tri.verts[ 2].color[ 2] = blue;
+            tri.verts[ 2].color[ 3] = alpha;
 
             tri.verts[ 3].xyz = right.oMinus(up);
-
-            for (int i = 0; i < 4; i++) {
-            	ColorUtil.setElements(tri.verts[i].getColor(), red, green, blue, alpha);
-			}
+            tri.verts[ 3].color[ 0] = red;
+            tri.verts[ 3].color[ 1] = green;
+            tri.verts[ 3].color[ 2] = blue;
+            tri.verts[ 3].color[ 3] = alpha;
 
             R_BoundTriSurf(tri);
 
@@ -168,15 +174,15 @@ public class Model_sprite {
 
         @Override
         public idBounds Bounds(renderEntity_s renderEntity) {
-            final idBounds b = new idBounds();
+            idBounds b = new idBounds();
 
             b.Zero();
             if (renderEntity == null) {
                 b.ExpandSelf(8.0f);
             } else {
-                b.ExpandSelf(Max(renderEntity.shaderParms[SHADERPARM_SPRITE_WIDTH], renderEntity.shaderParms[SHADERPARM_SPRITE_HEIGHT]) * 0.5f);
+                b.ExpandSelf((float) (Max(renderEntity.shaderParms[SHADERPARM_SPRITE_WIDTH], renderEntity.shaderParms[SHADERPARM_SPRITE_HEIGHT]) * 0.5f));
             }
             return b;
         }
-    }
+    };
 }

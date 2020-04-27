@@ -41,30 +41,30 @@ public class Winvar {
         private final  int DBG_count = DBG_counter++;
 
         public idWinVar() {
-            this.guiDict = null;
-            this.name = null;
-            this.eval = true;
+            guiDict = null;
+            name = null;
+            eval = true;
         }
         // public   ~idWinVar();
 
         public void SetGuiInfo(idDict gd, final String _name) {
-            this.guiDict = gd;
+            guiDict = gd;
             SetName(_name);
         }
 
         public String GetName() {
-            if (this.name != null) {
-                if ((this.guiDict != null) && (this.name.charAt(0) == '*')) {
-                    return this.guiDict.GetString(this.name.substring(1));
+            if (name != null) {
+                if (guiDict != null && name.charAt(0) == '*') {
+                    return guiDict.GetString(name.substring(1));
                 }
-                return this.name;
+                return name;
             }
             return "";
         }
 
         public void SetName(final String _name) {
             // delete []name; 
-            this.name = _name;
+            name = _name;
 //            if (_name != null) {
 //                // name = new char[strlen(_name)+1]; 
 //                // strcpy(name, _name); 
@@ -74,28 +74,28 @@ public class Winvar {
 
         // idWinVar &operator=( final idWinVar other );
         public idWinVar oSet(final idWinVar other) {
-            this.guiDict = other.guiDict;
+            guiDict = other.guiDict;
             SetName(other.name);
             return this;
         }
 
         public idDict GetDict() {
-            return this.guiDict;
+            return guiDict;
         }
 
         public boolean NeedsUpdate() {
-            return (this.guiDict != null);
+            return (guiDict != null);
         }
 
         public static int DBG_Init = 0;
         public void Init(final String _name, idWindow win) {
             idStr key = new idStr(_name);
-            this.guiDict = null;
-            final int len = key.Length();
-            if ((len > 5) && _name.startsWith("gui:")) {
+            guiDict = null;
+            int len = key.Length();
+            if (len > 5 && _name.startsWith("gui:")) {
                 DBG_Init++;
                 key = key.Right(len - VAR_GUIPREFIX_LEN);
-                SetGuiInfo(win.GetGui().GetStateDict(), key.getData());
+                SetGuiInfo(win.GetGui().GetStateDict(), key.toString());
                 win.AddUpdateVar(this);
             } else {
                 Set(_name);
@@ -105,7 +105,7 @@ public class Winvar {
         public abstract void Set(final String val);
 
         public void Set(final idStr val) {
-            Set(val.getData());
+            Set(val.toString());
         }
 
         public abstract void Update();
@@ -113,7 +113,7 @@ public class Winvar {
         public abstract String c_str();
 
         public int /*size_t*/ Size() {
-            final int /*size_t*/ sz = (this.name != null) ? this.name.length() : 0;
+            int /*size_t*/ sz = (name != null) ? name.length() : 0;
             return sz;
         }
 
@@ -124,21 +124,19 @@ public class Winvar {
         public abstract float x();
 
         public void SetEval(boolean b) {
-            this.eval = b;
+            eval = b;
         }
 
         public boolean GetEval() {
-            return this.eval;
+            return eval;
         }
 
         /** @deprecated calling this function in idWindow::EmitOp hides the loading bar progress. */
         @Deprecated
         public static idWinVar clone(final idWinVar var) {
-            if (var == null) {
-				return null;
-			}
+            if (var == null) return null;
 
-            if ((var.name != null) && var.name.isEmpty()) {
+            if (var.name != null && var.name.isEmpty()) {
                 final int a = 1;
             }
             if (var instanceof idWinBool) {
@@ -173,9 +171,9 @@ public class Winvar {
 
         @Override
         public String toString() {
-            return "idWinVar{" + "guiDict=" + this.guiDict + ", name=" + this.name + '}';
+            return "idWinVar{" + "guiDict=" + guiDict + ", name=" + name + '}';
         }
-    }
+    };
 
     static class idWinBool extends idWinVar {
 
@@ -189,7 +187,7 @@ public class Winvar {
 
         public idWinBool(boolean a) {
             this();
-            this.data = a;
+            data = a;
         }
 
         //copy constructor
@@ -202,8 +200,8 @@ public class Winvar {
         @Override
         public void Init(final String _name, idWindow win) {
             super.Init(_name, win);
-            if (this.guiDict != null) {
-                this.data = this.guiDict.GetBool(GetName());
+            if (guiDict != null) {
+                data = guiDict.GetBool(GetName());
             }
         }
 //	int	operator==(	const bool &other ) { return (other == data); }
@@ -211,7 +209,7 @@ public class Winvar {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = (37 * hash) + (this.data ? 1 : 0);
+            hash = 37 * hash + (this.data ? 1 : 0);
             return hash;
         }
 
@@ -229,62 +227,62 @@ public class Winvar {
         }
 
         public boolean oSet(final boolean other) {
-            this.data = other;
-            if (this.guiDict != null) {
-                this.guiDict.SetBool(GetName(), this.data);
+            data = other;
+            if (guiDict != null) {
+                guiDict.SetBool(GetName(), data);
             }
-            return this.data;
+            return data;
         }
 
         public idWinBool oSet(final idWinBool other) {
             super.oSet(other);
-            this.data = other.data;
+            data = other.data;
             return this;
         }
 
         public boolean oCastBoolean() {
-            return this.data;
+            return data;
         }
 
         @Override
         public void Set(final String val) {
-            this.data = (atoi(val) != 0);
-            if (this.guiDict != null) {
-                this.guiDict.SetBool(GetName(), this.data);
+            data = (atoi(val) != 0);
+            if (guiDict != null) {
+                guiDict.SetBool(GetName(), data);
             }
         }
 
         @Override
         public void Update() {
             final String s = GetName();
-            if ((this.guiDict != null) && (s.charAt(0) != '\0')) {
-                this.data = this.guiDict.GetBool(s);
+            if (guiDict != null && s.charAt(0) != '\0') {
+                data = guiDict.GetBool(s);
             }
         }
 
         @Override
         public String c_str() {
-            return va("%d", this.data);
+            return va("%d", data);
         }
 
         // SaveGames
         @Override
         public void WriteToSaveGame(idFile savefile) {
-            savefile.WriteBool(this.eval);
-            savefile.WriteBool(this.data);
+            savefile.WriteBool(eval);
+            savefile.WriteBool(data);
         }
 
         @Override
         public void ReadFromSaveGame(idFile savefile) {
-            this.eval = savefile.ReadBool();
-            this.data = savefile.ReadBool();
+            eval = savefile.ReadBool();
+            data = savefile.ReadBool();
         }
 
         @Override
         public float x() {
-            return this.data ? 1.0f : 0.0f;
+            return data ? 1.0f : 0.0f;
         }
-    }
+    };
 
     public static class idWinStr extends idWinVar {
 
@@ -299,7 +297,7 @@ public class Winvar {
 
         public idWinStr(String a) {
             this();
-            this.data = new idStr(a);
+            data = new idStr(a);
         }
 
         //copy constructor
@@ -311,8 +309,8 @@ public class Winvar {
         @Override
         public void Init(final String _name, idWindow win) {
             super.Init(_name, win);
-            if (this.guiDict != null) {
-                this.data = new idStr(this.guiDict.GetString(GetName()));
+            if (guiDict != null) {
+                data = new idStr(guiDict.GetString(GetName()));
             }
         }
 
@@ -325,7 +323,7 @@ public class Winvar {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = (11 * hash) + Objects.hashCode(this.data);
+            hash = 11 * hash + Objects.hashCode(this.data);
             return hash;
         }
 
@@ -353,103 +351,103 @@ public class Winvar {
         }
 
         public idStr oSet(final idStr other) {
-            this.data = other;
-            if (this.guiDict != null) {
-                this.guiDict.Set(GetName(), this.data);
+            data = other;
+            if (guiDict != null) {
+                guiDict.Set(GetName(), data);
             }
-            return this.data;
+            return data;
         }
 
         public idWinStr oSet(final idWinStr other) {
             super.oSet(other);
-            this.data = other.data;
+            data = other.data;
             return this;
         }
 //public	operator const char *() {//TODO:wtF?
 
         public char[] oCastChar() {//TODO:wtF?
-            return this.data.getData().toCharArray();
+            return data.c_str();
         }
 //	public operator const idStr &() {
 
         public int LengthWithoutColors() {
-            if ((this.guiDict != null) && (this.name != null) && !this.name.isEmpty()) {
-                this.data.oSet(this.guiDict.GetString(GetName()));
+            if (guiDict != null && name != null && !name.isEmpty()) {
+                data.oSet(guiDict.GetString(GetName()));
             }
-            return this.data.LengthWithoutColors();
+            return data.LengthWithoutColors();
         }
 
         public int Length() {
-            if ((this.guiDict != null) && (this.name != null) && !this.name.isEmpty()) {
-                this.data.oSet(this.guiDict.GetString(GetName()));
+            if (guiDict != null && name != null && !name.isEmpty()) {
+                data.oSet(guiDict.GetString(GetName()));
             }
-            return this.data.Length();
+            return data.Length();
         }
 
         public void RemoveColors() {
-            if ((this.guiDict != null) && (this.name != null) && !this.name.isEmpty()) {
-                this.data.oSet(this.guiDict.GetString(GetName()));
+            if (guiDict != null && name != null && !name.isEmpty()) {
+                data.oSet(guiDict.GetString(GetName()));
             }
-            this.data.RemoveColors();
+            data.RemoveColors();
         }
 
         @Override
         public String c_str() {
-            return this.data.getData();
+            return data.toString();
         }
 
         @Override
         public void Set(final String val) {
-            this.data.oSet(val);
-            if (this.guiDict != null) {
-                this.guiDict.Set(GetName(), this.data);
+            data.oSet(val);
+            if (guiDict != null) {
+                guiDict.Set(GetName(), data);
             }
         }
 
         @Override
         public void Update() {
             final String s = GetName();
-            if ((this.guiDict != null) && !s.isEmpty()) {
-                this.data.oSet(this.guiDict.GetString(s));
+            if (guiDict != null && !s.isEmpty()) {
+                data.oSet(guiDict.GetString(s));
             }
         }
 
         @Override
         public int /*size_t*/ Size() {
             final int sz = super.Size();
-            return sz + this.data.Allocated();
+            return sz + data.Allocated();
         }
 
         // SaveGames
         @Override
         public void WriteToSaveGame(idFile savefile) {
-            savefile.WriteBool(this.eval);
+            savefile.WriteBool(eval);
 
-            final int len = this.data.Length();
+            int len = data.Length();
             savefile.WriteInt(len);
             if (len > 0) {
-                savefile.WriteString(this.data);
+                savefile.WriteString(data);
             }
         }
 
         @Override
         public void ReadFromSaveGame(idFile savefile) {
-            this.eval = savefile.ReadBool();
+            eval = savefile.ReadBool();
 
             int len;
             len = savefile.ReadInt();
             if (len > 0) {
-                this.data.Fill(' ', len);
-                savefile.ReadString(this.data);
+                data.Fill(' ', len);
+                savefile.ReadString(data);
             }
         }
 
         // return wether string is emtpy
         @Override
         public float x() {
-            return this.data.IsEmpty() ? 0.0f : 1.0f;
+            return data.IsEmpty() ? 0.0f : 1.0f;
         }
-    }
+    };
 
     static class idWinInt extends idWinVar {
 
@@ -463,68 +461,68 @@ public class Winvar {
 
         public idWinInt(int a) {
             this();
-            this.data = a;
+            data = a;
         }
 
 //	~idWinInt() {};
         @Override
         public void Init(final String _name, idWindow win) {
             super.Init(_name, win);
-            if (this.guiDict != null) {
-                this.data = this.guiDict.GetInt(GetName());
+            if (guiDict != null) {
+                data = guiDict.GetInt(GetName());
             }
         }
 
         public int oSet(final int other) {
-            this.data = other;
-            if (this.guiDict != null) {
-                this.guiDict.SetInt(GetName(), this.data);
+            data = other;
+            if (guiDict != null) {
+                guiDict.SetInt(GetName(), data);
             }
-            return this.data;
+            return data;
         }
 
         public idWinInt oSet(final idWinInt other) {
             super.oSet(other);
-            this.data = other.data;
+            data = other.data;
             return this;
         }
 
         int oCastInt() {
-            return this.data;
+            return data;
         }
 
         @Override
         public void Set(final String val) {
-            this.data = Integer.parseInt(val);
-            if (this.guiDict != null) {
-                this.guiDict.SetInt(GetName(), this.data);
+            data = Integer.parseInt(val);
+            if (guiDict != null) {
+                guiDict.SetInt(GetName(), data);
             }
         }
 
         @Override
         public void Update() {
             final String s = GetName();
-            if ((this.guiDict != null) && (s.charAt(0) != '\0')) {
-                this.data = this.guiDict.GetInt(s);
+            if (guiDict != null && s.charAt(0) != '\0') {
+                data = guiDict.GetInt(s);
             }
         }
 
         @Override
         public String c_str() {
-            return va("%d", this.data);
+            return va("%d", data);
         }
 
         // SaveGames
         @Override
         public void WriteToSaveGame(idFile savefile) {
-            savefile.WriteBool(this.eval);
-            savefile.WriteInt(this.data);
+            savefile.WriteBool(eval);
+            savefile.WriteInt(data);
         }
 
         @Override
         public void ReadFromSaveGame(idFile savefile) {
-            this.eval = savefile.ReadBool();
-            this.data = savefile.ReadInt();
+            eval = savefile.ReadBool();
+            data = savefile.ReadInt();
         }
 
         // no suitable conversion
@@ -533,7 +531,7 @@ public class Winvar {
             assert (false);
             return 0.0f;
         }
-    }
+    };
 
     static class idWinFloat extends idWinVar {
 
@@ -547,7 +545,7 @@ public class Winvar {
 
         public idWinFloat(int a) {
             this();
-            this.data = a;///TODO:to float bits?
+            data = a;///TODO:to float bits?
         }
 
         //copy constructor
@@ -560,72 +558,72 @@ public class Winvar {
         @Override
         public void Init(final String _name, idWindow win) {
             super.Init(_name, win);
-            if (this.guiDict != null) {
-                this.data = this.guiDict.GetFloat(GetName());
+            if (guiDict != null) {
+                data = guiDict.GetFloat(GetName());
             }
         }
 
         public idWinFloat oSet(final idWinFloat other) {
             super.oSet(other);
-            this.data = other.data;
+            data = other.data;
             return this;
         }
 
         public float oSet(final float other) {
-            this.data = other;
-            if (this.guiDict != null) {
-                this.guiDict.SetFloat(GetName(), this.data);
+            data = other;
+            if (guiDict != null) {
+                guiDict.SetFloat(GetName(), data);
             }
-            return this.data;
+            return data;
         }
 
         public float oCastFloat() {
-            return this.data;
+            return data;
         }
 
         @Override
         public void Set(final String val) {
             try {
-                this.data = Float.parseFloat(val);
-            } catch (final NumberFormatException e) {
-                this.data = 0;//atof doesn't crash with non numbers.
+                data = Float.parseFloat(val);
+            } catch (NumberFormatException e) {
+                data = 0;//atof doesn't crash with non numbers.
             }
-            if (this.guiDict != null) {
-                this.guiDict.SetFloat(GetName(), this.data);
+            if (guiDict != null) {
+                guiDict.SetFloat(GetName(), data);
             }
         }
 
         @Override
         public void Update() {
             final String s = GetName();
-            if ((this.guiDict != null) && (s.charAt(0) != '\0')) {
-                this.data = this.guiDict.GetFloat(s);
+            if (guiDict != null && s.charAt(0) != '\0') {
+                data = guiDict.GetFloat(s);
             }
         }
 
         @Override
         public String c_str() {
-            return va("%f", this.data);
+            return va("%f", data);
         }
 
         @Override
         public void WriteToSaveGame(idFile savefile) {
-            savefile.WriteBool(this.eval);
-            savefile.WriteFloat(this.data);
+            savefile.WriteBool(eval);
+            savefile.WriteFloat(data);
         }
 
         @Override
         public void ReadFromSaveGame(idFile savefile) {
-            this.eval = savefile.ReadBool();
-            this.data = savefile.ReadFloat();
+            eval = savefile.ReadBool();
+            data = savefile.ReadFloat();
         }
 
         @Override
         public float x() {
-            return this.data;
+            return data;
         }
 
-    }
+    };
 
     static class idWinRectangle extends idWinVar {
 
@@ -635,7 +633,7 @@ public class Winvar {
 
         public idWinRectangle() {
             super();
-            this.data = new idRectangle();
+            data = new idRectangle();
         }
 
         //copy constructor
@@ -648,12 +646,12 @@ public class Winvar {
         @Override
         public void Init(final String _name, idWindow win) {
             super.Init(_name, win);
-            if (this.guiDict != null) {
-                final idVec4 v = this.guiDict.GetVec4(GetName());
-                this.data.x = v.x;
-                this.data.y = v.y;
-                this.data.w = v.z;
-                this.data.h = v.w;
+            if (guiDict != null) {
+                idVec4 v = guiDict.GetVec4(GetName());
+                data.x = v.x;
+                data.y = v.y;
+                data.w = v.z;
+                data.h = v.w;
             }
         }
 
@@ -662,59 +660,59 @@ public class Winvar {
 //	}//TODO:overrid equals
         public idWinRectangle oSet(final idWinRectangle other) {
             super.oSet(other);
-            this.data = other.data;
+            data = other.data;
             return this;
         }
 
         public idRectangle oSet(final idVec4 other) {
-            this.data.oSet(other);
-            if (this.guiDict != null) {
-                this.guiDict.SetVec4(GetName(), other);
+            data.oSet(other);
+            if (guiDict != null) {
+                guiDict.SetVec4(GetName(), other);
             }
-            return this.data;
+            return data;
         }
 
         public idRectangle oSet(final idRectangle other) {
-            this.data = other;
-            if (this.guiDict != null) {
-                final idVec4 v = this.data.ToVec4();
-                this.guiDict.SetVec4(GetName(), v);
+            data = other;
+            if (guiDict != null) {
+                idVec4 v = data.ToVec4();
+                guiDict.SetVec4(GetName(), v);
             }
-            return this.data;
+            return data;
         }
 
         public idRectangle oCastIdRectangle() {
-            return this.data;
+            return data;
         }
 
         @Override
         public float x() {
-            return this.data.x;
+            return data.x;
         }
 
         public float y() {
-            return this.data.y;
+            return data.y;
         }
 
         public float w() {
-            return this.data.w;
+            return data.w;
         }
 
         public float h() {
-            return this.data.h;
+            return data.h;
         }
 
         public float Right() {
-            return this.data.Right();
+            return data.Right();
         }
 
         public float Bottom() {
-            return this.data.Bottom();
+            return data.Bottom();
         }
         private static idVec4 ret;
 
         public idVec4 ToVec4() {
-            ret = this.data.ToVec4();
+            ret = data.ToVec4();
             return ret;
         }
 
@@ -725,72 +723,72 @@ public class Winvar {
                 if (val.contains(",")) {
 //			sscanf( val, "%f,%f,%f,%f", data.x, data.y, data.w, data.h );
                     if (sscanf.hasNext()) {
-                        this.data.x = sscanf.nextFloat();
+                        data.x = sscanf.nextFloat();
                     }
                     if (sscanf.hasNext()) {
-                        this.data.y = sscanf.skip(",").nextFloat();
+                        data.y = sscanf.skip(",").nextFloat();
                     }
                     if (sscanf.hasNext()) {
-                        this.data.w = sscanf.skip(",").nextFloat();
+                        data.w = sscanf.skip(",").nextFloat();
                     }
                     if (sscanf.hasNext()) {
-                        this.data.h = sscanf.skip(",").nextFloat();
+                        data.h = sscanf.skip(",").nextFloat();
                     }
                 } else {
 //			sscanf( val, "%f %f %f %f", data.x, data.y, data.w, data.h );
                     if (sscanf.hasNextFloat()) {
-                        this.data.x = sscanf.nextFloat();
+                        data.x = sscanf.nextFloat();
                     }
                     if (sscanf.hasNextFloat()) {
-                        this.data.y = sscanf.nextFloat();
+                        data.y = sscanf.nextFloat();
                     }
                     if (sscanf.hasNextFloat()) {
-                        this.data.w = sscanf.nextFloat();
+                        data.w = sscanf.nextFloat();
                     }
                     if (sscanf.hasNextFloat()) {
-                        this.data.h = sscanf.nextFloat();
+                        data.h = sscanf.nextFloat();
                     }
                 }
             }
-            if (this.guiDict != null) {
-                final idVec4 v = this.data.ToVec4();
-                this.guiDict.SetVec4(GetName(), v);
+            if (guiDict != null) {
+                idVec4 v = data.ToVec4();
+                guiDict.SetVec4(GetName(), v);
             }
         }
 
         @Override
         public void Update() {
             final String s = GetName();
-            if ((this.guiDict != null) && (s.charAt(0) != '\0')) {
-                final idVec4 v = this.guiDict.GetVec4(s);
-                this.data.x = v.x;
-                this.data.y = v.y;
-                this.data.w = v.z;
-                this.data.h = v.w;
+            if (guiDict != null && s.charAt(0) != '\0') {
+                idVec4 v = guiDict.GetVec4(s);
+                data.x = v.x;
+                data.y = v.y;
+                data.w = v.z;
+                data.h = v.w;
             }
         }
 
         @Override
         public String c_str() {
-            return this.data.ToVec4().ToString();
+            return data.ToVec4().ToString();
         }
 
         @Override
         public void WriteToSaveGame(idFile savefile) {
-            savefile.WriteBool(this.eval);
-            savefile.Write(this.data);
+            savefile.WriteBool(eval);
+            savefile.Write(data);
         }
 
         @Override
         public void ReadFromSaveGame(idFile savefile) {
-            this.eval = savefile.ReadBool();
-            savefile.Read(this.data);
+            eval = savefile.ReadBool();
+            savefile.Read(data);
         }
 
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = (97 * hash) + Objects.hashCode(this.data);
+            hash = 97 * hash + Objects.hashCode(this.data);
             return hash;
         }
 
@@ -806,7 +804,7 @@ public class Winvar {
             
             return Objects.equals(this.data, other);
         }
-    }
+    };
 
     static class idWinVec2 extends idWinVar {
 
@@ -821,8 +819,8 @@ public class Winvar {
         //copy constructor
         idWinVec2(idVec2 vec2) {
             this.data = new idVec2(vec2);
-            if (this.guiDict != null) {
-                this.guiDict.SetVec2(GetName(), this.data);
+            if (guiDict != null) {
+                guiDict.SetVec2(GetName(), data);
             }
         }
 
@@ -830,8 +828,8 @@ public class Winvar {
         @Override
         public void Init(final String _name, idWindow win) {
             super.Init(_name, win);
-            if (this.guiDict != null) {
-                this.data = this.guiDict.GetVec2(GetName());
+            if (guiDict != null) {
+                data = guiDict.GetVec2(GetName());
             }
         }
 //	int	operator==(	const idVec2 other ) {
@@ -841,7 +839,7 @@ public class Winvar {
         @Override
         public int hashCode() {
             int hash = 3;
-            hash = (23 * hash) + Objects.hashCode(this.data);
+            hash = 23 * hash + Objects.hashCode(this.data);
             return hash;
         }
 
@@ -860,25 +858,25 @@ public class Winvar {
 
         idWinVec2 oSet(final idWinVec2 other) {
             super.oSet(other);
-            this.data = other.data;
+            data = other.data;
             return this;
         }
 
         idVec2 oSet(final idVec2 other) {
-            this.data = other;
-            if (this.guiDict != null) {
-                this.guiDict.SetVec2(GetName(), this.data);
+            data = other;
+            if (guiDict != null) {
+                guiDict.SetVec2(GetName(), data);
             }
-            return this.data;
+            return data;
         }
 
         @Override
         public float x() {
-            return this.data.x;
+            return data.x;
         }
 
         public float y() {
-            return this.data.y;
+            return data.y;
         }
 
         @Override
@@ -888,59 +886,59 @@ public class Winvar {
                 if (val.contains(",")) {
 //			sscanf( val, "%f,%f,%f,%f", data.x, data.y, data.w, data.h );
                     if (sscanf.hasNext()) {
-                        this.data.x = sscanf.nextFloat();
+                        data.x = sscanf.nextFloat();
                     }
                     if (sscanf.hasNext()) {
-                        this.data.y = sscanf.skip(",").nextFloat();
+                        data.y = sscanf.skip(",").nextFloat();
                     }
                 } else {
 //			sscanf( val, "%f %f %f %f", data.x, data.y, data.w, data.h );
                     if (sscanf.hasNextFloat()) {
-                        this.data.x = sscanf.nextFloat();
+                        data.x = sscanf.nextFloat();
                     }
                     if (sscanf.hasNextFloat()) {
-                        this.data.y = sscanf.nextFloat();
+                        data.y = sscanf.nextFloat();
                     }
                 }
             }
-            if (this.guiDict != null) {
-                this.guiDict.SetVec2(GetName(), this.data);
+            if (guiDict != null) {
+                guiDict.SetVec2(GetName(), data);
             }
         }
 
         idVec2 oCastIdVec2() {
-            return this.data;
+            return data;
         }
 
         @Override
         public void Update() {
             final String s = GetName();
-            if ((this.guiDict != null) && (s.charAt(0) != '\0')) {
-                this.data = this.guiDict.GetVec2(s);
+            if (guiDict != null && s.charAt(0) != '\0') {
+                data = guiDict.GetVec2(s);
             }
         }
 
         @Override
         public String c_str() {
-            return this.data.ToString();
+            return data.ToString();
         }
 
         void Zero() {
-            this.data.Zero();
+            data.Zero();
         }
 
         @Override
         public void WriteToSaveGame(idFile savefile) {
-            savefile.WriteBool(this.eval);
-            savefile.Write(this.data);
+            savefile.WriteBool(eval);
+            savefile.Write(data);
         }
 
         @Override
         public void ReadFromSaveGame(idFile savefile) {
-            this.eval = savefile.ReadBool();
-            savefile.Read(this.data);
+            eval = savefile.ReadBool();
+            savefile.Read(data);
         }
-    }
+    };
 
     static class idWinVec4 extends idWinVar {
 
@@ -950,12 +948,12 @@ public class Winvar {
 
         public idWinVec4() {
             super();
-            this.data = new idVec4();
+            data = new idVec4();
         }
 
         public idWinVec4(float x, float y, float z, float w) {//TODO: check whether the int to pointer cast works like this.
             this();
-            this.data.oSet(new idVec4(x, y, z, w));
+            data.oSet(new idVec4(x, y, z, w));
         }
 
         //copy constructor
@@ -968,8 +966,8 @@ public class Winvar {
         @Override
         public void Init(final String _name, idWindow win) {
             super.Init(_name, win);
-            if (this.guiDict != null) {
-                this.data.oSet(this.guiDict.GetVec4(GetName()));
+            if (guiDict != null) {
+                data.oSet(guiDict.GetVec4(GetName()));
             }
         }
 //	int	operator==(	final idVec4 other ) {
@@ -979,7 +977,7 @@ public class Winvar {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = (97 * hash) + Objects.hashCode(this.data);
+            hash = 97 * hash + Objects.hashCode(this.data);
             return hash;
         }
 
@@ -998,37 +996,37 @@ public class Winvar {
 
         public idWinVec4 oSet(final idWinVec4 other) {
             super.oSet(other);
-            this.data.oSet(other.data);
+            data.oSet(other.data);
             return this;
         }
 
         public idVec4 oSet(final idVec4 other) {
-            this.data.oSet(other);
-            if (this.guiDict != null) {
-                this.guiDict.SetVec4(GetName(), this.data);
+            data.oSet(other);
+            if (guiDict != null) {
+                guiDict.SetVec4(GetName(), data);
             }
-            return this.data;
+            return data;
         }
 
         public idVec4 oCastIdVec4() {
-            return this.data;
+            return data;
         }
 
         @Override
         public float x() {
-            return this.data.x;
+            return data.x;
         }
 
         public float y() {
-            return this.data.y;
+            return data.y;
         }
 
         public float z() {
-            return this.data.z;
+            return data.z;
         }
 
         public float w() {
-            return this.data.w;
+            return data.w;
         }
 
         @Override
@@ -1038,79 +1036,79 @@ public class Winvar {
                 if (val.contains(",")) {
 //			sscanf( val, "%f,%f,%f,%f", data.x, data.y, data.z, data.w );
                     if (sscanf.hasNext()) {
-                        this.data.x = sscanf.nextFloat();
+                        data.x = sscanf.nextFloat();
                     }
                     if (sscanf.hasNext()) {
-                        this.data.y = sscanf.skip(",").nextFloat();
+                        data.y = sscanf.skip(",").nextFloat();
                     }
                     if (sscanf.hasNext()) {
-                        this.data.z = sscanf.skip(",").nextFloat();
+                        data.z = sscanf.skip(",").nextFloat();
                     }
                     if (sscanf.hasNext()) {
-                        this.data.w = sscanf.skip(",").nextFloat();
+                        data.w = sscanf.skip(",").nextFloat();
                     }
                 } else {
 //			sscanf( val, "%f %f %f %f", data.x, data.y, data.z, data.w );
                     if (sscanf.hasNextFloat()) {
-                        this.data.x = sscanf.nextFloat();
+                        data.x = sscanf.nextFloat();
                     }
                     if (sscanf.hasNextFloat()) {
-                        this.data.y = sscanf.nextFloat();
+                        data.y = sscanf.nextFloat();
                     }
                     if (sscanf.hasNextFloat()) {
-                        this.data.z = sscanf.nextFloat();
+                        data.z = sscanf.nextFloat();
                     }
                     if (sscanf.hasNextFloat()) {
-                        this.data.w = sscanf.nextFloat();
+                        data.w = sscanf.nextFloat();
                     }
                 }
             }
-            if (this.guiDict != null) {
-                this.guiDict.SetVec4(GetName(), this.data);
+            if (guiDict != null) {
+                guiDict.SetVec4(GetName(), data);
             }
         }
 
         @Override
         public void Update() {
             final String s = GetName();
-            if ((this.guiDict != null) && (s.charAt(0) != '\0')) {
-                this.data.oSet(this.guiDict.GetVec4(s));
+            if (guiDict != null && s.charAt(0) != '\0') {
+                data.oSet(guiDict.GetVec4(s));
             }
         }
 
         @Override
         public String c_str() {
-            return this.data.ToString();
+            return data.ToString();
         }
 
         @Override
         public String toString() {
-            return String.valueOf(this.data);
+            return String.valueOf(data);
         }
 
         public void Zero() {
-            this.data.Zero();
-            if (this.guiDict != null) {
-                this.guiDict.SetVec4(GetName(), this.data);
+            data.Zero();
+            if (guiDict != null) {
+                guiDict.SetVec4(GetName(), data);
             }
         }
 
         public idVec3 ToVec3() {
-            return this.data.ToVec3();
+            return data.ToVec3();
         }
 
         @Override
         public void WriteToSaveGame(idFile savefile) {
-            savefile.WriteBool(this.eval);
-            savefile.Write(this.data);
+            savefile.WriteBool(eval);
+            savefile.Write(data);
         }
 
         @Override
         public void ReadFromSaveGame(idFile savefile) {
-            this.eval = savefile.ReadBool();
-            savefile.Read(this.data);
+            eval = savefile.ReadBool();
+            savefile.Read(data);
         }
-    }
+    };
 
     static class idWinVec3 extends idWinVar {
 
@@ -1132,8 +1130,8 @@ public class Winvar {
         @Override
         public void Init(final String _name, idWindow win) {
             super.Init(_name, win);
-            if (this.guiDict != null) {
-                this.data = this.guiDict.GetVector(GetName());
+            if (guiDict != null) {
+                data = guiDict.GetVector(GetName());
             }
         }
 //	int	operator==(	const idVec3 other ) {
@@ -1143,7 +1141,7 @@ public class Winvar {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = (23 * hash) + Objects.hashCode(this.data);
+            hash = 23 * hash + Objects.hashCode(this.data);
             return hash;
         }
 
@@ -1162,33 +1160,33 @@ public class Winvar {
 
         public idWinVec3 oSet(final idWinVec3 other) {
             super.oSet(other);
-            this.data = other.data;
+            data = other.data;
             return this;
         }
 
         public idVec3 oSet(final idVec3 other) {
-            this.data = other;
-            if (this.guiDict != null) {
-                this.guiDict.SetVector(GetName(), this.data);
+            data = other;
+            if (guiDict != null) {
+                guiDict.SetVector(GetName(), data);
             }
-            return this.data;
+            return data;
         }
 
         public idVec3 oCastIdVec3() {
-            return this.data;
+            return data;
         }
 
         @Override
         public float x() {
-            return this.data.x;
+            return data.x;
         }
 
         public float y() {
-            return this.data.y;
+            return data.y;
         }
 
         public float z() {
-            return this.data.z;
+            return data.z;
         }
 
         @Override
@@ -1196,52 +1194,52 @@ public class Winvar {
             try (final Scanner sscanf = new Scanner(val)) {
 //		sscanf( val, "%f %f %f", data.x, data.y, data.z);
                 if (sscanf.hasNextFloat()) {
-                    this.data.x = sscanf.nextFloat();
+                    data.x = sscanf.nextFloat();
                 }
                 if (sscanf.hasNextFloat()) {
-                    this.data.y = sscanf.nextFloat();
+                    data.y = sscanf.nextFloat();
                 }
                 if (sscanf.hasNextFloat()) {
-                    this.data.z = sscanf.nextFloat();
+                    data.z = sscanf.nextFloat();
                 }
             }
-            if (this.guiDict != null) {
-                this.guiDict.SetVector(GetName(), this.data);
+            if (guiDict != null) {
+                guiDict.SetVector(GetName(), data);
             }
         }
 
         @Override
         public void Update() {
             final String s = GetName();
-            if ((this.guiDict != null) && (s.charAt(0) != '\0')) {
-                this.data = this.guiDict.GetVector(s);
+            if (guiDict != null && s.charAt(0) != '\0') {
+                data = guiDict.GetVector(s);
             }
         }
 
         @Override
         public String c_str() {
-            return this.data.ToString();
+            return data.ToString();
         }
 
         public void Zero() {
-            this.data.Zero();
-            if (this.guiDict != null) {
-                this.guiDict.SetVector(GetName(), this.data);
+            data.Zero();
+            if (guiDict != null) {
+                guiDict.SetVector(GetName(), data);
             }
         }
 
         @Override
         public void WriteToSaveGame(idFile savefile) {
-            savefile.WriteBool(this.eval);
-            savefile.Write(this.data);
+            savefile.WriteBool(eval);
+            savefile.Write(data);
         }
 
         @Override
         public void ReadFromSaveGame(idFile savefile) {
-            this.eval = savefile.ReadBool();
-            savefile.Read(this.data);
+            eval = savefile.ReadBool();
+            savefile.Read(data);
         }
-    }
+    };
 
     static class idWinBackground extends idWinStr {
 
@@ -1251,20 +1249,20 @@ public class Winvar {
 
         public idWinBackground() {
             super();
-            this.mat = new idMaterial[1];
+            mat = new idMaterial[1];
             this.data = new idStr();
         }
 
         //copy constructor
         idWinBackground(idWinBackground other) {
             super.oSet(other);
-            this.data = other.data;
-            this.mat = other.mat;
-            if (this.mat != null) {
-                if (this.data.IsEmpty()) {
-                    this.mat[0] = null;
+            data = other.data;
+            mat = other.mat;
+            if (mat != null) {
+                if (data.IsEmpty()) {
+                    mat[0] = null;
                 } else {
-                    this.mat[0] = declManager.FindMaterial(this.data);
+                    mat[0] = declManager.FindMaterial(data);
                 }
             }
         }
@@ -1273,8 +1271,8 @@ public class Winvar {
         @Override
         public void Init(final String _name, idWindow win) {
             super.Init(_name, win);
-            if (this.guiDict != null) {
-                this.data.oSet(this.guiDict.GetString(GetName()));
+            if (guiDict != null) {
+                data.oSet(guiDict.GetString(GetName()));
             }
         }
 //	int	operator==(	const idStr other ) {
@@ -1296,18 +1294,18 @@ public class Winvar {
 
         @Override
         public idStr oSet(final idStr other) {
-            this.data = other;
-            if (this.guiDict != null) {
-                this.guiDict.Set(GetName(), this.data);
+            data = other;
+            if (guiDict != null) {
+                guiDict.Set(GetName(), data);
             }
-            if (this.mat[0] != null) {
-                if (this.data.IsEmpty()) {
-                    this.mat[0] = null;
+            if (mat[0] != null) {
+                if (data.IsEmpty()) {
+                    mat[0] = null;
                 } else {
-                    this.mat[0] = declManager.FindMaterial(this.data);
+                    mat[0] = declManager.FindMaterial(data);
                 }
             }
-            return this.data;
+            return data;
         }
 
 //        public idWinBackground oSet(final idWinBackground other) {
@@ -1325,33 +1323,33 @@ public class Winvar {
 //        }
         @Override
         public char[] oCastChar() {
-            return this.data.getData().toCharArray();
+            return data.c_str();
         }
 
         @Override
         public int Length() {
-            if (this.guiDict != null) {
-                this.data.oSet(this.guiDict.GetString(GetName()));
+            if (guiDict != null) {
+                data.oSet(guiDict.GetString(GetName()));
             }
-            return this.data.Length();
+            return data.Length();
         }
 
         @Override
         public String c_str() {
-            return this.data.getData();
+            return data.toString();
         }
 
         @Override
         public void Set(final String val) {
-            this.data.oSet(val);
-            if (this.guiDict != null) {
-                this.guiDict.Set(GetName(), this.data);
+            data.oSet(val);
+            if (guiDict != null) {
+                guiDict.Set(GetName(), data);
             }
-            if (this.mat[0] != null) {
-                if (this.data.IsEmpty()) {
-                    this.mat[0] = null;
+            if (mat[0] != null) {
+                if (data.IsEmpty()) {
+                    mat[0] = null;
                 } else {
-                    this.mat[0] = declManager.FindMaterial(this.data);
+                    mat[0] = declManager.FindMaterial(data);
                 }
             }
         }
@@ -1359,13 +1357,13 @@ public class Winvar {
         @Override
         public void Update() {
             final String s = GetName();
-            if ((this.guiDict != null) && (s.charAt(0) != '\0')) {
-                this.data.oSet(this.guiDict.GetString(s));
-                if (this.mat != null) {
-                    if (this.data.IsEmpty()) {
-                        this.mat[0] = null;
+            if (guiDict != null && s.charAt(0) != '\0') {
+                data.oSet(guiDict.GetString(s));
+                if (mat != null) {
+                    if (data.IsEmpty()) {
+                        mat[0] = null;
                     } else {
-                        this.mat[0] = declManager.FindMaterial(this.data);
+                        mat[0] = declManager.FindMaterial(data);
                     }
                 }
             }
@@ -1373,44 +1371,44 @@ public class Winvar {
 
         @Override
         public int/*size_t*/ Size() {
-            final int sz = super.Size();
-            return sz + this.data.Allocated();
+            int sz = super.Size();
+            return sz + data.Allocated();
         }
 
         public void SetMaterialPtr(final idMaterial m) {
-            this.mat[0] = m;
+            mat[0] = m;
         }
 
         @Override
         public void WriteToSaveGame(idFile savefile) {
-            savefile.WriteBool(this.eval);
+            savefile.WriteBool(eval);
 
-            final int len = this.data.Length();
+            int len = data.Length();
             savefile.WriteInt(len);
             if (len > 0) {
-                savefile.WriteString(this.data);
+                savefile.WriteString(data);
             }
         }
 
         @Override
         public void ReadFromSaveGame(idFile savefile) {
-            this.eval = savefile.ReadBool();
+            eval = savefile.ReadBool();
 
             int len;
             len = savefile.ReadInt();
             if (len > 0) {
-                this.data.Fill(' ', len);
-                savefile.ReadString(this.data);
+                data.Fill(' ', len);
+                savefile.ReadString(data);
             }
-            if (this.mat[0] != null) {
+            if (mat[0] != null) {
                 if (len > 0) {
-                    this.mat[0] = declManager.FindMaterial(this.data);
+                    mat[0] = declManager.FindMaterial(data);
                 } else {
-                    this.mat[0] = null;
+                    mat[0] = null;
                 }
             }
         }
-    }
+    };
 
     /*
      ================
@@ -1437,5 +1435,5 @@ public class Winvar {
                 this.oGet(i).SetGuiInfo(dict, this.oGet(i).c_str());
             }
         }
-    }
+    };
 }

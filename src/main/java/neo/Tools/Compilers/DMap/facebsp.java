@@ -48,7 +48,7 @@ public class facebsp {
         float d;
 
         while (node.planenum != PLANENUM_LEAF) {
-            final idPlane plane = dmapGlobals.mapPlanes.oGet(node.planenum);
+            idPlane plane = dmapGlobals.mapPlanes.oGet(node.planenum);
             d = plane.Distance(origin);
             if (d >= 0) {
                 node = node.children[0];
@@ -141,7 +141,7 @@ public class facebsp {
             return;
         }
 
-        final idPlane plane = dmapGlobals.mapPlanes.oGet(node.planenum);
+        idPlane plane = dmapGlobals.mapPlanes.oGet(node.planenum);
         common.Printf("#%d (%5.2f %5.2f %5.2f %5.2f)\n", node.planenum,
                 plane.oGet(0), plane.oGet(1), plane.oGet(2), plane.oGet(3));
         PrintTree_r(node.children[0], depth + 1);
@@ -189,7 +189,7 @@ public class facebsp {
         int side;
         idPlane mapPlane;
         int value, bestValue;
-        final idPlane plane = new idPlane();
+        idPlane plane = new idPlane();
         int planenum;
         boolean havePortals;
         float dist;
@@ -205,7 +205,7 @@ public class facebsp {
             } else {
                 dist = (float) (BLOCK_SIZE * (floor(node.bounds.oGet(0, axis) / BLOCK_SIZE) + 1.0f));
             }
-            if ((dist > (node.bounds.oGet(0, axis) + 1.0f)) && (dist < (node.bounds.oGet(1, axis) - 1.0f))) {
+            if (dist > node.bounds.oGet(0, axis) + 1.0f && dist < node.bounds.oGet(1, axis) - 1.0f) {
                 plane.oSet(0, plane.oSet(1, plane.oSet(2, 0.0f)));
                 plane.oSet(axis, 1.0f);
                 plane.oSet(3, -dist);
@@ -256,7 +256,7 @@ public class facebsp {
                     back++;
                 }
             }
-            value = (5 * facing) - (5 * splits); // - abs(front-back);
+            value = 5 * facing - 5 * splits; // - abs(front-back);
             if (mapPlane.Type() < PLANETYPE_TRUEAXIAL) {
                 value += 5;		// axial is better
             }
@@ -284,8 +284,8 @@ public class facebsp {
         bspface_s next;
         int side;
         bspface_s newFace;
-        final bspface_s[] childLists = new bspface_s[2];
-        final idWinding frontWinding = new idWinding(), backWinding = new idWinding();
+        bspface_s[] childLists = new bspface_s[2];
+        idWinding frontWinding = new idWinding(), backWinding = new idWinding();
         int i;
         int splitPlaneNum;
 
@@ -299,7 +299,7 @@ public class facebsp {
 
         // partition the list
         node.planenum = splitPlaneNum;
-        final idPlane plane = dmapGlobals.mapPlanes.oGet(splitPlaneNum);
+        idPlane plane = dmapGlobals.mapPlanes.oGet(splitPlaneNum);
         childLists[0] = null;
         childLists[1] = null;
         for (split = list; split != null; split = next) {
@@ -425,7 +425,7 @@ public class facebsp {
             if (NOT(b)) {
                 continue;
             }
-            if (!b.opaque && (0 == (b.contents & CONTENTS_AREAPORTAL))) {
+            if (!b.opaque && 0 == (b.contents & CONTENTS_AREAPORTAL)) {
                 continue;
             }
             for (i = 0; i < b.numsides; i++) {

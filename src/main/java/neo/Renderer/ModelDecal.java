@@ -62,7 +62,7 @@ public class ModelDecal {
         float fadeDepth;
         int startTime;
         boolean force;
-    }
+    };
 
     static class idRenderModelDecal {
 
@@ -71,20 +71,20 @@ public class ModelDecal {
         //
         private idMaterial material;
         private srfTriangles_s tri;
-        private final idDrawVert[] verts = new idDrawVert[MAX_DECAL_VERTS];
-        private final float[] vertDepthFade = new float[MAX_DECAL_VERTS];
-        //private final int[]/*glIndex_t*/ indexes = new int[MAX_DECAL_INDEXES];
-        private final int[] indexStartTime = new int[MAX_DECAL_INDEXES];
+        private idDrawVert[] verts = new idDrawVert[MAX_DECAL_VERTS];
+        private float[] vertDepthFade = new float[MAX_DECAL_VERTS];
+        private int[]/*glIndex_t*/ indexes = new int[MAX_DECAL_INDEXES];
+        private int[] indexStartTime = new int[MAX_DECAL_INDEXES];
         private idRenderModelDecal nextDecal;
         //
         //
 
         public idRenderModelDecal() {
 //	memset( &tri, 0, sizeof( tri ) );
-            this.tri.verts = this.verts;
-            this.tri.getIndexes().createValues(MAX_DECAL_INDEXES);
-            this.material = null;
-            this.nextDecal = null;
+            tri.verts = verts;
+            tri.indexes = indexes;
+            material = null;
+            nextDecal = null;
         }
 //								~idRenderModelDecal( void );
 //
@@ -100,7 +100,7 @@ public class ModelDecal {
         // Creates decal projection info.
         public static boolean CreateProjectionInfo(decalProjectionInfo_s info, final idFixedWinding winding, final idVec3 projectionOrigin, final boolean parallel, final float fadeDepth, final idMaterial material, final int startTime) {
 
-            if (winding.GetNumPoints() != (NUM_DECAL_BOUNDING_PLANES - 2)) {
+            if (winding.GetNumPoints() != NUM_DECAL_BOUNDING_PLANES - 2) {
                 common.Printf("idRenderModelDecal::CreateProjectionInfo: winding must have %d points\n", NUM_DECAL_BOUNDING_PLANES - 2);
                 return false;
             }
@@ -115,9 +115,9 @@ public class ModelDecal {
             info.force = false;
 
             // get the winding plane and the depth of the projection volume
-            final idPlane windingPlane = new idPlane();
+            idPlane windingPlane = new idPlane();
             winding.GetPlane(windingPlane);
-            final float depth = windingPlane.Distance(projectionOrigin);
+            float depth = windingPlane.Distance(projectionOrigin);
 
             // find the bounds for the projection
             winding.GetBounds(info.projectionBounds);
@@ -130,7 +130,7 @@ public class ModelDecal {
             // calculate the world space projection volume bounding planes, positive sides face outside the decal
             if (parallel) {
                 for (int i = 0; i < winding.GetNumPoints(); i++) {
-                    final idVec3 edge = winding.oGet((i + 1) % winding.GetNumPoints()).ToVec3().oMinus(winding.oGet(i).ToVec3());
+                    idVec3 edge = winding.oGet((i + 1) % winding.GetNumPoints()).ToVec3().oMinus(winding.oGet(i).ToVec3());
                     info.boundingPlanes[i].Normal().Cross(windingPlane.Normal(), edge);
                     info.boundingPlanes[i].Normalize();
                     info.boundingPlanes[i].FitThroughPoint(winding.oGet(i).ToVec3());
@@ -152,8 +152,8 @@ public class ModelDecal {
 
             // calculate the texture vectors for the winding
             float len, texArea, inva;
-            final idVec3 temp = new idVec3();
-            final idVec5 d0 = new idVec5(), d1 = new idVec5();
+            idVec3 temp = new idVec3();
+            idVec5 d0 = new idVec5(), d1 = new idVec5();
 
             final idVec5 a = winding.oGet(0);
             final idVec5 b = winding.oGet(1);
@@ -169,16 +169,16 @@ public class ModelDecal {
             texArea = (d0.oGet(3) * d1.oGet(4)) - (d0.oGet(4) * d1.oGet(3));
             inva = 1.0f / texArea;
 
-            temp.oSet(0, ((d0.oGet(0) * d1.oGet(4)) - (d0.oGet(4) * d1.oGet(0))) * inva);
-            temp.oSet(1, ((d0.oGet(1) * d1.oGet(4)) - (d0.oGet(4) * d1.oGet(1))) * inva);
-            temp.oSet(2, ((d0.oGet(2) * d1.oGet(4)) - (d0.oGet(4) * d1.oGet(2))) * inva);
+            temp.oSet(0, (d0.oGet(0) * d1.oGet(4) - d0.oGet(4) * d1.oGet(0)) * inva);
+            temp.oSet(1, (d0.oGet(1) * d1.oGet(4) - d0.oGet(4) * d1.oGet(1)) * inva);
+            temp.oSet(2, (d0.oGet(2) * d1.oGet(4) - d0.oGet(4) * d1.oGet(2)) * inva);
             len = temp.Normalize();
             info.textureAxis[0].SetNormal(temp.oMultiply(1.0f / len));
             info.textureAxis[0].oSet(3, winding.oGet(0).s - (winding.oGet(0).ToVec3().oMultiply(info.textureAxis[0].Normal())));
 
-            temp.oSet(0, ((d0.oGet(3) * d1.oGet(0)) - (d0.oGet(0) * d1.oGet(3))) * inva);
-            temp.oSet(1, ((d0.oGet(3) * d1.oGet(1)) - (d0.oGet(1) * d1.oGet(3))) * inva);
-            temp.oSet(2, ((d0.oGet(3) * d1.oGet(2)) - (d0.oGet(2) * d1.oGet(3))) * inva);
+            temp.oSet(0, (d0.oGet(3) * d1.oGet(0) - d0.oGet(0) * d1.oGet(3)) * inva);
+            temp.oSet(1, (d0.oGet(3) * d1.oGet(1) - d0.oGet(1) * d1.oGet(3)) * inva);
+            temp.oSet(2, (d0.oGet(3) * d1.oGet(2) - d0.oGet(2) * d1.oGet(3)) * inva);
             len = temp.Normalize();
             info.textureAxis[1].SetNormal(temp.oMultiply(1.0f / len));
             info.textureAxis[1].oSet(3, winding.oGet(0).s - (winding.oGet(0).ToVec3().oMultiply(info.textureAxis[1].Normal())));
@@ -188,7 +188,7 @@ public class ModelDecal {
 
         // Transform the projection info from global space to local.
         public static void GlobalProjectionInfoToLocal(decalProjectionInfo_s localInfo, final decalProjectionInfo_s info, final idVec3 origin, final idMat3 axis) {
-            final float[] modelMatrix = new float[16];
+            float[] modelMatrix = new float[16];
 
             R_AxisToModelMatrix(axis, origin, modelMatrix);
 
@@ -218,7 +218,7 @@ public class ModelDecal {
                 final modelSurface_s surf = model.Surface(surfNum);
 
                 // if no geometry or no shader
-                if ((null == surf.geometry) || (null == surf.shader)) {
+                if (null == surf.geometry || null == surf.shader) {
                     continue;
                 }
 
@@ -227,7 +227,7 @@ public class ModelDecal {
                     continue;
                 }
 
-                final srfTriangles_s stri = surf.geometry;
+                srfTriangles_s stri = surf.geometry;
 
                 // if the triangle bounds do not overlap with projection bounds
                 if (!localInfo.projectionBounds.IntersectsBounds(stri.bounds)) {
@@ -235,16 +235,16 @@ public class ModelDecal {
                 }
 
                 // allocate memory for the cull bits
-                final byte[] cullBits = new byte[stri.numVerts];
+                byte[] cullBits = new byte[stri.numVerts];
 
                 // catagorize all points by the planes
                 SIMDProcessor.DecalPointCull(cullBits, localInfo.boundingPlanes, stri.verts, stri.numVerts);
 
                 // find triangles inside the projection volume
-                for (int triNum = 0, index = 0; index < stri.getIndexes().getNumValues(); index += 3, triNum++) {
-                    final int v1 = stri.getIndexes().getValues().get(index + 0);
-                    final int v2 = stri.getIndexes().getValues().get(index + 1);
-                    final int v3 = stri.getIndexes().getValues().get(index + 2);
+                for (int triNum = 0, index = 0; index < stri.numIndexes; index += 3, triNum++) {
+                    int v1 = stri.indexes[index + 0];
+                    int v2 = stri.indexes[index + 1];
+                    int v3 = stri.indexes[index + 2];
 
                     // skip triangles completely off one side
                     if ((cullBits[v1] & cullBits[v2] & cullBits[v3]) != 0) {
@@ -252,26 +252,26 @@ public class ModelDecal {
                     }
 
                     // skip back facing triangles
-                    if ((stri.facePlanes != null) && stri.facePlanesCalculated
-                            && (stri.facePlanes[triNum].Normal().oMultiply(localInfo.boundingPlanes[NUM_DECAL_BOUNDING_PLANES - 2].Normal()) < -0.1f)) {
+                    if (stri.facePlanes != null && stri.facePlanesCalculated
+                            && stri.facePlanes[triNum].Normal().oMultiply(localInfo.boundingPlanes[NUM_DECAL_BOUNDING_PLANES - 2].Normal()) < -0.1f) {
                         continue;
                     }
 
                     // create a winding with texture coordinates for the triangle
-                    final idFixedWinding fw = new idFixedWinding();
+                    idFixedWinding fw = new idFixedWinding();
                     fw.SetNumPoints(3);
                     if (localInfo.parallel) {
                         for (int j = 0; j < 3; j++) {
-                            fw.oGet(j).oSet(stri.verts[stri.getIndexes().getValues().get(index + j)].xyz);
+                            fw.oGet(j).oSet(stri.verts[stri.indexes[index + j]].xyz);
                             fw.oGet(j).s = localInfo.textureAxis[0].Distance(fw.oGet(j).ToVec3());
                             fw.oGet(j).t = localInfo.textureAxis[1].Distance(fw.oGet(j).ToVec3());
                         }
                     } else {
                         for (int j = 0; j < 3; j++) {
                             idVec3 dir;
-                            final float[] scale = new float[1];
+                            float[] scale = new float[1];
 
-                            fw.oGet(j).oSet(stri.verts[stri.getIndexes().getValues().get(index + j)].xyz);
+                            fw.oGet(j).oSet(stri.verts[stri.indexes[index + j]].xyz);
                             dir = fw.oGet(j).ToVec3().oMinus(localInfo.projectionOrigin);
                             localInfo.boundingPlanes[NUM_DECAL_BOUNDING_PLANES - 1].RayIntersection(fw.oGet(j).ToVec3(), dir, scale);
                             dir = fw.oGet(j).ToVec3().oPlus(dir.oMultiply(scale[0]));
@@ -280,7 +280,7 @@ public class ModelDecal {
                         }
                     }
 
-                    final int orBits = cullBits[v1] | cullBits[v2] | cullBits[v3];
+                    int orBits = cullBits[v1] | cullBits[v2] | cullBits[v3];
 
                     // clip the exact surface triangle to the projection volume
                     for (int j = 0; j < NUM_DECAL_BOUNDING_PLANES; j++) {
@@ -303,7 +303,7 @@ public class ModelDecal {
         // Remove decals that are completely faded away.
         public static idRenderModelDecal RemoveFadedDecals(idRenderModelDecal decals, int time) {
             int i, j, minTime, newNumIndexes, newNumVerts;
-            final int[] inUse = new int[MAX_DECAL_VERTS];
+            int[] inUse = new int[MAX_DECAL_VERTS];
             decalInfo_t decalInfo;
             idRenderModelDecal nextDecal;
 
@@ -325,12 +325,12 @@ public class ModelDecal {
             minTime = time - (decalInfo.stayTime + decalInfo.fadeTime);
 
             newNumIndexes = 0;
-            for (i = 0; i < decals.tri.getIndexes().getNumValues(); i += 3) {
+            for (i = 0; i < decals.tri.numIndexes; i += 3) {
                 if (decals.indexStartTime[i] > minTime) {
                     // keep this triangle
                     if (newNumIndexes != i) {
                         for (j = 0; j < 3; j++) {
-                            decals.tri.getIndexes().getValues().put(newNumIndexes + j, decals.tri.getIndexes().getValues().get(i + j));
+                            decals.tri.indexes[newNumIndexes + j] = decals.tri.indexes[i + j];
                             decals.indexStartTime[newNumIndexes + j] = decals.indexStartTime[i + j];
                         }
                     }
@@ -345,12 +345,12 @@ public class ModelDecal {
                 return nextDecal;
             }
 
-            decals.tri.getIndexes().setNumValues(newNumIndexes);
+            decals.tri.numIndexes = newNumIndexes;
 
 //	memset( inUse, 0, sizeof( inUse ) );
             Arrays.fill(inUse, 0);
-            for (i = 0; i < decals.tri.getIndexes().getNumValues(); i++) {
-                inUse[decals.tri.getIndexes().getValues().get(i)] = 1;
+            for (i = 0; i < decals.tri.numIndexes; i++) {
+                inUse[decals.tri.indexes[i]] = 1;
             }
 
             newNumVerts = 0;
@@ -365,8 +365,8 @@ public class ModelDecal {
             }
             decals.tri.numVerts = newNumVerts;
 
-            for (i = 0; i < decals.tri.getIndexes().getNumValues(); i++) {
-                decals.tri.getIndexes().getValues().put(i, inUse[decals.tri.getIndexes().getValues().get(i)]);
+            for (i = 0; i < decals.tri.numIndexes; i++) {
+                decals.tri.indexes[i] = inUse[decals.tri.indexes[i]];
             }
 
             return decals;
@@ -379,17 +379,17 @@ public class ModelDecal {
             float f;
             decalInfo_t decalInfo;
 
-            if (this.tri.getIndexes().getNumValues() == 0) {
+            if (tri.numIndexes == 0) {
                 return;
             }
 
             // fade down all the verts with time
-            decalInfo = this.material.GetDecalInfo();
+            decalInfo = material.GetDecalInfo();
             maxTime = decalInfo.stayTime + decalInfo.fadeTime;
 
             // set vertex colors and remove faded triangles
-            for (i = 0; i < this.tri.getIndexes().getNumValues(); i += 3) {
-                int deltaTime = tr.viewDef.renderView.time - this.indexStartTime[i];
+            for (i = 0; i < tri.numIndexes; i += 3) {
+                int deltaTime = tr.viewDef.renderView.time - indexStartTime[i];
 
                 if (deltaTime > maxTime) {
                     continue;
@@ -403,17 +403,17 @@ public class ModelDecal {
                 f = (float) deltaTime / decalInfo.fadeTime;
 
                 for (j = 0; j < 3; j++) {
-                    final int ind = this.tri.getIndexes().getValues().get(i + j);
+                    int ind = tri.indexes[i + j];
 
                     for (int k = 0; k < 4; k++) {
-                        final float fcolor = decalInfo.start[k] + ((decalInfo.end[k] - decalInfo.start[k]) * f);
-                        int icolor = idMath.FtoiFast(fcolor * this.vertDepthFade[ind] * 255.0f);
+                        float fcolor = decalInfo.start[k] + (decalInfo.end[k] - decalInfo.start[k]) * f;
+                        int icolor = idMath.FtoiFast(fcolor * vertDepthFade[ind] * 255.0f);
                         if (icolor < 0) {
                             icolor = 0;
                         } else if (icolor > 255) {
                             icolor = 255;
                         }
-                        this.tri.verts[ind].getColor().put(k, (byte) icolor);
+                        tri.verts[ind].color[k] = (byte) icolor;
                     }
                 }
             }
@@ -422,18 +422,18 @@ public class ModelDecal {
             // because if we are running multi-threaded, we wouldn't
             // be able to reorganize the index list
             srfTriangles_s newTri;//(srfTriangles_s) R_FrameAlloc(sizeof(newTri));
-            newTri = this.tri;
+            newTri = tri;
 
             // copy the current vertexes to temp vertex cache
-            newTri.ambientCache = vertexCache.AllocFrameTemp(this.tri.verts, this.tri.numVerts * idDrawVert.BYTES);
+            newTri.ambientCache = vertexCache.AllocFrameTemp(tri.verts, tri.numVerts * idDrawVert.BYTES);
 
             // create the drawsurf
-            R_AddDrawSurf(newTri, space, space.entityDef.parms, this.material, space.scissorRect);
+            R_AddDrawSurf(newTri, space, space.entityDef.parms, material, space.scissorRect);
         }
 
         // Returns the next decal in the chain.
         public idRenderModelDecal Next() {
-            return this.nextDecal;
+            return nextDecal;
         }
 
         public void ReadFromDemoFile(idDemoFile f) {
@@ -451,14 +451,14 @@ public class ModelDecal {
             float invFadeDepth, fade;
             decalInfo_t decalInfo;
 
-            if (((this.material == null) || (this.material == decalMaterial))
-                    && ((this.tri.numVerts + w.GetNumPoints()) < MAX_DECAL_VERTS)
-                    && ((this.tri.getIndexes().getNumValues() + ((w.GetNumPoints() - 2) * 3)) < MAX_DECAL_INDEXES)) {
+            if ((material == null || material == decalMaterial)
+                    && tri.numVerts + w.GetNumPoints() < MAX_DECAL_VERTS
+                    && tri.numIndexes + (w.GetNumPoints() - 2) * 3 < MAX_DECAL_INDEXES) {
 
-                this.material = decalMaterial;
+                material = decalMaterial;
 
                 // add to this decal
-                decalInfo = this.material.GetDecalInfo();
+                decalInfo = material.GetDecalInfo();
                 invFadeDepth = -1.0f / fadeDepth;
 
                 for (i = 0; i < w.GetNumPoints(); i++) {
@@ -472,10 +472,10 @@ public class ModelDecal {
                         fade = 1.0f;
                     }
                     fade = 1.0f - fade;
-                    this.vertDepthFade[this.tri.numVerts + i] = fade;
-                    this.tri.verts[this.tri.numVerts + i].xyz = w.oGet(i).ToVec3();
-                    this.tri.verts[this.tri.numVerts + i].st.oSet(0, w.oGet(i).s);
-                    this.tri.verts[this.tri.numVerts + i].st.oSet(1, w.oGet(i).t);
+                    vertDepthFade[tri.numVerts + i] = fade;
+                    tri.verts[tri.numVerts + i].xyz = w.oGet(i).ToVec3();
+                    tri.verts[tri.numVerts + i].st.oSet(0, w.oGet(i).s);
+                    tri.verts[tri.numVerts + i].st.oSet(1, w.oGet(i).t);
                     for (int k = 0; k < 4; k++) {
                         int icolor = idMath.FtoiFast(decalInfo.start[k] * fade * 255.0f);
                         if (icolor < 0) {
@@ -483,28 +483,28 @@ public class ModelDecal {
                         } else if (icolor > 255) {
                             icolor = 255;
                         }
-                        this.tri.verts[this.tri.numVerts + i].getColor().put(k, (byte) icolor);
+                        tri.verts[tri.numVerts + i].color[k] = (byte) icolor;
                     }
                 }
                 for (i = 2; i < w.GetNumPoints(); i++) {
-                    this.tri.getIndexes().getValues().put(this.tri.getIndexes().getNumValues() + 0, this.tri.numVerts);
-                    this.tri.getIndexes().getValues().put(this.tri.getIndexes().getNumValues() + 1, (this.tri.numVerts + i) - 1);
-                    this.tri.getIndexes().getValues().put(this.tri.getIndexes().getNumValues() + 2, this.tri.numVerts + i);
-                    this.indexStartTime[this.tri.getIndexes().getNumValues()]
-                            = this.indexStartTime[this.tri.getIndexes().getNumValues() + 1]
-                            = this.indexStartTime[this.tri.getIndexes().getNumValues() + 2] = startTime;
-                    this.tri.getIndexes().setNumValues(this.tri.getIndexes().getNumValues() + 3);
+                    tri.indexes[tri.numIndexes + 0] = tri.numVerts;
+                    tri.indexes[tri.numIndexes + 1] = tri.numVerts + i - 1;
+                    tri.indexes[tri.numIndexes + 2] = tri.numVerts + i;
+                    indexStartTime[tri.numIndexes]
+                            = indexStartTime[tri.numIndexes + 1]
+                            = indexStartTime[tri.numIndexes + 2] = startTime;
+                    tri.numIndexes += 3;
                 }
-                this.tri.numVerts += w.GetNumPoints();
+                tri.numVerts += w.GetNumPoints();
                 return;
             }
 
             // if we are at the end of the list, create a new decal
-            if (null == this.nextDecal) {
-                this.nextDecal = idRenderModelDecal.Alloc();
+            if (null == nextDecal) {
+                nextDecal = idRenderModelDecal.Alloc();
             }
             // let the next decal on the chain take a look
-            this.nextDecal.AddWinding(w, decalMaterial, fadePlanes, fadeDepth, startTime);
+            nextDecal.AddWinding(w, decalMaterial, fadePlanes, fadeDepth, startTime);
         }
 
         // Adds depth faded triangles for the winding to the appropriate
@@ -526,5 +526,5 @@ public class ModelDecal {
 
             AddWinding(front, decalMaterial, fadePlanes, fadeDepth, startTime);
         }
-    }
+    };
 }

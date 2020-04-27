@@ -49,11 +49,7 @@ public class Token {
 //	friend class idParser;
 //	friend class idLexer;
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		public    int     type;                   // token type
+        public    int     type;                   // token type
         public    int     subtype;                // token sub type
         public    int     line;                   // line in script the token was on
         public    int     linesCrossed;           // number of lines crossed in white space before token
@@ -90,13 +86,13 @@ public class Token {
 
         // double value of TT_NUMBER
         public double GetDoubleValue() {
-            if (this.type != TT_NUMBER) {
+            if (type != TT_NUMBER) {
                 return 0.0;
             }
-            if (0 == (this.subtype & TT_VALUESVALID)) {
+            if (0 == (subtype & TT_VALUESVALID)) {
                 NumberValue();
             }
-            return this.floatValue;
+            return floatValue;
         }
 
         // float value of TT_NUMBER
@@ -105,13 +101,13 @@ public class Token {
         }
 
         public long GetUnsignedLongValue() {        // unsigned long value of TT_NUMBER
-            if (this.type != TT_NUMBER) {
+            if (type != TT_NUMBER) {
                 return 0;
             }
-            if (0 == (this.subtype & TT_VALUESVALID)) {
+            if (0 == (subtype & TT_VALUESVALID)) {
                 NumberValue();
             }
-            return this.intValue;
+            return intValue;
         }
 
         public int GetIntValue() {                // int value of TT_NUMBER
@@ -119,13 +115,13 @@ public class Token {
         }
 
         public boolean WhiteSpaceBeforeToken() {// returns length of whitespace before token
-            return (this.whiteSpaceEnd_p > this.whiteSpaceStart_p);
+            return (whiteSpaceEnd_p > whiteSpaceStart_p);
         }
 
         public void ClearTokenWhiteSpace() {        // forget whitespace before token
-            this.whiteSpaceStart_p = 0;
-            this.whiteSpaceEnd_p = 0;
-            this.linesCrossed = 0;
+            whiteSpaceStart_p = 0;
+            whiteSpaceEnd_p = 0;
+            linesCrossed = 0;
         }
 //
 
@@ -136,36 +132,36 @@ public class Token {
             int pIndex = 0;
             double m;
 
-            assert (this.type == TT_NUMBER);
+            assert (type == TT_NUMBER);
             p = c_str();
-            this.floatValue = 0;
-            this.intValue = 0;
+            floatValue = 0;
+            intValue = 0;
             // floating point number
-            if ((this.subtype & TT_FLOAT) != 0) {
-                if ((this.subtype & (TT_INFINITE | TT_INDEFINITE | TT_NAN)) != 0) {
-                    if ((this.subtype & TT_INFINITE) != 0) {            // 1.#INF
-                        final int inf = 0x7f800000;
-                        this.floatValue = (inf);//TODO:WHY THE DOUBLE CAST?
-                    } else if ((this.subtype & TT_INDEFINITE) != 0) {    // 1.#IND
-                        final int ind = 0xffc00000;
-                        this.floatValue = (ind);
-                    } else if ((this.subtype & TT_NAN) != 0) {			// 1.#QNAN
-                        final int nan = 0x7fc00000;
-                        this.floatValue = (nan);
+            if ((subtype & TT_FLOAT) != 0) {
+                if ((subtype & (TT_INFINITE | TT_INDEFINITE | TT_NAN)) != 0) {
+                    if ((subtype & TT_INFINITE) != 0) {            // 1.#INF
+                        int inf = 0x7f800000;
+                        floatValue = (double) ((float) inf);//TODO:WHY THE DOUBLE CAST?
+                    } else if ((subtype & TT_INDEFINITE) != 0) {    // 1.#IND
+                        int ind = 0xffc00000;
+                        floatValue = (double) ((float) ind);
+                    } else if ((subtype & TT_NAN) != 0) {			// 1.#QNAN
+                        int nan = 0x7fc00000;
+                        floatValue = (double) ((float) nan);
                     }
                 } else {
-                    while ( /*p[pIndex]!=null &&*/(p[pIndex] != '.') && (p[pIndex] != 'e')) {
-                        this.floatValue = (this.floatValue * 10.0) + (p[pIndex] - '0');
+                    while ( /*p[pIndex]!=null &&*/p[pIndex] != '.' && p[pIndex] != 'e') {
+                        floatValue = floatValue * 10.0 + (double) (p[pIndex] - '0');
                         pIndex++;
                     }
                     if (p[pIndex] == '.') {
                         pIndex++;
-                        for (m = 0.1; (pIndex < p.length) && (p[pIndex] != 'e'); pIndex++) {
-                            this.floatValue = this.floatValue + ((p[pIndex] - '0') * m);
+                        for (m = 0.1; pIndex < p.length && p[pIndex] != 'e'; pIndex++) {
+                            floatValue = floatValue + (double) (p[pIndex] - '0') * m;
                             m *= 0.1;
                         }
                     }
-                    if ((pIndex < p.length) && (p[pIndex] == 'e')) {
+                    if (pIndex < p.length && p[pIndex] == 'e') {
                         pIndex++;
                         if (p[pIndex] == '-') {
                             div = true;
@@ -178,86 +174,86 @@ public class Token {
                         }
 
                         for (pow = 0; pIndex < p.length; pIndex++) {
-                            pow = (pow * 10) + p[pIndex] - '0';
+                            pow = pow * 10 + (int) (p[pIndex] - '0');
                         }
                         for (m = 1.0, i = 0; i < pow; i++) {
                             m *= 10.0;
                         }
                         if (div) {
-                            this.floatValue /= m;
+                            floatValue /= m;
                         } else {
-                            this.floatValue *= m;
+                            floatValue *= m;
                         }
                     }
                 }
-                this.intValue = idMath.Ftol((float) this.floatValue);
-            } else if ((this.subtype & TT_DECIMAL) != 0) {
+                intValue = idMath.Ftol((float) floatValue);
+            } else if ((subtype & TT_DECIMAL) != 0) {
                 while (pIndex < p.length) {
-                    this.intValue = (this.intValue * 10) + (p[pIndex] - '0');
+                    intValue = intValue * 10 + (p[pIndex] - '0');
                     pIndex++;
                 }
-                this.floatValue = this.intValue;
-            } else if ((this.subtype & TT_IPADDRESS) != 0) {
+                floatValue = intValue;
+            } else if ((subtype & TT_IPADDRESS) != 0) {
                 c = 0;
                 while (/*p[pIndex] &&*/p[pIndex] != ':') {
                     if (p[pIndex] == '.') {
                         while (c != 3) {
-                            this.intValue = this.intValue * 10;
+                            intValue = intValue * 10;
                             c++;
                         }
                         c = 0;
                     } else {
-                        this.intValue = (this.intValue * 10) + (p[pIndex] - '0');
+                        intValue = intValue * 10 + (p[pIndex] - '0');
                         c++;
                     }
                     pIndex++;
                 }
                 while (c != 3) {
-                    this.intValue = this.intValue * 10;
+                    intValue = intValue * 10;
                     c++;
                 }
-                this.floatValue = this.intValue;
-            } else if ((this.subtype & TT_OCTAL) != 0) {
+                floatValue = intValue;
+            } else if ((subtype & TT_OCTAL) != 0) {
                 // step over the first zero
                 pIndex += 1;
                 while (pIndex < p.length) {
-                    this.intValue = (this.intValue << 3) + (p[pIndex] - '0');
+                    intValue = (intValue << 3) + (p[pIndex] - '0');
                     pIndex++;
                 }
-                this.floatValue = this.intValue;
-            } else if ((this.subtype & TT_HEX) != 0) {
+                floatValue = intValue;
+            } else if ((subtype & TT_HEX) != 0) {
                 // step over the leading 0x or 0X
                 pIndex += 2;
                 while (pIndex < p.length) {
-                    this.intValue <<= 4;
-                    if ((p[pIndex] >= 'a') && (p[pIndex] <= 'f')) {
-                        this.intValue += (p[pIndex] - 'a') + 10;
-                    } else if ((p[pIndex] >= 'A') && (p[pIndex] <= 'F')) {
-                        this.intValue += (p[pIndex] - 'A') + 10;
+                    intValue <<= 4;
+                    if (p[pIndex] >= 'a' && p[pIndex] <= 'f') {
+                        intValue += p[pIndex] - 'a' + 10;
+                    } else if (p[pIndex] >= 'A' && p[pIndex] <= 'F') {
+                        intValue += p[pIndex] - 'A' + 10;
                     } else {
-                        this.intValue += p[pIndex] - '0';
+                        intValue += p[pIndex] - '0';
                     }
                     p[pIndex]++;
                 }
-                this.floatValue = this.intValue;
-            } else if ((this.subtype & TT_BINARY) != 0) {
+                floatValue = intValue;
+            } else if ((subtype & TT_BINARY) != 0) {
                 // step over the leading 0b or 0B
                 pIndex += 2;
                 while (pIndex < p.length) {
-                    this.intValue = (this.intValue << 1) + (p[pIndex] - '0');
+                    intValue = (intValue << 1) + (p[pIndex] - '0');
                     pIndex++;
                 }
-                this.floatValue = this.intValue;
+                floatValue = intValue;
             }
-            this.subtype |= TT_VALUESVALID;
+            subtype |= TT_VALUESVALID;
         }
 
         // append character without adding trailing zero
         protected void AppendDirty(final char a) {
-            EnsureAlloced(Length() + 2, true);
+            EnsureAlloced(len + 2, true);
 //	data[len++] = a;
-            setData(getData() + a);
-            // setLen(Length());
+            data += a;
+            len++;
         }
 
         idToken oSet(final idToken token) {
@@ -292,8 +288,8 @@ public class Token {
             }
 
             final idToken other = (idToken) obj;
-            return this.getData().startsWith(other.getData());
+            return this.data.startsWith(other.data);
         }
 
-    }
+    };
 }

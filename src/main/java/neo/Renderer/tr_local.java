@@ -33,6 +33,9 @@ import static neo.Renderer.RenderSystem_init.r_renderer;
 import static neo.Renderer.RenderSystem_init.r_screenFraction;
 import static neo.Renderer.RenderSystem_init.r_showDemo;
 import static neo.Renderer.VertexCache.vertexCache;
+import static neo.Renderer.qgl.qglGetError;
+import static neo.Renderer.qgl.qglReadBuffer;
+import static neo.Renderer.qgl.qglReadPixels;
 import static neo.Renderer.tr_backend.RB_ShowImages;
 import static neo.Renderer.tr_font.BUILD_FREETYPE;
 import static neo.Renderer.tr_font.R_DoneFreeType;
@@ -72,24 +75,22 @@ import static neo.framework.Session.session;
 import static neo.idlib.Lib.colorWhite;
 import static neo.idlib.Text.Str.C_COLOR_DEFAULT;
 import static neo.idlib.math.Vector.getVec3_zero;
-import static neo.open.gl.QGL.qglGetError;
-import static neo.open.gl.QGL.qglReadBuffer;
-import static neo.open.gl.QGL.qglReadPixels;
-import static neo.open.gl.QGLConstantsIfc.GL_BACK;
-import static neo.open.gl.QGLConstantsIfc.GL_FRONT;
-import static neo.open.gl.QGLConstantsIfc.GL_NO_ERROR;
-import static neo.open.gl.QGLConstantsIfc.GL_RGB;
-import static neo.open.gl.QGLConstantsIfc.GL_UNSIGNED_BYTE;
 import static neo.sys.win_glimp.GLimp_Shutdown;
+import static org.lwjgl.opengl.GL11.GL_BACK;
+import static org.lwjgl.opengl.GL11.GL_FRONT;
+import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
+import static org.lwjgl.opengl.GL11.GL_RGB;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+
+import org.lwjgl.BufferUtils;
 
 import neo.Renderer.Cinematic.idCinematic;
 import neo.Renderer.GuiModel.idGuiModel;
@@ -129,8 +130,6 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import neo.open.NeoIntBuffer;
-import neo.open.Nio;
 
 /**
  *
@@ -177,74 +176,74 @@ public class tr_local {
 
         // clear to backwards values
         public void Clear() {
-            this.x1 = this.y1 = 32000;
-            this.x2 = this.y2 = -32000;
-            this.zmin = 0.0f;
-            this.zmax = 1.0f;
+            x1 = y1 = 32000;
+            x2 = y2 = -32000;
+            zmin = 0.0f;
+            zmax = 1.0f;
         }
 
         public void AddPoint(float x, float y) {			// adds a point
             final short ix = (short) idMath.FtoiFast(x);
             final short iy = (short) idMath.FtoiFast(y);
 
-            if (ix < this.x1) {
-                this.x1 = ix;
+            if (ix < x1) {
+                x1 = ix;
             }
-            if (ix > this.x2) {
-                this.x2 = ix;
+            if (ix > x2) {
+                x2 = ix;
             }
-            if (iy < this.y1) {
-                this.y1 = iy;
+            if (iy < y1) {
+                y1 = iy;
             }
-            if (iy > this.y2) {
-                this.y2 = iy;
+            if (iy > y2) {
+                y2 = iy;
             }
         }
 
         public void Expand() {								// expand by one pixel each way to fix roundoffs
-            this.x1--;
-            this.y1--;
-            this.x2++;
-            this.y2++;
+            x1--;
+            y1--;
+            x2++;
+            y2++;
         }
 
         public void Intersect(final idScreenRect rect) {
-            if (rect.x1 > this.x1) {
-                this.x1 = rect.x1;
+            if (rect.x1 > x1) {
+                x1 = rect.x1;
             }
-            if (rect.x2 < this.x2) {
-                this.x2 = rect.x2;
+            if (rect.x2 < x2) {
+                x2 = rect.x2;
             }
-            if (rect.y1 > this.y1) {
-                this.y1 = rect.y1;
+            if (rect.y1 > y1) {
+                y1 = rect.y1;
             }
-            if (rect.y2 < this.y2) {
-                this.y2 = rect.y2;
+            if (rect.y2 < y2) {
+                y2 = rect.y2;
             }
         }
 
         public void Union(final idScreenRect rect) {
-            if (rect.x1 < this.x1) {
-                this.x1 = rect.x1;
+            if (rect.x1 < x1) {
+                x1 = rect.x1;
             }
-            if (rect.x2 > this.x2) {
-                this.x2 = rect.x2;
+            if (rect.x2 > x2) {
+                x2 = rect.x2;
             }
-            if (rect.y1 < this.y1) {
-                this.y1 = rect.y1;
+            if (rect.y1 < y1) {
+                y1 = rect.y1;
             }
-            if (rect.y2 > this.y2) {
-                this.y2 = rect.y2;
+            if (rect.y2 > y2) {
+                y2 = rect.y2;
             }
         }
 
         @Override
         public int hashCode() {
             int hash = 3;
-            hash = (47 * hash) + this.x1;
-            hash = (47 * hash) + this.y1;
-            hash = (47 * hash) + this.x2;
-            hash = (47 * hash) + this.y2;
+            hash = 47 * hash + this.x1;
+            hash = 47 * hash + this.y1;
+            hash = 47 * hash + this.x2;
+            hash = 47 * hash + this.y2;
             return hash;
         }
 
@@ -274,16 +273,16 @@ public class tr_local {
 
         @Deprecated
         public boolean Equals(final idScreenRect rect) {
-            return ((this.x1 == rect.x1) && (this.x2 == rect.x2) && (this.y1 == rect.y1) && (this.y2 == rect.y2));
+            return (x1 == rect.x1 && x2 == rect.x2 && y1 == rect.y1 && y2 == rect.y2);
         }
 
         public boolean IsEmpty() {
-            return ((this.x1 > this.x2) || (this.y1 > this.y2));
+            return (x1 > x2 || y1 > y2);
         }
 
         @Override
         public String toString() {
-            return "idScreenRect{" + "x1=" + this.x1 + ", y1=" + this.y1 + ", x2=" + this.x2 + ", y2=" + this.y2 + '}';
+            return "idScreenRect{" + "x1=" + x1 + ", y1=" + y1 + ", x2=" + x2 + ", y2=" + y2 + '}';
         }
 
         static idScreenRect[] generateArray(final int length) {
@@ -292,7 +291,7 @@ public class tr_local {
                     limit(length).
                     toArray(idScreenRect[]::new);
         }
-    }
+    };
 
     enum demoCommand_t {
 
@@ -311,7 +310,7 @@ public class tr_local {
         DC_SET_PORTAL_STATE,
         DC_UPDATE_SOUNDOCCLUSION,
         DC_GUI_MODEL
-    }
+    };
     /*
      ==============================================================================
 
@@ -346,7 +345,7 @@ public class tr_local {
 
         private static int DBG_counter = 0;
         private final  int DBG_count   = DBG_counter++;
-    }
+    };
 
     public static class shadowFrustum_t {
 
@@ -363,11 +362,11 @@ public class tr_local {
         // that has adjacent frustums doesn't need to
 
         public shadowFrustum_t() {
-            for (int p = 0; p < this.planes.length; p++) {
-                this.planes[p] = new idPlane();
+            for (int p = 0; p < planes.length; p++) {
+                planes[p] = new idPlane();
             }
         }
-    }
+    };
 
 // areas have references to hold all the lights and entities in them
     public static class areaReference_s {
@@ -378,7 +377,7 @@ public class tr_local {
         idRenderEntityLocal entity;         // only one of entity / light will be non-NULL
         idRenderLightLocal light;           // only one of entity / light will be non-NULL
         portalArea_s area;                  // so owners can find all the areas they are in
-    }
+    };
 
     // idRenderLight should become the new public interface replacing the qhandle_t to light defs in the idRenderWorld interface
     public static abstract class idRenderLight {
@@ -397,7 +396,7 @@ public class tr_local {
         public abstract void ForceUpdate();
 
         public abstract int GetIndex();
-    }
+    };
 
     // idRenderEntity should become the new public interface replacing the qhandle_t to entity defs in the idRenderWorld interface
     public static abstract class idRenderEntity {
@@ -421,7 +420,7 @@ public class tr_local {
         public abstract void ProjectOverlay(final idPlane[] localTextureAxis/*[2]*/, final idMaterial material);
 
         public abstract void RemoveDecals();
-    }
+    };
 
     public static class idRenderLightLocal extends idRenderLight {
 
@@ -472,42 +471,42 @@ public class tr_local {
         //
 
         public idRenderLightLocal() {
-            this.parms = new renderLight_s();//memset( & parms, 0, sizeof(parms));
+            parms = new renderLight_s();//memset( & parms, 0, sizeof(parms));
 //            memset(modelMatrix, 0, sizeof(modelMatrix));
 //            memset(shadowFrustums, 0, sizeof(shadowFrustums));
-            for (int s = 0; s < this.shadowFrustums.length; s++) {
-                this.shadowFrustums[s] = new shadowFrustum_t();
+            for (int s = 0; s < shadowFrustums.length; s++) {
+                shadowFrustums[s] = new shadowFrustum_t();
             }
 //            memset(lightProject, 0, sizeof(lightProject));
-            for (int l = 0; l < this.lightProject.length; l++) {
-                this.lightProject[l] = new idPlane();
+            for (int l = 0; l < lightProject.length; l++) {
+                lightProject[l] = new idPlane();
             }
 //            memset(frustum, 0, sizeof(frustum));
-            for (int f = 0; f < this.frustum.length; f++) {
-                this.frustum[f] = new idPlane();
+            for (int f = 0; f < frustum.length; f++) {
+                frustum[f] = new idPlane();
             }
 //            memset(frustumWindings, 0, sizeof(frustumWindings));
-            for (int f = 0; f < this.frustumWindings.length; f++) {
-                this.frustumWindings[f] = new idWinding();
+            for (int f = 0; f < frustumWindings.length; f++) {
+                frustumWindings[f] = new idWinding();
             }
 
-            this.lightHasMoved = false;
-            this.world = null;
-            this.index = 0;
-            this.areaNum = 0;
-            this.lastModifiedFrameNum = 0;
-            this.archived = false;
-            this.lightShader = null;
-            this.falloffImage = null;
-            this.globalLightOrigin = getVec3_zero();
-            this.frustumTris = null;
-            this.numShadowFrustums = 0;
-            this.viewCount = 0;
-            this.viewLight = null;
-            this.references = null;
-            this.foggedPortals = null;
-            this.firstInteraction = null;
-            this.lastInteraction = null;
+            lightHasMoved = false;
+            world = null;
+            index = 0;
+            areaNum = 0;
+            lastModifiedFrameNum = 0;
+            archived = false;
+            lightShader = null;
+            falloffImage = null;
+            globalLightOrigin = getVec3_zero();
+            frustumTris = null;
+            numShadowFrustums = 0;
+            viewCount = 0;
+            viewLight = null;
+            references = null;
+            foggedPortals = null;
+            firstInteraction = null;
+            lastInteraction = null;
         }
 
         @Override
@@ -528,9 +527,9 @@ public class tr_local {
 
         @Override
         public int GetIndex() {
-            return this.index;
+            return index;
         }
-    }
+    };
 
     public static class idRenderEntityLocal extends idRenderEntity {
 
@@ -578,70 +577,64 @@ public class tr_local {
         private final  int DBG_count = DBG_counter++;
 
         public idRenderEntityLocal() {
-            this.parms = new renderEntity_s();//memset( parms, 0, sizeof( parms ) );
+            parms = new renderEntity_s();//memset( parms, 0, sizeof( parms ) );
 //	memset( modelMatrix, 0, sizeof( modelMatrix ) );
 
-            this.world = null;
-            this.index = 0;
-            this.lastModifiedFrameNum = 0;
-            this.archived = false;
-            this.dynamicModel = null;
-            this.dynamicModelFrameCount = 0;
-            this.cachedDynamicModel = null;
-            this.referenceBounds = new idBounds();//bounds_zero;//TODO:replace bounds_zero with something useful?
-            this.viewCount = 0;
-            this.viewEntity = null;
-            this.visibleCount = 0;
-            this.decals = null;
-            this.overlay = null;
-            this.entityRefs = null;
-            this.firstInteraction = null;
-            this.lastInteraction = null;
-            this.needsPortalSky = false;
+            world = null;
+            index = 0;
+            lastModifiedFrameNum = 0;
+            archived = false;
+            dynamicModel = null;
+            dynamicModelFrameCount = 0;
+            cachedDynamicModel = null;
+            referenceBounds = new idBounds();//bounds_zero;//TODO:replace bounds_zero with something useful?
+            viewCount = 0;
+            viewEntity = null;
+            visibleCount = 0;
+            decals = null;
+            overlay = null;
+            entityRefs = null;
+            firstInteraction = null;
+            lastInteraction = null;
+            needsPortalSky = false;
         }
 
         @Override
         public void FreeRenderEntity() {
-            // @see https://github.com/dhewm/dhewm3/blob/master/neo/renderer/RenderEntity.cpp Method is empty        	
-        	//throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
         public void UpdateRenderEntity(renderEntity_s re, boolean forceUpdate) {
-            // @see https://github.com/dhewm/dhewm3/blob/master/neo/renderer/RenderEntity.cpp Method is empty        	
-        	//throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
         public void GetRenderEntity(renderEntity_s re) {
-            // @see https://github.com/dhewm/dhewm3/blob/master/neo/renderer/RenderEntity.cpp Method is empty        	
-        	//throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
         public void ForceUpdate() {
-            // @see https://github.com/dhewm/dhewm3/blob/master/neo/renderer/RenderEntity.cpp Method is empty        	
-        	//throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
         public int GetIndex() {
-            return this.index;
+            return index;
         }
 
         // overlays are extra polygons that deform with animating models for blood and damage marks
         @Override
         public void ProjectOverlay(idPlane[] localTextureAxis, idMaterial material) {
-            // @see https://github.com/dhewm/dhewm3/blob/master/neo/renderer/RenderEntity.cpp Method is empty        	
-        	//throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
         public void RemoveDecals() {
-            // @see https://github.com/dhewm/dhewm3/blob/master/neo/renderer/RenderEntity.cpp Method is empty        	
-        	//throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported yet.");
         }
-    }
+    };
 
     // viewLights are allocated on the frame temporary stack memory
     // a viewLight contains everything that the back end needs out of an idRenderLightLocal,
@@ -686,7 +679,7 @@ public class tr_local {
         public final drawSurf_s[] localShadows = {null};            // don't shadow local Surfaces
         public final drawSurf_s[] globalInteractions = {null};      // get shadows from everything
         public final drawSurf_s[] translucentInteractions = {null}; // get shadows from everything
-    }
+    };
 
     /**
      * a viewEntity is created whenever a idRenderEntityLocal is considered for
@@ -714,8 +707,7 @@ public class tr_local {
         public float               modelDepthHack;
         //
         public float[]             modelMatrix     = new float[16];         // local coords to global coords
-        //private final float[]      modelViewMatrix = new float[16];         // local coords to eye coords
-        private final FloatBuffer  modelViewMatrix = Nio.newFloatBuffer(16);         // local coords to eye coords
+        public float[]             modelViewMatrix = new float[16];         // local coords to eye coords
 
         private static int DBG_COUNTER = 0;
         private final  int DBG_COUNT   = DBG_COUNTER++;
@@ -730,10 +722,8 @@ public class tr_local {
             this.scissorRect = new idScreenRect(v.scissorRect);
             this.weaponDepthHack = v.weaponDepthHack;
             this.modelDepthHack = v.modelDepthHack;
-            //System.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
-            Nio.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
-            //System.arraycopy(v.getModelViewMatrix(), 0, this.getModelViewMatrix(), 0, 16);
-            Nio.buffercopy(v.getModelViewMatrix(), 0, this.getModelViewMatrix(), 0, 16);
+            System.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
+            System.arraycopy(v.modelViewMatrix, 0, this.modelViewMatrix, 0, 16);
         }
 
         public void memSetZero() {
@@ -743,12 +733,7 @@ public class tr_local {
             this.weaponDepthHack = false;
             this.modelDepthHack = 0;
         }
-
-		public FloatBuffer getModelViewMatrix() {
-			return modelViewMatrix;
-		}
-
-    }
+    };
     static final int MAX_CLIP_PLANES = 1;				// we may expand this to six for some subview issues
 
     // viewDefs are allocated on the frame temporary stack memory
@@ -757,8 +742,7 @@ public class tr_local {
 
         public renderView_s       renderView;
 //
-        //private final float[]     projectionMatrix = new float[16];
-        private final FloatBuffer projectionMatrix = Nio.newFloatBuffer(16);
+        public float[]            projectionMatrix = new float[16];
         public viewEntity_s       worldSpace;
 //
         public idRenderWorldLocal renderWorld;
@@ -826,7 +810,7 @@ public class tr_local {
 
         public viewDef_s(final viewDef_s v) {
             this.renderView = new renderView_s(v.renderView);
-            Nio.buffercopy(v.getProjectionMatrix(), 0, this.getProjectionMatrix(), 0, 16);
+            System.arraycopy(v.projectionMatrix, 0, this.projectionMatrix, 0, 16);
             this.worldSpace = new viewEntity_s(v.worldSpace);
             this.renderWorld = v.renderWorld;
             this.floatTime = v.floatTime;
@@ -838,9 +822,8 @@ public class tr_local {
             this.numClipPlanes = v.numClipPlanes;
             this.clipPlanes = new idPlane[MAX_CLIP_PLANES];
             for (int i = 0; i < MAX_CLIP_PLANES; i++) {
-                if (v.clipPlanes[i] != null) {
-					this.clipPlanes[i].oSet(v.clipPlanes[i]);
-				}
+                if (v.clipPlanes[i] != null)
+                    this.clipPlanes[i].oSet(v.clipPlanes[i]);
             }
             this.viewport = new idScreenRect(v.viewport);
             this.scissor = new idScreenRect(v.scissor);
@@ -856,13 +839,9 @@ public class tr_local {
             this.areaNum = v.areaNum;
             if (v.connectedAreas != null) {
                 this.connectedAreas = new boolean[v.connectedAreas.length];
-                Nio.arraycopy(v.connectedAreas, 0, this.connectedAreas, 0, v.connectedAreas.length);
+                System.arraycopy(v.connectedAreas, 0, this.connectedAreas, 0, v.connectedAreas.length);
             }
         }
-
-		public FloatBuffer getProjectionMatrix() {
-			return projectionMatrix;
-		}
     }
 
 // complex light / surface interactions are broken up into multiple passes of a
@@ -895,7 +874,7 @@ public class tr_local {
         void oSet(drawInteraction_t d) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     /*
      =============================================================
@@ -913,7 +892,7 @@ public class tr_local {
         RC_SET_BUFFER,
         RC_COPY_RENDER,
         RC_SWAP_BUFFERS	// can't just assume swap at end of list because  of forced list submission before syncs
-    }
+    };
 
     static class emptyCommand_t {
 
@@ -928,20 +907,20 @@ public class tr_local {
         void oSet(renderCommand_t next) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     static class setBufferCommand_t extends emptyCommand_t {
 
 //        renderCommand_t commandId, next;
         int/*GLenum*/ buffer;
         int frameCount;
-    }
+    };
 
     static class drawSurfsCommand_t extends emptyCommand_t {
 
 //        renderCommand_t commandId, next;
         viewDef_s viewDef;
-    }
+    };
 
     static class copyRenderCommand_t extends emptyCommand_t {
 
@@ -949,7 +928,7 @@ public class tr_local {
         int x, y, imageWidth, imageHeight;
         idImage image;
         int cubeFace;					// when copying to a cubeMap
-    }
+    };
 //=======================================================================
     // this is the inital allocation for max number of drawsurfs
 // in a given view, but it will automatically grow if needed
@@ -966,7 +945,7 @@ public class tr_local {
         int used;
         int poop;			// so that base is 16 byte aligned
         byte[] base = new byte[4];	// dynamically allocated as [size]
-    }
+    };
 
 // all of the information needed by the back end must be
 // contained in a frameData_t.  This entire structure is
@@ -990,7 +969,7 @@ public class tr_local {
         // commands can be inserted at the front if needed, as for required
         // dynamically generated textures
         emptyCommand_t cmdHead, cmdTail;// may be of other command type based on commandId
-    }
+    };
     public static frameData_t frameData;
 //=======================================================================
 
@@ -1018,7 +997,7 @@ public class tr_local {
         int c_entityUpdates, c_lightUpdates, c_entityReferences, c_lightReferences;
         int c_guiSurfs;
         int frontEndMsec;	// sum of time in all RE_RenderScene's in a frame
-    }
+    };
 
     static class tmu_t {
 
@@ -1027,7 +1006,7 @@ public class tr_local {
         int currentCubeMap;
         int texEnv;
         textureType_t textureType;
-    }
+    };
     static final int MAX_MULTITEXTURE_UNITS = 8;
 
     static class glstate_t {
@@ -1041,11 +1020,11 @@ public class tr_local {
 
         glstate_t() {
             this.tmu = new tmu_t[MAX_MULTITEXTURE_UNITS];
-            for (int a = 0; a < this.tmu.length; a++) {
-                this.tmu[a] = new tmu_t();
+            for (int a = 0; a < tmu.length; a++) {
+                tmu[a] = new tmu_t();
             }
         }
-    }
+    };
 
     static class backEndCounters_t {
 
@@ -1070,7 +1049,7 @@ public class tr_local {
 //
         float maxLightValue;	// for light scale
         int msec;		// total msec for backend run
-    }
+    };
 
 // all state modified by the back end is separated
 // from the front end state
@@ -1086,8 +1065,8 @@ public class tr_local {
 //
         viewLight_s vLight;
         int depthFunc;			// GLS_DEPTHFUNC_EQUAL, or GLS_DEPTHFUNC_LESS for translucent
-        private final FloatBuffer lightTextureMatrix = Nio.newFloatBuffer(16);	// only if lightStage->texture.hasMatrix
-        private final FloatBuffer lightColor = Nio.newFloatBuffer(4);		// evaluation of current light's color stage
+        float[] lightTextureMatrix = new float[16];	// only if lightStage->texture.hasMatrix
+        float[] lightColor = new float[4];		// evaluation of current light's color stage
 //
         float lightScale;			// Every light color calaculation will be multiplied by this,
         // which will guarantee that the result is < tr.backEndRendererMaxLight
@@ -1107,16 +1086,7 @@ public class tr_local {
             this.pc = new backEndCounters_t();
             this.glState = new glstate_t();
         }
-
-        FloatBuffer getLightColor() {
-			return lightColor;
-		}
-
-		FloatBuffer getLightTextureMatrix() {
-			return lightTextureMatrix;
-		}
-
-    }
+    };
     static final int MAX_GUI_SURFACES = 1024;		// default size of the drawSurfs list for guis, will be automatically expanded as needed
 
     enum backEndName_t {
@@ -1127,12 +1097,12 @@ public class tr_local {
         BE_R200,
         BE_ARB2,
         BE_BAD
-    }
+    };
 
     static class renderCrop_t {
 
         public int x, y, width, height;	// these are in physical, OpenGL Y-at-bottom pixels
-    }
+    };
     static final int MAX_RENDER_CROPS = 8;
 
     /*
@@ -1256,50 +1226,50 @@ public class tr_local {
         // ~idRenderSystemLocal( void );
 
         public void Clear() {
-            this.registered = false;
-            this.frameCount = 0;
-            this.viewCount = 0;
-            this.staticAllocCount = 0;
-            this.frameShaderTime = 0.0f;
-            this.viewportOffset[0] = 0;
-            this.viewportOffset[1] = 0;
-            this.tiledViewport[0] = 0;
-            this.tiledViewport[1] = 0;
-            this.backEndRenderer = BE_BAD;
-            this.backEndRendererHasVertexPrograms = false;
-            this.backEndRendererMaxLight = 1.0f;
-            this.ambientLightVector.Zero();
-            this.sortOffset = 0;
-            this.worlds.Clear();
-            this.primaryWorld = null;
+            registered = false;
+            frameCount = 0;
+            viewCount = 0;
+            staticAllocCount = 0;
+            frameShaderTime = 0.0f;
+            viewportOffset[0] = 0;
+            viewportOffset[1] = 0;
+            tiledViewport[0] = 0;
+            tiledViewport[1] = 0;
+            backEndRenderer = BE_BAD;
+            backEndRendererHasVertexPrograms = false;
+            backEndRendererMaxLight = 1.0f;
+            ambientLightVector.Zero();
+            sortOffset = 0;
+            worlds.Clear();
+            primaryWorld = null;
 //            memset(primaryRenderView, 0, sizeof(primaryRenderView));
-            this.primaryRenderView = new renderView_s();
-            this.primaryView = null;
-            this.defaultMaterial = null;
-            this.testImage = null;
-            this.ambientCubeImage = null;
-            this.viewDef = null;
+            primaryRenderView = new renderView_s();
+            primaryView = null;
+            defaultMaterial = null;
+            testImage = null;
+            ambientCubeImage = null;
+            viewDef = null;
 //            memset(pc, 0, sizeof(pc));
-            this.pc = new performanceCounters_t();
+            pc = new performanceCounters_t();
 //            memset(lockSurfacesCmd, 0, sizeof(lockSurfacesCmd));
-            this.lockSurfacesCmd = new drawSurfsCommand_t();
+            lockSurfacesCmd = new drawSurfsCommand_t();
 //            memset(identitySpace, 0, sizeof(identitySpace));
-            this.identitySpace = new viewEntity_s();
-            this.logFile = null;
-            this.stencilIncr = 0;
-            this.stencilDecr = 0;
+            identitySpace = new viewEntity_s();
+            logFile = null;
+            stencilIncr = 0;
+            stencilDecr = 0;
 //            memset(renderCrops, 0, sizeof(renderCrops));
-            this.renderCrops = new renderCrop_t[MAX_RENDER_CROPS];
-            for (int r = 0; r < this.renderCrops.length; r++) {
-                this.renderCrops[r] = new renderCrop_t();
+            renderCrops = new renderCrop_t[MAX_RENDER_CROPS];
+            for (int r = 0; r < renderCrops.length; r++) {
+                renderCrops[r] = new renderCrop_t();
             }
-            this.currentRenderCrop = 0;
-            this.guiRecursionLevel = 0;
-            this.guiModel = null;
-            this.demoGuiModel = null;
+            currentRenderCrop = 0;
+            guiRecursionLevel = 0;
+            guiModel = null;
+            demoGuiModel = null;
 //            memset(gammaTable, 0, sizeof(gammaTable));
-            this.gammaTable = new short[256];
-            this.takingScreenshot = false;
+            gammaTable = new short[256];
+            takingScreenshot = false;
         }
 
         /*
@@ -1314,51 +1284,51 @@ public class tr_local {
                 return;
             }
 
-            final boolean oldVPstate = this.backEndRendererHasVertexPrograms;
+            boolean oldVPstate = backEndRendererHasVertexPrograms;
 
-            this.backEndRenderer = BE_BAD;
+            backEndRenderer = BE_BAD;
 
             if (idStr.Icmp(r_renderer.GetString(), "arb") == 0) {
-                this.backEndRenderer = BE_ARB;
+                backEndRenderer = BE_ARB;
             } else if (idStr.Icmp(r_renderer.GetString(), "arb2") == 0) {
                 if (glConfig.allowARB2Path) {
-                    this.backEndRenderer = BE_ARB2;
+                    backEndRenderer = BE_ARB2;
                 }
             } else if (idStr.Icmp(r_renderer.GetString(), "nv10") == 0) {
                 if (glConfig.allowNV10Path) {
-                    this.backEndRenderer = BE_NV10;
+                    backEndRenderer = BE_NV10;
                 }
             } else if (idStr.Icmp(r_renderer.GetString(), "nv20") == 0) {
                 if (glConfig.allowNV20Path) {
-                    this.backEndRenderer = BE_NV20;
+                    backEndRenderer = BE_NV20;
                 }
             } else if (idStr.Icmp(r_renderer.GetString(), "r200") == 0) {
                 if (glConfig.allowR200Path) {
-                    this.backEndRenderer = BE_R200;
+                    backEndRenderer = BE_R200;
                 }
             }
 
             // fallback
-            if (this.backEndRenderer == BE_BAD) {
+            if (backEndRenderer == BE_BAD) {
                 // choose the best
                 if (glConfig.allowARB2Path) {
-                    this.backEndRenderer = BE_ARB2;
+                    backEndRenderer = BE_ARB2;
                 } else if (glConfig.allowR200Path) {
-                    this.backEndRenderer = BE_R200;
+                    backEndRenderer = BE_R200;
                 } else if (glConfig.allowNV20Path) {
-                    this.backEndRenderer = BE_NV20;
+                    backEndRenderer = BE_NV20;
                 } else if (glConfig.allowNV10Path) {
-                    this.backEndRenderer = BE_NV10;
+                    backEndRenderer = BE_NV10;
                 } else {
                     // the others are considered experimental
-                    this.backEndRenderer = BE_ARB;
+                    backEndRenderer = BE_ARB;
                 }
             }
 
-            this.backEndRendererHasVertexPrograms = false;
-            this.backEndRendererMaxLight = 1.0f;
+            backEndRendererHasVertexPrograms = false;
+            backEndRendererMaxLight = 1.0f;
 
-            switch (this.backEndRenderer) {
+            switch (backEndRenderer) {
                 case BE_ARB:
                     common.Printf("using ARB renderSystem\n");
                     break;
@@ -1367,16 +1337,16 @@ public class tr_local {
                     break;
                 case BE_NV20:
                     common.Printf("using NV20 renderSystem\n");
-                    this.backEndRendererHasVertexPrograms = true;
+                    backEndRendererHasVertexPrograms = true;
                     break;
                 case BE_R200:
                     common.Printf("using R200 renderSystem\n");
-                    this.backEndRendererHasVertexPrograms = true;
+                    backEndRendererHasVertexPrograms = true;
                     break;
                 case BE_ARB2:
                     common.Printf("using ARB2 renderSystem\n");
-                    this.backEndRendererHasVertexPrograms = true;
-                    this.backEndRendererMaxLight = 999;
+                    backEndRendererHasVertexPrograms = true;
+                    backEndRendererMaxLight = 999;
                     break;
                 default:
                     common.FatalError("SetbackEndRenderer: bad back end");
@@ -1385,10 +1355,10 @@ public class tr_local {
             // clear the vertex cache if we are changing between
             // using vertex programs and not, because specular and
             // shadows will be different data
-            if (oldVPstate != this.backEndRendererHasVertexPrograms) {
+            if (oldVPstate != backEndRendererHasVertexPrograms) {
                 vertexCache.PurgeAll();
-                if (this.primaryWorld != null) {
-                    this.primaryWorld.FreeInteractions();
+                if (primaryWorld != null) {
+                    primaryWorld.FreeInteractions();
                 }
             }
 
@@ -1403,15 +1373,15 @@ public class tr_local {
          =====================
          */
         public void RenderViewToViewport(final renderView_s renderView, idScreenRect viewport) {
-            final renderCrop_t rc = this.renderCrops[this.currentRenderCrop];
+            renderCrop_t rc = renderCrops[currentRenderCrop];
 
-            final float wRatio = (float) rc.width / SCREEN_WIDTH;
-            final float hRatio = (float) rc.height / SCREEN_HEIGHT;
+            float wRatio = (float) rc.width / SCREEN_WIDTH;
+            float hRatio = (float) rc.height / SCREEN_HEIGHT;
 
-            viewport.x1 = idMath.Ftoi(rc.x + (renderView.x * wRatio));
-            viewport.x2 = idMath.Ftoi((rc.x + (float) Math.floor(((renderView.x + renderView.width) * wRatio) + 0.5f)) - 1);
-            viewport.y1 = idMath.Ftoi((rc.y + rc.height) - (float) Math.floor(((renderView.y + renderView.height) * hRatio) + 0.5f));
-            viewport.y2 = idMath.Ftoi((rc.y + rc.height) - (float) Math.floor((renderView.y * hRatio) + 0.5f) - 1);
+            viewport.x1 = idMath.Ftoi(rc.x + renderView.x * wRatio);
+            viewport.x2 = idMath.Ftoi(rc.x + (float) Math.floor((renderView.x + renderView.width) * wRatio + 0.5f) - 1);
+            viewport.y1 = idMath.Ftoi((rc.y + rc.height) - (float) Math.floor((renderView.y + renderView.height) * hRatio + 0.5f));
+            viewport.y2 = idMath.Ftoi((rc.y + rc.height) - (float) Math.floor(renderView.y * hRatio + 0.5f) - 1);
         }
 
         @Override
@@ -1420,14 +1390,14 @@ public class tr_local {
             common.Printf("------- Initializing renderSystem --------\n");
 
             // clear all our internal state
-            this.viewCount = 1;		// so cleared structures never match viewCount
+            viewCount = 1;		// so cleared structures never match viewCount
             // we used to memset tr, but now that it is a class, we can't, so
             // there may be other state we need to reset
 
-            this.ambientLightVector.oSet(0, 0.5f);
-            this.ambientLightVector.oSet(1, 0.5f - 0.385f);
-            this.ambientLightVector.oSet(2, 0.8925f);
-            this.ambientLightVector.oSet(3, 1.0f);
+            ambientLightVector.oSet(0, 0.5f);
+            ambientLightVector.oSet(1, 0.5f - 0.385f);
+            ambientLightVector.oSet(2, 0.8925f);
+            ambientLightVector.oSet(3, 1.0f);
 
 //            memset(backEnd, 0, sizeof(backEnd));
             backEnd = new backEndState_t();
@@ -1436,11 +1406,11 @@ public class tr_local {
 
             R_InitCommands();
 
-            this.guiModel = new idGuiModel();
-            this.guiModel.Clear();
+            guiModel = new idGuiModel();
+            guiModel.Clear();
 
-            this.demoGuiModel = new idGuiModel();
-            this.demoGuiModel.Clear();
+            demoGuiModel = new idGuiModel();
+            demoGuiModel.Clear();
 
             R_InitTriSurfData();
 
@@ -1456,9 +1426,9 @@ public class tr_local {
             renderModelManager.Init();
 
             // set the identity space
-            this.identitySpace.modelMatrix[(0 * 4) + 0] = 1.0f;
-            this.identitySpace.modelMatrix[(1 * 4) + 1] = 1.0f;
-            this.identitySpace.modelMatrix[(2 * 4) + 2] = 1.0f;
+            identitySpace.modelMatrix[0 * 4 + 0] = 1.0f;
+            identitySpace.modelMatrix[1 * 4 + 1] = 1.0f;
+            identitySpace.modelMatrix[2 * 4 + 2] = 1.0f;
 
             // determine which back end we will use
             // ??? this is invalid here as there is not enough information to set it up correctly
@@ -1485,14 +1455,14 @@ public class tr_local {
             globalImages.Shutdown();
 
             // close the r_logFile
-            if (this.logFile != null) {
+            if (logFile != null) {
                 try {
-                    fprintf(this.logFile, "*** CLOSING LOG ***\n");
-                    this.logFile.close();
-                } catch (final IOException ex) {
+                    fprintf(logFile, "*** CLOSING LOG ***\n");
+                    logFile.close();
+                } catch (IOException ex) {
                     Logger.getLogger(tr_local.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                this.logFile = null;
+                logFile = null;
             }
 
             // free frame memory
@@ -1564,16 +1534,16 @@ public class tr_local {
         public idRenderWorld AllocRenderWorld() {
             idRenderWorldLocal rw;
             rw = new idRenderWorldLocal();
-            this.worlds.Append(rw);
+            worlds.Append(rw);
             return rw;
         }
 
         @Override
         public void FreeRenderWorld(idRenderWorld rw) {
-            if (this.primaryWorld == rw) {
-                this.primaryWorld = null;
+            if (primaryWorld == rw) {
+                primaryWorld = null;
             }
-            this.worlds.Remove((idRenderWorldLocal) rw);
+            worlds.Remove((idRenderWorldLocal) rw);
 //	delete rw;
         }
 
@@ -1611,11 +1581,11 @@ public class tr_local {
 //            idMaterial h;
 //            float max;
 //}
-            final ByteBuffer[] faceData = {null};
-            final long[] fTime = {0};
+            ByteBuffer[] faceData = {null};
+            long[] fTime = {0};
             int i, len, fontCount;
 //	char name[1024];
-            final StringBuilder name = new StringBuilder(1024);
+            StringBuilder name = new StringBuilder(1024);
 
             int pointSize = 12;
             /*
@@ -1685,7 +1655,7 @@ public class tr_local {
                     outFont.glyphs[i].t = readFloat();
                     outFont.glyphs[i].s2 = readFloat();
                     outFont.glyphs[i].t2 = readFloat();
-                    final int junk /* font.glyphs[i].glyph */ = readInt();
+                    int junk /* font.glyphs[i].glyph */ = readInt();
                     //FIXME: the +6, -6 skips the embedded fonts/ 
 //                    memcpy(outFont.glyphs[i].shaderName, fdFile[fdOffset + 6], 32 - 6);
                     outFont.glyphs[i].shaderName = new String(Arrays.copyOfRange(fdFile, fdOffset + 6, fdOffset + 32));
@@ -1858,12 +1828,12 @@ public class tr_local {
 
         @Override
         public void SetColor4(float r, float g, float b, float a) {
-            this.guiModel.SetColor(r, g, b, a);
+            guiModel.SetColor(r, g, b, a);
         }
 
         @Override
         public void DrawStretchPic(idDrawVert[] verts, int[] indexes, int vertCount, int indexCount, idMaterial material, boolean clip, float min_x, float min_y, float max_x, float max_y) {
-            this.guiModel.DrawStretchPic(verts, indexes, vertCount, indexCount, material, clip, min_x, min_y, max_x, max_y);
+            guiModel.DrawStretchPic(verts, indexes, vertCount, indexCount, material, clip, min_x, min_y, max_x, max_y);
         }
 
         /*
@@ -1875,7 +1845,7 @@ public class tr_local {
          */
         @Override
         public void DrawStretchPic(float x, float y, float w, float h, float s1, float t1, float s2, float t2, idMaterial material) {
-            this.guiModel.DrawStretchPic(x, y, w, h, s1, t1, s2, t2, material);
+            guiModel.DrawStretchPic(x, y, w, h, s1, t1, s2, t2, material);
         }
 
         /*
@@ -1966,7 +1936,7 @@ public class tr_local {
             s = 0;//(const unsigned char*)string;
             xx = x;
             SetColor(setColor);
-            while ((s < string.length) && (string[s] != '\0')) {
+            while (s < string.length && string[s] != '\0') {
                 if (idStr.IsColor(ctos(string).substring(s))) {
                     if (!forceColor) {
                         if (string[s + 1] == C_COLOR_DEFAULT) {
@@ -2058,12 +2028,12 @@ public class tr_local {
         public void WriteDemoPics() {
             session.writeDemo.WriteInt(DS_RENDER);
             session.writeDemo.WriteInt(DC_GUI_MODEL);
-            this.guiModel.WriteToDemo(session.writeDemo);
+            guiModel.WriteToDemo(session.writeDemo);
         }
 
         @Override
         public void DrawDemoPics() {
-            this.demoGuiModel.EmitFullScreen();
+            demoGuiModel.EmitFullScreen();
         }
 
         @Override
@@ -2077,36 +2047,36 @@ public class tr_local {
             // determine which back end we will use
             SetBackEndRenderer();
 
-            this.guiModel.Clear();
+            guiModel.Clear();
 
             // for the larger-than-window tiled rendering screenshots
-            if (this.tiledViewport[0] != 0) {
-                windowWidth = this.tiledViewport[0];
-                windowHeight = this.tiledViewport[1];
+            if (tiledViewport[0] != 0) {
+                windowWidth = tiledViewport[0];
+                windowHeight = tiledViewport[1];
             }
 
             glConfig.vidWidth = windowWidth;
             glConfig.vidHeight = windowHeight;
 
-            this.renderCrops[0].x = 0;
-            this.renderCrops[0].y = 0;
-            this.renderCrops[0].width = windowWidth;
-            this.renderCrops[0].height = windowHeight;
-            this.currentRenderCrop = 0;
+            renderCrops[0].x = 0;
+            renderCrops[0].y = 0;
+            renderCrops[0].width = windowWidth;
+            renderCrops[0].height = windowHeight;
+            currentRenderCrop = 0;
 
             // screenFraction is just for quickly testing fill rate limitations
             if (r_screenFraction.GetInteger() != 100) {
-                final int w = (int) ((SCREEN_WIDTH * r_screenFraction.GetInteger()) / 100.0f);
-                final int h = (int) ((SCREEN_HEIGHT * r_screenFraction.GetInteger()) / 100.0f);
+                int w = (int) (SCREEN_WIDTH * r_screenFraction.GetInteger() / 100.0f);
+                int h = (int) (SCREEN_HEIGHT * r_screenFraction.GetInteger() / 100.0f);
                 CropRenderSize(w, h);
             }
 
             // this is the ONLY place this is modified
-            this.frameCount++;
+            frameCount++;
 
             // just in case we did a common.Error while this
             // was set
-            this.guiRecursionLevel = 0;
+            guiRecursionLevel = 0;
 
             // the first rendering will be used for commands like
             // screenshot, rather than a possible subsequent remote
@@ -2114,14 +2084,14 @@ public class tr_local {
 //	primaryWorld = NULL;
 
             // set the time for shader effects in 2D rendering
-            this.frameShaderTime = (float) (eventLoop.Milliseconds() * 0.001);
+            frameShaderTime = (float) (eventLoop.Milliseconds() * 0.001);
 
             //
             // draw buffer stuff
             //
             R_GetCommandBuffer(cmd = new setBufferCommand_t()/*sizeof(cmd)*/);
             cmd.commandId = RC_SET_BUFFER;
-            cmd.frameCount = this.frameCount;
+            cmd.frameCount = frameCount;
 
             if (r_frontBuffer.GetBool()) {
                 cmd.buffer = GL_FRONT;
@@ -2147,12 +2117,12 @@ public class tr_local {
             }
 
             // close any gui drawing
-            this.guiModel.EmitFullScreen();
-            this.guiModel.Clear();
+            guiModel.EmitFullScreen();
+            guiModel.Clear();
 
             // save out timing information
             if (frontEndMsec != null) {
-                frontEndMsec[0] = this.pc.frontEndMsec;
+                frontEndMsec[0] = pc.frontEndMsec;
             }
             if (backEndMsec != null) {
                 backEndMsec[0] = backEnd.pc.msec;
@@ -2207,17 +2177,17 @@ public class tr_local {
             byte[] buffer;
             int i, j, c, temp;
 
-            this.takingScreenshot = true;
+            takingScreenshot = true;
 
-            final int pix = width * height;
+            int pix = width * height;
 
-            buffer = new byte[(pix * 3) + 18];// R_StaticAlloc(pix * 3 + 18);
+            buffer = new byte[pix * 3 + 18];// R_StaticAlloc(pix * 3 + 18);
 //	memset (buffer, 0, 18);
 
             if (blends <= 1) {
                 R_ReadTiledPixels(width, height, buffer, 18, ref);
             } else {
-                final short[] shortBuffer = new short[pix * 2 * 3];// R_StaticAlloc(pix * 2 * 3);
+                short[] shortBuffer = new short[pix * 2 * 3];// R_StaticAlloc(pix * 2 * 3);
 //		memset (shortBuffer, 0, pix*2*3);
 
                 // enable anti-aliasing jitter
@@ -2226,13 +2196,13 @@ public class tr_local {
                 for (i = 0; i < blends; i++) {
                     R_ReadTiledPixels(width, height, buffer, 18, ref);
 
-                    for (j = 0; j < (pix * 3); j++) {
+                    for (j = 0; j < pix * 3; j++) {
                         shortBuffer[j] += buffer[18 + j];
                     }
                 }
 
                 // divide back to bytes
-                for (i = 0; i < (pix * 3); i++) {
+                for (i = 0; i < pix * 3; i++) {
                     buffer[18 + i] = (byte) (shortBuffer[i] / blends);
                 }
 
@@ -2249,7 +2219,7 @@ public class tr_local {
             buffer[16] = 24;	// pixel size
 
             // swap rgb to bgr
-            c = 18 + (width * height * 3);
+            c = 18 + width * height * 3;
             for (i = 18; i < c; i += 3) {
                 temp = buffer[i];
                 buffer[i] = buffer[i + 2];
@@ -2265,7 +2235,7 @@ public class tr_local {
 //
 //            R_StaticFree(buffer);
 
-            this.takingScreenshot = false;
+            takingScreenshot = false;
 
         }
 
@@ -2285,10 +2255,10 @@ public class tr_local {
             }
 
             // close any gui drawing before changing the size
-            this.guiModel.EmitFullScreen();
-            this.guiModel.Clear();
+            guiModel.EmitFullScreen();
+            guiModel.Clear();
 
-            if ((width < 1) || (height < 1)) {
+            if (width < 1 || height < 1) {
                 common.Error("CropRenderSize: bad sizes");
             }
 
@@ -2305,17 +2275,17 @@ public class tr_local {
             }
 
             // convert from virtual SCREEN_WIDTH/SCREEN_HEIGHT coordinates to physical OpenGL pixels
-            final renderView_s renderView = new renderView_s();
+            renderView_s renderView = new renderView_s();
             renderView.x = 0;
             renderView.y = 0;
             renderView.width = width;
             renderView.height = height;
 
-            final idScreenRect r = new idScreenRect();
+            idScreenRect r = new idScreenRect();
             RenderViewToViewport(renderView, r);
 
-            width = (r.x2 - r.x1) + 1;
-            height = (r.y2 - r.y1) + 1;
+            width = r.x2 - r.x1 + 1;
+            height = r.y2 - r.y1 + 1;
 
             if (forceDimensions) {
                 // just give exactly what we ask for
@@ -2330,7 +2300,7 @@ public class tr_local {
                 // FIXME: megascreenshots with offset viewports don't work right with this yet
             }
 
-            final renderCrop_t rc = this.renderCrops[this.currentRenderCrop];
+            renderCrop_t rc = renderCrops[currentRenderCrop];
 
             // we might want to clip these to the crop window instead
             while (width > glConfig.vidWidth) {
@@ -2340,14 +2310,14 @@ public class tr_local {
                 height >>= 1;
             }
 
-            if (this.currentRenderCrop == MAX_RENDER_CROPS) {
+            if (currentRenderCrop == MAX_RENDER_CROPS) {
                 common.Error("idRenderSystemLocal::CropRenderSize: currentRenderCrop == MAX_RENDER_CROPS");
             }
 
-            this.currentRenderCrop++;
+            currentRenderCrop++;
 
 //            rc = renderCrops[currentRenderCrop];
-            this.renderCrops[this.currentRenderCrop - 1] = this.renderCrops[this.currentRenderCrop];
+            renderCrops[currentRenderCrop - 1] = renderCrops[currentRenderCrop];
 
             rc.x = 0;
             rc.y = 0;
@@ -2360,8 +2330,8 @@ public class tr_local {
             if (!glConfig.isInitialized) {
                 return;
             }
-            this.guiModel.EmitFullScreen();
-            this.guiModel.Clear();
+            guiModel.EmitFullScreen();
+            guiModel.Clear();
 
             if (session.writeDemo != null) {
                 session.writeDemo.WriteInt(DS_RENDER);
@@ -2375,9 +2345,9 @@ public class tr_local {
 
             // look up the image before we create the render command, because it
             // may need to sync to create the image
-            final idImage image = globalImages.ImageFromFile(imageName, TF_DEFAULT, true, TR_REPEAT, TD_DEFAULT);
+            idImage image = globalImages.ImageFromFile(imageName, TF_DEFAULT, true, TR_REPEAT, TD_DEFAULT);
 
-            final renderCrop_t rc = this.renderCrops[this.currentRenderCrop];
+            renderCrop_t rc = renderCrops[currentRenderCrop];
 
             copyRenderCommand_t cmd;
             R_GetCommandBuffer(cmd = new copyRenderCommand_t()/*sizeof(cmd)*/);
@@ -2388,7 +2358,7 @@ public class tr_local {
             cmd.imageHeight = rc.height;
             cmd.image = image;
 
-            this.guiModel.Clear();
+            guiModel.Clear();
         }
 
         @Override
@@ -2397,17 +2367,17 @@ public class tr_local {
                 return;
             }
 
-            final renderCrop_t rc = this.renderCrops[this.currentRenderCrop];
+            renderCrop_t rc = renderCrops[currentRenderCrop];
 
-            this.guiModel.EmitFullScreen();
-            this.guiModel.Clear();
+            guiModel.EmitFullScreen();
+            guiModel.Clear();
             R_IssueRenderCommands();
 
             qglReadBuffer(GL_BACK);
 
             // include extra space for OpenGL padding to word boundaries
-            final int c = (rc.width + 3) * rc.height;
-            ByteBuffer data = Nio.newByteBuffer(c * 3);// R_StaticAlloc(c * 3);
+            int c = (rc.width + 3) * rc.height;
+            ByteBuffer data = BufferUtils.createByteBuffer(c * 3);// R_StaticAlloc(c * 3);
 
             qglReadPixels(rc.x, rc.y, rc.width, rc.height, GL_RGB, GL_UNSIGNED_BYTE, data);
 
@@ -2415,9 +2385,9 @@ public class tr_local {
 
             for (int i = 0; i < c; i++) {
                 data2.put(i * 4, data.get(i * 3));
-                data2.put((i * 4) + 1, data.get((i * 3) + 1));
-                data2.put((i * 4) + 2, data.get((i * 3) + 2));
-                data2.put((i * 4) + 3, (byte) 0xff);
+                data2.put(i * 4 + 1, data.get(i * 3 + 1));
+                data2.put(i * 4 + 2, data.get(i * 3 + 2));
+                data2.put(i * 4 + 3, (byte) 0xff);
             }
 
             R_WriteTGA(fileName, data2, rc.width, rc.height, true);
@@ -2432,15 +2402,15 @@ public class tr_local {
                 return;
             }
 
-            if (this.currentRenderCrop < 1) {
+            if (currentRenderCrop < 1) {
                 common.Error("idRenderSystemLocal::UnCrop: currentRenderCrop < 1");
             }
 
             // close any gui drawing
-            this.guiModel.EmitFullScreen();
-            this.guiModel.Clear();
+            guiModel.EmitFullScreen();
+            guiModel.Clear();
 
-            this.currentRenderCrop--;
+            currentRenderCrop--;
 
             if (session.writeDemo != null) {
                 session.writeDemo.WriteInt(DS_RENDER);
@@ -2454,13 +2424,13 @@ public class tr_local {
 
         @Override
         public void GetCardCaps(boolean[] oldCard, boolean[] nv10or20) {
-            nv10or20[0] = ((tr.backEndRenderer == BE_NV10) || (tr.backEndRenderer == BE_NV20));
-            oldCard[0] = ((tr.backEndRenderer == BE_ARB) || (tr.backEndRenderer == BE_R200) || (tr.backEndRenderer == BE_NV10) || (tr.backEndRenderer == BE_NV20));
+            nv10or20[0] = (tr.backEndRenderer == BE_NV10 || tr.backEndRenderer == BE_NV20);
+            oldCard[0] = (tr.backEndRenderer == BE_ARB || tr.backEndRenderer == BE_R200 || tr.backEndRenderer == BE_NV10 || tr.backEndRenderer == BE_NV20);
         }
 
         @Override
         public boolean UploadImage(String imageName, ByteBuffer data, int width, int height) {
-            final idImage image = globalImages.GetImage(imageName);
+            idImage image = globalImages.GetImage(imageName);
             if (null == image) {
                 return false;
             }
@@ -2468,7 +2438,7 @@ public class tr_local {
             image.SetImageFilterAndRepeat();
             return true;
         }
-    }
+    };
     public static backEndState_t backEnd;
     public static idRenderSystemLocal tr       = new idRenderSystemLocal();
     public static glconfig_s          glConfig = new glconfig_s();                 // outside of TR since it shouldn't be cleared during ref re-init
@@ -2555,7 +2525,7 @@ public class tr_local {
         VPROG_GLASSWARP,
         FPROG_GLASSWARP,
         PROG_USER
-    }
+    };
 
     /*
 
@@ -2608,7 +2578,7 @@ public class tr_local {
         _8_, _9_,//more fillers
         //
         PP_LIGHT_FALLOFF_TQ //= 20	// only for NV programs
-    }
+    };
 
     /*
      ============================================================
@@ -2631,7 +2601,7 @@ public class tr_local {
         public int                numRearCapIndexes;
         public int                numSilPlaneIndexes;
         public int                totalIndexes;
-    }
+    };
 //optimizedShadow_t SuperOptimizeOccluders( idVec4 *verts, glIndex_t *indexes, int numIndexes,
 //										 idPlane projectionPlane, idVec3 projectionOrigin );
 //
@@ -2660,9 +2630,8 @@ public class tr_local {
         int   numMirroredVerts;
         int[] mirroredVerts;
         //
-        //int   numIndexes;
-        //int[]/*glIndex_t */ indexes;
-        private NeoIntBuffer indexes = new NeoIntBuffer();
+        int   numIndexes;
+        int[]/*glIndex_t */ indexes;
         //
         int[]/*glIndex_t */ silIndexes;
         //
@@ -2673,11 +2642,7 @@ public class tr_local {
         silEdge_t[]     silEdges;
         //
         dominantTri_s[] dominantTris;
-
-        public NeoIntBuffer getIndexes() {
-			return this.indexes;
-		}
-    }
+    };
 
     /*
      =============================================================
@@ -2693,5 +2658,5 @@ public class tr_local {
         idVec3 point;
         idVec3 normal;
         final int[] indexes = new int[3];
-    }
+    };
 }

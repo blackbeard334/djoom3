@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import neo.TempDump;
 import neo.TempDump.NiLLABLE;
 import neo.TempDump.TODO_Exception;
 import neo.framework.File_h.idFile;
@@ -45,148 +44,148 @@ public class Model_lwo {
         return ((a << 24) | (b << 16) | (c << 8) | (d << 0));
     }
 //    
-    public static final int ID_FORM = (('F' << 24) | ('O' << 16) | ('R' << 8) | 'M');
-    public static final int ID_LWO2 = (('L' << 24) | ('W' << 16) | ('O' << 8) | '2');
-    public static final int ID_LWOB = (('L' << 24) | ('W' << 16) | ('O' << 8) | 'B');
+    public static final int ID_FORM = ('F' << 24 | 'O' << 16 | 'R' << 8 | 'M');
+    public static final int ID_LWO2 = ('L' << 24 | 'W' << 16 | 'O' << 8 | '2');
+    public static final int ID_LWOB = ('L' << 24 | 'W' << 16 | 'O' << 8 | 'B');
 //                                       
     /* top-level chunks */
-    public static final int ID_LAYR = (('L' << 24) | ('A' << 16) | ('Y' << 8) | 'R');
-    public static final int ID_TAGS = (('T' << 24) | ('A' << 16) | ('G' << 8) | 'S');
-    public static final int ID_PNTS = (('P' << 24) | ('N' << 16) | ('T' << 8) | 'S');
-    public static final int ID_BBOX = (('B' << 24) | ('B' << 16) | ('O' << 8) | 'X');
-    public static final int ID_VMAP = (('V' << 24) | ('M' << 16) | ('A' << 8) | 'P');
-    public static final int ID_VMAD = (('V' << 24) | ('M' << 16) | ('A' << 8) | 'D');
-    public static final int ID_POLS = (('P' << 24) | ('O' << 16) | ('L' << 8) | 'S');
-    public static final int ID_PTAG = (('P' << 24) | ('T' << 16) | ('A' << 8) | 'G');
-    public static final int ID_ENVL = (('E' << 24) | ('N' << 16) | ('V' << 8) | 'L');
-    public static final int ID_CLIP = (('C' << 24) | ('L' << 16) | ('I' << 8) | 'P');
-    public static final int ID_SURF = (('S' << 24) | ('U' << 16) | ('R' << 8) | 'F');
-    public static final int ID_DESC = (('D' << 24) | ('E' << 16) | ('S' << 8) | 'C');
-    public static final int ID_TEXT = (('T' << 24) | ('E' << 16) | ('X' << 8) | 'T');
-    public static final int ID_ICON = (('I' << 24) | ('C' << 16) | ('O' << 8) | 'N');
+    public static final int ID_LAYR = ('L' << 24 | 'A' << 16 | 'Y' << 8 | 'R');
+    public static final int ID_TAGS = ('T' << 24 | 'A' << 16 | 'G' << 8 | 'S');
+    public static final int ID_PNTS = ('P' << 24 | 'N' << 16 | 'T' << 8 | 'S');
+    public static final int ID_BBOX = ('B' << 24 | 'B' << 16 | 'O' << 8 | 'X');
+    public static final int ID_VMAP = ('V' << 24 | 'M' << 16 | 'A' << 8 | 'P');
+    public static final int ID_VMAD = ('V' << 24 | 'M' << 16 | 'A' << 8 | 'D');
+    public static final int ID_POLS = ('P' << 24 | 'O' << 16 | 'L' << 8 | 'S');
+    public static final int ID_PTAG = ('P' << 24 | 'T' << 16 | 'A' << 8 | 'G');
+    public static final int ID_ENVL = ('E' << 24 | 'N' << 16 | 'V' << 8 | 'L');
+    public static final int ID_CLIP = ('C' << 24 | 'L' << 16 | 'I' << 8 | 'P');
+    public static final int ID_SURF = ('S' << 24 | 'U' << 16 | 'R' << 8 | 'F');
+    public static final int ID_DESC = ('D' << 24 | 'E' << 16 | 'S' << 8 | 'C');
+    public static final int ID_TEXT = ('T' << 24 | 'E' << 16 | 'X' << 8 | 'T');
+    public static final int ID_ICON = ('I' << 24 | 'C' << 16 | 'O' << 8 | 'N');
 //                                      
     /* polygon types */
-    public static final int ID_FACE = (('F' << 24) | ('A' << 16) | ('C' << 8) | 'E');
-    public static final int ID_CURV = (('C' << 24) | ('U' << 16) | ('R' << 8) | 'V');
-    public static final int ID_PTCH = (('P' << 24) | ('T' << 16) | ('C' << 8) | 'H');
-    public static final int ID_MBAL = (('M' << 24) | ('B' << 16) | ('A' << 8) | 'L');
-    public static final int ID_BONE = (('B' << 24) | ('O' << 16) | ('N' << 8) | 'E');
+    public static final int ID_FACE = ('F' << 24 | 'A' << 16 | 'C' << 8 | 'E');
+    public static final int ID_CURV = ('C' << 24 | 'U' << 16 | 'R' << 8 | 'V');
+    public static final int ID_PTCH = ('P' << 24 | 'T' << 16 | 'C' << 8 | 'H');
+    public static final int ID_MBAL = ('M' << 24 | 'B' << 16 | 'A' << 8 | 'L');
+    public static final int ID_BONE = ('B' << 24 | 'O' << 16 | 'N' << 8 | 'E');
 //                                      
     /* polygon tags */
 //    public static final int ID_SURF = ('S' << 24 | 'U' << 16 | 'R' << 8 | 'F');
-    public static final int ID_PART = (('P' << 24) | ('A' << 16) | ('R' << 8) | 'T');
-    public static final int ID_SMGP = (('S' << 24) | ('M' << 16) | ('G' << 8) | 'P');
+    public static final int ID_PART = ('P' << 24 | 'A' << 16 | 'R' << 8 | 'T');
+    public static final int ID_SMGP = ('S' << 24 | 'M' << 16 | 'G' << 8 | 'P');
 //                                     
     /* envelopes */
-    public static final int ID_PRE = (('P' << 24) | ('R' << 16) | ('E' << 8) | ' ');
-    public static final int ID_POST = (('P' << 24) | ('O' << 16) | ('S' << 8) | 'T');
-    public static final int ID_KEY = (('K' << 24) | ('E' << 16) | ('Y' << 8) | ' ');
-    public static final int ID_SPAN = (('S' << 24) | ('P' << 16) | ('A' << 8) | 'N');
-    public static final int ID_TCB = (('T' << 24) | ('C' << 16) | ('B' << 8) | ' ');
-    public static final int ID_HERM = (('H' << 24) | ('E' << 16) | ('R' << 8) | 'M');
-    public static final int ID_BEZI = (('B' << 24) | ('E' << 16) | ('Z' << 8) | 'I');
-    public static final int ID_BEZ2 = (('B' << 24) | ('E' << 16) | ('Z' << 8) | '2');
-    public static final int ID_LINE = (('L' << 24) | ('I' << 16) | ('N' << 8) | 'E');
-    public static final int ID_STEP = (('S' << 24) | ('T' << 16) | ('E' << 8) | 'P');
+    public static final int ID_PRE = ('P' << 24 | 'R' << 16 | 'E' << 8 | ' ');
+    public static final int ID_POST = ('P' << 24 | 'O' << 16 | 'S' << 8 | 'T');
+    public static final int ID_KEY = ('K' << 24 | 'E' << 16 | 'Y' << 8 | ' ');
+    public static final int ID_SPAN = ('S' << 24 | 'P' << 16 | 'A' << 8 | 'N');
+    public static final int ID_TCB = ('T' << 24 | 'C' << 16 | 'B' << 8 | ' ');
+    public static final int ID_HERM = ('H' << 24 | 'E' << 16 | 'R' << 8 | 'M');
+    public static final int ID_BEZI = ('B' << 24 | 'E' << 16 | 'Z' << 8 | 'I');
+    public static final int ID_BEZ2 = ('B' << 24 | 'E' << 16 | 'Z' << 8 | '2');
+    public static final int ID_LINE = ('L' << 24 | 'I' << 16 | 'N' << 8 | 'E');
+    public static final int ID_STEP = ('S' << 24 | 'T' << 16 | 'E' << 8 | 'P');
 //                                     
     /* clips */
-    public static final int ID_STIL = (('S' << 24) | ('T' << 16) | ('I' << 8) | 'L');
-    public static final int ID_ISEQ = (('I' << 24) | ('S' << 16) | ('E' << 8) | 'Q');
-    public static final int ID_ANIM = (('A' << 24) | ('N' << 16) | ('I' << 8) | 'M');
-    public static final int ID_XREF = (('X' << 24) | ('R' << 16) | ('E' << 8) | 'F');
-    public static final int ID_STCC = (('S' << 24) | ('T' << 16) | ('C' << 8) | 'C');
-    public static final int ID_TIME = (('T' << 24) | ('I' << 16) | ('M' << 8) | 'E');
-    public static final int ID_CONT = (('C' << 24) | ('O' << 16) | ('N' << 8) | 'T');
-    public static final int ID_BRIT = (('B' << 24) | ('R' << 16) | ('I' << 8) | 'T');
-    public static final int ID_SATR = (('S' << 24) | ('A' << 16) | ('T' << 8) | 'R');
-    public static final int ID_HUE = (('H' << 24) | ('U' << 16) | ('E' << 8) | ' ');
-    public static final int ID_GAMM = (('G' << 24) | ('A' << 16) | ('M' << 8) | 'M');
-    public static final int ID_NEGA = (('N' << 24) | ('E' << 16) | ('G' << 8) | 'A');
-    public static final int ID_IFLT = (('I' << 24) | ('F' << 16) | ('L' << 8) | 'T');
-    public static final int ID_PFLT = (('P' << 24) | ('F' << 16) | ('L' << 8) | 'T');
+    public static final int ID_STIL = ('S' << 24 | 'T' << 16 | 'I' << 8 | 'L');
+    public static final int ID_ISEQ = ('I' << 24 | 'S' << 16 | 'E' << 8 | 'Q');
+    public static final int ID_ANIM = ('A' << 24 | 'N' << 16 | 'I' << 8 | 'M');
+    public static final int ID_XREF = ('X' << 24 | 'R' << 16 | 'E' << 8 | 'F');
+    public static final int ID_STCC = ('S' << 24 | 'T' << 16 | 'C' << 8 | 'C');
+    public static final int ID_TIME = ('T' << 24 | 'I' << 16 | 'M' << 8 | 'E');
+    public static final int ID_CONT = ('C' << 24 | 'O' << 16 | 'N' << 8 | 'T');
+    public static final int ID_BRIT = ('B' << 24 | 'R' << 16 | 'I' << 8 | 'T');
+    public static final int ID_SATR = ('S' << 24 | 'A' << 16 | 'T' << 8 | 'R');
+    public static final int ID_HUE = ('H' << 24 | 'U' << 16 | 'E' << 8 | ' ');
+    public static final int ID_GAMM = ('G' << 24 | 'A' << 16 | 'M' << 8 | 'M');
+    public static final int ID_NEGA = ('N' << 24 | 'E' << 16 | 'G' << 8 | 'A');
+    public static final int ID_IFLT = ('I' << 24 | 'F' << 16 | 'L' << 8 | 'T');
+    public static final int ID_PFLT = ('P' << 24 | 'F' << 16 | 'L' << 8 | 'T');
 //                                    
     /* surfaces */
-    public static final int ID_COLR = (('C' << 24) | ('O' << 16) | ('L' << 8) | 'R');
-    public static final int ID_LUMI = (('L' << 24) | ('U' << 16) | ('M' << 8) | 'I');
-    public static final int ID_DIFF = (('D' << 24) | ('I' << 16) | ('F' << 8) | 'F');
-    public static final int ID_SPEC = (('S' << 24) | ('P' << 16) | ('E' << 8) | 'C');
-    public static final int ID_GLOS = (('G' << 24) | ('L' << 16) | ('O' << 8) | 'S');
-    public static final int ID_REFL = (('R' << 24) | ('E' << 16) | ('F' << 8) | 'L');
-    public static final int ID_RFOP = (('R' << 24) | ('F' << 16) | ('O' << 8) | 'P');
-    public static final int ID_RIMG = (('R' << 24) | ('I' << 16) | ('M' << 8) | 'G');
-    public static final int ID_RSAN = (('R' << 24) | ('S' << 16) | ('A' << 8) | 'N');
-    public static final int ID_TRAN = (('T' << 24) | ('R' << 16) | ('A' << 8) | 'N');
-    public static final int ID_TROP = (('T' << 24) | ('R' << 16) | ('O' << 8) | 'P');
-    public static final int ID_TIMG = (('T' << 24) | ('I' << 16) | ('M' << 8) | 'G');
-    public static final int ID_RIND = (('R' << 24) | ('I' << 16) | ('N' << 8) | 'D');
-    public static final int ID_TRNL = (('T' << 24) | ('R' << 16) | ('N' << 8) | 'L');
-    public static final int ID_BUMP = (('B' << 24) | ('U' << 16) | ('M' << 8) | 'P');
-    public static final int ID_SMAN = (('S' << 24) | ('M' << 16) | ('A' << 8) | 'N');
-    public static final int ID_SIDE = (('S' << 24) | ('I' << 16) | ('D' << 8) | 'E');
-    public static final int ID_CLRH = (('C' << 24) | ('L' << 16) | ('R' << 8) | 'H');
-    public static final int ID_CLRF = (('C' << 24) | ('L' << 16) | ('R' << 8) | 'F');
-    public static final int ID_ADTR = (('A' << 24) | ('D' << 16) | ('T' << 8) | 'R');
-    public static final int ID_SHRP = (('S' << 24) | ('H' << 16) | ('R' << 8) | 'P');
+    public static final int ID_COLR = ('C' << 24 | 'O' << 16 | 'L' << 8 | 'R');
+    public static final int ID_LUMI = ('L' << 24 | 'U' << 16 | 'M' << 8 | 'I');
+    public static final int ID_DIFF = ('D' << 24 | 'I' << 16 | 'F' << 8 | 'F');
+    public static final int ID_SPEC = ('S' << 24 | 'P' << 16 | 'E' << 8 | 'C');
+    public static final int ID_GLOS = ('G' << 24 | 'L' << 16 | 'O' << 8 | 'S');
+    public static final int ID_REFL = ('R' << 24 | 'E' << 16 | 'F' << 8 | 'L');
+    public static final int ID_RFOP = ('R' << 24 | 'F' << 16 | 'O' << 8 | 'P');
+    public static final int ID_RIMG = ('R' << 24 | 'I' << 16 | 'M' << 8 | 'G');
+    public static final int ID_RSAN = ('R' << 24 | 'S' << 16 | 'A' << 8 | 'N');
+    public static final int ID_TRAN = ('T' << 24 | 'R' << 16 | 'A' << 8 | 'N');
+    public static final int ID_TROP = ('T' << 24 | 'R' << 16 | 'O' << 8 | 'P');
+    public static final int ID_TIMG = ('T' << 24 | 'I' << 16 | 'M' << 8 | 'G');
+    public static final int ID_RIND = ('R' << 24 | 'I' << 16 | 'N' << 8 | 'D');
+    public static final int ID_TRNL = ('T' << 24 | 'R' << 16 | 'N' << 8 | 'L');
+    public static final int ID_BUMP = ('B' << 24 | 'U' << 16 | 'M' << 8 | 'P');
+    public static final int ID_SMAN = ('S' << 24 | 'M' << 16 | 'A' << 8 | 'N');
+    public static final int ID_SIDE = ('S' << 24 | 'I' << 16 | 'D' << 8 | 'E');
+    public static final int ID_CLRH = ('C' << 24 | 'L' << 16 | 'R' << 8 | 'H');
+    public static final int ID_CLRF = ('C' << 24 | 'L' << 16 | 'R' << 8 | 'F');
+    public static final int ID_ADTR = ('A' << 24 | 'D' << 16 | 'T' << 8 | 'R');
+    public static final int ID_SHRP = ('S' << 24 | 'H' << 16 | 'R' << 8 | 'P');
 //    public static final int ID_LINE = ('L' << 24 | 'I' << 16 | 'N' << 8 | 'E');
-    public static final int ID_LSIZ = (('L' << 24) | ('S' << 16) | ('I' << 8) | 'Z');
-    public static final int ID_ALPH = (('A' << 24) | ('L' << 16) | ('P' << 8) | 'H');
-    public static final int ID_AVAL = (('A' << 24) | ('V' << 16) | ('A' << 8) | 'L');
-    public static final int ID_GVAL = (('G' << 24) | ('V' << 16) | ('A' << 8) | 'L');
-    public static final int ID_BLOK = (('B' << 24) | ('L' << 16) | ('O' << 8) | 'K');
+    public static final int ID_LSIZ = ('L' << 24 | 'S' << 16 | 'I' << 8 | 'Z');
+    public static final int ID_ALPH = ('A' << 24 | 'L' << 16 | 'P' << 8 | 'H');
+    public static final int ID_AVAL = ('A' << 24 | 'V' << 16 | 'A' << 8 | 'L');
+    public static final int ID_GVAL = ('G' << 24 | 'V' << 16 | 'A' << 8 | 'L');
+    public static final int ID_BLOK = ('B' << 24 | 'L' << 16 | 'O' << 8 | 'K');
 //                                      
 /* texture layer */
-    public static final int ID_TYPE = (('T' << 24) | ('Y' << 16) | ('P' << 8) | 'E');
-    public static final int ID_CHAN = (('C' << 24) | ('H' << 16) | ('A' << 8) | 'N');
-    public static final int ID_NAME = (('N' << 24) | ('A' << 16) | ('M' << 8) | 'E');
-    public static final int ID_ENAB = (('E' << 24) | ('N' << 16) | ('A' << 8) | 'B');
-    public static final int ID_OPAC = (('O' << 24) | ('P' << 16) | ('A' << 8) | 'C');
-    public static final int ID_FLAG = (('F' << 24) | ('L' << 16) | ('A' << 8) | 'G');
-    public static final int ID_PROJ = (('P' << 24) | ('R' << 16) | ('O' << 8) | 'J');
-    public static final int ID_STCK = (('S' << 24) | ('T' << 16) | ('C' << 8) | 'K');
-    public static final int ID_TAMP = (('T' << 24) | ('A' << 16) | ('M' << 8) | 'P');
+    public static final int ID_TYPE = ('T' << 24 | 'Y' << 16 | 'P' << 8 | 'E');
+    public static final int ID_CHAN = ('C' << 24 | 'H' << 16 | 'A' << 8 | 'N');
+    public static final int ID_NAME = ('N' << 24 | 'A' << 16 | 'M' << 8 | 'E');
+    public static final int ID_ENAB = ('E' << 24 | 'N' << 16 | 'A' << 8 | 'B');
+    public static final int ID_OPAC = ('O' << 24 | 'P' << 16 | 'A' << 8 | 'C');
+    public static final int ID_FLAG = ('F' << 24 | 'L' << 16 | 'A' << 8 | 'G');
+    public static final int ID_PROJ = ('P' << 24 | 'R' << 16 | 'O' << 8 | 'J');
+    public static final int ID_STCK = ('S' << 24 | 'T' << 16 | 'C' << 8 | 'K');
+    public static final int ID_TAMP = ('T' << 24 | 'A' << 16 | 'M' << 8 | 'P');
 //                                      
     /* texture coordinates */
-    public static final int ID_TMAP = (('T' << 24) | ('M' << 16) | ('A' << 8) | 'P');
-    public static final int ID_AXIS = (('A' << 24) | ('X' << 16) | ('I' << 8) | 'S');
-    public static final int ID_CNTR = (('C' << 24) | ('N' << 16) | ('T' << 8) | 'R');
-    public static final int ID_SIZE = (('S' << 24) | ('I' << 16) | ('Z' << 8) | 'E');
-    public static final int ID_ROTA = (('R' << 24) | ('O' << 16) | ('T' << 8) | 'A');
-    public static final int ID_OREF = (('O' << 24) | ('R' << 16) | ('E' << 8) | 'F');
-    public static final int ID_FALL = (('F' << 24) | ('A' << 16) | ('L' << 8) | 'L');
-    public static final int ID_CSYS = (('C' << 24) | ('S' << 16) | ('Y' << 8) | 'S');
+    public static final int ID_TMAP = ('T' << 24 | 'M' << 16 | 'A' << 8 | 'P');
+    public static final int ID_AXIS = ('A' << 24 | 'X' << 16 | 'I' << 8 | 'S');
+    public static final int ID_CNTR = ('C' << 24 | 'N' << 16 | 'T' << 8 | 'R');
+    public static final int ID_SIZE = ('S' << 24 | 'I' << 16 | 'Z' << 8 | 'E');
+    public static final int ID_ROTA = ('R' << 24 | 'O' << 16 | 'T' << 8 | 'A');
+    public static final int ID_OREF = ('O' << 24 | 'R' << 16 | 'E' << 8 | 'F');
+    public static final int ID_FALL = ('F' << 24 | 'A' << 16 | 'L' << 8 | 'L');
+    public static final int ID_CSYS = ('C' << 24 | 'S' << 16 | 'Y' << 8 | 'S');
 //                                      
     /* image map */
-    public static final int ID_IMAP = (('I' << 24) | ('M' << 16) | ('A' << 8) | 'P');
-    public static final int ID_IMAG = (('I' << 24) | ('M' << 16) | ('A' << 8) | 'G');
-    public static final int ID_WRAP = (('W' << 24) | ('R' << 16) | ('A' << 8) | 'P');
-    public static final int ID_WRPW = (('W' << 24) | ('R' << 16) | ('P' << 8) | 'W');
-    public static final int ID_WRPH = (('W' << 24) | ('R' << 16) | ('P' << 8) | 'H');
+    public static final int ID_IMAP = ('I' << 24 | 'M' << 16 | 'A' << 8 | 'P');
+    public static final int ID_IMAG = ('I' << 24 | 'M' << 16 | 'A' << 8 | 'G');
+    public static final int ID_WRAP = ('W' << 24 | 'R' << 16 | 'A' << 8 | 'P');
+    public static final int ID_WRPW = ('W' << 24 | 'R' << 16 | 'P' << 8 | 'W');
+    public static final int ID_WRPH = ('W' << 24 | 'R' << 16 | 'P' << 8 | 'H');
 //    public static final int ID_VMAP = ('V' << 24 | 'M' << 16 | 'A' << 8 | 'P');
-    public static final int ID_AAST = (('A' << 24) | ('A' << 16) | ('S' << 8) | 'T');
-    public static final int ID_PIXB = (('P' << 24) | ('I' << 16) | ('X' << 8) | 'B');
+    public static final int ID_AAST = ('A' << 24 | 'A' << 16 | 'S' << 8 | 'T');
+    public static final int ID_PIXB = ('P' << 24 | 'I' << 16 | 'X' << 8 | 'B');
 //                                      
     /* procedural */
-    public static final int ID_PROC = (('P' << 24) | ('R' << 16) | ('O' << 8) | 'C');
+    public static final int ID_PROC = ('P' << 24 | 'R' << 16 | 'O' << 8 | 'C');
 //    public static final int ID_COLR = ('C' << 24 | 'O' << 16 | 'L' << 8 | 'R');
-    public static final int ID_VALU = (('V' << 24) | ('A' << 16) | ('L' << 8) | 'U');
-    public static final int ID_FUNC = (('F' << 24) | ('U' << 16) | ('N' << 8) | 'C');
-    public static final int ID_FTPS = (('F' << 24) | ('T' << 16) | ('P' << 8) | 'S');
-    public static final int ID_ITPS = (('I' << 24) | ('T' << 16) | ('P' << 8) | 'S');
-    public static final int ID_ETPS = (('E' << 24) | ('T' << 16) | ('P' << 8) | 'S');
+    public static final int ID_VALU = ('V' << 24 | 'A' << 16 | 'L' << 8 | 'U');
+    public static final int ID_FUNC = ('F' << 24 | 'U' << 16 | 'N' << 8 | 'C');
+    public static final int ID_FTPS = ('F' << 24 | 'T' << 16 | 'P' << 8 | 'S');
+    public static final int ID_ITPS = ('I' << 24 | 'T' << 16 | 'P' << 8 | 'S');
+    public static final int ID_ETPS = ('E' << 24 | 'T' << 16 | 'P' << 8 | 'S');
 //                                      
     /* gradient */
-    public static final int ID_GRAD = (('G' << 24) | ('R' << 16) | ('A' << 8) | 'D');
-    public static final int ID_GRST = (('G' << 24) | ('R' << 16) | ('S' << 8) | 'T');
-    public static final int ID_GREN = (('G' << 24) | ('R' << 16) | ('E' << 8) | 'N');
-    public static final int ID_PNAM = (('P' << 24) | ('N' << 16) | ('A' << 8) | 'M');
-    public static final int ID_INAM = (('I' << 24) | ('N' << 16) | ('A' << 8) | 'M');
-    public static final int ID_GRPT = (('G' << 24) | ('R' << 16) | ('P' << 8) | 'T');
-    public static final int ID_FKEY = (('F' << 24) | ('K' << 16) | ('E' << 8) | 'Y');
-    public static final int ID_IKEY = (('I' << 24) | ('K' << 16) | ('E' << 8) | 'Y');
+    public static final int ID_GRAD = ('G' << 24 | 'R' << 16 | 'A' << 8 | 'D');
+    public static final int ID_GRST = ('G' << 24 | 'R' << 16 | 'S' << 8 | 'T');
+    public static final int ID_GREN = ('G' << 24 | 'R' << 16 | 'E' << 8 | 'N');
+    public static final int ID_PNAM = ('P' << 24 | 'N' << 16 | 'A' << 8 | 'M');
+    public static final int ID_INAM = ('I' << 24 | 'N' << 16 | 'A' << 8 | 'M');
+    public static final int ID_GRPT = ('G' << 24 | 'R' << 16 | 'P' << 8 | 'T');
+    public static final int ID_FKEY = ('F' << 24 | 'K' << 16 | 'E' << 8 | 'Y');
+    public static final int ID_IKEY = ('I' << 24 | 'K' << 16 | 'E' << 8 | 'Y');
 //                                      
     /* shader */
-    public static final int ID_SHDR = (('S' << 24) | ('H' << 16) | ('D' << 8) | 'R');
-    public static final int ID_DATA = (('D' << 24) | ('A' << 16) | ('T' << 8) | 'A');
+    public static final int ID_SHDR = ('S' << 24 | 'H' << 16 | 'D' << 8 | 'R');
+    public static final int ID_DATA = ('D' << 24 | 'A' << 16 | 'T' << 8 | 'A');
 
     /* generic linked list */
     static abstract class lwNode implements NiLLABLE<lwNode> {
@@ -202,7 +201,7 @@ public class Model_lwo {
 
         @Override
         public boolean isNULL() {
-            return this.NULL;
+            return NULL;
         }
 
         static int getPosition(lwNode n) {
@@ -247,7 +246,7 @@ public class Model_lwo {
         public abstract lwNode getPrev();
 
         public abstract void setPrev(lwNode prev);
-    }
+    };
 
 
     /* plug-in reference */
@@ -261,7 +260,7 @@ public class Model_lwo {
 //        Object data;
         @Override
         public lwNode getNext() {
-            return this.next;
+            return next;
         }
 
         @Override
@@ -271,14 +270,14 @@ public class Model_lwo {
 
         @Override
         public lwNode getPrev() {
-            return this.prev;
+            return prev;
         }
 
         @Override
         public void setPrev(lwNode prev) {
             this.prev = (lwPlugin) prev;
         }
-    }
+    };
 
 
     /* envelopes */
@@ -295,7 +294,7 @@ public class Model_lwo {
 
         @Override
         public lwNode getNext() {
-            return this.next;
+            return next;
         }
 
         @Override
@@ -305,14 +304,14 @@ public class Model_lwo {
 
         @Override
         public lwNode getPrev() {
-            return this.prev;
+            return prev;
         }
 
         @Override
         public void setPrev(lwNode prev) {
             this.prev = (lwKey) prev;
         }
-    }
+    };
 
     static class lwEnvelope extends lwNode {
 
@@ -328,7 +327,7 @@ public class Model_lwo {
 
         @Override
         public lwNode getNext() {
-            return this.next;
+            return next;
         }
 
         @Override
@@ -338,14 +337,14 @@ public class Model_lwo {
 
         @Override
         public lwNode getPrev() {
-            return this.prev;
+            return prev;
         }
 
         @Override
         public void setPrev(lwNode prev) {
             this.prev = (lwEnvelope) prev;
         }
-    }
+    };
     public static final int BEH_RESET = 0;
     public static final int BEH_CONSTANT = 1;
     public static final int BEH_REPEAT = 2;
@@ -359,20 +358,20 @@ public class Model_lwo {
 
         float val;
         int eindex;
-    }
+    };
 
     static class lwVParam {
 
         float[] val = new float[3];
         int eindex;
-    }
+    };
 
 
     /* clips */
     static class lwClipStill {
 
         String name;
-    }
+    };
 
     static class lwClipSeq {
 
@@ -383,28 +382,28 @@ public class Model_lwo {
         int offset;
         int start;
         int end;
-    }
+    };
 
     static class lwClipAnim {
 
         String name;
         String server;              // anim loader plug-in 
         Object data;
-    }
+    };
 
     static class lwClipXRef {
 
         String string;
         int index;
         lwClip clip;
-    }
+    };
 
     static class lwClipCycle {
 
         String name;
         int lo;
         int hi;
-    }
+    };
 
     static class lwClip extends lwNode {
 
@@ -419,7 +418,7 @@ public class Model_lwo {
             lwClipAnim anim = new lwClipAnim();
             lwClipXRef xref = new lwClipXRef();
             lwClipCycle cycle = new lwClipCycle();
-        }
+        };
         Source source = new Source();
         float start_time;
         float duration;
@@ -437,7 +436,7 @@ public class Model_lwo {
 
         @Override
         public lwNode getNext() {
-            return this.next;
+            return next;
         }
 
         @Override
@@ -447,14 +446,14 @@ public class Model_lwo {
 
         @Override
         public lwNode getPrev() {
-            return this.prev;
+            return prev;
         }
 
         @Override
         public void setPrev(lwNode prev) {
             this.prev = (lwClip) prev;
         }
-    }
+    };
 
     /* textures */
     static class lwTMap {
@@ -466,7 +465,7 @@ public class Model_lwo {
         int fall_type;
         String ref_object;
         int coord_sys;
-    }
+    };
 
     static class lwImageMap {
 
@@ -483,7 +482,7 @@ public class Model_lwo {
         int pblend;
         lwEParam stck = new lwEParam();
         lwEParam amplitude = new lwEParam();
-    }
+    };
     public static final int PROJ_PLANAR = 0;
     public static final int PROJ_CYLINDRICAL = 1;
     public static final int PROJ_SPHERICAL = 2;
@@ -501,14 +500,14 @@ public class Model_lwo {
         float[] value = new float[3];
         String name;
         Object data;
-    }
+    };
 
     static class lwGradKey {
 
         lwGradKey next, prev;
         float value;
         float[] rgba = new float[4];
-    }
+    };
 
     static class lwGradient {
 
@@ -519,7 +518,7 @@ public class Model_lwo {
         int repeat;
         lwGradKey[] key;             // array of gradient keys 
         short[] ikey;                // array of interpolation codes 
-    }
+    };
 
     static class lwTexture extends lwNode {
 
@@ -538,19 +537,19 @@ public class Model_lwo {
             lwImageMap imap = new lwImageMap();
             lwProcedural proc = new lwProcedural();
             lwGradient grad = new lwGradient();
-        }
+        };
         Param param = new Param();
         lwTMap tmap = new lwTMap();
 
         public lwTexture() {
-            this.NULL = true;
+            NULL = true;
         }
 
         @Override
         public lwNode oSet(lwNode node) {
-            final lwTexture tempNode = (lwTexture) node;
+            lwTexture tempNode = (lwTexture) node;
 
-            this.NULL = false;
+            NULL = false;
 
             this.next = tempNode.next;
             this.prev = tempNode.prev;
@@ -567,7 +566,7 @@ public class Model_lwo {
 
         @Override
         public lwNode getNext() {
-            return this.next;
+            return next;
         }
 
         @Override
@@ -577,14 +576,14 @@ public class Model_lwo {
 
         @Override
         public lwNode getPrev() {
-            return this.prev;
+            return prev;
         }
 
         @Override
         public void setPrev(lwNode prev) {
             this.prev = (lwTexture) prev;
         }
-    }
+    };
 
 
     /* values that can be textured */
@@ -593,14 +592,14 @@ public class Model_lwo {
         float val;
         int eindex;
         lwTexture tex = new lwTexture();                 // linked list of texture layers
-    }
+    };
 
     static class lwCParam {
 
         float[] rgb = new float[3];
         int eindex;
         lwTexture tex = new lwTexture();                 // linked list of texture layers
-    }
+    };
 
 
     /* surfaces */
@@ -610,7 +609,7 @@ public class Model_lwo {
         short type;
         lwEParam intensity;
         lwEParam size;
-    }
+    };
 
     static class lwRMap {
 
@@ -618,14 +617,14 @@ public class Model_lwo {
         int options;
         int cindex;
         float seam_angle;
-    }
+    };
 
     static class lwLine {
 
         short enabled;
         int flags;
         lwEParam size;
-    }
+    };
 
     static class lwSurface extends lwNode {
 
@@ -658,7 +657,7 @@ public class Model_lwo {
         @Override
         public lwNode oSet(lwNode node) {
 
-            final lwSurface surface = (lwSurface) node;
+            lwSurface surface = (lwSurface) node;
 
             this.next = surface.next;
             this.prev = surface.prev;
@@ -692,7 +691,7 @@ public class Model_lwo {
 
         @Override
         public lwNode getNext() {
-            return this.next;
+            return next;
         }
 
         @Override
@@ -702,7 +701,7 @@ public class Model_lwo {
 
         @Override
         public lwNode getPrev() {
-            return this.prev;
+            return prev;
         }
 
         @Override
@@ -713,7 +712,7 @@ public class Model_lwo {
         @Override
         public int hashCode() {
             int hash = 5;
-            hash = (41 * hash) + Objects.hashCode(this.name);
+            hash = 41 * hash + Objects.hashCode(this.name);
             return hash;
         }
 
@@ -731,7 +730,7 @@ public class Model_lwo {
             }
             return true;
         }
-    }
+    };
 
     /* vertex maps */
     static class lwVMap extends lwNode {
@@ -764,7 +763,7 @@ public class Model_lwo {
 
         @Override
         public lwNode getNext() {
-            return this.next;
+            return next;
         }
 
         @Override
@@ -774,14 +773,14 @@ public class Model_lwo {
 
         @Override
         public lwNode getPrev() {
-            return this.prev;
+            return prev;
         }
 
         @Override
         public void setPrev(lwNode prev) {
             this.prev = (lwVMap) prev;
         }
-    }
+    };
 
     static class lwVMapPt {
 
@@ -797,7 +796,7 @@ public class Model_lwo {
                     limit(length).
                     toArray(lwVMapPt[]::new);
         }
-    }
+    };
 
 
     /* points and polygons */
@@ -808,7 +807,7 @@ public class Model_lwo {
         int[] pol;               // array of polygon indexes 
         int nvmaps;
         lwVMapPt[] vm;           // array of vmap references 
-    }
+    };
 
     static class lwPolVert {
 
@@ -816,7 +815,7 @@ public class Model_lwo {
         float[] norm = new float[3];
         int nvmaps;
         lwVMapPt[] vm;           // array of vmap references 
-    }
+    };
 
     static class lwPolygon {
 
@@ -831,7 +830,7 @@ public class Model_lwo {
         private int vOffset;     // the offset from the start of v to point towards.
 
         public lwPolVert getV(int index) {
-            return this.v[this.vOffset + index];
+            return v[vOffset + index];
         }
 
         public void setV(lwPolVert[] v, int vOffset) {
@@ -839,14 +838,14 @@ public class Model_lwo {
             this.vOffset = vOffset;
         }
 
-    }
+    };
 
     static class lwPointList {
 
         int count;
         int offset;              // only used during reading 
         lwPoint[] pt;            // array of points 
-    }
+    };
 
     static class lwPolygonList {
 
@@ -855,7 +854,7 @@ public class Model_lwo {
         int vcount;              // total number of vertices 
         int voffset;             // only used during reading 
         lwPolygon[] pol;         // array of polygons 
-    }
+    };
 
 
     /* geometry layers */
@@ -875,7 +874,7 @@ public class Model_lwo {
 
         @Override
         public lwNode getNext() {
-            return this.next;
+            return next;
         }
 
         @Override
@@ -885,14 +884,14 @@ public class Model_lwo {
 
         @Override
         public lwNode getPrev() {
-            return this.prev;
+            return prev;
         }
 
         @Override
         public void setPrev(lwNode prev) {
             this.prev = (lwLayer) prev;
         }
-    }
+    };
 
 
     /* tag strings */
@@ -901,7 +900,7 @@ public class Model_lwo {
         int count;
         int offset;             // only used during reading 
         String[] tag;           // array of strings 
-    }
+    };
 
 
     /* an object */
@@ -917,7 +916,7 @@ public class Model_lwo {
         int nenvs;
         int nclips;
         int nsurfs;
-    }
+    };
 
     /*
      ======================================================================
@@ -929,7 +928,7 @@ public class Model_lwo {
     static abstract class LW {
 
         public abstract void run(final Object p);
-    }
+    };
 
     /*
      ======================================================================
@@ -997,7 +996,7 @@ public class Model_lwo {
                 clip = null;
             }
         }
-    }
+    };
 
 
     /*
@@ -1083,7 +1082,7 @@ public class Model_lwo {
 
             /* error while reading current subchunk? */
             rlen = get_flen();
-            if ((rlen < 0) || (rlen > sz)) {
+            if (rlen < 0 || rlen > sz) {
                 break Fail;
             }
 
@@ -1176,7 +1175,7 @@ public class Model_lwo {
 
                 /* error while reading current subchunk? */
                 rlen = get_flen();
-                if ((rlen < 0) || (rlen > sz)) {
+                if (rlen < 0 || rlen > sz) {
                     break Fail;
                 }
 
@@ -1278,7 +1277,7 @@ public class Model_lwo {
                 env = null;
             }
         }
-    }
+    };
 
     public static class compare_keys implements cmp_t<lwKey> {
 
@@ -1301,7 +1300,7 @@ public class Model_lwo {
         lwPlugin plug;
         int id;
         short sz;
-        final float[] f = new float[4];
+        float[] f = new float[4];
         int i, nparams, pos, rlen;
 
 
@@ -1412,7 +1411,7 @@ public class Model_lwo {
 
                 /* error while reading current subchunk? */
                 rlen = get_flen();
-                if ((rlen < 0) || (rlen > sz)) {
+                if (rlen < 0 || rlen > sz) {
                     break Fail;
                 }
 
@@ -1480,8 +1479,7 @@ public class Model_lwo {
      For example, range( 3 pi, 0, 2 pi, i ) returns pi, with i = 1.
      ====================================================================== */
     public static float range(float v, float lo, float hi, int[] i) {
-        float v2;
-		final float r = hi - lo;
+        float v2, r = hi - lo;
 
         if (r == 0.0) {
             if (i[0] != 0) {
@@ -1490,9 +1488,9 @@ public class Model_lwo {
             return lo;
         }
 
-        v2 = (lo + v) - (r * (float) Math.floor((double) v / r));
+        v2 = lo + v - r * (float) Math.floor((double) v / r);
         if (i[0] != 0) {
-            i[0] = -(int) (((v2 - v) / r) + (v2 > v ? 0.5 : -0.5));
+            i[0] = -(int) ((v2 - v) / r + (v2 > v ? 0.5 : -0.5));
         }
 
         return v2;
@@ -1511,10 +1509,10 @@ public class Model_lwo {
         t2 = t * t;
         t3 = t * t2;
 
-        h2[0] = (3.0f * t2) - t3 - t3;
+        h2[0] = 3.0f * t2 - t3 - t3;
         h1[0] = 1.0f - h2[0];
         h4[0] = t3 - t2;
-        h3[0] = (h4[0] - t2) + t;
+        h3[0] = h4[0] - t2 + t;
     }
 
 
@@ -1531,10 +1529,10 @@ public class Model_lwo {
         t3 = t2 * t;
 
         c = 3.0f * (x1 - x0);
-        b = (3.0f * (x2 - x1)) - c;
+        b = 3.0f * (x2 - x1) - c;
         a = x3 - x0 - c - b;
 
-        return (a * t3) + (b * t2) + (c * t) + x0;
+        return a * t3 + b * t2 + c * t + x0;
     }
 
 
@@ -1551,7 +1549,7 @@ public class Model_lwo {
             float[] t0, float[] t1) {
         float v, t;
 
-        t = t0[0] + ((t1[0] - t0[0]) * 0.5f);
+        t = t0[0] + (t1[0] - t0[0]) * 0.5f;
         v = bezier(x0, x1, x2, x3, t);
         if (idMath.Fabs(time - v) > .0001f) {
             if (v > time) {
@@ -1574,12 +1572,12 @@ public class Model_lwo {
      ====================================================================== */
     public static float bez2(lwKey key0, lwKey key1, float time) {
         float x, y, t;
-        final float[] t0 = {0.0f}, t1 = {1.0f};
+        float[] t0 = {0.0f}, t1 = {1.0f};
 
         if (key0.shape == ID_BEZ2) {
             x = key0.time + key0.param[2];
         } else {
-            x = key0.time + ((key1.time - key0.time) / 3.0f);
+            x = key0.time + (key1.time - key0.time) / 3.0f;
         }
 
         t = bez2_time(key0.time, x, key1.time + key1.param[0], key1.time, time, t0, t1);
@@ -1587,7 +1585,7 @@ public class Model_lwo {
         if (key0.shape == ID_BEZ2) {
             y = key0.value + key0.param[3];
         } else {
-            y = key0.value + (key0.param[1] / 3.0f);
+            y = key0.value + key0.param[1] / 3.0f;
         }
 
         return bezier(key0.value, y, key1.param[1] + key1.value, key1.value, t);
@@ -1617,7 +1615,7 @@ public class Model_lwo {
 
                 if (key0.prev != null) {
                     t = (key1.time - key0.time) / (key1.time - key0.prev.time);
-                    out = t * ((a * (key0.value - key0.prev.value)) + (b * d));
+                    out = t * (a * (key0.value - key0.prev.value) + b * d);
                 } else {
                     out = b * d;
                 }
@@ -1627,7 +1625,7 @@ public class Model_lwo {
                 d = key1.value - key0.value;
                 if (key0.prev != null) {
                     t = (key1.time - key0.time) / (key1.time - key0.prev.time);
-                    out = t * ((key0.value - key0.prev.value) + d);
+                    out = t * (key0.value - key0.prev.value + d);
                 } else {
                     out = d;
                 }
@@ -1675,7 +1673,7 @@ public class Model_lwo {
                 d = key1.value - key0.value;
                 if (key1.next != null) {
                     t = (key1.time - key0.time) / (key1.next.time - key0.time);
-                    in = t * ((key1.next.value - key1.value) + d);
+                    in = t * (key1.next.value - key1.value + d);
                 } else {
                     in = d;
                 }
@@ -1692,7 +1690,7 @@ public class Model_lwo {
 
                 if (key1.next != null) {
                     t = (key1.time - key0.time) / (key1.next.time - key0.time);
-                    in = t * ((b * (key1.next.value - key1.value)) + (a * d));
+                    in = t * (b * (key1.next.value - key1.value) + a * d);
                 } else {
                     in = a * d;
                 }
@@ -1736,8 +1734,8 @@ public class Model_lwo {
     public static float evalEnvelope(lwEnvelope env, float time) {
         lwKey key0, key1, skey, ekey;
         float t, in, out, offset = 0.0f;
-        final float[] h1 = new float[1], h2 = new float[1], h3 = new float[1], h4 = new float[1];
-        final int[] noff = new int[1];
+        float[] h1 = new float[1], h2 = new float[1], h3 = new float[1], h4 = new float[1];
+        int[] noff = new int[1];
 
 
         /* if there's no key, the value is 0 */
@@ -1784,7 +1782,7 @@ public class Model_lwo {
                 case BEH_LINEAR:
                     out = outgoing(skey, skey.next)
                             / (skey.next.time - skey.time);
-                    return (out * (time - skey.time)) + skey.value;
+                    return out * (time - skey.time) + skey.value;
             }
         } /* use post-behavior if time is after last key time */ else if (time > ekey.time) {
             switch (env.behavior[1]) {
@@ -1813,7 +1811,7 @@ public class Model_lwo {
                 case BEH_LINEAR:
                     in = incoming(ekey.prev, ekey)
                             / (ekey.time - ekey.prev.time);
-                    return (in * (time - ekey.time)) + ekey.value;
+                    return in * (time - ekey.time) + ekey.value;
             }
         }
 
@@ -1842,13 +1840,13 @@ public class Model_lwo {
                 out = outgoing(key0, key1);
                 in = incoming(key0, key1);
                 hermite(t, h1, h2, h3, h4);
-                return (h1[0] * key0.value) + (h2[0] * key1.value) + (h3[0] * out) + (h4[0] * in) + offset;
+                return h1[0] * key0.value + h2[0] * key1.value + h3[0] * out + h4[0] * in + offset;
 
             case ID_BEZ2:
                 return bez2(key0, key1, time) + offset;
 
             case ID_LINE:
-                return key0.value + (t * (key1.value - key0.value)) + offset;
+                return key0.value + t * (key1.value - key0.value) + offset;
 
             case ID_STEP:
                 return key0.value + offset;
@@ -1886,11 +1884,10 @@ public class Model_lwo {
     static <T> T lwListAdd(T list, lwNode node) {
         lwNode head, tail = null;
 
-        if (list == null) {
+        head = (lwNode) list;
+        if (null == head) {
             return (T) node;
         }
-
-        head = (lwNode) list;
         while (head != null) {
             tail = head;
             head = head.getNext();
@@ -1934,7 +1931,7 @@ public class Model_lwo {
         }
 
         list = vList;
-        item = vItem;
+        item = (lwNode) vItem;
         node = list;
         prev = null;
 
@@ -2020,7 +2017,7 @@ public class Model_lwo {
 
     public static int getI1(idFile fp) {
         int i;
-        final byte[] c = {0};
+        byte[] c = {0};
 
         if (flen == FLEN_ERROR) {
             return 0;
@@ -2040,7 +2037,7 @@ public class Model_lwo {
     }
 
     public static short getI2(idFile fp) {
-        final ByteBuffer i = ByteBuffer.allocate(2);
+        ByteBuffer i = ByteBuffer.allocate(2);
 
         if (flen == FLEN_ERROR) {
             return 0;
@@ -2055,7 +2052,7 @@ public class Model_lwo {
     }
 
     public static int getI4(idFile fp) {
-        final ByteBuffer i = ByteBuffer.allocate(4);
+        ByteBuffer i = ByteBuffer.allocate(4);
 
         if (flen == FLEN_ERROR) {
             return 0;
@@ -2071,7 +2068,7 @@ public class Model_lwo {
 
     public static char getU1(idFile fp) {
         int i;
-        final byte[] c = {0};
+        byte[] c = {0};
 
         if (flen == FLEN_ERROR) {
             return 0;
@@ -2087,7 +2084,7 @@ public class Model_lwo {
     }
 
     public static short getU2(idFile fp) {
-        final ByteBuffer i = ByteBuffer.allocate(2);
+        ByteBuffer i = ByteBuffer.allocate(2);
 
         if (flen == FLEN_ERROR) {
             return 0;
@@ -2102,7 +2099,7 @@ public class Model_lwo {
     }
 
     public static int getU4(idFile fp) {
-        final ByteBuffer i = ByteBuffer.allocate(4);
+        ByteBuffer i = ByteBuffer.allocate(4);
 
         if (flen == FLEN_ERROR) {
             return 0;
@@ -2117,7 +2114,7 @@ public class Model_lwo {
     }
 
     public static int getVX(idFile fp) {
-        final ByteBuffer c = ByteBuffer.allocate(1);
+        ByteBuffer c = ByteBuffer.allocate(1);
         int i;
 
         if (flen == FLEN_ERROR) {
@@ -2160,7 +2157,7 @@ public class Model_lwo {
     }
 
     public static float getF4(idFile fp) {
-        final ByteBuffer f = ByteBuffer.allocate(4);
+        ByteBuffer f = ByteBuffer.allocate(4);
 
         if (flen == FLEN_ERROR) {
             return 0.0f;
@@ -2181,7 +2178,7 @@ public class Model_lwo {
     public static String getS0(idFile fp) {
         ByteBuffer s;
         int i, len, pos;
-        final ByteBuffer c = ByteBuffer.allocate(1);
+        ByteBuffer c = ByteBuffer.allocate(1);
 
         if (flen == FLEN_ERROR) {
             return null;
@@ -2319,18 +2316,18 @@ public class Model_lwo {
 
     public static int sgetVX(ByteBuffer bp) {
         int i;
-        final int pos = bp.position();
+        int pos = bp.position();
 
         if (flen == FLEN_ERROR) {
             return 0;
         }
 
         if (bp.get(pos) != 0xFF) {
-            i = (btoi(bp.get(pos)) << 8) | btoi(bp.get(pos + 1));
+            i = btoi(bp.get(pos)) << 8 | btoi(bp.get(pos + 1));
             flen += 2;
             bp.position(pos + 2);
         } else {
-            i = (btoi(bp.get(pos + 1)) << 16) | (btoi(bp.get(pos + 2)) << 8) | btoi(bp.get(pos + 3));
+            i = btoi(bp.get(pos + 1)) << 16 | btoi(bp.get(pos + 2)) << 8 | btoi(bp.get(pos + 3));
             flen += 4;
             bp.position(pos + 4);
         }
@@ -2339,7 +2336,7 @@ public class Model_lwo {
 
     public static float sgetF4(ByteBuffer bp) {
         float f;
-        final int i = 0;
+        int i = 0;
 
         if (flen == FLEN_ERROR) {
             return 0.0f;
@@ -2360,7 +2357,7 @@ public class Model_lwo {
         String s;
 //   unsigned char *buf = *bp;
         int len;
-        final int pos = bp.position();
+        int pos = bp.position();
 
         if (flen == FLEN_ERROR) {
             return null;
@@ -2418,7 +2415,7 @@ public class Model_lwo {
                 layer = null;
             }
         }
-    }
+    };
 
 
     /*
@@ -2553,10 +2550,10 @@ public class Model_lwo {
                         layer.name = getS0(fp);
 
                         rlen = get_flen();
-                        if ((rlen < 0) || (rlen > cksize)) {
+                        if (rlen < 0 || rlen > cksize) {
                             break Fail;
                         }
-                        if (rlen <= (cksize - 2)) {
+                        if (rlen <= cksize - 2) {
                             layer.parent = getU2(fp);
                         }
                         rlen = get_flen();
@@ -2599,7 +2596,7 @@ public class Model_lwo {
                             layer.bbox[i] = getF4(fp);
                         }
                         rlen = get_flen();
-                        if ((rlen < 0) || (rlen > cksize)) {
+                        if (rlen < 0 || rlen > cksize) {
                             break Fail;
                         }
                         if (rlen < cksize) {
@@ -2614,7 +2611,7 @@ public class Model_lwo {
                         break;
 
                     case ID_ENVL:
-                        node = lwGetEnvelope(fp, cksize);
+                        node = (lwNode) lwGetEnvelope(fp, cksize);
                         if (null == node) {
                             break Fail;
                         }
@@ -2623,7 +2620,7 @@ public class Model_lwo {
                         break;
 
                     case ID_CLIP:
-                        node = lwGetClip(fp, cksize);
+                        node = (lwNode) lwGetClip(fp, cksize);
                         if (null == node) {
                             break Fail;
                         }
@@ -2632,7 +2629,7 @@ public class Model_lwo {
                         break;
 
                     case ID_SURF:
-                        node = lwGetSurface(fp, cksize);
+                        node = (lwNode) lwGetSurface(fp, cksize);
                         if (null == node) {
                             break Fail;
                         }
@@ -2649,7 +2646,7 @@ public class Model_lwo {
                 }
 
                 /* end of the file? */
-                if (formsize <= (fp.Tell() - 8)) {
+                if (formsize <= fp.Tell() - 8) {
                     break;
                 }
 
@@ -2707,34 +2704,34 @@ public class Model_lwo {
     }
 
     /* IDs specific to LWOB */
-    static final int ID_SRFS = (('S' << 24) | ('R' << 16) | ('F' << 8) | 'S');
+    static final int ID_SRFS = ('S' << 24 | 'R' << 16 | 'F' << 8 | 'S');
 //    static final int ID_FLAG = ('F' << 24 | 'L' << 16 | 'A' << 8 | 'G');
-    static final int ID_VLUM = (('V' << 24) | ('L' << 16) | ('U' << 8) | 'M');
-    static final int ID_VDIF = (('V' << 24) | ('D' << 16) | ('I' << 8) | 'F');
-    static final int ID_VSPC = (('V' << 24) | ('S' << 16) | ('P' << 8) | 'C');
-    static final int ID_RFLT = (('R' << 24) | ('F' << 16) | ('L' << 8) | 'T');
-    static final int ID_BTEX = (('B' << 24) | ('T' << 16) | ('E' << 8) | 'X');
-    static final int ID_CTEX = (('C' << 24) | ('T' << 16) | ('E' << 8) | 'X');
-    static final int ID_DTEX = (('D' << 24) | ('T' << 16) | ('E' << 8) | 'X');
-    static final int ID_LTEX = (('L' << 24) | ('T' << 16) | ('E' << 8) | 'X');
-    static final int ID_RTEX = (('R' << 24) | ('T' << 16) | ('E' << 8) | 'X');
-    static final int ID_STEX = (('S' << 24) | ('T' << 16) | ('E' << 8) | 'X');
-    static final int ID_TTEX = (('T' << 24) | ('T' << 16) | ('E' << 8) | 'X');
-    static final int ID_TFLG = (('T' << 24) | ('F' << 16) | ('L' << 8) | 'G');
-    static final int ID_TSIZ = (('T' << 24) | ('S' << 16) | ('I' << 8) | 'Z');
-    static final int ID_TCTR = (('T' << 24) | ('C' << 16) | ('T' << 8) | 'R');
-    static final int ID_TFAL = (('T' << 24) | ('F' << 16) | ('A' << 8) | 'L');
-    static final int ID_TVEL = (('T' << 24) | ('V' << 16) | ('E' << 8) | 'L');
-    static final int ID_TCLR = (('T' << 24) | ('C' << 16) | ('L' << 8) | 'R');
-    static final int ID_TVAL = (('T' << 24) | ('V' << 16) | ('A' << 8) | 'L');
+    static final int ID_VLUM = ('V' << 24 | 'L' << 16 | 'U' << 8 | 'M');
+    static final int ID_VDIF = ('V' << 24 | 'D' << 16 | 'I' << 8 | 'F');
+    static final int ID_VSPC = ('V' << 24 | 'S' << 16 | 'P' << 8 | 'C');
+    static final int ID_RFLT = ('R' << 24 | 'F' << 16 | 'L' << 8 | 'T');
+    static final int ID_BTEX = ('B' << 24 | 'T' << 16 | 'E' << 8 | 'X');
+    static final int ID_CTEX = ('C' << 24 | 'T' << 16 | 'E' << 8 | 'X');
+    static final int ID_DTEX = ('D' << 24 | 'T' << 16 | 'E' << 8 | 'X');
+    static final int ID_LTEX = ('L' << 24 | 'T' << 16 | 'E' << 8 | 'X');
+    static final int ID_RTEX = ('R' << 24 | 'T' << 16 | 'E' << 8 | 'X');
+    static final int ID_STEX = ('S' << 24 | 'T' << 16 | 'E' << 8 | 'X');
+    static final int ID_TTEX = ('T' << 24 | 'T' << 16 | 'E' << 8 | 'X');
+    static final int ID_TFLG = ('T' << 24 | 'F' << 16 | 'L' << 8 | 'G');
+    static final int ID_TSIZ = ('T' << 24 | 'S' << 16 | 'I' << 8 | 'Z');
+    static final int ID_TCTR = ('T' << 24 | 'C' << 16 | 'T' << 8 | 'R');
+    static final int ID_TFAL = ('T' << 24 | 'F' << 16 | 'A' << 8 | 'L');
+    static final int ID_TVEL = ('T' << 24 | 'V' << 16 | 'E' << 8 | 'L');
+    static final int ID_TCLR = ('T' << 24 | 'C' << 16 | 'L' << 8 | 'R');
+    static final int ID_TVAL = ('T' << 24 | 'V' << 16 | 'A' << 8 | 'L');
 //    static final int ID_TAMP = ('T' << 24 | 'A' << 16 | 'M' << 8 | 'P');
 //    static final int ID_TIMG = ('T' << 24 | 'I' << 16 | 'M' << 8 | 'G');
-    static final int ID_TAAS = (('T' << 24) | ('A' << 16) | ('A' << 8) | 'S');
-    static final int ID_TREF = (('T' << 24) | ('R' << 16) | ('E' << 8) | 'F');
-    static final int ID_TOPC = (('T' << 24) | ('O' << 16) | ('P' << 8) | 'C');
-    static final int ID_SDAT = (('S' << 24) | ('D' << 16) | ('A' << 8) | 'T');
-    static final int ID_TFP0 = (('T' << 24) | ('F' << 16) | ('P' << 8) | '0');
-    static final int ID_TFP1 = (('T' << 24) | ('F' << 16) | ('P' << 8) | '1');
+    static final int ID_TAAS = ('T' << 24 | 'A' << 16 | 'A' << 8 | 'S');
+    static final int ID_TREF = ('T' << 24 | 'R' << 16 | 'E' << 8 | 'F');
+    static final int ID_TOPC = ('T' << 24 | 'O' << 16 | 'P' << 8 | 'C');
+    static final int ID_SDAT = ('S' << 24 | 'D' << 16 | 'A' << 8 | 'T');
+    static final int ID_TFP0 = ('T' << 24 | 'F' << 16 | 'P' << 8 | '0');
+    static final int ID_TFP1 = ('T' << 24 | 'F' << 16 | 'P' << 8 | '1');
 
 //    static {
 //        ID_SRFS = LWID_('S', 'R', 'F', 'S');
@@ -2777,9 +2774,8 @@ public class Model_lwo {
         lwClip clip;
         int p;
 
-        try {
-            clip = new lwClip();// Mem_ClearedAlloc(sizeof(lwClip));
-		} catch (Exception e) {
+        clip = new lwClip();// Mem_ClearedAlloc(sizeof(lwClip));
+        if (null == clip) {
             return 0;
         }
 
@@ -2824,7 +2820,7 @@ public class Model_lwo {
             env = new lwEnvelope();// Mem_ClearedAlloc(sizeof(lwEnvelope));
             key0 = new lwKey();// Mem_ClearedAlloc(sizeof(lwKey));
             key1 = new lwKey();// Mem_ClearedAlloc(sizeof(lwKey));
-            if ((null == env) || (null == key0) || (null == key1)) {
+            if (null == env || null == key0 || null == key1) {
                 return 0;
             }
 
@@ -2832,7 +2828,7 @@ public class Model_lwo {
             key0.value = pos[i];
             key0.time = 0.0f;
             key1.prev = key0;
-            key1.value = pos[i] + (vel[i] * 30.0f);
+            key1.value = pos[i] + vel[i] * 30.0f;
             key1.time = 1.0f;
             key0.shape = key1.shape = ID_LINE;
 
@@ -2866,9 +2862,8 @@ public class Model_lwo {
     public static lwTexture get_texture(String s) {
         lwTexture tex;
 
-        try {
-            tex = new lwTexture();// Mem_ClearedAlloc(sizeof(lwTexture));
-		} catch (Exception e) {
+        tex = new lwTexture();// Mem_ClearedAlloc(sizeof(lwTexture));
+        if (null == tex) {
             return null;
         }
 
@@ -2913,8 +2908,8 @@ public class Model_lwo {
         lwSurface surf;
         lwTexture tex = new lwTexture();
         lwPlugin shdr = new lwPlugin();
-        final String[] s = {null};
-        final float[] v = new float[3];
+        String[] s = {null};
+        float[] v = new float[3];
         int id, flags;
         short sz;
         int pos, rlen, i = 0;
@@ -3029,7 +3024,7 @@ public class Model_lwo {
                     case ID_RIMG:
                         s[0] = getS0(fp);
                          {
-                            final int[] nclips = {obj.nclips};
+                            int[] nclips = {obj.nclips};
                             surf.reflection.cindex = add_clip(s, obj.clip, nclips);
                             obj.nclips = nclips[0];
                         }
@@ -3147,7 +3142,7 @@ public class Model_lwo {
                             v[i] = getF4(fp);
                         }
                          {
-                            final int[] nenvs = {obj.nenvs};
+                            int[] nenvs = {obj.nenvs};
                             tex.tmap.center.eindex = add_tvel(tex.tmap.center.val, v, obj.env, nenvs);
                             obj.nenvs = nenvs[0];
                         }
@@ -3174,7 +3169,7 @@ public class Model_lwo {
                     case ID_TIMG:
                         s[0] = getS0(fp);
                          {
-                            final int[] nClips = {obj.nclips};
+                            int[] nClips = {obj.nclips};
                             tex.param.imap.cindex = add_clip(s, obj.clip, nClips);
                             obj.nclips = nClips[0];
                         }
@@ -3206,9 +3201,8 @@ public class Model_lwo {
                         break;
 
                     case ID_SHDR:
-                        try {
-                            shdr = new lwPlugin();// Mem_ClearedAlloc(sizeof(lwPlugin));
-                		} catch (Exception e) {
+                        shdr = new lwPlugin();// Mem_ClearedAlloc(sizeof(lwPlugin));
+                        if (null == shdr) {
                             break Fail;
                         }
                         shdr.name = new String(getbytes(fp, sz));
@@ -3226,7 +3220,7 @@ public class Model_lwo {
 
                 /* error while reading current subchunk? */
                 rlen = get_flen();
-                if ((rlen < 0) || (rlen > sz)) {
+                if (rlen < 0 || rlen > sz) {
                     break Fail;
                 }
 
@@ -3236,7 +3230,7 @@ public class Model_lwo {
                 }
 
                 /* end of the SURF chunk? */
-                if (cksize <= (fp.Tell() - pos)) {
+                if (cksize <= fp.Tell() - pos) {
                     break;
                 }
 
@@ -3296,7 +3290,7 @@ public class Model_lwo {
                 nv = sgetU2(buf);
                 nverts += nv;
                 npols++;
-                buf.position(buf.position() + (2 * nv));
+                buf.position(buf.position() + 2 * nv);
                 i = sgetI2(buf);
                 if (i < 0) {
                     buf.position(buf.position() + 2);      // detail polygons 
@@ -3398,7 +3392,7 @@ public class Model_lwo {
         }
 
         /* LWOB? */
-        if ((id != ID_FORM) || (type != ID_LWOB)) {
+        if (id != ID_FORM || type != ID_LWOB) {
             fileSystem.CloseFile(fp);
             if (failpos != null) {
                 failpos[0] = 12;
@@ -3409,15 +3403,13 @@ public class Model_lwo {
         Fail:
         /* allocate an object and a default layer */
         if (true) {
-            try {
-                object = new lwObject();// Mem_ClearedAlloc(sizeof(lwObject));
-    		} catch (Exception e) {
+            object = new lwObject();// Mem_ClearedAlloc(sizeof(lwObject));
+            if (null == object) {
                 break Fail;
             }
 
-            try {
-                layer = new lwLayer();// Mem_ClearedAlloc(sizeof(lwLayer));
-    		} catch (Exception e) {
+            layer = new lwLayer();// Mem_ClearedAlloc(sizeof(lwLayer));
+            if (null == layer) {
                 break Fail;
             }
             object.layer = layer;
@@ -3455,7 +3447,7 @@ public class Model_lwo {
                         break;
 
                     case ID_SURF:
-                        node = lwGetSurface5(fp, cksize, object);
+                        node = (lwNode) lwGetSurface5(fp, cksize, object);
                         if (null == node) {
                             break Fail;
                         }
@@ -3469,7 +3461,7 @@ public class Model_lwo {
                 }
 
                 /* end of the file? */
-                if (formsize <= (fp.Tell() - 8)) {
+                if (formsize <= fp.Tell() - 8) {
                     break;
                 }
 
@@ -3519,7 +3511,7 @@ public class Model_lwo {
      Free the memory used by an lwPointList.
      ====================================================================== */
     public static void lwFreePoints(lwPointList point) {
-        final int i;
+        int i;
 
         if (point != null) {
             if (point.pt != null) {
@@ -3546,7 +3538,7 @@ public class Model_lwo {
      Free the memory used by an lwPolygonList.
      ====================================================================== */
     public static void lwFreePolygons(lwPolygonList plist) {
-        final int i, j;
+        int i, j;
 
         if (plist != null) {
             if (plist.pol != null) {
@@ -3596,7 +3588,7 @@ public class Model_lwo {
         }
         if (oldpt != null) {
 //            memcpy(point.pt, oldpt, point.offset * sizeof(lwPoint));
-        	System.arraycopy(oldpt, 0, point.pt, 0, point.offset);
+            System.arraycopy(oldpt, 0, point.pt, 0, point.offset);
 //            Mem_Free(oldpt);
             oldpt = null;
         }
@@ -3677,7 +3669,7 @@ public class Model_lwo {
 //        }
         if (oldpol != null) {
 //            memcpy(plist.pol, oldpol, plist.offset);
-        	System.arraycopy(oldpol, 0, plist.pol, 0, plist.offset);
+            System.arraycopy(oldpol, 0, plist.pol, 0, plist.offset);
 //            Mem_Free(oldpol);
             oldpol = null;
         }
@@ -3695,7 +3687,7 @@ public class Model_lwo {
         }
         if (oldpolv != null) {
 //            memcpy(plist.pol[0].v, oldpolv, plist.voffset);
-        	System.arraycopy(oldpolv, 0, plist.pol[0].v, 0, plist.voffset);
+            System.arraycopy(oldpolv, 0, plist.pol[0].v, 0, plist.voffset);
             oldpolv = null;//Mem_Free(oldpolv);
         }
 //        memset(plist.pol[ 0].v + plist.voffset, 0, nverts);
@@ -3795,7 +3787,7 @@ public class Model_lwo {
             return true;
         }
 
-        //Fail:
+        Fail:
         if (buf != null) {
             buf = null;
         }
@@ -3814,7 +3806,7 @@ public class Model_lwo {
      ====================================================================== */
     public static void lwGetPolyNormals(lwPointList point, lwPolygonList polygon) {
         int i, j;
-        final float[] p1 = new float[3], p2 = new float[3], pn = new float[3],
+        float[] p1 = new float[3], p2 = new float[3], pn = new float[3],
                 v1 = new float[3], v2 = new float[3];
 
         for (i = 0; i < polygon.count; i++) {
@@ -3895,7 +3887,7 @@ public class Model_lwo {
         lwSurface[] s;
         lwSurface st;
         int i, index;
-        final lwTagList tlist = object.taglist;
+        lwTagList tlist = object.taglist;
         lwSurface surf = object.surf;
 
         if (tlist.count == 0) {
@@ -3910,7 +3902,7 @@ public class Model_lwo {
         for (i = 0; i < tlist.count; i++) {
             st = surf;
             while (st != null) {
-                if ((st.name != null) && st.name.equals(tlist.tag[i])) {
+                if (st.name != null && st.name.equals(tlist.tag[i])) {
                     s[i] = st;
                     break;
                 }
@@ -3920,7 +3912,7 @@ public class Model_lwo {
 
         for (i = 0; i < polygon.count; i++) {
             index = polygon.pol[i].part;
-            if ((index < 0) || (index > tlist.count)) {
+            if (index < 0 || index > tlist.count) {
                 return false;
             }
             if (null == s[index]) {
@@ -4007,7 +3999,7 @@ public class Model_lwo {
      Free memory used by an lwTagList.
      ====================================================================== */
     public static void lwFreeTags(lwTagList tlist) {
-        final int i;
+        int i;
 
         if (tlist != null) {
             if (tlist.tag != null) {
@@ -4061,7 +4053,7 @@ public class Model_lwo {
             return false;
         }
         if (oldtag != null) {
-        	System.arraycopy(oldtag, 0, tList.tag, 0, tList.offset);
+            System.arraycopy(oldtag, 0, tList.tag, 0, tList.offset);
         }
 
         /* copy the new tags to the tag array */
@@ -4080,7 +4072,7 @@ public class Model_lwo {
     public static boolean lwGetPolygonTags(idFile fp, int cksize, lwTagList tlist, lwPolygonList plist) {
         int type;
         int rlen = 0, i, j;
-        final Map<Integer, lwNode> nodeMap = new HashMap<>(2);
+        Map<Integer, lwNode> nodeMap = new HashMap<>(2);
 
         set_flen(0);
         type = getU4(fp);
@@ -4089,7 +4081,7 @@ public class Model_lwo {
             return false;
         }
 
-        if ((type != ID_SURF) && (type != ID_PART) && (type != ID_SMGP)) {
+        if (type != ID_SURF && type != ID_PART && type != ID_SMGP) {
             fp.Seek(cksize - 4, FS_SEEK_CUR);
             return true;
         }
@@ -4098,7 +4090,7 @@ public class Model_lwo {
             i = getVX(fp) + plist.offset;
             j = getVX(fp) + tlist.offset;
             rlen = get_flen();
-            if ((rlen < 0) || (rlen > cksize)) {
+            if (rlen < 0 || rlen > cksize) {
                 return false;
             }
 
@@ -4157,7 +4149,7 @@ public class Model_lwo {
 //                Mem_Free(p);
 //            }
         }
-    }
+    };
 
 
     /*
@@ -4220,7 +4212,7 @@ public class Model_lwo {
                 t = null;
             }
         }
-    }
+    };
 
 
     /*
@@ -4267,7 +4259,7 @@ public class Model_lwo {
                 surf = null;
             }
         }
-    }
+    };
 
 
     /*
@@ -4332,7 +4324,7 @@ public class Model_lwo {
 
             /* error while reading current subchunk? */
             rlen = get_flen();
-            if ((rlen < 0) || (rlen > sz)) {
+            if (rlen < 0 || rlen > sz) {
                 return 0;
             }
 
@@ -4342,7 +4334,7 @@ public class Model_lwo {
             }
 
             /* end of the texture header subchunk? */
-            if (hsz <= (fp.Tell() - pos)) {
+            if (hsz <= fp.Tell() - pos) {
                 break;
             }
 
@@ -4427,7 +4419,7 @@ public class Model_lwo {
 
             /* error while reading the current subchunk? */
             rlen = get_flen();
-            if ((rlen < 0) || (rlen > sz)) {
+            if (rlen < 0 || rlen > sz) {
                 return 0;
             }
 
@@ -4437,7 +4429,7 @@ public class Model_lwo {
             }
 
             /* end of the TMAP subchunk? */
-            if (tmapsz <= (fp.Tell() - pos)) {
+            if (tmapsz <= fp.Tell() - pos) {
                 break;
             }
 
@@ -4540,7 +4532,7 @@ public class Model_lwo {
 
             /* error while reading the current subchunk? */
             rlen = get_flen();
-            if ((rlen < 0) || (rlen > sz)) {
+            if (rlen < 0 || rlen > sz) {
                 return 0;
             }
 
@@ -4550,7 +4542,7 @@ public class Model_lwo {
             }
 
             /* end of the image map? */
-            if (rsz <= (fp.Tell() - pos)) {
+            if (rsz <= fp.Tell() - pos) {
                 break;
             }
 
@@ -4623,7 +4615,7 @@ public class Model_lwo {
 
             /* error while reading the current subchunk? */
             rlen = get_flen();
-            if ((rlen < 0) || (rlen > sz)) {
+            if (rlen < 0 || rlen > sz) {
                 return 0;
             }
 
@@ -4633,7 +4625,7 @@ public class Model_lwo {
             }
 
             /* end of the procedural block? */
-            if (rsz <= (fp.Tell() - pos)) {
+            if (rsz <= fp.Tell() - pos) {
                 break;
             }
 
@@ -4731,7 +4723,7 @@ public class Model_lwo {
 
             /* error while reading the current subchunk? */
             rlen = get_flen();
-            if ((rlen < 0) || (rlen > sz)) {
+            if (rlen < 0 || rlen > sz) {
                 return 0;
             }
 
@@ -4741,7 +4733,7 @@ public class Model_lwo {
             }
 
             /* end of the gradient? */
-            if (rsz <= (fp.Tell() - pos)) {
+            if (rsz <= fp.Tell() - pos) {
                 break;
             }
 
@@ -4770,9 +4762,8 @@ public class Model_lwo {
         short sz;
         int ok;
 
-        try {
-            tex = new lwTexture();// Mem_ClearedAlloc(sizeof(lwTexture));
-		} catch (Exception e) {
+        tex = new lwTexture();// Mem_ClearedAlloc(sizeof(lwTexture));
+        if (null == tex) {
             return null;
         }
 
@@ -4826,9 +4817,8 @@ public class Model_lwo {
         short sz;
         int hsz, rlen, pos;
 
-        try {
-            shdr = new lwPlugin();//Mem_ClearedAlloc(sizeof(lwPlugin));
-		} catch (Exception e) {
+        shdr = new lwPlugin();//Mem_ClearedAlloc(sizeof(lwPlugin));
+        if (null == shdr) {
             return null;
         }
 
@@ -4881,7 +4871,7 @@ public class Model_lwo {
 
                 /* error while reading the current subchunk? */
                 rlen = get_flen();
-                if ((rlen < 0) || (rlen > sz)) {
+                if (rlen < 0 || rlen > sz) {
                     break Fail;
                 }
 
@@ -4891,7 +4881,7 @@ public class Model_lwo {
                 }
 
                 /* end of the shader block? */
-                if (bloksz <= (fp.Tell() - pos)) {
+                if (bloksz <= fp.Tell() - pos) {
                     break;
                 }
 
@@ -4997,11 +4987,10 @@ public class Model_lwo {
     public static lwSurface lwDefaultSurface() {
         lwSurface surf;
 
-        try {
-            surf = new lwSurface();// Mem_ClearedAlloc(sizeof(lwSurface));
-		} catch (Exception e) {
+        surf = new lwSurface();// Mem_ClearedAlloc(sizeof(lwSurface));
+        if (null == surf) {
             return null;
-		}
+        }
 
         surf.color.rgb[0] = 0.78431f;
         surf.color.rgb[1] = 0.78431f;
@@ -5232,7 +5221,7 @@ public class Model_lwo {
 
                 /* error while reading current subchunk? */
                 rlen = get_flen();
-                if ((rlen < 0) || (rlen > sz)) {
+                if (rlen < 0 || rlen > sz) {
                     break Fail;
                 }
 
@@ -5242,7 +5231,7 @@ public class Model_lwo {
                 }
 
                 /* end of the SURF chunk? */
-                if (cksize <= (fp.Tell() - pos)) {
+                if (cksize <= fp.Tell() - pos) {
                     break;
                 }
 
@@ -5266,19 +5255,19 @@ public class Model_lwo {
     }
 
     public static float dot(float a[], float b[]) {
-        return (a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]);
+        return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
     }
 
     public static void cross(float a[], float b[], float c[]) {
-        c[0] = (a[1] * b[2]) - (a[2] * b[1]);
-        c[1] = (a[2] * b[0]) - (a[0] * b[2]);
-        c[2] = (a[0] * b[1]) - (a[1] * b[0]);
+        c[0] = a[1] * b[2] - a[2] * b[1];
+        c[1] = a[2] * b[0] - a[0] * b[2];
+        c[2] = a[0] * b[1] - a[1] * b[0];
     }
 
     public static void normalize(float v[]) {
         float r;
 
-        r = idMath.Sqrt(dot(v, v));
+        r = (float) idMath.Sqrt(dot(v, v));
         if (r > 0) {
             v[0] /= r;
             v[1] /= r;
@@ -5305,7 +5294,7 @@ public class Model_lwo {
 
         @Override
         public void run(Object p) {
-            final lwVMap vmap = (lwVMap) p;
+            lwVMap vmap = (lwVMap) p;
             if (vmap != null) {
                 if (vmap.name != null) {
                     vmap.name = null;
@@ -5325,7 +5314,7 @@ public class Model_lwo {
                 vmap.clear();
             }
         }
-    }
+    };
 
 
     /*
@@ -5338,7 +5327,7 @@ public class Model_lwo {
         ByteBuffer buf;
 //        String b[];
         lwVMap vmap;
-        final float[] f;
+        float[] f;
         int i, j, npts, rlen;
 
 
@@ -5372,7 +5361,7 @@ public class Model_lwo {
             if (perpoly != 0) {
                 i = sgetVX(buf);
             }
-            buf.position(buf.position() + (vmap.dim * (Float.SIZE / Byte.SIZE)));
+            buf.position(buf.position() + vmap.dim * (Float.SIZE / Byte.SIZE));
             ++npts;
         }
 
@@ -5380,8 +5369,8 @@ public class Model_lwo {
         vmap.nverts = npts;
         vmap.vindex = new int[npts];// Mem_ClearedAlloc(npts);
 
-//        Fail:
-        if (!TempDump.isDeadCodeTrue()) { // code block returns, so code after that will never be reached
+        Fail:
+        if (true) {
 //            if (null == vmap.vindex) {
 //                break Fail;
 //            }

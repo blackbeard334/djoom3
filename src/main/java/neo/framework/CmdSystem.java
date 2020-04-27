@@ -12,7 +12,6 @@ import static neo.idlib.Text.Str.va;
 
 import java.nio.ByteBuffer;
 
-import neo.TempDump.NeoFixStrings;
 import neo.TempDump.void_callback;
 import neo.framework.DeclManager.declType_t;
 import neo.framework.FileSystem_h.idFileList;
@@ -22,7 +21,6 @@ import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.cmp_t;
 import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrList.idStrList;
-import neo.open.Nio;
 
 /**
  *
@@ -63,7 +61,7 @@ public class CmdSystem {
         CMD_EXEC_NOW, // don't return until completed
         CMD_EXEC_INSERT, // insert at current position, but don't run yet
         CMD_EXEC_APPEND						// add to end of the command buffer (normal case)
-    }
+    };
 
     // command function
     public static abstract class cmdFunction_t {
@@ -144,7 +142,7 @@ public class CmdSystem {
                 callback.run(va("%s 0", args.Argv(0)));
                 callback.run(va("%s 1", args.Argv(0)));
             }
-        }
+        };
 
         public static class ArgCompletion_Integer extends argCompletion_t {
 
@@ -157,11 +155,11 @@ public class CmdSystem {
 
             @Override
             public void run(idCmdArgs args, void_callback<String> callback) throws idException {
-                for (int i = this.min; i <= this.max; i++) {
+                for (int i = min; i <= max; i++) {
                     callback.run(va("%s %d", args.Argv(0), i));
                 }
             }
-        }
+        };
 
 //	template<final String *strings>
         public static class ArgCompletion_String extends argCompletion_t {
@@ -174,8 +172,8 @@ public class CmdSystem {
 
             @Override
             public void run(idCmdArgs args, void_callback<String> callback) throws idException {
-                for (int i = 0; this.listDeclStrings[i] != null; i++) {
-                    callback.run(va("%s %s", args.Argv(0), this.listDeclStrings[i]));
+                for (int i = 0; listDeclStrings[i] != null; i++) {
+                    callback.run(va("%s %s", args.Argv(0), listDeclStrings[i]));
                 }
             }
         }
@@ -191,9 +189,9 @@ public class CmdSystem {
 
             @Override
             public void run(idCmdArgs args, void_callback<String> callback) throws idException {
-                cmdSystem.ArgCompletion_DeclName(args, callback, this.type.ordinal());
+                cmdSystem.ArgCompletion_DeclName(args, callback, type.ordinal());
             }
-        }
+        };
 
         public static class ArgCompletion_FileName extends argCompletion_t {
 
@@ -207,7 +205,7 @@ public class CmdSystem {
             public void run(idCmdArgs args, void_callback<String> callback) throws idException {
                 cmdSystem.ArgCompletion_FolderExtension(args, callback, "/", true, "", null);
             }
-        }
+        };
 
         public static class ArgCompletion_MapName extends argCompletion_t {
 
@@ -221,7 +219,7 @@ public class CmdSystem {
             public void run(idCmdArgs args, void_callback<String> callback) throws idException {
                 cmdSystem.ArgCompletion_FolderExtension(args, callback, "maps/", true, ".map", null);
             }
-        }
+        };
 
         public static class ArgCompletion_ModelName extends argCompletion_t {
 
@@ -235,7 +233,7 @@ public class CmdSystem {
             public void run(idCmdArgs args, void_callback<String> callback) throws idException {
                 cmdSystem.ArgCompletion_FolderExtension(args, callback, "models/", false, ".lwo", ".ase", ".md5mesh", ".ma", null);
             }
-        }
+        };
 
         public static class ArgCompletion_SoundName extends argCompletion_t {
 
@@ -249,7 +247,7 @@ public class CmdSystem {
             public void run(idCmdArgs args, void_callback<String> callback) throws idException {
                 cmdSystem.ArgCompletion_FolderExtension(args, callback, "sound/", false, ".wav", ".ogg", null);
             }
-        }
+        };
 
         public static class ArgCompletion_ImageName extends argCompletion_t {
 
@@ -263,7 +261,7 @@ public class CmdSystem {
             public void run(idCmdArgs args, void_callback<String> callback) throws idException {
                 cmdSystem.ArgCompletion_FolderExtension(args, callback, "/", false, ".tga", ".dds", ".jpg", ".pcx", null);
             }
-        }
+        };
 
         public static class ArgCompletion_VideoName extends argCompletion_t {
 
@@ -277,7 +275,7 @@ public class CmdSystem {
             public void run(idCmdArgs args, void_callback<String> callback) throws idException {
                 cmdSystem.ArgCompletion_FolderExtension(args, callback, "video/", false, ".roq", null);
             }
-        }
+        };
 
         public static class ArgCompletion_ConfigName extends argCompletion_t {
 
@@ -291,7 +289,7 @@ public class CmdSystem {
             public void run(idCmdArgs args, void_callback<String> callback) throws idException {
                 cmdSystem.ArgCompletion_FolderExtension(args, callback, "/", true, ".cfg", null);
             }
-        }
+        };
 
         public static class ArgCompletion_SaveGame extends argCompletion_t {
 
@@ -305,7 +303,7 @@ public class CmdSystem {
             public void run(idCmdArgs args, void_callback<String> callback) throws idException {
                 cmdSystem.ArgCompletion_FolderExtension(args, callback, "SaveGames/", true, ".save", null);
             }
-        }
+        };
 
         public static class ArgCompletion_DemoName extends argCompletion_t {
 
@@ -319,8 +317,8 @@ public class CmdSystem {
             public void run(idCmdArgs args, void_callback<String> callback) throws idException {
                 cmdSystem.ArgCompletion_FolderExtension(args, callback, "demos/", true, ".demo", null);
             }
-        }
-    }
+        };
+    };
 
     /*
      ===============================================================================
@@ -341,7 +339,7 @@ public class CmdSystem {
         private void oSet(commandDef_s last) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
+    };
 
     static class idCmdSystemLocal extends idCmdSystem {
 
@@ -353,9 +351,9 @@ public class CmdSystem {
         private int textLength;
         private byte[] textBuf = new byte[MAX_CMD_BUFFER];
         private idStr completionString;
-        private final idStrList completionParms;
+        private idStrList completionParms;
         // piggybacks on the text buffer, avoids tokenize again and screwing it up
-        private final idList<idCmdArgs> tokenizedCmds;
+        private idList<idCmdArgs> tokenizedCmds;
         // a command stored to be executed after a reloadEngine and all associated commands have been processed
         private idCmdArgs postReload;
         //
@@ -364,7 +362,7 @@ public class CmdSystem {
         idCmdSystemLocal() {
             this.completionString = new idStr();
             this.completionParms = new idStrList();
-            this.tokenizedCmds = new idList<idCmdArgs>();
+            this.tokenizedCmds = new idList<>();
             this.postReload = new idCmdArgs();
         }
 
@@ -383,14 +381,14 @@ public class CmdSystem {
             AddCommand("parse", Parse_f.getInstance(), CMD_FL_SYSTEM, "prints tokenized string");
             AddCommand("wait", Wait_f.getInstance(), CMD_FL_SYSTEM, "delays remaining buffered commands one or more frames");
 
-            this.completionString = new idStr("*");
+            completionString = new idStr("*");
 
-            this.textLength = 0;
+            textLength = 0;
         }
 
         @Override
         public void Shutdown() {
-            final commandDef_s cmd;
+            commandDef_s cmd;
 
 //            for (cmd = commands; cmd != null; cmd = commands) {
 //                commands = commands.next;
@@ -399,12 +397,12 @@ public class CmdSystem {
 ////                Mem_Free(cmd.description);
 ////		delete cmd;
 //            }
-            this.commands = null;
+            commands = null;
 
-            this.completionString.Clear();
-            this.completionParms.Clear();
-            this.tokenizedCmds.Clear();
-            this.postReload.Clear();
+            completionString.Clear();
+            completionParms.Clear();
+            tokenizedCmds.Clear();
+            postReload.Clear();
         }
 
         @Override
@@ -412,7 +410,7 @@ public class CmdSystem {
             commandDef_s cmd;
 
             // fail if the command already exists
-            for (cmd = this.commands; cmd != null; cmd = cmd.next) {
+            for (cmd = commands; cmd != null; cmd = cmd.next) {
                 if (idStr.Cmp(cmdName, cmd.name) == 0) {
                     if (function != cmd.function) {
                         common.Printf("idCmdSystemLocal::AddCommand: %s already defined\n", cmdName);
@@ -427,18 +425,18 @@ public class CmdSystem {
             cmd.argCompletion = argCompletion;
             cmd.flags = flags;
             cmd.description = description;//Mem_CopyString(description);
-            cmd.next = this.commands;
-            this.commands = cmd;
+            cmd.next = commands;
+            commands = cmd;
         }
 
         @Override
         public void RemoveCommand(String cmdName) {
             commandDef_s cmd, last;
 
-            for (last = cmd = this.commands; cmd != null; cmd = cmd.next) {
+            for (last = cmd = commands; cmd != null; cmd = cmd.next) {
                 if (idStr.Cmp(cmdName, cmd.name) == 0) {
-                    if (cmd == this.commands) {//first iteration.
-                        this.commands = cmd.next;//TODO:BOINTER. edit: check if this equals **last;
+                    if (cmd == commands) {//first iteration.
+                        commands = cmd.next;//TODO:BOINTER. edit: check if this equals **last;
                     } else {//set last.next to last.next.next,
                         //where last.next is the current cmd. so basically setting overwriting the current node.
                         last.next = cmd.next;
@@ -457,16 +455,15 @@ public class CmdSystem {
         public void RemoveFlaggedCommands(int flags) {
             commandDef_s cmd, last;
 
-            for (last = this.commands, cmd = last; cmd != null; cmd = last) {
-                //if ((cmd.flags & flags) != 0) {
-                    this.commands = cmd.next;
+            for (last = commands, cmd = last; cmd != null; cmd = last) {
+                if ((cmd.flags & flags) != 0) {
+                    commands = cmd.next;
 //                    cmd.name = cmd.description = null;
 //                    Mem_Free(cmd.name);
 //                    Mem_Free(cmd.description);
 //			delete cmd;
-                	//throw new TODO_Exception(); // endless loop
-                    //continue;
-                //}
+                    continue;
+                }
                 last = cmd.next;
             }
         }
@@ -475,7 +472,7 @@ public class CmdSystem {
         public void CommandCompletion(void_callback<String> callback) throws idException {
             commandDef_s cmd;
 
-            for (cmd = this.commands; cmd != null; cmd = cmd.next) {
+            for (cmd = commands; cmd != null; cmd = cmd.next) {
                 callback.run(cmd.name);
             }
         }
@@ -483,11 +480,11 @@ public class CmdSystem {
         @Override
         public void ArgCompletion(String cmdString, void_callback<String> callback) throws idException {
             commandDef_s cmd;
-            final idCmdArgs args = new idCmdArgs();
+            idCmdArgs args = new idCmdArgs();
 
             args.TokenizeString(cmdString, false);
 
-            for (cmd = this.commands; cmd != null; cmd = cmd.next) {
+            for (cmd = commands; cmd != null; cmd = cmd.next) {
                 if (null == cmd.argCompletion) {
                     continue;
                 }
@@ -529,37 +526,37 @@ public class CmdSystem {
             idCmdArgs args = new idCmdArgs();
             
 
-            while (this.textLength != 0) {
+            while (textLength != 0) {
                 DBG_ExecuteCommandBuffer++;
 
-                if (this.wait != 0) {
+                if (wait != 0) {
                     // skip out while text still remains in buffer, leaving it for next frame
-                    this.wait--;
+                    wait--;
                     break;
                 }
 
                 // find a \n or ; line break
-                text = new String(this.textBuf).toCharArray();//TODO:??
+                text = new String(textBuf).toCharArray();//TODO:??
                     
                 quotes = 0;
-                for (i = 0; i < this.textLength; i++) {
+                for (i = 0; i < textLength; i++) {
                     if (text[i] == '"') {
                         quotes++;
                     }
-                    if ((0 == (quotes & 1)) && (text[i] == ';')) {
+                    if (0 == (quotes & 1) && text[i] == ';') {
                         break;	// don't break if inside a quoted string
                     }
-                    if ((text[i] == '\n') || (text[i] == '\r')) {
+                    if (text[i] == '\n' || text[i] == '\r') {
                         break;
                     }
                 }
 
 //                text[i] = 0;
-                final String bla = new String(text);
+                String bla = new String(text);
                 txt = bla.substring(0, i);//do not use ctos!
                 if (0 == idStr.Cmp(txt, "_execTokenized")) {
-                    args = this.tokenizedCmds.oGet(0);
-                    this.tokenizedCmds.RemoveIndex(0);
+                    args = tokenizedCmds.oGet(0);
+                    tokenizedCmds.RemoveIndex(0);
                 } else {
                     args.TokenizeString(txt, false);
                 }
@@ -567,14 +564,14 @@ public class CmdSystem {
                 // delete the text from the command buffer and move remaining commands down
                 // this is necessary because commands (exec) can insert data at the
                 // beginning of the text buffer
-                if (i == this.textLength) {
-                    this.textLength = 0;
+                if (i == textLength) {
+                    textLength = 0;
                 } else {
-                    final byte[] textBuf2 = this.textBuf;
+                    final byte[] textBuf2 = textBuf;
                     i++;
-                    this.textLength -= i;
-                    this.textBuf = new byte[this.textBuf.length];//memmove(text, text + i, textLength);
-                    Nio.arraycopy(textBuf2, i, this.textBuf, 0, this.textLength);
+                    textLength -= i;
+                    textBuf = new byte[textBuf.length];//memmove(text, text + i, textLength);
+                    System.arraycopy(textBuf2, i, textBuf, 0, textLength);
                 }
 
                 // execute the command line that we have already tokenized
@@ -593,23 +590,22 @@ public class CmdSystem {
             string += " ";
             string += args.Argv(1);
 
-            if (this.completionString.Icmp(string) != 0) {
-                idStr parm;
-				final idStr path = new idStr();
+            if (completionString.Icmp(string) != 0) {
+                idStr parm, path = new idStr();
                 idFileList names;
 
-                this.completionString = new idStr(string);
-                this.completionParms.Clear();
+                completionString = new idStr(string);
+                completionParms.Clear();
 
                 parm = new idStr(args.Argv(1));
                 parm.ExtractFilePath(path);
-                if (stripFolder || (path.Length() == 0)) {
+                if (stripFolder || path.Length() == 0) {
                     path.oSet(folder).Append(path);
                 }
                 path.StripTrailing('/');
 
                 // list folders
-                names = fileSystem.ListFiles(path.getData(), "/", true, true);
+                names = fileSystem.ListFiles(path.toString(), "/", true, true);
                 for (i = 0; i < names.GetNumFiles(); i++) {
                     idStr name = new idStr(names.GetFile(i));
                     if (stripFolder) {
@@ -618,31 +614,31 @@ public class CmdSystem {
                         name.Strip("/");
                     }
                     name = new idStr(args.Argv(0) + (" " + name) + "/");
-                    this.completionParms.Append(name);
+                    completionParms.Append(name);
                 }
                 fileSystem.FreeFileList(names);
 
                 // list files
 //                va_start(argPtr, stripFolder);
 //                for (extension = va_arg(argPtr, String); extension != null; extension = va_arg(argPtr, String)) {
-                for (final Object extension : objects) {
-                    names = fileSystem.ListFiles(path.getData(), extension.toString(), true, true);
+                for (Object extension : objects) {
+                    names = fileSystem.ListFiles(path.toString(), extension.toString(), true, true);
                     for (i = 0; i < names.GetNumFiles(); i++) {
-                        final idStr name = new idStr(names.GetFile(i));
+                        idStr name = new idStr(names.GetFile(i));
                         if (stripFolder) {
                             name.Strip(folder);
                         } else {
                             name.Strip("/");
                         }
                         name.oSet(args.Argv(0) + (" " + name));
-                        this.completionParms.Append(name);
+                        completionParms.Append(name);
                     }
                     fileSystem.FreeFileList(names);
                 }
 //                va_end(argPtr);
             }
-            for (i = 0; i < this.completionParms.Num(); i++) {
-                callback.run(this.completionParms.oGet(i).getData());
+            for (i = 0; i < completionParms.Num(); i++) {
+                callback.run(completionParms.oGet(i).toString());
             }
         }
 
@@ -668,7 +664,7 @@ public class CmdSystem {
                 }
                 case CMD_EXEC_APPEND: {
                     AppendCommandText("_execTokenized\n");
-                    this.tokenizedCmds.Append(args);
+                    tokenizedCmds.Append(args);
                     break;
                 }
                 default: {
@@ -680,16 +676,16 @@ public class CmdSystem {
         @Override
         public void SetupReloadEngine(idCmdArgs args) throws idException {
             BufferCommandText(CMD_EXEC_APPEND, "reloadEngine\n");
-            this.postReload = args;
+            postReload = args;
         }
 
         @Override
         public boolean PostReloadEngine() throws idException {
-            if (0 == this.postReload.Argc()) {
+            if (0 == postReload.Argc()) {
                 return false;
             }
-            BufferCommandArgs(CMD_EXEC_APPEND, this.postReload);
-            this.postReload.Clear();
+            BufferCommandArgs(CMD_EXEC_APPEND, postReload);
+            postReload.Clear();
             return true;
         }
 //        
@@ -697,11 +693,11 @@ public class CmdSystem {
 //        
 
         public void SetWait(int numFrames) {
-            this.wait = numFrames;
+            wait = numFrames;
         }
 
         public commandDef_s GetCommands() {
-            return this.commands;
+            return commands;
         }
 
         private void ExecuteTokenizedString(final idCmdArgs args) throws idException {
@@ -712,23 +708,23 @@ public class CmdSystem {
                 return;		// no tokens
             }
 
-            if (args.Argv(0).equals(NeoFixStrings.BLA1)) {
+            if (args.Argv(0).equals("bla1")) {
                 args.oSet("map game/alphalabs1");//HACKME::11
             }
 
             // check registered command functions	
-            for (prev = cmd = this.commands; cmd != null; cmd = cmd.next) {
+            for (prev = cmd = commands; cmd != null; cmd = cmd.next) {
 //                cmd = prev;
                 if (idStr.Icmp(args.Argv(0), cmd.name) == 0) {
                     // rearrange the links so that the command will be
                     // near the head of the list next time it is used
-                    if (cmd != this.commands) {//no re-arranging necessary for first element.
+                    if (cmd != commands) {//no re-arranging necessary for first element.
                         prev.next = cmd.next;
-                        cmd.next = this.commands;
-                        this.commands = cmd;
+                        cmd.next = commands;
+                        commands = cmd;
                     }
 
-                    if (((cmd.flags & (CMD_FL_CHEAT | CMD_FL_TOOL)) != 0) && (session != null)
+                    if (((cmd.flags & (CMD_FL_CHEAT | CMD_FL_TOOL)) != 0) && session != null
                             && session.IsMultiplayer() && !cvarSystem.GetCVarBool("net_allowCheats")) {
                         common.Printf("Command '%s' not valid in multiplayer mode.\n", cmd.name);
                         return;
@@ -776,24 +772,24 @@ public class CmdSystem {
             int i;
 
             len = text.length() + 1;
-            if ((len + this.textLength) > this.textBuf.length) {
+            if (len + textLength > textBuf.length) {
                 common.Printf("idCmdSystemLocal::InsertText: buffer overflow\n");
                 return;
             }
 
             // move the existing command text
-            for (i = this.textLength - 1; i >= 0; i--) {
-                this.textBuf[i + len] = this.textBuf[i];
+            for (i = textLength - 1; i >= 0; i--) {
+                textBuf[i + len] = textBuf[i];
             }
 
             // copy the new text in
 //            memcpy(textBuf, text, len - 1);
-            Nio.arraycopy(text.getBytes(), 0, this.textBuf, 0, len - 1);
+            System.arraycopy(text.getBytes(), 0, textBuf, 0, len - 1);
 
             // add a \n
-            this.textBuf[len - 1] = '\n';
+            textBuf[len - 1] = '\n';
 
-            this.textLength += len;
+            textLength += len;
         }
 
         /*
@@ -808,20 +804,20 @@ public class CmdSystem {
 
             l = text.length();
 
-            if ((this.textLength + l) >= this.textBuf.length) {
+            if (textLength + l >= textBuf.length) {
                 common.Printf("idCmdSystemLocal::AppendText: buffer overflow\n");
                 return;
             }
 //	memcpy( textBuf + textLength, text, l );
-            Nio.arraycopy(text.getBytes(), 0, this.textBuf, this.textLength, l);//TODO:check 1 at the end. EDIT: it was an L ya blind fool!
-            this.textLength += l;
+            System.arraycopy(text.getBytes(), 0, textBuf, textLength, l);//TODO:check 1 at the end. EDIT: it was an L ya blind fool!
+            textLength += l;
         }
 
         private static void ListByFlags(final idCmdArgs args, long cmdFlags_t) throws idException {
             int i;
             String match;
             commandDef_s cmd;
-            final idList<commandDef_s> cmdList = new idList<commandDef_s>();
+            idList<commandDef_s> cmdList = new idList<>();
 
             if (args.Argc() > 1) {
                 match = args.Args(1, -1);
@@ -867,7 +863,7 @@ public class CmdSystem {
             public void run(idCmdArgs args) throws idException {
                 idCmdSystemLocal.ListByFlags(args, CMD_FL_ALL);
             }
-        }
+        };
 
         private static class SystemList_f extends cmdFunction_t {
 
@@ -884,7 +880,7 @@ public class CmdSystem {
             public void run(idCmdArgs args) throws idException {
                 idCmdSystemLocal.ListByFlags(args, CMD_FL_SYSTEM);
             }
-        }
+        };
 
         private static class RendererList_f extends cmdFunction_t {
 
@@ -901,7 +897,7 @@ public class CmdSystem {
             public void run(idCmdArgs args) throws idException {
                 idCmdSystemLocal.ListByFlags(args, CMD_FL_RENDERER);
             }
-        }
+        };
 
         private static class SoundList_f extends cmdFunction_t {
 
@@ -918,7 +914,7 @@ public class CmdSystem {
             public void run(idCmdArgs args) throws idException {
                 idCmdSystemLocal.ListByFlags(args, CMD_FL_SOUND);
             }
-        }
+        };
 
         private static class GameList_f extends cmdFunction_t {
 
@@ -935,7 +931,7 @@ public class CmdSystem {
             public void run(idCmdArgs args) throws idException {
                 idCmdSystemLocal.ListByFlags(args, CMD_FL_GAME);
             }
-        }
+        };
 
         private static class ToolList_f extends cmdFunction_t {
 
@@ -952,7 +948,7 @@ public class CmdSystem {
             public void run(idCmdArgs args) throws idException {
                 idCmdSystemLocal.ListByFlags(args, CMD_FL_TOOL);
             }
-        }
+        };
 //private	static void				Exec_f( const idCmdArgs &args );
 
         private static class Exec_f extends cmdFunction_t {
@@ -968,7 +964,7 @@ public class CmdSystem {
 
             @Override
             public void run(idCmdArgs args) throws idException {
-                final ByteBuffer[] f = {null};
+                ByteBuffer[] f = {null};
                 int len;
                 idStr filename;
 
@@ -979,7 +975,7 @@ public class CmdSystem {
 
                 filename = new idStr(args.Argv(1));
                 filename.DefaultFileExtension(".cfg");
-                len = fileSystem.ReadFile(filename.getData(),/*reinterpret_cast<void **>*/ f, null);
+                len = fileSystem.ReadFile(filename.toString(),/*reinterpret_cast<void **>*/ f, null);
                 if (null == f[0]) {
                     common.Printf("couldn't exec %s\n", args.Argv(1));
                     return;
@@ -990,7 +986,7 @@ public class CmdSystem {
 
                 fileSystem.FreeFile(f);
             }
-        }
+        };
 
         /*
          ===============
@@ -1023,7 +1019,7 @@ public class CmdSystem {
 
                 cmdSystemLocal.BufferCommandText(CMD_EXEC_APPEND, va("%s\n", v));
             }
-        }
+        };
 
         /*
          ===============
@@ -1052,7 +1048,7 @@ public class CmdSystem {
                 }
                 common.Printf("\n");
             }
-        }
+        };
 
         /*
          ============
@@ -1080,7 +1076,7 @@ public class CmdSystem {
                     common.Printf("%d: %s\n", i, args.Argv(i));
                 }
             }
-        }
+        };
 
         /*
          ============
@@ -1108,7 +1104,7 @@ public class CmdSystem {
                     cmdSystemLocal.SetWait(1);
                 }
             }
-        }
+        };
 //private	static void				PrintMemInfo_f( const idCmdArgs &args );
 
         private static class PrintMemInfo_f extends cmdFunction_t {
@@ -1126,8 +1122,8 @@ public class CmdSystem {
             public void run(idCmdArgs args) throws idException {
                 idCmdSystemLocal.ListByFlags(args, CMD_FL_SYSTEM);
             }
-        }
-    }
+        };
+    };
 
     /*
      ============

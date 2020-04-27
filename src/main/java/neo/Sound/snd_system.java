@@ -24,25 +24,6 @@ import static neo.framework.CmdSystem.cmdSystem;
 import static neo.framework.Common.common;
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
 import static neo.idlib.math.Simd.SIMDProcessor;
-import static neo.open.al.QAL.alDeleteSources;
-import static neo.open.al.QAL.alGenSources;
-import static neo.open.al.QAL.alGetError;
-import static neo.open.al.QAL.alIsExtensionPresent;
-import static neo.open.al.QAL.alSourceStop;
-import static neo.open.al.QAL.alSourcef;
-import static neo.open.al.QAL.alSourcei;
-import static neo.open.al.QAL.alcCloseDevice;
-import static neo.open.al.QAL.alcCreateContext;
-import static neo.open.al.QAL.alcDestroyContext;
-import static neo.open.al.QAL.alcGetString;
-import static neo.open.al.QAL.alcMakeContextCurrent;
-import static neo.open.al.QAL.alcOpenDevice;
-import static neo.open.al.QAL.alcProcessContext;
-import static neo.open.al.QAL.alcSuspendContext;
-import static neo.open.al.QALConstantsIfc.ALC_DEVICE_SPECIFIER;
-import static neo.open.al.QALConstantsIfc.AL_BUFFER;
-import static neo.open.al.QALConstantsIfc.AL_NO_ERROR;
-import static neo.open.al.QALConstantsIfc.AL_ROLLOFF_FACTOR;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
 import static neo.sys.win_main.Sys_Printf;
@@ -50,10 +31,34 @@ import static neo.sys.win_main.Sys_Sleep;
 import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.sys.win_snd.Sys_FreeOpenAL;
 import static neo.sys.win_snd.Sys_LoadOpenAL;
+import static org.lwjgl.openal.AL10.AL_BUFFER;
+import static org.lwjgl.openal.AL10.AL_NO_ERROR;
+import static org.lwjgl.openal.AL10.AL_ROLLOFF_FACTOR;
+import static org.lwjgl.openal.AL10.alDeleteSources;
+import static org.lwjgl.openal.AL10.alGenSources;
+import static org.lwjgl.openal.AL10.alGetError;
+import static org.lwjgl.openal.AL10.alIsExtensionPresent;
+import static org.lwjgl.openal.AL10.alSourceStop;
+import static org.lwjgl.openal.AL10.alSourcef;
+import static org.lwjgl.openal.AL10.alSourcei;
+import static org.lwjgl.openal.ALC10.ALC_DEVICE_SPECIFIER;
+import static org.lwjgl.openal.ALC10.alcCloseDevice;
+import static org.lwjgl.openal.ALC10.alcCreateContext;
+import static org.lwjgl.openal.ALC10.alcDestroyContext;
+import static org.lwjgl.openal.ALC10.alcGetString;
+import static org.lwjgl.openal.ALC10.alcMakeContextCurrent;
+import static org.lwjgl.openal.ALC10.alcOpenDevice;
+import static org.lwjgl.openal.ALC10.alcProcessContext;
+import static org.lwjgl.openal.ALC10.alcSuspendContext;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.Arrays;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.ALC;
+import org.lwjgl.openal.ALCCapabilities;
+import org.lwjgl.openal.ALCapabilities;
 
 import neo.Renderer.Cinematic.cinData_t;
 import neo.Renderer.RenderWorld.idRenderWorld;
@@ -81,8 +86,6 @@ import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
-import neo.open.Nio;
-import neo.open.al.QAL;
 
 /**
  *
@@ -122,7 +125,7 @@ public class snd_system {
         //
         public /*unsigned*/ int               nextWriteBlock;
         //
-        public float[] realAccum = new float[(6 * MIXBUFFER_SAMPLES) + 16];
+        public float[] realAccum = new float[6 * MIXBUFFER_SAMPLES + 16];
         public float[] finalMixBuffer;                              // points inside realAccum at a 16 byte aligned boundary
         //
         public boolean isInitialized;
@@ -226,7 +229,7 @@ public class snd_system {
         //
 
         public idSoundSystemLocal() {
-            this.isInitialized = false;
+            isInitialized = false;
         }
 
         // all non-hardware initialization
@@ -242,37 +245,37 @@ public class snd_system {
 
             common.Printf("----- Initializing Sound System ------\n");
 
-            this.isInitialized = false;
-            this.muted = false;
-            this.shutdown = false;
+            isInitialized = false;
+            muted = false;
+            shutdown = false;
 
-            this.currentSoundWorld = null;
-            this.soundCache = null;
+            currentSoundWorld = null;
+            soundCache = null;
 
-            this.olddwCurrentWritePos = 0;
-            this.buffers = 0;
-            this.CurrentSoundTime = 0;
+            olddwCurrentWritePos = 0;
+            buffers = 0;
+            CurrentSoundTime = 0;
 
-            this.nextWriteBlock = 0xffffffff;
+            nextWriteBlock = 0xffffffff;
 
 //            memset(meterTops, 0, sizeof(meterTops));
-            this.meterTops = new int[this.meterTops.length];
+            meterTops = new int[meterTops.length];
 //            memset(meterTopsTime, 0, sizeof(meterTopsTime));
-            this.meterTopsTime = new int[this.meterTopsTime.length];
+            meterTopsTime = new int[meterTopsTime.length];
 
             for (int i = -600; i < 600; i++) {
-                final float pt = i * 0.1f;
-                this.volumesDB[i + 600] = (float) pow(2.0f, (pt * (1.0f / 6.0f)));
+                float pt = i * 0.1f;
+                volumesDB[i + 600] = (float) pow(2.0f, (pt * (1.0f / 6.0f)));
             }
 
             // make a 16 byte aligned finalMixBuffer
-            this.finalMixBuffer = this.realAccum;//(float[]) ((((int) realAccum) + 15) & ~15);
+            finalMixBuffer = realAccum;//(float[]) ((((int) realAccum) + 15) & ~15);
 
-            this.graph = null;
+            graph = null;
 
             if (!s_noSound.GetBool()) {
                 idSampleDecoder.Init();
-                this.soundCache = new idSoundCache();
+                soundCache = new idSoundCache();
             }
 
             // set up openal device and context
@@ -284,12 +287,13 @@ public class snd_system {
                     idSoundSystemLocal.s_useOpenAL.SetBool(false);
                 } else {
                     common.Printf("Setup OpenAL device and context... ");
-                    this.openalDevice = alcOpenDevice((ByteBuffer) null);
-                    this.openalContext = alcCreateContext(this.openalDevice, (IntBuffer) null);
+                    openalDevice = alcOpenDevice((ByteBuffer) null);
+                    openalContext = alcCreateContext(openalDevice, (int[]) null);
 
-                    alcMakeContextCurrent(this.openalContext);
+                    alcMakeContextCurrent(openalContext);
                     
-                    QAL.createCapabilities(this.openalDevice);
+                    ALCCapabilities alcCapabilities = ALC.createCapabilities(openalDevice);
+                    ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
                     common.Printf("Done.\n");
 
                     // try to obtain EAX extensions
@@ -319,45 +323,45 @@ public class snd_system {
                     if (!idSoundSystemLocal.s_useOpenAL.GetBool()) {
                         common.Printf("OpenAL: disabling ( no EAX ). Using legacy mixer.\n");
 
-                        alcMakeContextCurrent(this.openalContext);
+                        alcMakeContextCurrent(openalContext);
 
-                        alcDestroyContext(this.openalContext);
-                        this.openalContext = 0;
+                        alcDestroyContext(openalContext);
+                        openalContext = 0;
 
-                        alcCloseDevice(this.openalDevice);
-                        this.openalDevice = 0;
+                        alcCloseDevice(openalDevice);
+                        openalDevice = 0;
                     } else {
 
                         int/*ALuint*/ handle;
-                        this.openalSourceCount = 0;
+                        openalSourceCount = 0;
 
-                        while (this.openalSourceCount < 256) {
+                        while (openalSourceCount < 256) {
                             alGetError();
                             handle = alGenSources();//alGenSources(1, handle);
                             if (alGetError() != AL_NO_ERROR) {
                                 break;
                             } else {
                                 // store in source array
-                                this.openalSources[this.openalSourceCount] = new openalSource_t();
-                                this.openalSources[this.openalSourceCount].handle = handle;
-                                this.openalSources[this.openalSourceCount].startTime = 0;
-                                this.openalSources[this.openalSourceCount].chan = null;
-                                this.openalSources[this.openalSourceCount].inUse = false;
-                                this.openalSources[this.openalSourceCount].looping = false;
+                                openalSources[openalSourceCount] = new openalSource_t();
+                                openalSources[openalSourceCount].handle = handle;
+                                openalSources[openalSourceCount].startTime = 0;
+                                openalSources[openalSourceCount].chan = null;
+                                openalSources[openalSourceCount].inUse = false;
+                                openalSources[openalSourceCount].looping = false;
 
                                 // initialise sources
                                 alSourcef(handle, AL_ROLLOFF_FACTOR, 0.0f);
 
                                 // found one source
-                                this.openalSourceCount++;
+                                openalSourceCount++;
                             }
                         }
 
-                        common.Printf("OpenAL: found %s\n", alcGetString(this.openalDevice, ALC_DEVICE_SPECIFIER));
-                        common.Printf("OpenAL: found %d hardware voices\n", this.openalSourceCount);
+                        common.Printf("OpenAL: found %s\n", alcGetString(openalDevice, ALC_DEVICE_SPECIFIER));
+                        common.Printf("OpenAL: found %d hardware voices\n", openalSourceCount);
 
                         // adjust source count to allow for at least eight stereo sounds to play
-                        this.openalSourceCount -= 8;
+                        openalSourceCount -= 8;
 
                         EAXAvailable = 1;
                     }
@@ -383,48 +387,48 @@ public class snd_system {
             ShutdownHW();
 
             // EAX or not, the list needs to be cleared
-            this.EFXDatabase.Clear();
+            EFXDatabase.Clear();
 
             // destroy openal sources
             if (useOpenAL) {
 
-                this.efxloaded = false;
+                efxloaded = false;
 
                 // adjust source count back up to allow for freeing of all resources
-                this.openalSourceCount += 8;
+                openalSourceCount += 8;
 
-                for (int/*ALsizei*/ i = 0; i < this.openalSourceCount; i++) {
+                for (int/*ALsizei*/ i = 0; i < openalSourceCount; i++) {
                     // stop source
-                    alSourceStop(this.openalSources[i].handle);
-                    alSourcei(this.openalSources[i].handle, AL_BUFFER, 0);
+                    alSourceStop(openalSources[i].handle);
+                    alSourcei(openalSources[i].handle, AL_BUFFER, 0);
 
                     // delete source
 //                    alDeleteSources(1, openalSources[i].handle);
-                    alDeleteSources(this.openalSources[i].handle);
+                    alDeleteSources(openalSources[i].handle);
 
                     // clear entry in source array
-                    this.openalSources[i].handle = 0;
-                    this.openalSources[i].startTime = 0;
-                    this.openalSources[i].chan = null;
-                    this.openalSources[i].inUse = false;
-                    this.openalSources[i].looping = false;
+                    openalSources[i].handle = 0;
+                    openalSources[i].startTime = 0;
+                    openalSources[i].chan = null;
+                    openalSources[i].inUse = false;
+                    openalSources[i].looping = false;
 
                 }
             }
 
             // destroy all the sounds (hardware buffers as well)
 //	delete soundCache;
-            this.soundCache = null;
+            soundCache = null;
 
             // destroy openal device and context
             if (useOpenAL) {
-                alcMakeContextCurrent(this.openalContext);
+                alcMakeContextCurrent(openalContext);
 
-                alcDestroyContext(this.openalContext);
-                this.openalContext = 0;
+                alcDestroyContext(openalContext);
+                openalContext = 0;
 
-                alcCloseDevice(this.openalDevice);
-                this.openalDevice = 0;
+                alcCloseDevice(openalDevice);
+                openalDevice = 0;
             }
 
             Sys_FreeOpenAL();
@@ -436,12 +440,12 @@ public class snd_system {
         public void ClearBuffer() {
 
             // check to make sure hardware actually exists
-            if (NOT(this.snd_audio_hw)) {
+            if (NOT(snd_audio_hw)) {
                 return;
             }
 
-            final short[] fBlock = {0};
-            final long /*ulong*/ fBlockLen = 0;
+            short[] fBlock = {0};
+            long /*ulong*/ fBlockLen = 0;
 
             //TODO:see what this block does.
 //            if (!snd_audio_hw.Lock( /*(void **)*/fBlock, fBlockLen)) {
@@ -457,23 +461,23 @@ public class snd_system {
         // sound is attached to the window, and must be recreated when the window is changed
         @Override
         public boolean ShutdownHW() {
-            if (!this.isInitialized) {
+            if (!isInitialized) {
                 return false;
             }
 
-            this.shutdown = true;		// don't do anything at AsyncUpdate() time
+            shutdown = true;		// don't do anything at AsyncUpdate() time
             Sys_Sleep(100);		// sleep long enough to make sure any async sound talking to hardware has returned
 
             common.Printf("Shutting down sound hardware\n");
 
 //	delete snd_audio_hw;
-            this.snd_audio_hw = null;
+            snd_audio_hw = null;
 
-            this.isInitialized = false;
+            isInitialized = false;
 
-            if (this.graph != null) {
+            if (graph != null) {
 //                Mem_Free(graph);//TODO:remove all this memory crap.
-                this.graph = null;
+                graph = null;
             }
 
             return true;
@@ -487,28 +491,28 @@ public class snd_system {
             }
 
 //	delete snd_audio_hw;
-            this.snd_audio_hw = idAudioHardware.Alloc();
+            snd_audio_hw = idAudioHardware.Alloc();
 
-            if (this.snd_audio_hw == null) {
+            if (snd_audio_hw == null) {
                 return false;
             }
 
             if (!useOpenAL) {
-                if (!this.snd_audio_hw.Initialize()) {
+                if (!snd_audio_hw.Initialize()) {
 //			delete snd_audio_hw;
-                    this.snd_audio_hw = null;
+                    snd_audio_hw = null;
                     return false;
                 }
 
-                if (this.snd_audio_hw.GetNumberOfSpeakers() == 0) {
+                if (snd_audio_hw.GetNumberOfSpeakers() == 0) {
                     return false;
                 }
                 // put the real number in there
-                s_numberOfSpeakers.SetInteger(this.snd_audio_hw.GetNumberOfSpeakers());
+                s_numberOfSpeakers.SetInteger(snd_audio_hw.GetNumberOfSpeakers());
             }
 
-            this.isInitialized = true;
-            this.shutdown = false;
+            isInitialized = true;
+            shutdown = false;
 
             return true;
         }
@@ -523,7 +527,7 @@ public class snd_system {
         @Override
         public int AsyncUpdate(int time) {
 
-            if (!this.isInitialized || this.shutdown || NOT(this.snd_audio_hw)) {
+            if (!isInitialized || shutdown || NOT(snd_audio_hw)) {
                 return 0;
             }
 
@@ -538,103 +542,103 @@ public class snd_system {
             } else {
                 // and here in bytes
                 // get the current byte position in the buffer where the sound hardware is currently reading
-                if (!this.snd_audio_hw.GetCurrentPosition(dwCurrentWritePos)) {
+                if (!snd_audio_hw.GetCurrentPosition(dwCurrentWritePos)) {
                     return 0;
                 }
                 // mixBufferSize is in bytes
-                dwCurrentBlock = (int) (dwCurrentWritePos / this.snd_audio_hw.GetMixBufferSize());
+                dwCurrentBlock = (int) (dwCurrentWritePos / snd_audio_hw.GetMixBufferSize());
             }
 
-            if (this.nextWriteBlock == 0xffffffff) {
-                this.nextWriteBlock = dwCurrentBlock;
+            if (nextWriteBlock == 0xffffffff) {
+                nextWriteBlock = dwCurrentBlock;
             }
 
-            if (dwCurrentBlock != this.nextWriteBlock) {
+            if (dwCurrentBlock != nextWriteBlock) {
                 return 0;
             }
 
             // lock the buffer so we can actually write to it
-            final short[] fBlock = null;
-            final long/*ulong*/ fBlockLen = 0;
+            short[] fBlock = null;
+            long/*ulong*/ fBlockLen = 0;
             if (!useOpenAL) {
-                this.snd_audio_hw.Lock( /*(void **)*/fBlock, fBlockLen);
+                snd_audio_hw.Lock( /*(void **)*/fBlock, fBlockLen);
                 if (null == fBlock) {
                     return 0;
                 }
             }
 
             int j;
-            this.soundStats.runs++;
-            this.soundStats.activeSounds = 0;
+            soundStats.runs++;
+            soundStats.activeSounds = 0;
 
-            final int numSpeakers = this.snd_audio_hw.GetNumberOfSpeakers();
+            int numSpeakers = snd_audio_hw.GetNumberOfSpeakers();
 
-            this.nextWriteBlock++;
-            this.nextWriteBlock %= ROOM_SLICES_IN_BUFFER;
+            nextWriteBlock++;
+            nextWriteBlock %= ROOM_SLICES_IN_BUFFER;
 
-            final int newPosition = this.nextWriteBlock * MIXBUFFER_SAMPLES;
+            int newPosition = nextWriteBlock * MIXBUFFER_SAMPLES;
 
-            if (newPosition < this.olddwCurrentWritePos) {
-                this.buffers++;					// buffer wrapped
+            if (newPosition < olddwCurrentWritePos) {
+                buffers++;					// buffer wrapped
             }
 
             // nextWriteSample is in multi-channel samples inside the buffer
-            final int nextWriteSamples = this.nextWriteBlock * MIXBUFFER_SAMPLES;
+            int nextWriteSamples = nextWriteBlock * MIXBUFFER_SAMPLES;
 
-            this.olddwCurrentWritePos = newPosition;
+            olddwCurrentWritePos = newPosition;
 
             // newSoundTime is in multi-channel samples since the sound system was started
-            final int newSoundTime = (this.buffers * MIXBUFFER_SAMPLES * ROOM_SLICES_IN_BUFFER) + nextWriteSamples;
+            int newSoundTime = (buffers * MIXBUFFER_SAMPLES * ROOM_SLICES_IN_BUFFER) + nextWriteSamples;
 
             // check for impending overflow
             // FIXME: we don't handle sound wrap-around correctly yet
             if (newSoundTime > 0x6fffffff) {
-                this.buffers = 0;
+                buffers = 0;
             }
 
-            if ((newSoundTime - this.CurrentSoundTime) > MIXBUFFER_SAMPLES) {
-                this.soundStats.missedWindow++;
+            if ((newSoundTime - CurrentSoundTime) > MIXBUFFER_SAMPLES) {
+                soundStats.missedWindow++;
             }
 
             if (useOpenAL) {
                 // enable audio hardware caching
-                alcSuspendContext(this.openalContext);
+                alcSuspendContext(openalContext);
             } else {
                 // clear the buffer for all the mixing output
 //                SIMDProcessor.Memset(finalMixBuffer, 0, MIXBUFFER_SAMPLES * sizeof(float) * numSpeakers);
-                Arrays.fill(this.finalMixBuffer, 0, 0, MIXBUFFER_SAMPLES * numSpeakers);
+                Arrays.fill(finalMixBuffer, 0, 0, MIXBUFFER_SAMPLES * numSpeakers);
             }
 
             // let the active sound world mix all the channels in unless muted or avi demo recording
-            if (!this.muted && (this.currentSoundWorld != null) && (null == this.currentSoundWorld.fpa[0])) {
-                this.currentSoundWorld.MixLoop(newSoundTime, numSpeakers, this.finalMixBuffer);
+            if (!muted && currentSoundWorld != null && null == currentSoundWorld.fpa[0]) {
+                currentSoundWorld.MixLoop(newSoundTime, numSpeakers, finalMixBuffer);
             }
 
             if (useOpenAL) {
                 // disable audio hardware caching (this updates ALL settings since last alcSuspendContext)
-                alcProcessContext(this.openalContext);
+                alcProcessContext(openalContext);
             } else {
 //                short[] dest = fBlock + nextWriteSamples * numSpeakers;
                 final int dest = nextWriteSamples * numSpeakers;
 
-                SIMDProcessor.MixedSoundToSamples(fBlock, dest, this.finalMixBuffer, MIXBUFFER_SAMPLES * numSpeakers);
+                SIMDProcessor.MixedSoundToSamples(fBlock, dest, finalMixBuffer, MIXBUFFER_SAMPLES * numSpeakers);
 
                 // allow swapping the left / right speaker channels for people with miswired systems
-                if ((numSpeakers == 2) && s_reverse.GetBool()) {
+                if (numSpeakers == 2 && s_reverse.GetBool()) {
                     for (j = 0; j < MIXBUFFER_SAMPLES; j++) {
-                        final short temp = fBlock[dest + (j * 2)];
-                        fBlock[dest + (j * 2)] = fBlock[dest + (j * 2) + 1];
-                        fBlock[dest + (j * 2) + 1] = temp;
+                        short temp = fBlock[dest + j * 2];
+                        fBlock[dest + j * 2] = fBlock[dest + j * 2 + 1];
+                        fBlock[dest + j * 2 + 1] = temp;
                     }
                 }
-                this.snd_audio_hw.Unlock(fBlock, fBlockLen);
+                snd_audio_hw.Unlock(fBlock, fBlockLen);
             }
 
-            this.CurrentSoundTime = newSoundTime;
+            CurrentSoundTime = newSoundTime;
 
-            this.soundStats.timeinprocess = Sys_Milliseconds() - time;
+            soundStats.timeinprocess = Sys_Milliseconds() - time;
 
-            return this.soundStats.timeinprocess;
+            return soundStats.timeinprocess;
         }
 
         /*
@@ -649,68 +653,68 @@ public class snd_system {
         @Override
         public int AsyncUpdateWrite(int inTime) {
 
-            if (!this.isInitialized || this.shutdown || NOT(this.snd_audio_hw)) {
+            if (!isInitialized || shutdown || NOT(snd_audio_hw)) {
                 return 0;
             }
 
             if (!useOpenAL) {
-                this.snd_audio_hw.Flush();
+                snd_audio_hw.Flush();
             }
 
-            final long/*unsigned int*/ dwCurrentBlock = (/*unsigned int*/long) ((inTime * 44.1f) / MIXBUFFER_SAMPLES);
+            long/*unsigned int*/ dwCurrentBlock = (/*unsigned int*/long) (inTime * 44.1f / MIXBUFFER_SAMPLES);
 
-            if (this.nextWriteBlock == 0xffffffff) {
-                this.nextWriteBlock = (int) dwCurrentBlock;
+            if (nextWriteBlock == 0xffffffff) {
+                nextWriteBlock = (int) dwCurrentBlock;
             }
 
-            if (dwCurrentBlock < this.nextWriteBlock) {
+            if (dwCurrentBlock < nextWriteBlock) {
                 return 0;
             }
 
-            if (this.nextWriteBlock != dwCurrentBlock) {
-                Sys_Printf("missed %d sound updates\n", dwCurrentBlock - this.nextWriteBlock);
+            if (nextWriteBlock != dwCurrentBlock) {
+                Sys_Printf("missed %d sound updates\n", dwCurrentBlock - nextWriteBlock);
             }
 
-            final int sampleTime = (int) (dwCurrentBlock * MIXBUFFER_SAMPLES);
-            final int numSpeakers = this.snd_audio_hw.GetNumberOfSpeakers();
+            int sampleTime = (int) (dwCurrentBlock * MIXBUFFER_SAMPLES);
+            int numSpeakers = snd_audio_hw.GetNumberOfSpeakers();
 
             if (useOpenAL) {
                 // enable audio hardware caching
-                alcSuspendContext(this.openalContext);
+                alcSuspendContext(openalContext);
             } else {
                 // clear the buffer for all the mixing output
 //                SIMDProcessor.Memset(finalMixBuffer, 0, MIXBUFFER_SAMPLES * sizeof(float) * numSpeakers);
-                Arrays.fill(this.finalMixBuffer, 0);
+                Arrays.fill(finalMixBuffer, 0);
             }
 
             // let the active sound world mix all the channels in unless muted or avi demo recording
-            if (!this.muted && (this.currentSoundWorld != null) && (null == this.currentSoundWorld.fpa[0])) {
-                this.currentSoundWorld.MixLoop(sampleTime, numSpeakers, this.finalMixBuffer);
+            if (!muted && currentSoundWorld != null && null == currentSoundWorld.fpa[0]) {
+                currentSoundWorld.MixLoop(sampleTime, numSpeakers, finalMixBuffer);
             }
 
             if (useOpenAL) {
                 // disable audio hardware caching (this updates ALL settings since last alcSuspendContext)
-                alcProcessContext(this.openalContext);
+                alcProcessContext(openalContext);
             } else {
-                final short[] dest = this.snd_audio_hw.GetMixBuffer();
+                short[] dest = snd_audio_hw.GetMixBuffer();
 
-                SIMDProcessor.MixedSoundToSamples(dest, this.finalMixBuffer, MIXBUFFER_SAMPLES * numSpeakers);
+                SIMDProcessor.MixedSoundToSamples(dest, finalMixBuffer, MIXBUFFER_SAMPLES * numSpeakers);
 
                 // allow swapping the left / right speaker channels for people with miswired systems
-                if ((numSpeakers == 2) && s_reverse.GetBool()) {
+                if (numSpeakers == 2 && s_reverse.GetBool()) {
                     int j;
                     for (j = 0; j < MIXBUFFER_SAMPLES; j++) {
-                        final short temp = dest[j * 2];
-                        dest[j * 2] = dest[(j * 2) + 1];
-                        dest[(j * 2) + 1] = temp;
+                        short temp = dest[j * 2];
+                        dest[j * 2] = dest[j * 2 + 1];
+                        dest[j * 2 + 1] = temp;
                     }
                 }
-                this.snd_audio_hw.Write(false);
+                snd_audio_hw.Write(false);
             }
 
             // only move to the next block if the write was successful
-            this.nextWriteBlock = (int) (dwCurrentBlock + 1);
-            this.CurrentSoundTime = sampleTime;
+            nextWriteBlock = (int) (dwCurrentBlock + 1);
+            CurrentSoundTime = sampleTime;
 
             return Sys_Milliseconds() - inTime;
         }
@@ -725,54 +729,54 @@ public class snd_system {
         public int AsyncMix(int soundTime, float[] mixBuffer) {
             int inTime, numSpeakers;
 
-            if (!this.isInitialized || this.shutdown || NOT(this.snd_audio_hw)) {
+            if (!isInitialized || shutdown || NOT(snd_audio_hw)) {
                 return 0;
             }
 
             inTime = Sys_Milliseconds();
-            numSpeakers = this.snd_audio_hw.GetNumberOfSpeakers();
+            numSpeakers = snd_audio_hw.GetNumberOfSpeakers();
 
             // let the active sound world mix all the channels in unless muted or avi demo recording
-            if (!this.muted && (this.currentSoundWorld != null) && (null == this.currentSoundWorld.fpa[0])) {
-                this.currentSoundWorld.MixLoop(soundTime, numSpeakers, mixBuffer);
+            if (!muted && currentSoundWorld != null && null == currentSoundWorld.fpa[0]) {
+                currentSoundWorld.MixLoop(soundTime, numSpeakers, mixBuffer);
             }
 
-            this.CurrentSoundTime = soundTime;
+            CurrentSoundTime = soundTime;
 
             return Sys_Milliseconds() - inTime;
         }
 
         @Override
         public void SetMute(boolean muteOn) {
-            this.muted = muteOn;
+            muted = muteOn;
         }
 
         @Override
         public cinData_t ImageForTime(final int milliseconds, final boolean waveform) {
-            final cinData_t ret = new cinData_t();
+            cinData_t ret = new cinData_t();
             int i, j;
 
-            if (!this.isInitialized || NOT(this.snd_audio_hw)) {
+            if (!isInitialized || NOT(snd_audio_hw)) {
 //		memset( &ret, 0, sizeof( ret ) );
                 return ret;
             }
 
             Sys_EnterCriticalSection();
 
-            if (null == this.graph) {
-                this.graph = new int[256 * 128 * 4];// Mem_Alloc(256 * 128 * 4);
+            if (null == graph) {
+                graph = new int[256 * 128 * 4];// Mem_Alloc(256 * 128 * 4);
             }
 //	memset( graph, 0, 256*128 * 4 );
-            final float[] accum = this.finalMixBuffer;	// unfortunately, these are already clamped
-            final int time = Sys_Milliseconds();
+            float[] accum = finalMixBuffer;	// unfortunately, these are already clamped
+            int time = Sys_Milliseconds();
 
-            final int numSpeakers = this.snd_audio_hw.GetNumberOfSpeakers();
+            int numSpeakers = snd_audio_hw.GetNumberOfSpeakers();
 
             if (!waveform) {
                 for (j = 0; j < numSpeakers; j++) {
                     int meter = 0;
                     for (i = 0; i < MIXBUFFER_SAMPLES; i++) {
-                        final float result = idMath.Fabs(accum[(i * numSpeakers) + j]);
+                        float result = idMath.Fabs(accum[i * numSpeakers + j]);
                         if (result > meter) {
                             meter = (int) result;
                         }
@@ -792,10 +796,10 @@ public class snd_system {
                         xsize = 63;
                     }
                     int x, y;
-                    final int/*dword*/ color = 0xff00ff00;
+                    int/*dword*/ color = 0xff00ff00;
                     for (y = 0; y < 128; y++) {
                         for (x = 0; x < xsize; x++) {
-                            this.graph[((127 - y) * 256) + offset + x] = color;
+                            graph[(127 - y) * 256 + offset + x] = color;
                         }
 // #if 0
                         // if ( y == 80 ) {
@@ -809,19 +813,19 @@ public class snd_system {
                         }
                     }
 
-                    if (meter > this.meterTops[j]) {
-                        this.meterTops[j] = meter;
-                        this.meterTopsTime[j] = time + s_meterTopTime.GetInteger();
-                    } else if ((time > this.meterTopsTime[j]) && (this.meterTops[j] > 0)) {
-                        this.meterTops[j]--;
-                        if (this.meterTops[j] != 0) {
-                            this.meterTops[j]--;
+                    if (meter > meterTops[j]) {
+                        meterTops[j] = meter;
+                        meterTopsTime[j] = time + s_meterTopTime.GetInteger();
+                    } else if (time > meterTopsTime[j] && meterTops[j] > 0) {
+                        meterTops[j]--;
+                        if (meterTops[j] != 0) {
+                            meterTops[j]--;
                         }
                     }
                 }
 
                 for (j = 0; j < numSpeakers; j++) {
-                    final int meter = this.meterTops[j];
+                    int meter = meterTops[j];
 
                     int offset;
                     int xsize;
@@ -841,23 +845,23 @@ public class snd_system {
                     } else {
                         color = 0xff00007f;
                     }
-                    for (y = meter; (y < 128) && (y < (meter + 4)); y++) {
+                    for (y = meter; y < 128 && y < meter + 4; y++) {
                         for (x = 0; x < xsize; x++) {
-                            this.graph[((127 - y) * 256) + offset + x] = color;
+                            graph[(127 - y) * 256 + offset + x] = color;
                         }
                     }
                 }
             } else {
-                final int/*dword*/[] colors = {0xff007f00, 0xff007f7f, 0xff00007f, 0xff00ff00, 0xff00ffff, 0xff0000ff};
+                int/*dword*/[] colors = {0xff007f00, 0xff007f7f, 0xff00007f, 0xff00ff00, 0xff00ffff, 0xff0000ff};
 
                 for (j = 0; j < numSpeakers; j++) {
                     int xx = 0;
                     float fmeter;
-                    final int step = MIXBUFFER_SAMPLES / 256;
+                    int step = MIXBUFFER_SAMPLES / 256;
                     for (i = 0; i < MIXBUFFER_SAMPLES; i += step) {
                         fmeter = 0.0f;
                         for (int x = 0; x < step; x++) {
-                            float result = accum[((i + x) * numSpeakers) + j];
+                            float result = accum[(i + x) * numSpeakers + j];
                             result = result / 32768.0f;
                             fmeter += result;
                         }
@@ -868,35 +872,35 @@ public class snd_system {
                             fmeter = 1.0f;
                         }
                         int meter = (int) (fmeter * 63.0f);
-                        this.graph[ ((meter + 64) * 256) + xx] = colors[j];
+                        graph[ (meter + 64) * 256 + xx] = colors[j];
 
                         if (meter < 0) {
                             meter = -meter;
                         }
-                        if (meter > this.meterTops[xx]) {
-                            this.meterTops[xx] = meter;
-                            this.meterTopsTime[xx] = time + 100;
-                        } else if ((time > this.meterTopsTime[xx]) && (this.meterTops[xx] > 0)) {
-                            this.meterTops[xx]--;
-                            if (this.meterTops[xx] != 0) {
-                                this.meterTops[xx]--;
+                        if (meter > meterTops[xx]) {
+                            meterTops[xx] = meter;
+                            meterTopsTime[xx] = time + 100;
+                        } else if (time > meterTopsTime[xx] && meterTops[xx] > 0) {
+                            meterTops[xx]--;
+                            if (meterTops[xx] != 0) {
+                                meterTops[xx]--;
                             }
                         }
                         xx++;
                     }
                 }
                 for (i = 0; i < 256; i++) {
-                    final int meter = this.meterTops[i];
+                    int meter = meterTops[i];
                     for (int y = -meter; y < meter; y++) {
-                        this.graph[ ((y + 64) * 256) + i] = colors[j];
+                        graph[ (y + 64) * 256 + i] = colors[j];
                     }
                 }
             }
             ret.imageHeight = 128;
             ret.imageWidth = 256;
 
-            final ByteBuffer image = Nio.newByteBuffer(this.graph.length * 4);
-            image.asIntBuffer().put(this.graph);
+            ByteBuffer image = BufferUtils.createByteBuffer(graph.length * 4);
+            image.asIntBuffer().put(graph);
             ret.image = image;
 
             Sys_LeaveCriticalSection();
@@ -907,18 +911,18 @@ public class snd_system {
         @Override
         public int GetSoundDecoderInfo(int index, soundDecoderInfo_t decoderInfo) {
             int i, j, firstEmitter, firstChannel;
-            final idSoundWorldLocal sw = soundSystemLocal.currentSoundWorld;
+            idSoundWorldLocal sw = soundSystemLocal.currentSoundWorld;
 
             if (index < 0) {
                 firstEmitter = 0;
                 firstChannel = 0;
             } else {
                 firstEmitter = index / SOUND_MAX_CHANNELS;
-                firstChannel = (index - (firstEmitter * SOUND_MAX_CHANNELS)) + 1;
+                firstChannel = index - firstEmitter * SOUND_MAX_CHANNELS + 1;
             }
 
             for (i = firstEmitter; i < sw.emitters.Num(); i++) {
-                final idSoundEmitterLocal sound = sw.emitters.oGet(i);
+                idSoundEmitterLocal sound = sw.emitters.oGet(i);
 
                 if (null == sound) {
                     continue;
@@ -926,13 +930,13 @@ public class snd_system {
 
                 // run through all the channels
                 for (j = firstChannel; j < SOUND_MAX_CHANNELS; j++) {
-                    final idSoundChannel chan = sound.channels[j];
+                    idSoundChannel chan = sound.channels[j];
 
                     if (chan.decoder == null) {
                         continue;
                     }
 
-                    final idSoundSample sample = chan.decoder.GetSample();
+                    idSoundSample sample = chan.decoder.GetSample();
 
                     if (sample == null) {
                         continue;
@@ -949,7 +953,7 @@ public class snd_system {
                     decoderInfo.start44kHzTime = chan.trigger44kHzTime;
                     decoderInfo.current44kHzTime = soundSystemLocal.GetCurrent44kHzTime();
 
-                    return ((i * SOUND_MAX_CHANNELS) + j);
+                    return (i * SOUND_MAX_CHANNELS + j);
                 }
 
                 firstChannel = 0;
@@ -960,7 +964,7 @@ public class snd_system {
         // if rw == NULL, no portal occlusion or rendered debugging is available
         @Override
         public idSoundWorld AllocSoundWorld(idRenderWorld rw) {
-            final idSoundWorldLocal local = new idSoundWorldLocal();
+            idSoundWorldLocal local = new idSoundWorldLocal();
 
             local.Init(rw);
 
@@ -977,46 +981,46 @@ public class snd_system {
         // specifying NULL will cause silence to be played
         @Override
         public void SetPlayingSoundWorld(idSoundWorld soundWorld) {
-            this.currentSoundWorld = (idSoundWorldLocal) soundWorld;
+            currentSoundWorld = (idSoundWorldLocal) soundWorld;
         }
 
         // some tools, like the sound dialog, may be used in both the game and the editor
         // This can return NULL, so check!
         @Override
         public idSoundWorld GetPlayingSoundWorld() {
-            return this.currentSoundWorld;
+            return currentSoundWorld;
         }
 
         @Override
         public void BeginLevelLoad() {
-            if (!this.isInitialized) {
+            if (!isInitialized) {
                 return;
             }
-            this.soundCache.BeginLevelLoad();
+            soundCache.BeginLevelLoad();
 
-            if (this.efxloaded) {
-                this.EFXDatabase.UnloadFile();
-                this.efxloaded = false;
+            if (efxloaded) {
+                EFXDatabase.UnloadFile();
+                efxloaded = false;
             }
         }
 
         @Override
         public void EndLevelLoad(final String mapString) {
-            if (!this.isInitialized) {
+            if (!isInitialized) {
                 return;
             }
-            this.soundCache.EndLevelLoad();
+            soundCache.EndLevelLoad();
 
-            final idStr efxname = new idStr("efxs/");
-            final idStr mapname = new idStr(mapString);
+            idStr efxname = new idStr("efxs/");
+            idStr mapname = new idStr(mapString);
 
             mapname.SetFileExtension(".efx");
             mapname.StripPath();
             efxname.oPluSet(mapname);
 
-            this.efxloaded = this.EFXDatabase.LoadFile(efxname.getData());
+            efxloaded = EFXDatabase.LoadFile(efxname.toString());
 
-            if (this.efxloaded) {
+            if (efxloaded) {
                 common.Printf("sound: found %s\n", efxname);
             } else {
                 common.Printf("sound: missing %s\n", efxname);
@@ -1025,7 +1029,7 @@ public class snd_system {
 
         @Override
         public void PrintMemInfo(MemInfo_t mi) {
-            this.soundCache.PrintMemInfo(mi);
+            soundCache.PrintMemInfo(mi);
         }
 
         @Override
@@ -1065,8 +1069,8 @@ public class snd_system {
 
         //-------------------------
         public int GetCurrent44kHzTime() {
-            if (this.snd_audio_hw != null) {
-                return this.CurrentSoundTime;
+            if (snd_audio_hw != null) {
+                return CurrentSoundTime;
             } else {
                 // NOTE: this would overflow 31bits within about 1h20 ( not that important since we get a snd_audio_hw right away pbly )
                 //return ( ( Sys_Milliseconds()*441 ) / 10 ) * 4; 
@@ -1082,8 +1086,8 @@ public class snd_system {
             } else if (val >= 60.0f) {
                 return (float) pow(2.0f, val * (1.0f / 6.0f));
             }
-            final int ival = (int) ((val + 60.0f) * 10.0f);
-            return this.volumesDB[ival];
+            int ival = (int) ((val + 60.0f) * 10.0f);
+            return volumesDB[ival];
         }
 
         public int SamplesToMilliseconds(int samples) {
@@ -1096,32 +1100,32 @@ public class snd_system {
 
         public void DoEnviroSuit(float[] samples, int numSamples, int numSpeakers) {
             float[] out;
-            final int out_p = 2;
+            int out_p = 2;
             float[] in;
-            final int in_p = 2;
+            int in_p = 2;
 
             assert (!idSoundSystemLocal.useOpenAL);
 
-            if (0 == this.fxList.Num()) {
+            if (0 == fxList.Num()) {
                 for (int i = 0; i < 6; i++) {
                     SoundFX fx;
 
                     // lowpass filter
                     fx = new SoundFX_Lowpass();
                     fx.SetChannel(i);
-                    this.fxList.Append(fx);
+                    fxList.Append(fx);
 
                     // comb
                     fx = new SoundFX_Comb();
                     fx.SetChannel(i);
                     fx.SetParameter(i * 100);
-                    this.fxList.Append(fx);
+                    fxList.Append(fx);
 
                     // comb
                     fx = new SoundFX_Comb();
                     fx.SetChannel(i);
-                    fx.SetParameter((i * 100) + 5);
-                    this.fxList.Append(fx);
+                    fx.SetParameter(i * 100 + 5);
+                    fxList.Append(fx);
                 }
             }
 
@@ -1135,8 +1139,8 @@ public class snd_system {
                 in = new float[10000];
 
                 // fx loop
-                for (int k = 0; k < this.fxList.Num(); k++) {
-                    final SoundFX fx = this.fxList.oGet(k);
+                for (int k = 0; k < fxList.Num(); k++) {
+                    SoundFX fx = fxList.oGet(k);
 
                     // skip if we're not the right channel
                     if (fx.GetChannel() != i) {
@@ -1145,7 +1149,7 @@ public class snd_system {
 
                     // get samples and continuity
                     {
-                        final float[] in1 = {0}, in2 = {0}, out1 = {0}, out2 = {0};
+                        float[] in1 = {0}, in2 = {0}, out1 = {0}, out2 = {0};
                         fx.GetContinuitySamples(in1, in2, out1, out2);
                         in[in_p - 1] = in1[0];
                         in[in_p - 2] = in2[0];
@@ -1153,7 +1157,7 @@ public class snd_system {
                         out[out_p - 2] = out2[0];
                     }
                     for (j = 0; j < numSamples; j++) {
-                        in[in_p + j] = samples[(j * numSpeakers) + i] * s_enviroSuitVolumeScale.GetFloat();
+                        in[in_p + j] = samples[j * numSpeakers + i] * s_enviroSuitVolumeScale.GetFloat();
                     }
 
                     // process fx loop
@@ -1162,10 +1166,10 @@ public class snd_system {
                     }
 
                     // store samples and continuity
-                    fx.SetContinuitySamples(in[(in_p + numSamples) - 2], in[(in_p + numSamples) - 3], out[(out_p + numSamples) - 2], out[(out_p + numSamples) - 3]);
+                    fx.SetContinuitySamples(in[in_p + numSamples - 2], in[in_p + numSamples - 3], out[out_p + numSamples - 2], out[out_p + numSamples - 3]);
 
                     for (j = 0; j < numSamples; j++) {
-                        samples[(j * numSpeakers) + i] = out[out_p + j];
+                        samples[j * numSpeakers + i] = out[out_p + j];
                     }
                 }
             }
@@ -1183,30 +1187,30 @@ public class snd_system {
             int/*ALsizei*/ i;
 
             // Grab current msec time
-            final int time = Sys_Milliseconds();
+            int time = Sys_Milliseconds();
 
             // Cycle through all sources
-            for (i = 0; i < this.openalSourceCount; i++) {
+            for (i = 0; i < openalSourceCount; i++) {
                 // Use any unused source first,
                 // Then find oldest single shot quiet source,
                 // Then find oldest looping quiet source and
                 // Lastly find oldest single shot non quiet source..
-                if (!this.openalSources[i].inUse) {
+                if (!openalSources[i].inUse) {
                     iUnused = i;
                     break;
-                } else if (!this.openalSources[i].looping && (this.openalSources[i].chan.lastVolume < SND_EPSILON)) {
-                    if (this.openalSources[i].startTime < timeOldestZeroVolSingleShot) {
-                        timeOldestZeroVolSingleShot = this.openalSources[i].startTime;
+                } else if (!openalSources[i].looping && openalSources[i].chan.lastVolume < SND_EPSILON) {
+                    if (openalSources[i].startTime < timeOldestZeroVolSingleShot) {
+                        timeOldestZeroVolSingleShot = openalSources[i].startTime;
                         iOldestZeroVolSingleShot = i;
                     }
-                } else if (this.openalSources[i].looping && (this.openalSources[i].chan.lastVolume < SND_EPSILON)) {
-                    if (this.openalSources[i].startTime < timeOldestZeroVolLooping) {
-                        timeOldestZeroVolLooping = this.openalSources[i].startTime;
+                } else if (openalSources[i].looping && openalSources[i].chan.lastVolume < SND_EPSILON) {
+                    if (openalSources[i].startTime < timeOldestZeroVolLooping) {
+                        timeOldestZeroVolLooping = openalSources[i].startTime;
                         iOldestZeroVolLooping = i;
                     }
-                } else if (!this.openalSources[i].looping) {
-                    if (this.openalSources[i].startTime < timeOldestSingle) {
-                        timeOldestSingle = this.openalSources[i].startTime;
+                } else if (!openalSources[i].looping) {
+                    if (openalSources[i].startTime < timeOldestSingle) {
+                        timeOldestSingle = openalSources[i].startTime;
                         iOldestSingle = i;
                     }
                 }
@@ -1224,26 +1228,26 @@ public class snd_system {
 
             if (index != -1) {
                 // stop the channel that is being ripped off
-                if (this.openalSources[index].chan != null) {
+                if (openalSources[index].chan != null) {
                     // stop the channel only when not looping
-                    if (!this.openalSources[index].looping) {
-                        this.openalSources[index].chan.Stop();
+                    if (!openalSources[index].looping) {
+                        openalSources[index].chan.Stop();
                     } else {
-                        this.openalSources[index].chan.triggered = true;
+                        openalSources[index].chan.triggered = true;
                     }
 
                     // Free hardware resources
-                    this.openalSources[index].chan.ALStop();
+                    openalSources[index].chan.ALStop();
                 }
 
                 // Initialize structure
-                this.openalSources[index].startTime = time;
-                this.openalSources[index].chan = chan;
-                this.openalSources[index].inUse = true;
-                this.openalSources[index].looping = looping;
-                this.openalSources[index].stereo = stereo;
+                openalSources[index].startTime = time;
+                openalSources[index].chan = chan;
+                openalSources[index].inUse = true;
+                openalSources[index].looping = looping;
+                openalSources[index].stereo = stereo;
 
-                return this.openalSources[index].handle;
+                return openalSources[index].handle;
             } else {
                 return 0;
             }
@@ -1251,10 +1255,10 @@ public class snd_system {
 
         public void FreeOpenALSource(int/*ALuint*/ handle) {
             int/*ALsizei*/ i;
-            for (i = 0; i < this.openalSourceCount; i++) {
-                if (this.openalSources[i].handle == handle) {
-                    if (this.openalSources[i].chan != null) {
-                        this.openalSources[i].chan.openalSource = 0;
+            for (i = 0; i < openalSourceCount; i++) {
+                if (openalSources[i].handle == handle) {
+                    if (openalSources[i].chan != null) {
+                        openalSources[i].chan.openalSource = 0;
                     }
 // #if ID_OPENAL
                     // // Reset source EAX ROOM level when freeing stereo source
@@ -1264,15 +1268,15 @@ public class snd_system {
                     // }
 // #endif
                     // Initialize structure
-                    this.openalSources[i].startTime = 0;
-                    this.openalSources[i].chan = null;
-                    this.openalSources[i].inUse = false;
-                    this.openalSources[i].looping = false;
-                    this.openalSources[i].stereo = false;
+                    openalSources[i].startTime = 0;
+                    openalSources[i].chan = null;
+                    openalSources[i].inUse = false;
+                    openalSources[i].looping = false;
+                    openalSources[i].stereo = false;
                 }
             }
         }
-    }
+    };
 
     /*
      ===============
@@ -1302,7 +1306,7 @@ public class snd_system {
             soundSystem.SetMute(false);
             common.Printf("sound: changed sounds reloaded\n");
         }
-    }
+    };
 
     /*
      ===============
@@ -1337,7 +1341,7 @@ public class snd_system {
                 if (NOT(sample)) {
                     continue;
                 }
-                if ((snd != null) && (sample.name.Find(snd, false) < 0)) {
+                if (snd != null && sample.name.Find(snd, false) < 0) {
                     continue;
                 }
 
@@ -1369,7 +1373,7 @@ public class snd_system {
 //	common.Printf( "%8d kB total OpenAL audio memory used\n", ( alGetInteger( alGetEnumValue( "AL_EAX_RAM_SIZE" ) ) - alGetInteger( alGetEnumValue( "AL_EAX_RAM_FREE" ) ) ) >> 10 );
 //#endif
         }
-    }
+    };
 
     /*
      ===============
@@ -1386,12 +1390,12 @@ public class snd_system {
         @Override
         public void run(idCmdArgs args) {
             int i, j, numActiveDecoders, numWaitingDecoders;
-            final idSoundWorldLocal sw = soundSystemLocal.currentSoundWorld;
+            idSoundWorldLocal sw = soundSystemLocal.currentSoundWorld;
 
             numActiveDecoders = numWaitingDecoders = 0;
 
             for (i = 0; i < sw.emitters.Num(); i++) {
-                final idSoundEmitterLocal sound = sw.emitters.oGet(i);
+                idSoundEmitterLocal sound = sw.emitters.oGet(i);
 
                 if (NOT(sound)) {
                     continue;
@@ -1399,13 +1403,13 @@ public class snd_system {
 
                 // run through all the channels
                 for (j = 0; j < SOUND_MAX_CHANNELS; j++) {
-                    final idSoundChannel chan = sound.channels[j];
+                    idSoundChannel chan = sound.channels[j];
 
                     if (chan.decoder == null) {
                         continue;
                     }
 
-                    final idSoundSample sample = chan.decoder.GetSample();
+                    idSoundSample sample = chan.decoder.GetSample();
 
                     if (sample != null) {
                         continue;
@@ -1419,7 +1423,7 @@ public class snd_system {
             }
 
             for (i = 0; i < sw.emitters.Num(); i++) {
-                final idSoundEmitterLocal sound = sw.emitters.oGet(i);
+                idSoundEmitterLocal sound = sw.emitters.oGet(i);
 
                 if (NOT(sound)) {
                     continue;
@@ -1427,13 +1431,13 @@ public class snd_system {
 
                 // run through all the channels
                 for (j = 0; j < SOUND_MAX_CHANNELS; j++) {
-                    final idSoundChannel chan = sound.channels[j];
+                    idSoundChannel chan = sound.channels[j];
 
                     if (chan.decoder == null) {
                         continue;
                     }
 
-                    final idSoundSample sample = chan.decoder.GetSample();
+                    idSoundSample sample = chan.decoder.GetSample();
 
                     if (sample == null) {
                         continue;
@@ -1441,17 +1445,17 @@ public class snd_system {
 
                     final String format = (sample.objectInfo.wFormatTag == WAVE_FORMAT_TAG_OGG) ? "OGG" : "WAV";
 
-                    final int localTime = soundSystemLocal.GetCurrent44kHzTime() - chan.trigger44kHzTime;
-                    final int sampleTime = sample.LengthIn44kHzSamples() * sample.objectInfo.nChannels;
+                    int localTime = soundSystemLocal.GetCurrent44kHzTime() - chan.trigger44kHzTime;
+                    int sampleTime = sample.LengthIn44kHzSamples() * sample.objectInfo.nChannels;
                     int percent;
                     if (localTime > sampleTime) {
                         if ((chan.parms.soundShaderFlags & SSF_LOOPING) != 0) {
-                            percent = ((localTime % sampleTime) * 100) / sampleTime;
+                            percent = (localTime % sampleTime) * 100 / sampleTime;
                         } else {
                             percent = 100;
                         }
                     } else {
-                        percent = (localTime * 100) / sampleTime;
+                        percent = localTime * 100 / sampleTime;
                     }
 
                     common.Printf("%3d decoding %3d%% %s: %s\n", numActiveDecoders, percent, format, sample.name);
@@ -1465,7 +1469,7 @@ public class snd_system {
             common.Printf("%d active decoders\n", numActiveDecoders);
             common.Printf("%d kB decoder memory in %d blocks\n", idSampleDecoder.GetUsedBlockMemory() >> 10, idSampleDecoder.GetNumUsedBlocks());
         }
-    }
+    };
 
     /*
      ===============
@@ -1491,7 +1495,7 @@ public class snd_system {
                 soundSystemLocal.currentSoundWorld.PlayShaderDirectly(args.Argv(1));
             }
         }
-    }
+    };
 
     /*
      ===============
@@ -1516,7 +1520,7 @@ public class snd_system {
             soundSystemLocal.InitHW();
             soundSystem.SetMute(false);
         }
-    }
+    };
 
     public static void setSoundSystem(idSoundSystem soundSystem) {
         snd_system.soundSystem = snd_system.soundSystemLocal = (idSoundSystemLocal) soundSystem;

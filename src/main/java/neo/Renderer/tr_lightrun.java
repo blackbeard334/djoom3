@@ -151,7 +151,7 @@ public class tr_lightrun {
                 return;
             }
 
-            final float[] modulate = new float[3];
+            float[] modulate = new float[3];
             int i;
             for (i = 0; i < 3; i++) {
                 modulate[i] = Float.parseFloat(args.Argv(i + 1));
@@ -171,7 +171,7 @@ public class tr_lightrun {
             }
             common.Printf("modulated %d lights\n", count);
         }
-    }
+    };
 
 //======================================================================================
     /*
@@ -186,8 +186,8 @@ public class tr_lightrun {
      */
     public static void R_CreateEntityRefs(idRenderEntityLocal def) {
         int i;
-        final idVec3[] transformed = idVec3.generateArray(8);
-        final idVec3 v = new idVec3();
+        idVec3[] transformed = idVec3.generateArray(8);
+        idVec3 v = new idVec3();
 
         if (null == def.parms.hModel) {
             def.parms.hModel = renderModelManager.DefaultModel();
@@ -207,8 +207,8 @@ public class tr_lightrun {
         }
 
         if (r_showUpdates.GetBool()
-                && (((def.referenceBounds.oGet(1, 0) - def.referenceBounds.oGet(0, 0)) > 1024)
-                || ((def.referenceBounds.oGet(1, 1) - def.referenceBounds.oGet(0, 1)) > 1024))) {
+                && (def.referenceBounds.oGet(1, 0) - def.referenceBounds.oGet(0, 0) > 1024
+                || def.referenceBounds.oGet(1, 1) - def.referenceBounds.oGet(0, 1) > 1024)) {
             common.Printf("big entityRef: %f,%f\n", def.referenceBounds.oGet(1, 0) - def.referenceBounds.oGet(0, 0),
                     def.referenceBounds.oGet(1, 1) - def.referenceBounds.oGet(0, 1));
         }
@@ -257,7 +257,7 @@ public class tr_lightrun {
         float ofs;
         idVec3 right, up;
         idVec3 startGlobal;
-        final idVec4 targetGlobal = new idVec4();
+        idVec4 targetGlobal = new idVec4();
 
         right = new idVec3(rightVector);
         rLen = right.Normalize();
@@ -290,9 +290,9 @@ public class tr_lightrun {
         // now offset to center
         targetGlobal.oSet(target.oPlus(origin));
         targetGlobal.oSet(3, 1);
-        ofs = 0.5f - ((targetGlobal.oMultiply(lightProject[0].ToVec4())) / (targetGlobal.oMultiply(lightProject[2].ToVec4())));
+        ofs = 0.5f - (targetGlobal.oMultiply(lightProject[0].ToVec4())) / (targetGlobal.oMultiply(lightProject[2].ToVec4()));
         lightProject[0].ToVec4_oPluSet(lightProject[2].ToVec4().oMultiply(ofs));
-        ofs = 0.5f - ((targetGlobal.oMultiply(lightProject[1].ToVec4())) / (targetGlobal.oMultiply(lightProject[2].ToVec4())));
+        ofs = 0.5f - (targetGlobal.oMultiply(lightProject[1].ToVec4())) / (targetGlobal.oMultiply(lightProject[2].ToVec4()));
         lightProject[1].ToVec4_oPluSet(lightProject[2].ToVec4().oMultiply(ofs));
 
         // set the falloff vector
@@ -427,12 +427,12 @@ public class tr_lightrun {
         R_AxisToModelMatrix(light.parms.axis, light.parms.origin, light.modelMatrix);
 
         for (i = 0; i < 6; i++) {
-            final idPlane temp = new idPlane();
+            idPlane temp = new idPlane();
             temp.oSet(light.frustum[i]);
             R_LocalPlaneToGlobal(light.modelMatrix, temp, light.frustum[i]);
         }
         for (i = 0; i < 4; i++) {
-            final idPlane temp = new idPlane();
+            idPlane temp = new idPlane();
             temp.oSet(light.lightProject[i]);
             R_LocalPlaneToGlobal(light.modelMatrix, temp, light.lightProject[i]);
         }
@@ -440,7 +440,7 @@ public class tr_lightrun {
         // adjust global light origin for off center projections and parallel projections
         // we are just faking parallel by making it a very far off center for now
         if (light.parms.parallel) {
-            final idVec3 dir = new idVec3();
+            idVec3 dir = new idVec3();
 
             dir.oSet(light.parms.lightCenter);
             if (0 == dir.Normalize()) {
@@ -469,7 +469,7 @@ public class tr_lightrun {
     static final int MAX_LIGHT_VERTS = 40;
 
     public static void R_CreateLightRefs(idRenderLightLocal light) {
-        final idVec3[] points = new idVec3[MAX_LIGHT_VERTS];
+        idVec3[] points = new idVec3[MAX_LIGHT_VERTS];
         int i;
         srfTriangles_s tri;
 
@@ -484,8 +484,8 @@ public class tr_lightrun {
             points[i] = tri.verts[i].xyz;
         }
 
-        if (r_showUpdates.GetBool() && (((tri.bounds.oGet(1, 0) - tri.bounds.oGet(0, 0)) > 1024)
-                || ((tri.bounds.oGet(1, 1) - tri.bounds.oGet(0, 1)) > 1024))) {
+        if (r_showUpdates.GetBool() && (tri.bounds.oGet(1, 0) - tri.bounds.oGet(0, 0) > 1024
+                || tri.bounds.oGet(1, 1) - tri.bounds.oGet(0, 1) > 1024)) {
             common.Printf("big lightRef: %f,%f\n", tri.bounds.oGet(1, 0) - tri.bounds.oGet(0, 0), tri.bounds.oGet(1, 1) - tri.bounds.oGet(0, 1));
         }
 
@@ -507,7 +507,7 @@ public class tr_lightrun {
         // we can limit the area references to those visible through the portals from the light center.
         // We can't do this in the normal case, because shadows are cast from back facing triangles, which
         // may be in areas not directly visible to the light projection center.
-        if ((light.parms.prelightModel != null) && RenderSystem_init.r_useLightPortalFlow.GetBool() && light.lightShader.LightCastsShadows()) {
+        if (light.parms.prelightModel != null && RenderSystem_init.r_useLightPortalFlow.GetBool() && light.lightShader.LightCastsShadows()) {
             light.world.FlowLightThroughPortals(light);
         } else {
             // push these points down the BSP tree into areas
@@ -523,7 +523,7 @@ public class tr_lightrun {
      ===============
      */
     public static void R_RenderLightFrustum(final renderLight_s renderLight, idPlane[] lightFrustum/*[6]*/) {
-        final idRenderLightLocal fakeLight = new idRenderLightLocal();
+        idRenderLightLocal fakeLight = new idRenderLightLocal();
 
 //	memset( &fakeLight, 0, sizeof( fakeLight ) );
         fakeLight.parms = renderLight;
@@ -721,7 +721,7 @@ public class tr_lightrun {
      */
     public static void R_ClearEntityDefDynamicModel(idRenderEntityLocal def) {
         // free all the interaction surfaces
-        for (idInteraction inter = def.firstInteraction; (inter != null) && !inter.IsEmpty(); inter = inter.entityNext) {
+        for (idInteraction inter = def.firstInteraction; inter != null && !inter.IsEmpty(); inter = inter.entityNext) {
             inter.FreeSurfaces();
         }
 
@@ -738,7 +738,7 @@ public class tr_lightrun {
      */
     public static void R_FreeEntityDefDecals(idRenderEntityLocal def) {
         while (def.decals != null) {
-            final idRenderModelDecal next = def.decals.Next();
+            idRenderModelDecal next = def.decals.Next();
             idRenderModelDecal.Free(def.decals);
             def.decals = next;
         }
@@ -867,7 +867,7 @@ public class tr_lightrun {
                 if (null == light) {
                     continue;
                 }
-                final renderLight_s parms = light.parms;
+                renderLight_s parms = light.parms;
 
                 light.world.FreeLightDef(i);
                 rw.UpdateLightDef(i, parms);
@@ -905,5 +905,5 @@ public class tr_lightrun {
 
             common.Printf("Regenerated world, staticAllocCount = %d.\n", tr.staticAllocCount);
         }
-    }
+    };
 }

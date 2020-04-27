@@ -75,11 +75,11 @@ public class TypeInfo {
             int i;
 
             while (isNotNullOrEmpty(typeName)) {
-                if (idStr.Cmp(typeName.getData(), superType) == 0) {
+                if (idStr.Cmp(typeName.toString(), superType) == 0) {
                     return true;
                 }
                 for (i = 0; classTypeInfo[i].typeName != null; i++) {
-                    if (idStr.Cmp(typeName.getData(), classTypeInfo[i].typeName) == 0) {
+                    if (idStr.Cmp(typeName.toString(), classTypeInfo[i].typeName) == 0) {
                         typeName.oSet(classTypeInfo[i].superType);
                         break;
                     }
@@ -248,7 +248,7 @@ public class TypeInfo {
                 return null;
             }
 
-            for (i = c = 0; i < (buffers[0].length - 2); i++) {
+            for (i = c = 0; i < buffers[0].length - 2; i++) {
                 c++;
                 switch (string.charAt(c)) {
                     case '\0':
@@ -286,7 +286,7 @@ public class TypeInfo {
 
         private static boolean ParseTemplateArguments(idLexer src, idStr arguments) {
             int indent;
-            final idToken token = new idToken();
+            idToken token = new idToken();
 
             arguments.oSet("");
 
@@ -324,7 +324,7 @@ public class TypeInfo {
             public void run(String varName, String varType, String scope, String prefix, String postfix, String value, ByteBuffer varPtr, int varSize) {
                 common.Printf("%s%s::%s%s = \"%s\"\n", prefix, scope, varName, postfix, value);
             }
-        }
+        };
 
         private static class WriteVariable extends WriteVariableType_t {
 
@@ -337,18 +337,18 @@ public class TypeInfo {
             public void run(String varName, String varType, String scope, String prefix, String postfix, String value, ByteBuffer varPtr, int varSize) {
 
                 for (int i = idStr.FindChar(value, '#', 0); i >= 0; i = idStr.FindChar(value, '#', i + 1)) {
-                    if ((idStr.Icmpn(value + i + 1, "INF", 3) == 0)
-                            || (idStr.Icmpn(value + i + 1, "IND", 3) == 0)
-                            || (idStr.Icmpn(value + i + 1, "NAN", 3) == 0)
-                            || (idStr.Icmpn(value + i + 1, "QNAN", 4) == 0)
-                            || (idStr.Icmpn(value + i + 1, "SNAN", 4) == 0)) {
+                    if (idStr.Icmpn(value + i + 1, "INF", 3) == 0
+                            || idStr.Icmpn(value + i + 1, "IND", 3) == 0
+                            || idStr.Icmpn(value + i + 1, "NAN", 3) == 0
+                            || idStr.Icmpn(value + i + 1, "QNAN", 4) == 0
+                            || idStr.Icmpn(value + i + 1, "SNAN", 4) == 0) {
                         common.Warning("%s%s::%s%s = \"%s\"", prefix, scope, varName, postfix, value);
                         break;
                     }
                 }
                 fp.WriteFloatString("%s%s::%s%s = \"%s\"\n", prefix, scope, varName, postfix, value);
             }
-        }
+        };
 
         private static class WriteGameStateVariable extends WriteVariableType_t {
 
@@ -361,11 +361,11 @@ public class TypeInfo {
             public void run(String varName, String varType, String scope, String prefix, String postfix, String value, ByteBuffer varPtr, int varSize) {
 
                 for (int i = idStr.FindChar(value, '#', 0); i >= 0; i = idStr.FindChar(value, '#', i + 1)) {
-                    if ((idStr.Icmpn(value + i + 1, "INF", 3) == 0)
-                            || (idStr.Icmpn(value + i + 1, "IND", 3) == 0)
-                            || (idStr.Icmpn(value + i + 1, "NAN", 3) == 0)
-                            || (idStr.Icmpn(value + i + 1, "QNAN", 4) == 0)
-                            || (idStr.Icmpn(value + i + 1, "SNAN", 4) == 0)) {
+                    if (idStr.Icmpn(value + i + 1, "INF", 3) == 0
+                            || idStr.Icmpn(value + i + 1, "IND", 3) == 0
+                            || idStr.Icmpn(value + i + 1, "NAN", 3) == 0
+                            || idStr.Icmpn(value + i + 1, "QNAN", 4) == 0
+                            || idStr.Icmpn(value + i + 1, "SNAN", 4) == 0) {
                         common.Warning("%s%s::%s%s = \"%s\"", prefix, scope, varName, postfix, value);
                         break;
                     }
@@ -381,7 +381,7 @@ public class TypeInfo {
 
                 fp.WriteFloatString("%s%s::%s%s = \"%s\"\n", prefix, scope, varName, postfix, value);
             }
-        }
+        };
 
         private static class InitVariable extends WriteVariableType_t {
 
@@ -392,7 +392,7 @@ public class TypeInfo {
 
             @Override
             public void run(String varName, String varType, String scope, String prefix, String postfix, String value, ByteBuffer varPtr, int varSize) {
-                if ((varPtr != null) && (varSize > 0)) {
+                if (varPtr != null && varSize > 0) {
                     // NOTE: skip renderer handles
                     if (IsRenderHandleVariable(varName, varType, scope, prefix, postfix, value)) {
                         return;
@@ -401,7 +401,7 @@ public class TypeInfo {
                     Arrays.fill(varPtr.array(), 0, varSize, (byte) initValue);
                 }
             }
-        }
+        };
 
         private static class VerifyVariable extends WriteVariableType_t {
 
@@ -412,7 +412,7 @@ public class TypeInfo {
 
             @Override
             public void run(String varName, String varType, String scope, String prefix, String postfix, String value, ByteBuffer varPtr, int varSize) {
-                final idToken token = new idToken();
+                idToken token = new idToken();
 
                 if (typeError) {
                     return;
@@ -435,7 +435,7 @@ public class TypeInfo {
                     typeError = true;
                 }
             }
-        }
+        };
 
         private static int WriteVariable_r(final ByteBuffer varPtr, final String varName, final String varType, final String scope, final String prefix, final int pointerDepth) {
             throw new UnsupportedOperationException();
@@ -467,7 +467,7 @@ public class TypeInfo {
 //                typeSize = 0;
 //                for (i = 0; i < num; i++) {
 //                    String listVarName = va("%s[%d]", varName, i);
-//                    int size = WriteVariable_r(varPtr, listVarName, listVarType.getData(), scope, prefix, pointerDepth);
+//                    int size = WriteVariable_r(varPtr, listVarName, listVarType.toString(), scope, prefix, pointerDepth);
 //                    typeSize += size;
 //                    if (size == -1) {
 //                        break;
@@ -495,7 +495,7 @@ public class TypeInfo {
 //                return sizeof/*( void * )*/;
 //            }
 //
-//            typeSrc.LoadMemory(typeString.getData(), typeString.Length(), varName);
+//            typeSrc.LoadMemory(typeString.toString(), typeString.Length(), varName);
 //
 //            if (!typeSrc.ReadToken(token)) {
 //                Write.run(varName, varType, scope, prefix, "", va("<unknown type '%s'>", varType), varPtr, 0);
@@ -661,12 +661,12 @@ public class TypeInfo {
 //                Write.run(varName, varType, scope, prefix, "", idStr( /**
 //                         * ((float *)
 //                         */
-//                        varPtr).getData(), varPtr, typeSize);
+//                        varPtr).c_str(), varPtr, typeSize);
 //
 //            } else if (token.equals("double")) {
 //
 //                typeSize = sizeof(double);
-//                Write.run(varName, varType, scope, prefix, "", idStr( /*(float)*((double *)*/varPtr).getData(), varPtr, typeSize);
+//                Write.run(varName, varType, scope, prefix, "", idStr( /*(float)*((double *)*/varPtr).c_str(), varPtr, typeSize);
 //
 //            } else if (token.equals("idVec2")) {
 //
@@ -811,7 +811,7 @@ public class TypeInfo {
 //                typeSize = sizeof(idStr);
 //
 //                final idStr str = (/*(idStr *)*/varPtr);
-//                Write.run(varName, varType, scope, prefix, "", OutputString(str.getData()), str.getData(), str.Length());
+//                Write.run(varName, varType, scope, prefix, "", OutputString(str.toString()), str.c_str(), str.Length());
 //
 //            } else if (token.equals("idStrList")) {
 //
@@ -820,7 +820,7 @@ public class TypeInfo {
 //                final idStrList list = (/*(idStrList *)*/varPtr);
 //                if (list.Num() != 0) {
 //                    for (i = 0; i < list.Num(); i++) {
-//                        Write.run(varName, varType, scope, prefix, va("[%d]", i), OutputString(list.oGet(i).getData()), list.oGet(i).getData(), list.oGet(i).Length());
+//                        Write.run(varName, varType, scope, prefix, va("[%d]", i), OutputString(list.oGet(i).c_str()), list.oGet(i).c_str(), list.oGet(i).Length());
 //                    }
 //                } else {
 //                    Write.run(varName, varType, scope, prefix, "", "<empty>", null, 0);
@@ -834,7 +834,7 @@ public class TypeInfo {
 //                if (dict.GetNumKeyVals() != 0) {
 //                    for (i = 0; i < dict.GetNumKeyVals(); i++) {
 //                        final idKeyValue kv = dict.GetKeyVal(i);
-//                        Write.run(varName, varType, scope, prefix, va("[%d]", i), va("\'%s\'  \'%s\'", OutputString(kv.GetKey().getData()), OutputString(kv.GetValue().getData())), null, 0);
+//                        Write.run(varName, varType, scope, prefix, va("[%d]", i), va("\'%s\'  \'%s\'", OutputString(kv.GetKey().c_str()), OutputString(kv.GetValue().c_str())), null, 0);
 //                    }
 //                } else {
 //                    Write.run(varName, varType, scope, prefix, "", "<empty>", null, 0);
@@ -843,22 +843,22 @@ public class TypeInfo {
 //            } else if (token.equals("idExtrapolate")) {
 //
 //                final idExtrapolate<Float> interpolate = (/*(idExtrapolate<float> *)*/varPtr);
-//                Write.run(varName, varType, scope, prefix, ".extrapolationType", idStr(interpolate.GetExtrapolationType()).getData(), interpolate.extrapolationType, sizeof(interpolate.extrapolationType));
-//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).getData(), interpolate.startTime, sizeof(interpolate.startTime));
-//                Write.run(varName, varType, scope, prefix, ".duration", idStr(interpolate.GetDuration()).getData(), interpolate.duration, sizeof(interpolate.duration));
+//                Write.run(varName, varType, scope, prefix, ".extrapolationType", idStr(interpolate.GetExtrapolationType()).c_str(), interpolate.extrapolationType, sizeof(interpolate.extrapolationType));
+//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).c_str(), interpolate.startTime, sizeof(interpolate.startTime));
+//                Write.run(varName, varType, scope, prefix, ".duration", idStr(interpolate.GetDuration()).c_str(), interpolate.duration, sizeof(interpolate.duration));
 //
 //                if (ParseTemplateArguments(typeSrc, templateArgs)) {
 //                    if (templateArgs.equals("int")) {
 //                        final idExtrapolate<Integer> interpolate = ((idExtrapolate<Integer>) varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".baseSpeed", idStr(interpolate.GetBaseSpeed()).getData(), interpolate.baseSpeed, sizeof(interpolate.baseSpeed));
-//                        Write.run(varName, varType, scope, prefix, ".speed", idStr(interpolate.GetSpeed()).getData(), interpolate.speed, sizeof(interpolate.speed));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".baseSpeed", idStr(interpolate.GetBaseSpeed()).c_str(), interpolate.baseSpeed, sizeof(interpolate.baseSpeed));
+//                        Write.run(varName, varType, scope, prefix, ".speed", idStr(interpolate.GetSpeed()).c_str(), interpolate.speed, sizeof(interpolate.speed));
 //                        typeSize = sizeof(idExtrapolate < int >);
 //                    } else if (templateArgs.equals("float")) {
 //                        final idExtrapolate<Float> interpolate = ((idExtrapolate<Float>) varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".baseSpeed", idStr(interpolate.GetBaseSpeed()).getData(), interpolate.baseSpeed, sizeof(interpolate.baseSpeed));
-//                        Write.run(varName, varType, scope, prefix, ".speed", idStr(interpolate.GetSpeed()).getData(), interpolate.speed, sizeof(interpolate.speed));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".baseSpeed", idStr(interpolate.GetBaseSpeed()).c_str(), interpolate.baseSpeed, sizeof(interpolate.baseSpeed));
+//                        Write.run(varName, varType, scope, prefix, ".speed", idStr(interpolate.GetSpeed()).c_str(), interpolate.speed, sizeof(interpolate.speed));
 //                        typeSize = sizeof(idExtrapolate < float >);
 //                    } else if (templateArgs.equals("idVec3")) {
 //                        final idExtrapolate<idVec3> interpolate = ((idExtrapolate<idVec3>) varPtr);
@@ -873,77 +873,77 @@ public class TypeInfo {
 //                        Write.run(varName, varType, scope, prefix, ".speed", interpolate.GetSpeed().ToString(8), interpolate.speed, sizeof(interpolate.speed));
 //                        typeSize = sizeof(idExtrapolate < idAngles >);
 //                    } else {
-//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idExtrapolate>", templateArgs.getData()), null, 0);
+//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idExtrapolate>", templateArgs.c_str()), null, 0);
 //                    }
 //                }
 //
 //            } else if (token.equals("idInterpolate")) {
 //
 //                final idInterpolate<Float> interpolate = ((idInterpolate<Float>) varPtr);
-//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).getData(), interpolate.startTime, sizeof(interpolate.startTime));
-//                Write.run(varName, varType, scope, prefix, ".duration", idStr(interpolate.GetDuration()).getData(), interpolate.duration, sizeof(interpolate.duration));
+//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).c_str(), interpolate.startTime, sizeof(interpolate.startTime));
+//                Write.run(varName, varType, scope, prefix, ".duration", idStr(interpolate.GetDuration()).c_str(), interpolate.duration, sizeof(interpolate.duration));
 //
 //                if (ParseTemplateArguments(typeSrc, templateArgs)) {
 //                    if (templateArgs.equals("int")) {
 //                        final idInterpolate<Integer> interpolate = (/*(idInterpolate<int> *)*/varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).getData(), interpolate.endValue, sizeof(interpolate.endValue));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).c_str(), interpolate.endValue, sizeof(interpolate.endValue));
 //                        typeSize = sizeof(idInterpolate < int >);
 //                    } else if (templateArgs.equals("float")) {
 //                        final idInterpolate<Float> interpolate = ((idInterpolate<Float>) varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).getData(), interpolate.endValue, sizeof(interpolate.endValue));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).c_str(), interpolate.endValue, sizeof(interpolate.endValue));
 //                        typeSize = sizeof(idInterpolate < float >);
 //                    } else {
-//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idInterpolate>", templateArgs.getData()), null, 0);
+//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idInterpolate>", templateArgs.c_str()), null, 0);
 //                    }
 //                }
 //
 //            } else if (token.equals("idInterpolateAccelDecelLinear")) {
 //
 //                final idInterpolateAccelDecelLinear<Float> interpolate = ((idInterpolateAccelDecelLinear<Float>) varPtr);
-//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).getData(), interpolate.startTime, sizeof(interpolate.startTime));
-//                Write.run(varName, varType, scope, prefix, ".accelTime", idStr(interpolate.GetAcceleration()).getData(), interpolate.accelTime, sizeof(interpolate.accelTime));
-//                Write.run(varName, varType, scope, prefix, ".linearTime", idStr(interpolate.linearTime).getData(), interpolate.linearTime, sizeof(interpolate.linearTime));
-//                Write.run(varName, varType, scope, prefix, ".decelTime", idStr(interpolate.GetDeceleration()).getData(), interpolate.decelTime, sizeof(interpolate.decelTime));
+//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).c_str(), interpolate.startTime, sizeof(interpolate.startTime));
+//                Write.run(varName, varType, scope, prefix, ".accelTime", idStr(interpolate.GetAcceleration()).c_str(), interpolate.accelTime, sizeof(interpolate.accelTime));
+//                Write.run(varName, varType, scope, prefix, ".linearTime", idStr(interpolate.linearTime).c_str(), interpolate.linearTime, sizeof(interpolate.linearTime));
+//                Write.run(varName, varType, scope, prefix, ".decelTime", idStr(interpolate.GetDeceleration()).c_str(), interpolate.decelTime, sizeof(interpolate.decelTime));
 //
 //                if (ParseTemplateArguments(typeSrc, templateArgs)) {
 //                    if (templateArgs.equals("int")) {
 //                        final idInterpolateAccelDecelLinear<Integer> interpolate = ((idInterpolateAccelDecelLinear<Integer>) varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).getData(), interpolate.endValue, sizeof(interpolate.endValue));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).c_str(), interpolate.endValue, sizeof(interpolate.endValue));
 //                        typeSize = sizeof(idInterpolateAccelDecelLinear < int >);
 //                    } else if (templateArgs.equals("float")) {
 //                        final idInterpolateAccelDecelLinear<Float> interpolate = ((idInterpolateAccelDecelLinear<Float>) varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).getData(), interpolate.endValue, sizeof(interpolate.endValue));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).c_str(), interpolate.endValue, sizeof(interpolate.endValue));
 //                        typeSize = sizeof(idInterpolateAccelDecelLinear < float >);
 //                    } else {
-//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idInterpolateAccelDecelLinear>", templateArgs.getData()), null, 0);
+//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idInterpolateAccelDecelLinear>", templateArgs.c_str()), null, 0);
 //                    }
 //                }
 //
 //            } else if (token.equals("idInterpolateAccelDecelSine")) {
 //
 //                final idInterpolateAccelDecelSine<Float> interpolate = ((idInterpolateAccelDecelSine<Float>) varPtr);
-//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).getData(), interpolate.startTime, sizeof(interpolate.startTime));
-//                Write.run(varName, varType, scope, prefix, ".accelTime", idStr(interpolate.GetAcceleration()).getData(), interpolate.accelTime, sizeof(interpolate.accelTime));
-//                Write.run(varName, varType, scope, prefix, ".linearTime", idStr(interpolate.linearTime).getData(), interpolate.linearTime, sizeof(interpolate.linearTime));
-//                Write.run(varName, varType, scope, prefix, ".decelTime", idStr(interpolate.GetDeceleration()).getData(), interpolate.decelTime, sizeof(interpolate.decelTime));
+//                Write.run(varName, varType, scope, prefix, ".startTime", idStr(interpolate.GetStartTime()).c_str(), interpolate.startTime, sizeof(interpolate.startTime));
+//                Write.run(varName, varType, scope, prefix, ".accelTime", idStr(interpolate.GetAcceleration()).c_str(), interpolate.accelTime, sizeof(interpolate.accelTime));
+//                Write.run(varName, varType, scope, prefix, ".linearTime", idStr(interpolate.linearTime).c_str(), interpolate.linearTime, sizeof(interpolate.linearTime));
+//                Write.run(varName, varType, scope, prefix, ".decelTime", idStr(interpolate.GetDeceleration()).c_str(), interpolate.decelTime, sizeof(interpolate.decelTime));
 //
 //                if (ParseTemplateArguments(typeSrc, templateArgs)) {
 //                    if (templateArgs.equals("int")) {
 //                        final idInterpolateAccelDecelSine<Integer> interpolate = ((idInterpolateAccelDecelSine<Integer>) varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).getData(), interpolate.endValue, sizeof(interpolate.endValue));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).c_str(), interpolate.endValue, sizeof(interpolate.endValue));
 //                        typeSize = sizeof(idInterpolateAccelDecelSine < int >);
 //                    } else if (templateArgs.equals("float")) {
 //                        final idInterpolateAccelDecelSine<Float> interpolate = ((idInterpolateAccelDecelSine<Float>) varPtr);
-//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).getData(), interpolate.startValue, sizeof(interpolate.startValue));
-//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).getData(), interpolate.endValue, sizeof(interpolate.endValue));
+//                        Write.run(varName, varType, scope, prefix, ".startValue", idStr(interpolate.GetStartValue()).c_str(), interpolate.startValue, sizeof(interpolate.startValue));
+//                        Write.run(varName, varType, scope, prefix, ".endValue", idStr(interpolate.GetEndValue()).c_str(), interpolate.endValue, sizeof(interpolate.endValue));
 //                        typeSize = sizeof(idInterpolateAccelDecelSine < float >);
 //                    } else {
-//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idInterpolateAccelDecelSine>", templateArgs.getData()), null, 0);
+//                        Write.run(varName, varType, scope, prefix, "", va("<unknown template argument type '%s' for idInterpolateAccelDecelSine>", templateArgs.c_str()), null, 0);
 //                    }
 //                }
 //
@@ -982,7 +982,7 @@ public class TypeInfo {
 //                final idEntityPtr<idEntity> entPtr = ((idEntityPtr<idEntity>) varPtr);
 //                if (entPtr.GetEntity() != null) {
 //                    idEntity entity = entPtr.GetEntity();
-//                    Write.run(varName, varType, scope, prefix, ".", va("entity %d: \'%s\'", entity.entityNumber, entity.name.getData()), varPtr, typeSize);
+//                    Write.run(varName, varType, scope, prefix, ".", va("entity %d: \'%s\'", entity.entityNumber, entity.name.c_str()), varPtr, typeSize);
 //                } else {
 //                    Write.run(varName, varType, scope, prefix, "", "<null>", varPtr, typeSize);
 //                }
@@ -1044,7 +1044,7 @@ public class TypeInfo {
 //                    } else if (IsSubclassOf(token, "idEntity")) {
 //
 //                        final idEntity entity = ((idEntity) varPtr);
-//                        Write.run(varName, varType, scope, prefix, "", va("entity %d: \'%s\'", entity.entityNumber, entity.name.getData()), null, 0);
+//                        Write.run(varName, varType, scope, prefix, "", va("entity %d: \'%s\'", entity.entityNumber, entity.name.c_str()), null, 0);
 //
 //                    } else if (IsSubclassOf(token, "idDecl")) {
 
@@ -1126,13 +1126,13 @@ public class TypeInfo {
             for (i = 0; classInfo.variables[i].name != null; i++) {
                 final classVariableInfo_t classVar = classInfo.variables[i];
 
-                final ByteBuffer varPtr = /*(void *) (((byte *)*/ classPtr;
+                ByteBuffer varPtr = /*(void *) (((byte *)*/ classPtr;
                 varPtr.position(classVar.offset);
 
                 WriteVariable_r(varPtr, classVar.name, classVar.type, classType, prefix, pointerDepth);
             }
         }
-    }
+    };
 
     /*
      ================
@@ -1161,9 +1161,9 @@ public class TypeInfo {
             }
             fileName.SetFileExtension("gameState.txt");
 
-            idTypeInfoTools.WriteGameState(fileName.getData());
+            idTypeInfoTools.WriteGameState(fileName.toString());
         }
-    }
+    };
 
     /*
      ================
@@ -1192,9 +1192,9 @@ public class TypeInfo {
             }
             fileName.SetFileExtension("gameState.txt");
 
-            idTypeInfoTools.CompareGameState(fileName.getData());
+            idTypeInfoTools.CompareGameState(fileName.toString());
         }
-    }
+    };
 
     /*
      ================
@@ -1229,12 +1229,12 @@ public class TypeInfo {
                 name.Replace("/", "_");
                 cmdSystem.BufferCommandText(CMD_EXEC_NOW, va("saveGame test_%s", name));
                 cmdSystem.BufferCommandText(CMD_EXEC_NOW, va("loadGame test_%s", name));
-            } catch (final idException ex) {
+            } catch (idException ex) {
                 // an ERR_DROP was thrown
             }
             cmdSystem.BufferCommandText(CMD_EXEC_NOW, "quit");
         }
-    }
+    };
 
     /*
      ================
@@ -1255,14 +1255,14 @@ public class TypeInfo {
         @Override
         public void run(idCmdArgs args) {
             int i, j;
-            final idList<Integer> index = new idList<>();
+            idList<Integer> index = new idList<>();
 
             common.Printf("%-32s : %-32s size (B)\n", "type name", "super type name");
             for (i = 0; classTypeInfo[i].typeName != null; i++) {
                 index.Append(i);
             }
 
-            if ((args.Argc() > 1) && (idStr.Icmp(args.Argv(1), "size") == 0)) {
+            if (args.Argc() > 1 && idStr.Icmp(args.Argv(1), "size") == 0) {
                 index.Sort(new SortTypeInfoBySize());
             } else {
                 index.Sort(new SortTypeInfoByName());
@@ -1280,7 +1280,7 @@ public class TypeInfo {
             public int compare(final Integer a, final Integer b) {
                 return idStr.Icmp(classTypeInfo[a].typeName, classTypeInfo[b].typeName);
             }
-        }
+        };
 
         private static class SortTypeInfoBySize implements cmp_t<Integer> {
 
@@ -1294,9 +1294,9 @@ public class TypeInfo {
                 }
                 return 0;
             }
-        }
+        };
 
-    }
+    };
 
     /*
      ================

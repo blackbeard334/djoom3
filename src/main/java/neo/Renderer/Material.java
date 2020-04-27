@@ -155,14 +155,13 @@ import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGESCAPECHARS;
 import static neo.idlib.Text.Token.TT_NUMBER;
 import static neo.idlib.precompiled.MAX_EXPRESSION_OPS;
 import static neo.idlib.precompiled.MAX_EXPRESSION_REGISTERS;
-import static neo.open.gl.QGLConstantsIfc.GL_FRAGMENT_PROGRAM_ARB;
-import static neo.open.gl.QGLConstantsIfc.GL_VERTEX_PROGRAM_ARB;
 import static neo.ui.UserInterface.uiManager;
+import static org.lwjgl.opengl.ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB;
+import static org.lwjgl.opengl.ARBVertexProgram.GL_VERTEX_PROGRAM_ARB;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import neo.TempDump;
 import neo.TempDump.CPP_class;
 import neo.TempDump.CPP_class.Bool;
 import neo.TempDump.CPP_class.Pointer;
@@ -170,7 +169,6 @@ import neo.Renderer.Cinematic.idCinematic;
 import neo.Renderer.Cinematic.idSndWindow;
 import neo.Renderer.Image.cubeFiles_t;
 import neo.Renderer.Image.idImage;
-import neo.Renderer.Image.idImageManager;
 import neo.Renderer.Image.textureDepth_t;
 import neo.Renderer.MegaTexture.idMegaTexture;
 import neo.Renderer.tr_local.viewDef_s;
@@ -181,7 +179,6 @@ import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
-import neo.open.Nio;
 import neo.ui.UserInterface.idUserInterface;
 
 /*
@@ -199,7 +196,7 @@ public class Material {
         TF_LINEAR,
         TF_NEAREST,
         TF_DEFAULT			// use the user-specified r_textureFilter
-    }
+    };
 
     enum textureRepeat_t {
 
@@ -210,7 +207,7 @@ public class Material {
         TR_CLAMP_TO_ZERO, // guarantee 0,0,0,255 edge for projected textures, set AFTER image format selection
         //        
         TR_CLAMP_TO_ZERO_ALPHA	// guarantee 0 alpha edge for projected textures, set AFTER image format selection
-    }
+    };
 
     static class decalInfo_t {
 
@@ -224,7 +221,7 @@ public class Material {
         int fadeTime;                           // msec to fade vertex colors over
         final float[] start = new float[4];	// vertex color at spawn (possibly out of 0.0 - 1.0 range, will clamp after calc)
         final float[] end = new float[4];	// vertex color at fade-out (possibly out of 0.0 - 1.0 range, will clamp after calc)
-    }
+    };
 
     enum deform_t {
 
@@ -238,7 +235,7 @@ public class Material {
         DFRM_PARTICLE,
         DFRM_PARTICLE2,
         DFRM_TURB
-    }
+    };
 
     enum dynamicidImage_t {
 
@@ -248,7 +245,7 @@ public class Material {
         DI_MIRROR_RENDER,
         DI_XRAY_RENDER,
         DI_REMOTE_RENDER
-    }
+    };
 
 // note: keep opNames[] in sync with changes
     enum expOpType_t {
@@ -268,7 +265,7 @@ public class Material {
         OP_TYPE_AND,
         OP_TYPE_OR,
         OP_TYPE_SOUND
-    }
+    };
 
     @Deprecated
     static final String opNames[] = {
@@ -315,7 +312,7 @@ public class Material {
         EXP_REG_GLOBAL7,
         //
         EXP_REG_NUM_PREDEFINED
-    }
+    };
 
     static class expOp_t {
 
@@ -335,7 +332,7 @@ public class Material {
             this.b = op.b;
             this.c = op.c;
         }
-    }
+    };
 
     static class colorStage_t {
 
@@ -347,9 +344,9 @@ public class Material {
         }
 
         private colorStage_t(colorStage_t color) {
-            Nio.arraycopy(color.registers, 0, this.registers, 0, this.registers.length);
+            System.arraycopy(color.registers, 0, this.registers, 0, this.registers.length);
         }
-    }
+    };
 
     enum texgen_t {
 
@@ -361,7 +358,7 @@ public class Material {
         TG_SCREEN, // screen aligned, for mirrorRenders and screen space temporaries
         TG_SCREEN2,
         TG_GLASSWARP
-    }
+    };
 
     public static class textureStage_t {
 
@@ -397,14 +394,14 @@ public class Material {
             this.image[0] = texture.image[0];//pointer
             this.texgen = texture.texgen;
             this.hasMatrix = texture.hasMatrix;
-            Nio.arraycopy(texture.matrix[0], 0, this.matrix[0], 0, this.matrix[0].length);
-            Nio.arraycopy(texture.matrix[1], 0, this.matrix[1], 0, this.matrix[1].length);
+            System.arraycopy(texture.matrix[0], 0, this.matrix[0], 0, this.matrix[0].length);
+            System.arraycopy(texture.matrix[1], 0, this.matrix[1], 0, this.matrix[1].length);
             this.dynamic = texture.dynamic;
             this.width = texture.width;
             this.height = texture.height;
             this.dynamicFrameCount = texture.dynamicFrameCount;
         }
-    }
+    };
 
 // the order BUMP / DIFFUSE / SPECULAR is necessary for interactions to draw correctly on low end cards
     enum stageLighting_t {
@@ -413,7 +410,7 @@ public class Material {
         SL_BUMP,
         SL_DIFFUSE,
         SL_SPECULAR
-    }
+    };
 
 // cross-blended terrain textures need to modulate the color by
 // the vertex color to smoothly blend between two textures
@@ -422,7 +419,7 @@ public class Material {
         SVC_IGNORE,
         SVC_MODULATE,
         SVC_INVERSE_MODULATE
-    }
+    };
     static final int MAX_FRAGMENT_IMAGES = 8;
     static final int MAX_VERTEX_PARMS = 4;
 
@@ -444,7 +441,7 @@ public class Material {
         int numFragmentProgramImages;
         idImage[] fragmentProgramImages = new idImage[MAX_FRAGMENT_IMAGES];
         idMegaTexture megaTexture;      // handles all the binding and parameter setting
-    }
+    };
 
     public static class shaderStage_t {
 
@@ -505,7 +502,7 @@ public class Material {
             this.newStage = shader.newStage;//pointer
         }
 
-    }
+    };
 
     public enum materialCoverage_t {
 
@@ -513,7 +510,7 @@ public class Material {
         MC_OPAQUE, // completely fills the triangle, will have black drawn on fillDepthBuffer
         MC_PERFORATED, // may have alpha tested holes
         MC_TRANSLUCENT  	// blended with background
-    }
+    };
     //typedef enum {
     static final        int SS_SUBVIEW        = -3;             // mirrors, viewscreens, etc
     public static final int SS_GUI            = -2;             // guis
@@ -539,7 +536,7 @@ public class Material {
         CT_FRONT_SIDED,
         CT_BACK_SIDED,
         CT_TWO_SIDED
-    }
+    };
     // these don't effect per-material storage, so they can be very large
     static final        int MAX_SHADER_STAGES           = 256;
     //
@@ -608,7 +605,7 @@ public class Material {
         SURFTYPE_13,
         SURFTYPE_14,
         SURFTYPE_15
-    }
+    };
     //
     // surface flags
 // typedef enum {
@@ -650,24 +647,19 @@ public class Material {
 
         mtrParsingData_s() {
 
-            for (int s = 0; s < this.shaderOps.length; s++) {
-                this.shaderOps[s] = new expOp_t();
+            for (int s = 0; s < shaderOps.length; s++) {
+                shaderOps[s] = new expOp_t();
             }
 
-            for (int p = 0; p < this.parseStages.length; p++) {
-                this.parseStages[p] = new shaderStage_t();
+            for (int p = 0; p < parseStages.length; p++) {
+                parseStages[p] = new shaderStage_t();
             }
         }
-    }
+    };
 
     public static class idMaterial extends neo.framework.DeclManager.idDecl implements neo.TempDump.SERiAL {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public static final transient int SIZE
+        public static final transient int SIZE
                 = idStr.SIZE
                 + idStr.SIZE
                 + Pointer.SIZE //idImage.SIZE //pointer
@@ -777,13 +769,13 @@ public class Material {
         public int DBG_BALLS = 0;
 
         public idMaterial() {
-            this.dbg_count = debug_creation_counter++;
+            dbg_count = debug_creation_counter++;
             this.decalInfo = new decalInfo_t();
             CommonInit();
 
             // we put this here instead of in CommonInit, because
             // we don't want it cleared when a material is purged
-            this.surfaceArea = 0;
+            surfaceArea = 0;
         }
 //	virtual				~idMaterial();
 
@@ -840,8 +832,8 @@ public class Material {
         @Override
         public boolean SetDefaultText() {
             // if there exists an image with the same name
-            if (!TempDump.isDeadCodeTrue()) { //fileSystem->ReadFile( GetName(), NULL ) != -1 ) {
-                final StringBuilder generated = new StringBuilder(2048);
+            if (true) { //fileSystem->ReadFile( GetName(), NULL ) != -1 ) {
+                StringBuilder generated = new StringBuilder(2048);
                 idStr.snPrintf(generated, generated.capacity(),
                         "material %s // IMPLICITLY GENERATED\n"
                                 + "{\n"
@@ -879,9 +871,9 @@ public class Material {
 
         @Override
         public boolean Parse(final String text, final int textLength) {DEBUG_Parse++;
-            final idLexer src = new idLexer();
+            idLexer src = new idLexer();
 //	idToken	token;
-            final mtrParsingData_s parsingData = new mtrParsingData_s();
+            mtrParsingData_s parsingData = new mtrParsingData_s();
 
             src.LoadMemory(text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(DECL_LEXER_FLAGS);
@@ -891,7 +883,7 @@ public class Material {
             CommonInit();
 
 //	memset( &parsingData, 0, sizeof( parsingData ) );
-            this.pd = parsingData;    // this is only valid during parse
+            pd = parsingData;    // this is only valid during parse
 
             // parse it
             ParseMaterial(src);
@@ -903,93 +895,93 @@ public class Material {
 
             //
             // count non-lit stages
-            this.numAmbientStages = 0;
+            numAmbientStages = 0;
             int i;
-            for (i = 0; i < this.numStages; i++) {
-                if (this.pd.parseStages[i].lighting == SL_AMBIENT) {
-                    this.numAmbientStages++;
+            for (i = 0; i < numStages; i++) {
+                if (pd.parseStages[i].lighting == SL_AMBIENT) {
+                    numAmbientStages++;
                 }
             }
 
             // see if there is a subview stage
-            if (this.sort == SS_SUBVIEW) {
-                this.hasSubview = true;
+            if (sort == SS_SUBVIEW) {
+                hasSubview = true;
             } else {
-                this.hasSubview = false;
-                for (i = 0; i < this.numStages; i++) {
-                    if (etoi(this.pd.parseStages[i].texture.dynamic) != 0) {
-                        this.hasSubview = true;
+                hasSubview = false;
+                for (i = 0; i < numStages; i++) {
+                    if (etoi(pd.parseStages[i].texture.dynamic) != 0) {
+                        hasSubview = true;
                     }
                 }
             }
 
             // automatically determine coverage if not explicitly set
-            if (this.coverage == MC_BAD) {
+            if (coverage == MC_BAD) {
                 // automatically set MC_TRANSLUCENT if we don't have any interaction stages and 
                 // the first stage is blended and not an alpha test mask or a subview
-                if (0 == this.numStages) {
+                if (0 == numStages) {
                     // non-visible
-                    this.coverage = MC_TRANSLUCENT;
-                } else if (this.numStages != this.numAmbientStages) {
+                    coverage = MC_TRANSLUCENT;
+                } else if (numStages != numAmbientStages) {
                     // we have an interaction draw
-                    this.coverage = MC_OPAQUE;
-                } else if (((this.pd.parseStages[0].drawStateBits & GLS_DSTBLEND_BITS) != GLS_DSTBLEND_ZERO)
-                        || ((this.pd.parseStages[0].drawStateBits & GLS_SRCBLEND_BITS) == GLS_SRCBLEND_DST_COLOR)
-                        || ((this.pd.parseStages[0].drawStateBits & GLS_SRCBLEND_BITS) == GLS_SRCBLEND_ONE_MINUS_DST_COLOR)
-                        || ((this.pd.parseStages[0].drawStateBits & GLS_SRCBLEND_BITS) == GLS_SRCBLEND_DST_ALPHA)
-                        || ((this.pd.parseStages[0].drawStateBits & GLS_SRCBLEND_BITS) == GLS_SRCBLEND_ONE_MINUS_DST_ALPHA)) {
+                    coverage = MC_OPAQUE;
+                } else if ((pd.parseStages[0].drawStateBits & GLS_DSTBLEND_BITS) != GLS_DSTBLEND_ZERO
+                        || (pd.parseStages[0].drawStateBits & GLS_SRCBLEND_BITS) == GLS_SRCBLEND_DST_COLOR
+                        || (pd.parseStages[0].drawStateBits & GLS_SRCBLEND_BITS) == GLS_SRCBLEND_ONE_MINUS_DST_COLOR
+                        || (pd.parseStages[0].drawStateBits & GLS_SRCBLEND_BITS) == GLS_SRCBLEND_DST_ALPHA
+                        || (pd.parseStages[0].drawStateBits & GLS_SRCBLEND_BITS) == GLS_SRCBLEND_ONE_MINUS_DST_ALPHA) {
                     // blended with the destination
-                    this.coverage = MC_TRANSLUCENT;
+                    coverage = MC_TRANSLUCENT;
                 } else {
-                    this.coverage = MC_OPAQUE;
+                    coverage = MC_OPAQUE;
                 }
             }
 
             // translucent automatically implies noshadows
-            if (this.coverage == MC_TRANSLUCENT) {
+            if (coverage == MC_TRANSLUCENT) {
                 SetMaterialFlag(MF_NOSHADOWS);
             } else {
                 // mark the contents as opaque
-                this.contentFlags |= CONTENTS_OPAQUE;
+                contentFlags |= CONTENTS_OPAQUE;
             }
 
             // if we are translucent, draw with an alpha in the editor
-            if (this.coverage == MC_TRANSLUCENT) {
-                this.editorAlpha = 0.5f;
+            if (coverage == MC_TRANSLUCENT) {
+                editorAlpha = 0.5f;
             } else {
-                this.editorAlpha = 1.0f;
+                editorAlpha = 1.0f;
             }
 
             // the sorts can make reasonable defaults
-            if (this.sort == SS_BAD) {
+            if (sort == SS_BAD) {
                 if (TestMaterialFlag(MF_POLYGONOFFSET)) {
-                    this.sort = SS_DECAL;
-                } else if (this.coverage == MC_TRANSLUCENT) {
-                    this.sort = SS_MEDIUM;
+                    sort = SS_DECAL;
+                } else if (coverage == MC_TRANSLUCENT) {
+                    sort = SS_MEDIUM;
                 } else {
-                    this.sort = SS_OPAQUE;
+                    sort = SS_OPAQUE;
                 }
             }
 
             // anything that references _currentRender will automatically get sort = SS_POST_PROCESS
             // and coverage = MC_TRANSLUCENT
-            for (i = 0; i < this.numStages; i++) {
-                final shaderStage_t pStage = this.pd.parseStages[i];
+            for (i = 0; i < numStages; i++) {
+                shaderStage_t pStage = pd.parseStages[i];
                 if (pStage.texture.image[0] == globalImages.currentRenderImage) {
-                    if (this.sort != SS_PORTAL_SKY) {
-                        this.sort = SS_POST_PROCESS;
-                        this.coverage = MC_TRANSLUCENT;
+                    if (sort != SS_PORTAL_SKY) {
+                        sort = SS_POST_PROCESS;
+                        coverage = MC_TRANSLUCENT;
                     }
                     break;
                 }
                 if (pStage.newStage != null) {
                     for (int j = 0; j < pStage.newStage.numFragmentProgramImages; j++) {
                         if (pStage.newStage.fragmentProgramImages[j] == globalImages.currentRenderImage) {
-                            if (this.sort != SS_PORTAL_SKY) {
-                                this.sort = SS_POST_PROCESS;
-                                this.coverage = MC_TRANSLUCENT;
+                            if (sort != SS_PORTAL_SKY) {
+                                sort = SS_POST_PROCESS;
+                                coverage = MC_TRANSLUCENT;
                             }
-                            i = this.numStages;
+                            i = numStages;
                             break;
                         }
                     }
@@ -997,13 +989,13 @@ public class Material {
             }
 
             // set the drawStateBits depth flags
-            for (i = 0; i < this.numStages; i++) {
-                final shaderStage_t pStage = this.pd.parseStages[i];
-                if (this.sort == SS_POST_PROCESS) {
+            for (i = 0; i < numStages; i++) {
+                shaderStage_t pStage = pd.parseStages[i];
+                if (sort == SS_POST_PROCESS) {
                     // post-process effects fill the depth buffer as they draw, so only the
                     // topmost post-process effect is rendered
                     pStage.drawStateBits |= GLS_DEPTHFUNC_LESS;
-                } else if ((this.coverage == MC_TRANSLUCENT) || pStage.ignoreAlphaTest) {
+                } else if (coverage == MC_TRANSLUCENT || pStage.ignoreAlphaTest) {
                     // translucent surfaces can extend past the exactly marked depth buffer
                     pStage.drawStateBits |= GLS_DEPTHFUNC_LESS | GLS_DEPTHMASK;
                 } else {
@@ -1014,18 +1006,18 @@ public class Material {
             }
 
             // determine if this surface will accept overlays / decals
-            if (this.pd.forceOverlays) {
+            if (pd.forceOverlays) {
                 // explicitly flaged in material definition
-                this.allowOverlays = true;
+                allowOverlays = true;
             } else {
                 if (!IsDrawn()) {
-                    this.allowOverlays = false;
+                    allowOverlays = false;
                 }
                 if (Coverage() != MC_OPAQUE) {
-                    this.allowOverlays = false;
+                    allowOverlays = false;
                 }
                 if ((GetSurfaceFlags() & SURF_NOIMPACT) != 0) {
-                    this.allowOverlays = false;
+                    allowOverlays = false;
                 }
             }
 
@@ -1044,35 +1036,35 @@ public class Material {
              sort += hash * 0.01;
              }
              */
-            if (this.numStages != 0) {
-                this.stages = new shaderStage_t[this.numStages];// R_StaticAlloc(numStages* sizeof( stages[0] )
+            if (numStages != 0) {
+                stages = new shaderStage_t[numStages];// R_StaticAlloc(numStages* sizeof( stages[0] )
 //		memcpy( stages, pd.parseStages, numStages * sizeof( stages[0] ) );
                 DEBUG_Parse++;
 //                System.out.printf("%d-->%s\n", DEBUG_Parse, text);
-                for (int a = 0; a < this.numStages; a++) {
-                    this.stages[a] = new shaderStage_t(this.pd.parseStages[a]);
+                for (int a = 0; a < numStages; a++) {
+                    stages[a] = new shaderStage_t(pd.parseStages[a]);
                 }
             }
 
-            if (this.numOps != 0) {
-                this.ops = new expOp_t[this.numOps];// R_StaticAlloc(numOps * sizeof( ops[0] )
+            if (numOps != 0) {
+                ops = new expOp_t[numOps];// R_StaticAlloc(numOps * sizeof( ops[0] )
 //		memcpy( ops, pd.shaderOps, numOps * sizeof( ops[0] ) );
-                for (int a = 0; a < this.ops.length; a++) {
-                    this.ops[a] = new expOp_t(this.pd.shaderOps[a]);
+                for (int a = 0; a < ops.length; a++) {
+                    ops[a] = new expOp_t(pd.shaderOps[a]);
                 }
             }
 
-            if (this.numRegisters != 0) {
-                this.expressionRegisters = new float[this.numRegisters];//R_StaticAlloc(numRegisters *sizeof( expressionRegisters[0] )
+            if (numRegisters != 0) {
+                expressionRegisters = new float[numRegisters];//R_StaticAlloc(numRegisters *sizeof( expressionRegisters[0] )
 //		memcpy( expressionRegisters, pd.shaderRegisters, numRegisters * sizeof( expressionRegisters[0] ) );
-                Nio.arraycopy(this.pd.shaderRegisters, 0, this.expressionRegisters, 0, this.numRegisters);
+                System.arraycopy(pd.shaderRegisters, 0, expressionRegisters, 0, numRegisters);
             }
 
             // see if the registers are completely constant, and don't need to be evaluated
             // per-surface
             CheckForConstantRegisters();
 
-            this.pd = null;    // the pointer will be invalid after exiting this function
+            pd = null;    // the pointer will be invalid after exiting this function
 
             // finish things up
             if (TestMaterialFlag(MF_DEFAULTED)) {
@@ -1086,32 +1078,32 @@ public class Material {
         public void FreeData() {
             int i;
 
-            if (this.stages != null) {
+            if (stages != null) {
                 // delete any idCinematic textures
-                for (i = 0; i < this.numStages; i++) {//TODO:for loop is unnecessary
-                    if (this.stages[i].texture.cinematic[0] != null) {
+                for (i = 0; i < numStages; i++) {//TODO:for loop is unnecessary
+                    if (stages[i].texture.cinematic[0] != null) {
 //				delete stages[i].texture.cinematic;
-                        this.stages[i].texture.cinematic[0] = null;
+                        stages[i].texture.cinematic[0] = null;
                     }
-                    if (this.stages[i].newStage != null) {
-                        this.stages[i].newStage = null;
-                        this.stages[i].newStage = null;
+                    if (stages[i].newStage != null) {
+                        stages[i].newStage = null;
+                        stages[i].newStage = null;
                     }
                 }
 //                R_StaticFree(stages);
-                this.stages = null;
+                stages = null;
             }
-            if (this.expressionRegisters != null) {
+            if (expressionRegisters != null) {
 //                R_StaticFree(expressionRegisters);
-                this.expressionRegisters = null;
+                expressionRegisters = null;
             }
-            if (this.constantRegisters != null) {
+            if (constantRegisters != null) {
 //                R_StaticFree(constantRegisters);
-                this.constantRegisters = null;
+                constantRegisters = null;
             }
-            if (this.ops != null) {
+            if (ops != null) {
 //                R_StaticFree(ops);
-                this.ops = null;
+                ops = null;
             }
         }
 
@@ -1120,11 +1112,11 @@ public class Material {
             int i;
 
             for (i = EXP_REG_NUM_PREDEFINED.ordinal(); i < GetNumRegisters(); i++) {
-                common.Printf("register %d: %f\n", i, this.expressionRegisters[i]);
+                common.Printf("register %d: %f\n", i, expressionRegisters[i]);
             }
             common.Printf("\n");
-            for (i = 0; i < this.numOps; i++) {
-                final expOp_t op = this.ops[i];
+            for (i = 0; i < numOps; i++) {
+                final expOp_t op = ops[i];
                 if (op.opType == OP_TYPE_TABLE) {
                     common.Printf("%d = %s[ %d ]\n", op.c, declManager.DeclByIndex(DECL_TABLE, op.a).GetName(), op.b);
                 } else {
@@ -1146,47 +1138,47 @@ public class Material {
         // for the renderer CaptureRenderToImage() call
         // I'm not really sure why this needs to be virtual...
         public String ImageName() {
-            if (this.numStages == 0) {
+            if (numStages == 0) {
                 return "_scratch";
             }
-            final idImage image = this.stages[0].texture.image[0];
+            idImage image = stages[0].texture.image[0];
             if (image != null) {
-                return image.imgName.getData();
+                return image.imgName.toString();
             }
             return "_scratch";
         }
 
         public void ReloadImages(boolean force) {
-            for (int i = 0; i < this.numStages; i++) {
-                if (this.stages[i].newStage != null) {
-                    for (int j = 0; j < this.stages[i].newStage.numFragmentProgramImages; j++) {
-                        if (this.stages[i].newStage.fragmentProgramImages[j] != null) {
-                            this.stages[i].newStage.fragmentProgramImages[j].Reload(false, force);
+            for (int i = 0; i < numStages; i++) {
+                if (stages[i].newStage != null) {
+                    for (int j = 0; j < stages[i].newStage.numFragmentProgramImages; j++) {
+                        if (stages[i].newStage.fragmentProgramImages[j] != null) {
+                            stages[i].newStage.fragmentProgramImages[j].Reload(false, force);
                         }
                     }
-                } else if (this.stages[i].texture.image != null) {
-                    this.stages[i].texture.image[0].Reload(false, force);
+                } else if (stages[i].texture.image != null) {
+                    stages[i].texture.image[0].Reload(false, force);
                 }
             }
         }
 
         // returns number of stages this material contains
         public int GetNumStages() {
-            return this.numStages;
+            return numStages;
         }
 
         // get a specific stage
         public shaderStage_t GetStage(final int index) {
-            assert ((index >= 0) && (index < this.numStages));
-            return this.stages[index];
+            assert (index >= 0 && index < numStages);
+            return stages[index];
         }
 
         // get the first bump map stage, or NULL if not present.
         // used for bumpy-specular
         public shaderStage_t GetBumpStage() {
-            for (int i = 0; i < this.numStages; i++) {
-                if (this.stages[i].lighting == SL_BUMP) {
-                    return this.stages[i];
+            for (int i = 0; i < numStages; i++) {
+                if (stages[i].lighting == SL_BUMP) {
+                    return stages[i];
                 }
             }
             return null;
@@ -1197,23 +1189,23 @@ public class Material {
         // which can be used to make a simplified shadow hull for a complex object set
         // as noShadow
         public boolean IsDrawn() {
-            return ((this.numStages > 0) || (this.entityGui != 0) || (this.gui != null));
+            return (numStages > 0 || entityGui != 0 || gui != null);
         }
 
         // returns true if the material will draw any non light interaction stages
         public boolean HasAmbient() {
-            return (this.numAmbientStages > 0);
+            return (numAmbientStages > 0);
         }
 
         // returns true if material has a gui
         public boolean HasGui() {
-            return ((this.entityGui != 0) || (this.gui != null));
+            return (entityGui != 0 || gui != null);
         }
 
         // returns true if the material will generate another view, either as
         // a mirror or dynamic rendered image
         public boolean HasSubview() {
-            return this.hasSubview;
+            return hasSubview;
         }
 
         // returns true if the material will generate shadows, not making a
@@ -1225,20 +1217,20 @@ public class Material {
         // returns true if the material will generate interactions with fog/blend lights
         // All non-translucent surfaces receive fog unless they are explicitly noFog
         public boolean ReceivesFog() {
-            return (IsDrawn() && !this.noFog && (this.coverage != MC_TRANSLUCENT));
+            return (IsDrawn() && !noFog && coverage != MC_TRANSLUCENT);
         }
 
         // returns true if the material will generate interactions with normal lights
         // Many special effect surfaces don't have any bump/diffuse/specular
         // stages, and don't interact with lights at all
         public boolean ReceivesLighting() {
-            return this.numAmbientStages != this.numStages;
+            return numAmbientStages != numStages;
         }
 
         // returns true if the material should generate interactions on sides facing away
         // from light centers, as with noshadow and noselfshadow options
         public boolean ReceivesLightingOnBackSides() {
-            return (this.materialFlags & (MF_NOSELFSHADOW | MF_NOSHADOWS)) != 0;
+            return (materialFlags & (MF_NOSELFSHADOW | MF_NOSHADOWS)) != 0;
         }
 
         // Standard two-sided triangle rendering won't work with bump map lighting, because
@@ -1247,21 +1239,21 @@ public class Material {
         // addressed by having CleanupModelSurfaces() create duplicates of all the triangles
         // with apropriate order reversal.
         public boolean ShouldCreateBackSides() {
-            return this.shouldCreateBackSides;
+            return shouldCreateBackSides;
         }
 
         // characters and models that are created by a complete renderbump can use a faster
         // method of tangent and normal vector generation than surfaces which have a flat
         // renderbump wrapped over them.
         public boolean UseUnsmoothedTangents() {
-            return this.unsmoothedTangents;
+            return unsmoothedTangents;
         }
 
         // by default, monsters can have blood overlays placed on them, but this can
         // be overrided on a per-material basis with the "noOverlays" material command.
         // This will always return false for translucent surfaces
         public boolean AllowOverlays() {
-            return this.allowOverlays;
+            return allowOverlays;
         }
 
         // MC_OPAQUE, MC_PERFORATED, or MC_TRANSLUCENT, for interaction list linking and
@@ -1269,7 +1261,7 @@ public class Material {
         // The depth buffer will not be filled for MC_TRANSLUCENT surfaces
         // FIXME: what do nodraw surfaces return?
         public materialCoverage_t Coverage() {
-            return this.coverage;
+            return coverage;
         }
 
         // returns true if this material takes precedence over other in coplanar cases
@@ -1280,7 +1272,7 @@ public class Material {
 
         // returns a idUserInterface if it has a global gui, or NULL if no gui
         public idUserInterface GlobalGui() {
-            return this.gui;
+            return gui;
         }
 
         // a discrete surface will never be merged with other surfaces by dmap, which is
@@ -1288,8 +1280,8 @@ public class Material {
         // special effects from being combined into a single surface
         // guis, merging sprites or other effects, mirrors and remote views are always discrete
         public boolean IsDiscrete() {
-            return ((this.entityGui != 0) || (this.gui != null) || (this.deform != DFRM_NONE) || (this.sort == SS_SUBVIEW)
-                    || ((this.surfaceFlags & SURF_DISCRETE) != 0));
+            return (entityGui != 0 || gui != null || deform != DFRM_NONE || sort == SS_SUBVIEW
+                    || (surfaceFlags & SURF_DISCRETE) != 0);
         }
 
         // Normally, dmap chops each surface by every BSP boundary, then reoptimizes.
@@ -1301,31 +1293,31 @@ public class Material {
         // should manually make the edges of your sky box exactly meet, instead of poking
         // into each other.
         public boolean NoFragment() {
-            return (this.surfaceFlags & SURF_NOFRAGMENT) != 0;
+            return (surfaceFlags & SURF_NOFRAGMENT) != 0;
         }
 
         //------------------------------------------------------------------
         // light shader specific functions, only called for light entities
         // lightshader option to fill with fog from viewer instead of light from center
         public boolean IsFogLight() {
-            return this.fogLight;
+            return fogLight;
         }
 
         // perform simple blending of the projection, instead of interacting with bumps and textures
         public boolean IsBlendLight() {
-            return this.blendLight;
+            return blendLight;
         }
 
         // an ambient light has non-directional bump mapping and no specular
         public boolean IsAmbientLight() {
-            return this.ambientLight;
+            return ambientLight;
         }
 
         // implicitly no-shadows lights (ambients, fogs, etc) will never cast shadows
         // but individual light entities can also override this value
         public boolean LightCastsShadows() {
             return TestMaterialFlag(MF_FORCESHADOWS)
-                    || (!this.fogLight && !this.ambientLight && !this.blendLight && !TestMaterialFlag(MF_NOSHADOWS));
+                    || (!fogLight && !ambientLight && !blendLight && !TestMaterialFlag(MF_NOSHADOWS));
         }
 
         // fog lights, blend lights, ambient lights, etc will all have to have interaction
@@ -1335,88 +1327,88 @@ public class Material {
         // potentially slower than normal lights, which detracts from their optimization
         // ability, so they currently do not.
         public boolean LightEffectsBackSides() {
-            return this.fogLight || this.ambientLight || this.blendLight;
+            return fogLight || ambientLight || blendLight;
         }
 
         // NULL unless an image is explicitly specified in the shader with "lightFalloffShader <image>"
         public idImage LightFalloffImage() {
-            return this.lightFalloffImage;
+            return lightFalloffImage;
         }
 
         //------------------------------------------------------------------
         // returns the renderbump command line for this shader, or an empty string if not present
         public String GetRenderBump() {
-            return this.renderBump.getData();
+            return renderBump.toString();
         }
 
         // set specific material flag(s)
         public void SetMaterialFlag(final int flag) {
-            this.materialFlags |= flag;
+            materialFlags |= flag;
         }
 
         // clear specific material flag(s)
         public void ClearMaterialFlag(final int flag) {
-            this.materialFlags &= ~flag;
+            materialFlags &= ~flag;
         }
 
         // test for existance of specific material flag(s)
         public boolean TestMaterialFlag(final int flag) {
-            return (this.materialFlags & flag) != 0;
+            return (materialFlags & flag) != 0;
         }
 
         // get content flags
         public int GetContentFlags() {
-            return this.contentFlags;
+            return contentFlags;
         }
 
         // get surface flags
         public int GetSurfaceFlags() {
-            return this.surfaceFlags;
+            return surfaceFlags;
         }
 
         // gets name for surface type (stone, metal, flesh, etc.)
         public surfTypes_t GetSurfaceType() {
-            return surfTypes_t.values()[this.surfaceFlags & SURF_TYPE_MASK];
+            return surfTypes_t.values()[surfaceFlags & SURF_TYPE_MASK];
         }
 
         // get material description
         public String GetDescription() {
-            return this.desc.getData();
+            return desc.toString();
         }
 
         // get sort order
         public float GetSort() {
-            return this.sort;
+            return sort;
         }
 
         // this is only used by the gui system to force sorting order
         // on images referenced from tga's instead of materials. 
         // this is done this way as there are 2000 tgas the guis use
         public void SetSort(float s) {
-            this.sort = s;
+            sort = s;
         }
 
         // DFRM_NONE, DFRM_SPRITE, etc
         public deform_t Deform() {
-            return this.deform;
+            return deform;
         }
 
         // flare size, expansion size, etc
         public int GetDeformRegister(int index) {
-            return this.deformRegisters[index];
+            return deformRegisters[index];
         }
 
         // particle system to emit from surface and table for turbulent
         public idDecl GetDeformDecl() {
-            return this.deformDecl;
+            return deformDecl;
         }
 
         // currently a surface can only have one unique texgen for all the stages
         public texgen_t Texgen() {
-            if (this.stages != null) {
-                for (int i = 0; i < this.numStages; i++) {
-                    if (this.stages[i].texture.texgen != TG_EXPLICIT) {
-                        return this.stages[i].texture.texgen;
+            if (stages != null) {
+                for (int i = 0; i < numStages; i++) {
+                    if (stages[i].texture.texgen != TG_EXPLICIT) {
+                        return stages[i].texture.texgen;
                     }
                 }
             }
@@ -1426,77 +1418,77 @@ public class Material {
 
         // wobble sky parms
         public int[] GetTexGenRegisters() {
-            return this.texGenRegisters;
+            return texGenRegisters;
         }
 
         // get cull type
         public cullType_t GetCullType() {
-            return this.cullType;
+            return cullType;
         }
 
         public float GetEditorAlpha() {
-            return this.editorAlpha;
+            return editorAlpha;
         }
 
         public int GetEntityGui() {
-            return this.entityGui;
+            return entityGui;
         }
 
         public decalInfo_t GetDecalInfo() {
-            return this.decalInfo;
+            return decalInfo;
         }
 
         // spectrums are used for "invisible writing" that can only be
         // illuminated by a light of matching spectrum
         public int Spectrum() {
-            return this.spectrum;
+            return spectrum;
         }
 
         public float GetPolygonOffset() {
-            return this.polygonOffset;
+            return polygonOffset;
         }
 
         public float GetSurfaceArea() {
-            return this.surfaceArea;
+            return surfaceArea;
         }
 
         public void AddToSurfaceArea(float area) {
-            this.surfaceArea += area;
+            surfaceArea += area;
         }
 
         //------------------------------------------------------------------
         // returns the length, in milliseconds, of the videoMap on this material,
         // or zero if it doesn't have one
         public int CinematicLength() {
-            if (NOT((Object[])this.stages) || NOT(this.stages[0].texture.cinematic[0])) {
+            if (NOT(stages) || NOT(stages[0].texture.cinematic[0])) {
                 return 0;
             }
-            return this.stages[0].texture.cinematic[0].AnimationLength();
+            return stages[0].texture.cinematic[0].AnimationLength();
         }
 
         public void CloseCinematic() {
-            for (int i = 0; i < this.numStages; i++) {
-                if (this.stages[i].texture.cinematic[0] != null) {
-                    this.stages[i].texture.cinematic[0].Close();
+            for (int i = 0; i < numStages; i++) {
+                if (stages[i].texture.cinematic[0] != null) {
+                    stages[i].texture.cinematic[0].Close();
 //			delete stages[i].texture.cinematic;
-                    this.stages[i].texture.cinematic[0] = null;
+                    stages[i].texture.cinematic[0] = null;
                 }
             }
         }
 
         public void ResetCinematicTime(int time) {
-            for (int i = 0; i < this.numStages; i++) {
-                if (this.stages[i].texture.cinematic[0] != null) {
-                    this.stages[i].texture.cinematic[0].ResetTime(time);
+            for (int i = 0; i < numStages; i++) {
+                if (stages[i].texture.cinematic[0] != null) {
+                    stages[i].texture.cinematic[0].ResetTime(time);
                 }
             }
         }
 
         public void UpdateCinematic(int time) {
-            if (NOT((Object[])this.stages) || NOT(this.stages[0].texture.cinematic[0]) || NOT(backEnd.viewDef)) {
+            if (NOT(stages) || NOT(stages[0].texture.cinematic[0]) || NOT(backEnd.viewDef)) {
                 return;
             }
-            this.stages[0].texture.cinematic[0].ImageForTime(tr.primaryRenderView.time);
+            stages[0].texture.cinematic[0].ImageForTime(tr.primaryRenderView.time);
         }
 //
 //	//------------------------------------------------------------------
@@ -1504,51 +1496,51 @@ public class Material {
 
         // gets an image for the editor to use
         public idImage GetEditorImage() {
-            if (this.editorImage != null) {
-                return this.editorImage;
+            if (editorImage != null) {
+                return editorImage;
             }
 
             // if we don't have an editorImageName, use the first stage image
-            if (0 == this.editorImageName.Length()) {
+            if (0 == editorImageName.Length()) {
                 // _D3XP :: First check for a diffuse image, then use the first
-                if ((this.numStages != 0) && (this.stages != null)) {
+                if (numStages != 0 && stages != null) {
                     int i;
-                    for (i = 0; i < this.numStages; i++) {
-                        if (this.stages[i].lighting == SL_DIFFUSE) {
-                            this.editorImage = this.stages[i].texture.image[0];
+                    for (i = 0; i < numStages; i++) {
+                        if (stages[i].lighting == SL_DIFFUSE) {
+                            editorImage = stages[i].texture.image[0];
                             break;
                         }
                     }
-                    if (null == this.editorImage) {
-                        this.editorImage = this.stages[0].texture.image[0];
+                    if (null == editorImage) {
+                        editorImage = stages[0].texture.image[0];
                     }
                 } else {
-                    this.editorImage = globalImages.defaultImage;
+                    editorImage = globalImages.defaultImage;
                 }
             } else {
                 // look for an explicit one
-                this.editorImage = globalImages.ImageFromFile(this.editorImageName.getData(), TF_DEFAULT, true, TR_REPEAT, TD_DEFAULT);
+                editorImage = globalImages.ImageFromFile(editorImageName.toString(), TF_DEFAULT, true, TR_REPEAT, TD_DEFAULT);
             }
 
-            if (null == this.editorImage) {
-                this.editorImage = globalImages.defaultImage;
+            if (null == editorImage) {
+                editorImage = globalImages.defaultImage;
             }
 
-            return this.editorImage;
+            return editorImage;
         }
 
         public int GetImageWidth() {
-            assert ((GetStage(0) != null) && (GetStage(0).texture.image[0] != null));
+            assert (GetStage(0) != null && GetStage(0).texture.image[0] != null);
             return GetStage(0).texture.image[0].uploadWidth;
         }
 
         public int GetImageHeight() {
-            assert ((GetStage(0) != null) && (GetStage(0).texture.image[0] != null));
+            assert (GetStage(0) != null && GetStage(0).texture.image[0] != null);
             return GetStage(0).texture.image[0].uploadHeight;
         }
 
         public void SetGui(final String _gui) {
-            this.gui = uiManager.FindGui(_gui, true, false, true);
+            gui = uiManager.FindGui(_gui, true, false, true);
         }
 
 
@@ -1560,8 +1552,8 @@ public class Material {
          ===================
          */
         public void SetImageClassifications(int tag) {
-            for (int i = 0; i < this.numStages; i++) {
-                final idImage image = this.stages[i].texture.image[0];
+            for (int i = 0; i < numStages; i++) {
+                idImage image = stages[i].texture.image[0];
                 if (image != null) {
                     image.SetClassification(tag);
                 }
@@ -1571,7 +1563,7 @@ public class Material {
 
         // returns number of registers this material contains
         public int GetNumRegisters() {
-            return this.numRegisters;
+            return numRegisters;
         }
 
 
@@ -1591,8 +1583,8 @@ public class Material {
             /*expOp_t*/ int op;
 
             // copy the material constants
-            for (i = etoi(EXP_REG_NUM_PREDEFINED); i < this.numRegisters; i++) {
-                regs[i] = this.expressionRegisters[i];
+            for (i = etoi(EXP_REG_NUM_PREDEFINED); i < numRegisters; i++) {
+                regs[i] = expressionRegisters[i];
             }
 
             // copy the local and global parameters
@@ -1619,60 +1611,60 @@ public class Material {
             regs[etoi(EXP_REG_GLOBAL7)] = view.renderView.shaderParms[7];
 
             op = 0;// = ops;
-            for (i = 0; i < this.numOps; i++, op++) {
-                switch (this.ops[op].opType) {
+            for (i = 0; i < numOps; i++, op++) {
+                switch (ops[op].opType) {
                     case OP_TYPE_ADD:
-                        regs[this.ops[op].c] = regs[this.ops[op].a] + regs[this.ops[op].b];
+                        regs[ops[op].c] = regs[ops[op].a] + regs[ops[op].b];
                         break;
                     case OP_TYPE_SUBTRACT:
-                        regs[this.ops[op].c] = regs[this.ops[op].a] - regs[this.ops[op].b];
+                        regs[ops[op].c] = regs[ops[op].a] - regs[ops[op].b];
                         break;
                     case OP_TYPE_MULTIPLY:
-                        regs[this.ops[op].c] = regs[this.ops[op].a] * regs[this.ops[op].b];
+                        regs[ops[op].c] = regs[ops[op].a] * regs[ops[op].b];
                         break;
                     case OP_TYPE_DIVIDE:
-                        regs[this.ops[op].c] = regs[this.ops[op].a] / regs[this.ops[op].b];
+                        regs[ops[op].c] = regs[ops[op].a] / regs[ops[op].b];
                         break;
                     case OP_TYPE_MOD:
-                        b = (int) regs[this.ops[op].b];
+                        b = (int) regs[ops[op].b];
                         b = b != 0 ? b : 1;
-                        regs[this.ops[op].c] = (int) regs[this.ops[op].a] % b;
+                        regs[ops[op].c] = (int) regs[ops[op].a] % b;
                         break;
                     case OP_TYPE_TABLE: {
-                        final idDeclTable table = (idDeclTable) (declManager.DeclByIndex(DECL_TABLE, this.ops[op].a));
-                        regs[this.ops[op].c] = table.TableLookup(regs[this.ops[op].b]);
+                        final idDeclTable table = (idDeclTable) (declManager.DeclByIndex(DECL_TABLE, ops[op].a));
+                        regs[ops[op].c] = table.TableLookup(regs[ops[op].b]);
                     }
                     break;
                     case OP_TYPE_SOUND:
                         if (soundEmitter != null) {
-                            regs[this.ops[op].c] = soundEmitter.CurrentAmplitude();
+                            regs[ops[op].c] = soundEmitter.CurrentAmplitude();
                         } else {
-                            regs[this.ops[op].c] = 0;
+                            regs[ops[op].c] = 0;
                         }
                         break;
                     case OP_TYPE_GT:
-                        regs[this.ops[op].c] = regs[this.ops[op].a] > regs[this.ops[op].b] ? 1 : 0;
+                        regs[ops[op].c] = regs[ops[op].a] > regs[ops[op].b] ? 1 : 0;
                         break;
                     case OP_TYPE_GE:
-                        regs[this.ops[op].c] = regs[this.ops[op].a] >= regs[this.ops[op].b] ? 1 : 0;
+                        regs[ops[op].c] = regs[ops[op].a] >= regs[ops[op].b] ? 1 : 0;
                         break;
                     case OP_TYPE_LT:
-                        regs[this.ops[op].c] = regs[this.ops[op].a] < regs[this.ops[op].b] ? 1 : 0;
+                        regs[ops[op].c] = regs[ops[op].a] < regs[ops[op].b] ? 1 : 0;
                         break;
                     case OP_TYPE_LE:
-                        regs[this.ops[op].c] = regs[this.ops[op].a] <= regs[this.ops[op].b] ? 1 : 0;
+                        regs[ops[op].c] = regs[ops[op].a] <= regs[ops[op].b] ? 1 : 0;
                         break;
                     case OP_TYPE_EQ:
-                        regs[this.ops[op].c] = regs[this.ops[op].a] == regs[this.ops[op].b] ? 1 : 0;
+                        regs[ops[op].c] = regs[ops[op].a] == regs[ops[op].b] ? 1 : 0;
                         break;
                     case OP_TYPE_NE:
-                        regs[this.ops[op].c] = regs[this.ops[op].a] != regs[this.ops[op].b] ? 1 : 0;
+                        regs[ops[op].c] = regs[ops[op].a] != regs[ops[op].b] ? 1 : 0;
                         break;
                     case OP_TYPE_AND:
-                        regs[this.ops[op].c] = ((regs[this.ops[op].a] != 0) && (regs[this.ops[op].b] != 0)) ? 1 : 0;
+                        regs[ops[op].c] = (regs[ops[op].a] != 0 && regs[ops[op].b] != 0) ? 1 : 0;
                         break;
                     case OP_TYPE_OR:
-                        regs[this.ops[op].c] = ((regs[this.ops[op].a] != 0) || (regs[this.ops[op].b] != 0)) ? 1 : 0;
+                        regs[ops[op].c] = (regs[ops[op].a] != 0 || regs[ops[op].b] != 0) ? 1 : 0;
                         break;
                     default:
                         common.FatalError("R_EvaluateExpression: bad opcode");
@@ -1688,22 +1680,22 @@ public class Material {
             if (!RenderSystem_init.r_useConstantMaterials.GetBool()) {
                 return null;
             }
-            return this.constantRegisters;
+            return constantRegisters;
         }
 
         public boolean SuppressInSubview() {
-            return this.suppressInSubview;
+            return suppressInSubview;
         }
 
         public boolean IsPortalSky() {
-            return this.portalSky;
+            return portalSky;
         }
 
         public void AddReference() {
-            this.refCount++;
+            refCount++;
 
-            for (int i = 0; i < this.numStages; i++) {
-                final shaderStage_t s = this.stages[i];
+            for (int i = 0; i < numStages; i++) {
+                shaderStage_t s = stages[i];
 
                 if (s.texture.image[0] != null) {
                     s.texture.image[0].AddReference();
@@ -1713,54 +1705,54 @@ public class Material {
 
         // parse the entire material
         private void CommonInit() {
-            this.desc = new idStr("<none>");
-            this.renderBump = new idStr("");
-            this.contentFlags = CONTENTS_SOLID;
-            this.surfaceFlags = etoi(SURFTYPE_NONE);
-            this.materialFlags = 0;
-            this.sort = SS_BAD;
-            this.coverage = MC_BAD;
-            this.cullType = CT_FRONT_SIDED;
-            this.deform = DFRM_NONE;
-            this.numOps = 0;
-            this.ops = null;
-            this.numRegisters = 0;
-            this.expressionRegisters = null;
-            this.constantRegisters = null;
-            this.numStages = 0;
-            this.numAmbientStages = 0;
-            this.stages = null;
-            this.editorImage = null;
-            this.lightFalloffImage = null;
-            this.shouldCreateBackSides = false;
-            this.entityGui = 0;
-            this.fogLight = false;
-            this.blendLight = false;
-            this.ambientLight = false;
-            this.noFog = false;
-            this.hasSubview = false;
-            this.allowOverlays = true;
-            this.unsmoothedTangents = false;
-            this.gui = null;
+            desc = new idStr("<none>");
+            renderBump = new idStr("");
+            contentFlags = CONTENTS_SOLID;
+            surfaceFlags = etoi(SURFTYPE_NONE);
+            materialFlags = 0;
+            sort = SS_BAD;
+            coverage = MC_BAD;
+            cullType = CT_FRONT_SIDED;
+            deform = DFRM_NONE;
+            numOps = 0;
+            ops = null;
+            numRegisters = 0;
+            expressionRegisters = null;
+            constantRegisters = null;
+            numStages = 0;
+            numAmbientStages = 0;
+            stages = null;
+            editorImage = null;
+            lightFalloffImage = null;
+            shouldCreateBackSides = false;
+            entityGui = 0;
+            fogLight = false;
+            blendLight = false;
+            ambientLight = false;
+            noFog = false;
+            hasSubview = false;
+            allowOverlays = true;
+            unsmoothedTangents = false;
+            gui = null;
 //	memset( deformRegisters, 0, sizeof( deformRegisters ) );
-            Arrays.fill(this.deformRegisters, 0);
-            this.editorAlpha = 1.0f;
-            this.spectrum = 0;
-            this.polygonOffset = 0;
-            this.suppressInSubview = false;
-            this.refCount = 0;
-            this.portalSky = false;
+            Arrays.fill(deformRegisters, 0);
+            editorAlpha = 1.0f;
+            spectrum = 0;
+            polygonOffset = 0;
+            suppressInSubview = false;
+            refCount = 0;
+            portalSky = false;
 
-            this.decalInfo.stayTime = 10000;
-            this.decalInfo.fadeTime = 4000;
-            this.decalInfo.start[0] = 1;
-            this.decalInfo.start[1] = 1;
-            this.decalInfo.start[2] = 1;
-            this.decalInfo.start[3] = 1;
-            this.decalInfo.end[0] = 0;
-            this.decalInfo.end[1] = 0;
-            this.decalInfo.end[2] = 0;
-            this.decalInfo.end[3] = 0;
+            decalInfo.stayTime = 10000;
+            decalInfo.fadeTime = 4000;
+            decalInfo.start[0] = 1;
+            decalInfo.start[1] = 1;
+            decalInfo.start[2] = 1;
+            decalInfo.start[3] = 1;
+            decalInfo.end[0] = 0;
+            decalInfo.end[1] = 0;
+            decalInfo.end[2] = 0;
+            decalInfo.end[3] = 0;
         }
 
         /*
@@ -1774,22 +1766,22 @@ public class Material {
          =================
          */
         private void ParseMaterial(idLexer src) {
-            final idToken token = new idToken();
+            idToken token = new idToken();
             int s;
-            final char[] buffer = new char[1024];
+            char[] buffer = new char[1024];
             String str;
-            final idLexer newSrc = new idLexer();
+            idLexer newSrc = new idLexer();
             int i;
 
             s = 0;
 
-            this.numOps = 0;
-            this.numRegisters = EXP_REG_NUM_PREDEFINED.ordinal();// leave space for the parms to be copied in
-            for (i = 0; i < this.numRegisters; i++) {
-                this.pd.registerIsTemporary[i] = true;// they aren't constants that can be folded
+            numOps = 0;
+            numRegisters = EXP_REG_NUM_PREDEFINED.ordinal();// leave space for the parms to be copied in
+            for (i = 0; i < numRegisters; i++) {
+                pd.registerIsTemporary[i] = true;// they aren't constants that can be folded
             }
 
-            this.numStages = 0;
+            numStages = 0;
 
             textureRepeat_t trpDefault = TR_REPEAT;// allow a global setting for repeat
 
@@ -1807,13 +1799,13 @@ public class Material {
                     break;
                 } else if (0 == token.Icmp("qer_editorimage")) {
                     src.ReadTokenOnLine(token);
-                    this.editorImageName = new idStr(token.getData());
+                    editorImageName = new idStr(token.toString());
                     src.SkipRestOfLine();
                     continue;
                 } // description
                 else if (0 == token.Icmp("description")) {
                     src.ReadTokenOnLine(token);
-                    this.desc = new idStr(token.getData());
+                    desc = new idStr(token.toString());
                     continue;
                 } // check for the surface / content bit flags
                 else if (CheckSurfaceParm(token)) {
@@ -1822,21 +1814,21 @@ public class Material {
                 else if (0 == token.Icmp("polygonOffset")) {
                     SetMaterialFlag(MF_POLYGONOFFSET);
                     if (!src.ReadTokenOnLine(token)) {
-                        this.polygonOffset = 1;
+                        polygonOffset = 1;
                         continue;
                     }
                     // explict larger (or negative) offset
-                    this.polygonOffset = token.GetFloatValue();
+                    polygonOffset = token.GetFloatValue();
                     continue;
                 } // noshadow
                 else if (0 == token.Icmp("noShadows")) {
                     SetMaterialFlag(MF_NOSHADOWS);
                     continue;
                 } else if (0 == token.Icmp("suppressInSubview")) {
-                    this.suppressInSubview = true;
+                    suppressInSubview = true;
                     continue;
                 } else if (0 == token.Icmp("portalSky")) {
-                    this.portalSky = true;
+                    portalSky = true;
                     continue;
                 } // noSelfShadow
                 else if (0 == token.Icmp("noSelfShadow")) {
@@ -1852,15 +1844,15 @@ public class Material {
                     continue;
                 } // overlay / decal suppression
                 else if (0 == token.Icmp("noOverlays")) {
-                    this.allowOverlays = false;
+                    allowOverlays = false;
                     continue;
                 } // moster blood overlay forcing for alpha tested or translucent surfaces
                 else if (0 == token.Icmp("forceOverlays")) {
-                    this.pd.forceOverlays = true;
+                    pd.forceOverlays = true;
                     continue;
                 } // translucent
                 else if (0 == token.Icmp("translucent")) {
-                    this.coverage = MC_TRANSLUCENT;
+                    coverage = MC_TRANSLUCENT;
                     continue;
                 } // global zero clamp
                 else if (0 == token.Icmp("zeroclamp")) {
@@ -1876,11 +1868,11 @@ public class Material {
                     continue;
                 } // forceOpaque is used for skies-behind-windows
                 else if (0 == token.Icmp("forceOpaque")) {
-                    this.coverage = MC_OPAQUE;
+                    coverage = MC_OPAQUE;
                     continue;
                 } // twoSided
                 else if (0 == token.Icmp("twoSided")) {
-                    this.cullType = CT_TWO_SIDED;
+                    cullType = CT_TWO_SIDED;
                     // twoSided implies no-shadows, because the shadow
                     // volume would be coplanar with the surface, giving depth fighting
                     // we could make this no-self-shadows, but it may be more important
@@ -1888,34 +1880,34 @@ public class Material {
                     SetMaterialFlag(MF_NOSHADOWS);
                 } // backSided
                 else if (0 == token.Icmp("backSided")) {
-                    this.cullType = CT_BACK_SIDED;
+                    cullType = CT_BACK_SIDED;
                     // the shadow code doesn't handle this, so just disable shadows.
                     // We could fix this in the future if there was a need.
                     SetMaterialFlag(MF_NOSHADOWS);
                 } // foglight
                 else if (0 == token.Icmp("fogLight")) {
-                    this.fogLight = true;
+                    fogLight = true;
                     continue;
                 } // blendlight
                 else if (0 == token.Icmp("blendLight")) {
-                    this.blendLight = true;
+                    blendLight = true;
                     continue;
                 } // ambientLight
                 else if (0 == token.Icmp("ambientLight")) {
-                    this.ambientLight = true;
+                    ambientLight = true;
                     continue;
                 } // mirror
                 else if (0 == token.Icmp("mirror")) {
-                    this.sort = SS_SUBVIEW;
-                    this.coverage = MC_OPAQUE;
+                    sort = SS_SUBVIEW;
+                    coverage = MC_OPAQUE;
                     continue;
                 } // noFog
                 else if (0 == token.Icmp("noFog")) {
-                    this.noFog = true;
+                    noFog = true;
                     continue;
                 } // unsmoothedTangents
                 else if (0 == token.Icmp("unsmoothedTangents")) {
-                    this.unsmoothedTangents = true;
+                    unsmoothedTangents = true;
                     continue;
                 } // lightFallofImage <imageprogram>
                 // specifies the image to use for the third axis of projected
@@ -1925,7 +1917,7 @@ public class Material {
                     String copy;
 
                     copy = str;	// so other things don't step on it
-                    this.lightFalloffImage = globalImages.ImageFromFile(copy, TF_DEFAULT, false, TR_CLAMP /* TR_CLAMP_TO_ZERO */, TD_DEFAULT);
+                    lightFalloffImage = globalImages.ImageFromFile(copy, TF_DEFAULT, false, TR_CLAMP /* TR_CLAMP_TO_ZERO */, TD_DEFAULT);
                     continue;
                 } // guisurf <guifile> | guisurf entity
                 // an entity guisurf must have an idUserInterface
@@ -1933,13 +1925,13 @@ public class Material {
                 else if (0 == token.Icmp("guisurf")) {
                     src.ReadTokenOnLine(token);
                     if (0 == token.Icmp("entity")) {
-                        this.entityGui = 1;
+                        entityGui = 1;
                     } else if (0 == token.Icmp("entity2")) {
-                        this.entityGui = 2;
+                        entityGui = 2;
                     } else if (0 == token.Icmp("entity3")) {
-                        this.entityGui = 3;
+                        entityGui = 3;
                     } else {
-                        this.gui = uiManager.FindGui(token.getData(), true);
+                        gui = uiManager.FindGui(token.toString(), true);
                     }
                     continue;
                 } // sort
@@ -1949,7 +1941,7 @@ public class Material {
                 } // spectrum <integer>
                 else if (0 == token.Icmp("spectrum")) {
                     src.ReadTokenOnLine(token);
-                    this.spectrum = atoi(token.getData());
+                    spectrum = atoi(token.toString());
                     continue;
                 } // deform < sprite | tube | flare >
                 else if (0 == token.Icmp("deform")) {
@@ -1961,7 +1953,7 @@ public class Material {
                     continue;
                 } // renderbump <args...>
                 else if (0 == token.Icmp("renderbump")) {
-                    src.ParseRestOfLine(this.renderBump);
+                    src.ParseRestOfLine(renderBump);
                     continue;
                 } // diffusemap for stage shortcut
                 else if (0 == token.Icmp("diffusemap")) {
@@ -1994,14 +1986,14 @@ public class Material {
                 else if (0 == token.Icmp("DECAL_MACRO")) {
                     // polygonOffset
                     SetMaterialFlag(MF_POLYGONOFFSET);
-                    this.polygonOffset = 1;
+                    polygonOffset = 1;
 
                     // discrete
-                    this.surfaceFlags |= SURF_DISCRETE;
-                    this.contentFlags &= ~CONTENTS_SOLID;
+                    surfaceFlags |= SURF_DISCRETE;
+                    contentFlags &= ~CONTENTS_SOLID;
 
                     // sort decal
-                    this.sort = SS_DECAL;
+                    sort = SS_DECAL;
 
                     // noShadows
                     SetMaterialFlag(MF_NOSHADOWS);
@@ -2015,7 +2007,7 @@ public class Material {
                     ParseStage(src, trpDefault);
                     continue;
                 } else {
-                    common.Warning("unknown general material parameter '%s' in '%s'", token.getData(), GetName());
+                    common.Warning("unknown general material parameter '%s' in '%s'", token.toString(), GetName());
                     SetMaterialFlag(MF_DEFAULTED);
                     return;
                 }
@@ -2033,12 +2025,12 @@ public class Material {
             // so we get proper tangent vectors on both sides
             // we can't just call ReceivesLighting(), because the stages are still
             // in temporary form
-            if (this.cullType == CT_TWO_SIDED) {
-                for (i = 0; i < this.numStages; i++) {
-                    if ((this.pd.parseStages[i].lighting != SL_AMBIENT) || (this.pd.parseStages[i].texture.texgen != TG_EXPLICIT)) {
-                        if (this.cullType == CT_TWO_SIDED) {
-                            this.cullType = CT_FRONT_SIDED;
-                            this.shouldCreateBackSides = true;
+            if (cullType == CT_TWO_SIDED) {
+                for (i = 0; i < numStages; i++) {
+                    if (pd.parseStages[i].lighting != SL_AMBIENT || pd.parseStages[i].texture.texgen != TG_EXPLICIT) {
+                        if (cullType == CT_TWO_SIDED) {
+                            cullType = CT_FRONT_SIDED;
+                            shouldCreateBackSides = true;
                         }
                         break;
                     }
@@ -2047,11 +2039,11 @@ public class Material {
 
             // currently a surface can only have one unique texgen for all the stages on old hardware
             texgen_t firstGen = TG_EXPLICIT;
-            for (i = 0; i < this.numStages; i++) {
-                if (this.pd.parseStages[i].texture.texgen != TG_EXPLICIT) {
+            for (i = 0; i < numStages; i++) {
+                if (pd.parseStages[i].texture.texgen != TG_EXPLICIT) {
                     if (firstGen == TG_EXPLICIT) {
-                        firstGen = this.pd.parseStages[i].texture.texgen;
-                    } else if (firstGen != this.pd.parseStages[i].texture.texgen) {
+                        firstGen = pd.parseStages[i].texture.texgen;
+                    } else if (firstGen != pd.parseStages[i].texture.texgen) {
                         common.Warning("material '%s' has multiple stages with a texgen", GetName());
                         break;
                     }
@@ -2076,7 +2068,7 @@ public class Material {
         }
 
         private void ParseSort(idLexer src) {
-            final idToken token = new idToken();
+            idToken token = new idToken();
 
             if (!src.ReadTokenOnLine(token)) {
                 src.Warning("missing sort parameter");
@@ -2085,33 +2077,33 @@ public class Material {
             }
 
             if (0 == token.Icmp("subview")) {
-                this.sort = SS_SUBVIEW;
+                sort = SS_SUBVIEW;
             } else if (0 == token.Icmp("opaque")) {
-                this.sort = SS_OPAQUE;
+                sort = SS_OPAQUE;
             } else if (0 == token.Icmp("decal")) {
-                this.sort = SS_DECAL;
+                sort = SS_DECAL;
             } else if (0 == token.Icmp("far")) {
-                this.sort = SS_FAR;
+                sort = SS_FAR;
             } else if (0 == token.Icmp("medium")) {
-                this.sort = SS_MEDIUM;
+                sort = SS_MEDIUM;
             } else if (0 == token.Icmp("close")) {
-                this.sort = SS_CLOSE;
+                sort = SS_CLOSE;
             } else if (0 == token.Icmp("almostNearest")) {
-                this.sort = SS_ALMOST_NEAREST;
+                sort = SS_ALMOST_NEAREST;
             } else if (0 == token.Icmp("nearest")) {
-                this.sort = SS_NEAREST;
+                sort = SS_NEAREST;
             } else if (0 == token.Icmp("postProcess")) {
-                this.sort = SS_POST_PROCESS;
+                sort = SS_POST_PROCESS;
             } else if (0 == token.Icmp("portalSky")) {
-                this.sort = SS_PORTAL_SKY;
+                sort = SS_PORTAL_SKY;
             } else {
-                this.sort = Float.parseFloat(token.getData());
+                sort = Float.parseFloat(token.toString());
             }
         }
 
         private static int DBG_ParseBlend = 0;
         private void ParseBlend(idLexer src, shaderStage_t stage) {
-            final idToken token = new idToken();
+            idToken token = new idToken();
             int srcBlend, dstBlend;
             
 //            System.out.printf("ParseBlend(%d)\n", DBG_ParseBlend++);
@@ -2129,7 +2121,7 @@ public class Material {
                 stage.drawStateBits = GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
                 return;
             }
-            if ((0 == token.Icmp("filter")) || (0 == token.Icmp("modulate"))) {
+            if (0 == token.Icmp("filter") || 0 == token.Icmp("modulate")) {
                 stage.drawStateBits = GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO;
                 return;
             }
@@ -2172,11 +2164,11 @@ public class Material {
          ================
          */
         private void ParseVertexParm(idLexer src, newShaderStage_t newStage) {
-            final idToken token = new idToken();
+            idToken token = new idToken();
 
             src.ReadTokenOnLine(token);
-            final int parm = token.GetIntValue();
-            if (!token.IsNumeric() || (parm < 0) || (parm >= MAX_VERTEX_PARMS)) {
+            int parm = token.GetIntValue();
+            if (!token.IsNumeric() || parm < 0 || parm >= MAX_VERTEX_PARMS) {
                 common.Warning("bad vertexParm number\n");
                 SetMaterialFlag(MF_DEFAULTED);
                 return;
@@ -2188,7 +2180,7 @@ public class Material {
             newStage.vertexParms[parm][0] = ParseExpression(src);
 
             src.ReadTokenOnLine(token);
-            if (token.IsEmpty() || (token.Icmp(",") != 0)) {
+            if (token.IsEmpty() || token.Icmp(",") != 0) {
                 newStage.vertexParms[parm][1]
                         = newStage.vertexParms[parm][2]
                         = newStage.vertexParms[parm][3] = newStage.vertexParms[parm][0];
@@ -2198,7 +2190,7 @@ public class Material {
             newStage.vertexParms[parm][1] = ParseExpression(src);
 
             src.ReadTokenOnLine(token);
-            if (token.IsEmpty() || (token.Icmp(",") != 0)) {
+            if (token.IsEmpty() || token.Icmp(",") != 0) {
                 newStage.vertexParms[parm][2] = GetExpressionConstant(0);
                 newStage.vertexParms[parm][3] = GetExpressionConstant(1);
                 return;
@@ -2207,7 +2199,7 @@ public class Material {
             newStage.vertexParms[parm][2] = ParseExpression(src);
 
             src.ReadTokenOnLine(token);
-            if (token.IsEmpty() || (token.Icmp(",") != 0)) {
+            if (token.IsEmpty() || token.Icmp(",") != 0) {
                 newStage.vertexParms[parm][3] = GetExpressionConstant(1);
                 return;
             }
@@ -2222,7 +2214,7 @@ public class Material {
             textureDepth_t td;
             cubeFiles_t cubeMap;
             boolean allowPicmip;
-            final idToken token = new idToken();
+            idToken token = new idToken();
 
             tf = TF_DEFAULT;
             trp = TR_REPEAT;
@@ -2231,8 +2223,8 @@ public class Material {
             cubeMap = CF_2D;
 
             src.ReadTokenOnLine(token);
-            final int unit = token.GetIntValue();
-            if (!token.IsNumeric() || (unit < 0) || (unit >= MAX_FRAGMENT_IMAGES)) {
+            int unit = token.GetIntValue();
+            if (!token.IsNumeric() || unit < 0 || unit >= MAX_FRAGMENT_IMAGES) {
                 common.Warning("bad fragmentMap number\n");
                 SetMaterialFlag(MF_DEFAULTED);
                 return;
@@ -2287,8 +2279,8 @@ public class Material {
                     continue;
                 }
 
-                if ((0 == token.Icmp("uncompressed")) || (0 == token.Icmp("highquality"))) {
-                    if (0 == idImageManager.image_ignoreHighQuality.GetInteger()) {
+                if (0 == token.Icmp("uncompressed") || 0 == token.Icmp("highquality")) {
+                    if (0 == globalImages.image_ignoreHighQuality.GetInteger()) {
                         td = TD_HIGH_QUALITY;
                     }
                     continue;
@@ -2331,7 +2323,7 @@ public class Material {
 
         private void ParseStage(idLexer src, final textureRepeat_t trpDefault /*= TR_REPEAT */) {
             DEBUG_imageName++;
-            final idToken token = new idToken();
+            idToken token = new idToken();
             String str;
             shaderStage_t ss;
             textureStage_t ts;
@@ -2340,12 +2332,12 @@ public class Material {
             textureDepth_t td;
             cubeFiles_t cubeMap;
             boolean allowPicmip;
-            final char[] imageName = new char[MAX_IMAGE_NAME];
+            char[] imageName = new char[MAX_IMAGE_NAME];
             int a, b;
-            final int[][] matrix = new int[2][3];
-            final newShaderStage_t newStage = new newShaderStage_t();
+            int[][] matrix = new int[2][3];
+            newShaderStage_t newStage = new newShaderStage_t();
 
-            if (this.numStages >= MAX_SHADER_STAGES) {
+            if (numStages >= MAX_SHADER_STAGES) {
                 SetMaterialFlag(MF_DEFAULTED);
                 common.Warning("material '%s' exceeded %d stages", GetName(), MAX_SHADER_STAGES);
             }
@@ -2359,7 +2351,7 @@ public class Material {
             imageName[0] = 0;
 
 //	memset( &newStage, 0, sizeof( newStage ) );
-            ss = this.pd.parseStages[this.numStages];
+            ss = pd.parseStages[numStages];
             ts = ss.texture;
 
             ClearStage(ss);
@@ -2451,7 +2443,7 @@ public class Material {
                         }
                     }
                     ts.cinematic[0] = idCinematic.Alloc();
-                    ts.cinematic[0].InitFromFile(token.getData(), loop);
+                    ts.cinematic[0].InitFromFile(token.toString(), loop);
                     continue;
                 }
 
@@ -2461,7 +2453,7 @@ public class Material {
                         continue;
                     }
                     ts.cinematic[0] = new idSndWindow();
-                    ts.cinematic[0].InitFromFile(token.getData(), true);
+                    ts.cinematic[0].InitFromFile(token.toString(), true);
                     continue;
                 }
 
@@ -2507,8 +2499,8 @@ public class Material {
                     trp = TR_CLAMP_TO_ZERO_ALPHA;
                     continue;
                 }
-                if ((0 == token.Icmp("uncompressed")) || (0 == token.Icmp("highquality"))) {
-                    if (0 == idImageManager.image_ignoreHighQuality.GetInteger()) {
+                if (0 == token.Icmp("uncompressed") || 0 == token.Icmp("highquality")) {
+                    if (0 == globalImages.image_ignoreHighQuality.GetInteger()) {
                         td = TD_HIGH_QUALITY;
                     }
                     continue;
@@ -2551,21 +2543,21 @@ public class Material {
                         ts.texgen = TG_SKYBOX_CUBE;
                     } else if (0 == token.Icmp("wobbleSky")) {
                         ts.texgen = TG_WOBBLESKY_CUBE;
-                        this.texGenRegisters[0] = ParseExpression(src);
-                        this.texGenRegisters[1] = ParseExpression(src);
-                        this.texGenRegisters[2] = ParseExpression(src);
+                        texGenRegisters[0] = ParseExpression(src);
+                        texGenRegisters[1] = ParseExpression(src);
+                        texGenRegisters[2] = ParseExpression(src);
                     } else {
-                        common.Warning("bad texGen '%s' in material %s", token.getData(), GetName());
+                        common.Warning("bad texGen '%s' in material %s", token.toString(), GetName());
                         SetMaterialFlag(MF_DEFAULTED);
                     }
                     continue;
                 }
-                if ((0 == token.Icmp("scroll")) || (0 == token.Icmp("translate"))) {
+                if (0 == token.Icmp("scroll") || 0 == token.Icmp("translate")) {
 
                     a = ParseExpression(src);
                     MatchToken(src, ",");
                     if (DBG_ParseStage == 41) {
-                        final int aa = 0;
+                        int aa = aa = 0;
                         b = ParseExpression(src);
                     } else {
                         b = ParseExpression(src);
@@ -2689,7 +2681,7 @@ public class Material {
                 if (0 == token.Icmp("alphaTest")) {
                     ss.hasAlphaTest = true;
                     ss.alphaTestRegister = ParseExpression(src);
-                    this.coverage = MC_PERFORATED;
+                    coverage = MC_PERFORATED;
                     continue;
                 }
 
@@ -2699,7 +2691,7 @@ public class Material {
                     ss.color.registers[1] = etoi(EXP_REG_PARM1);
                     ss.color.registers[2] = etoi(EXP_REG_PARM2);
                     ss.color.registers[3] = etoi(EXP_REG_PARM3);
-                    this.pd.registersAreConstant = false;
+                    pd.registersAreConstant = false;
                     continue;
                 }
 
@@ -2729,7 +2721,7 @@ public class Material {
                     DEBUG_ParseStage++;
                     ss.color.registers[3] = ParseExpression(src);
 //                    System.out.printf("alpha=>%d\n", ss.color.registers[3]);
-                    final int s = ss.color.registers[3];                    
+                    int s = ss.color.registers[3];                    
                     continue;
                 }
                 if (0 == token.Icmp("rgb")) {
@@ -2749,27 +2741,27 @@ public class Material {
                 }
                 if (0 == token.Icmp("program")) {
                     if (src.ReadTokenOnLine(token)) {
-                        newStage.vertexProgram = R_FindARBProgram(GL_VERTEX_PROGRAM_ARB, token.getData());
-                        newStage.fragmentProgram = R_FindARBProgram(GL_FRAGMENT_PROGRAM_ARB, token.getData());
+                        newStage.vertexProgram = R_FindARBProgram(GL_VERTEX_PROGRAM_ARB, token.toString());
+                        newStage.fragmentProgram = R_FindARBProgram(GL_FRAGMENT_PROGRAM_ARB, token.toString());
                     }
                     continue;
                 }
                 if (0 == token.Icmp("fragmentProgram")) {
                     if (src.ReadTokenOnLine(token)) {
-                        newStage.fragmentProgram = R_FindARBProgram(GL_FRAGMENT_PROGRAM_ARB, token.getData());
+                        newStage.fragmentProgram = R_FindARBProgram(GL_FRAGMENT_PROGRAM_ARB, token.toString());
                     }
                     continue;
                 }
                 if (0 == token.Icmp("vertexProgram")) {
                     if (src.ReadTokenOnLine(token)) {
-                        newStage.vertexProgram = R_FindARBProgram(GL_VERTEX_PROGRAM_ARB, token.getData());
+                        newStage.vertexProgram = R_FindARBProgram(GL_VERTEX_PROGRAM_ARB, token.toString());
                     }
                     continue;
                 }
                 if (0 == token.Icmp("megaTexture")) {
                     if (src.ReadTokenOnLine(token)) {
                         newStage.megaTexture = new idMegaTexture();
-                        if (!newStage.megaTexture.InitFromMegaFile(token.getData())) {
+                        if (!newStage.megaTexture.InitFromMegaFile(token.toString())) {
 //					delete newStage.megaTexture;
                             newStage.megaTexture = null;
                             SetMaterialFlag(MF_DEFAULTED);
@@ -2791,19 +2783,19 @@ public class Material {
                     continue;
                 }
 
-                common.Warning("unknown token '%s' in material '%s'", token.getData(), GetName());
+                common.Warning("unknown token '%s' in material '%s'", token.toString(), GetName());
                 SetMaterialFlag(MF_DEFAULTED);
                 return;
             }
 
             // if we are using newStage, allocate a copy of it
-            if ((newStage.fragmentProgram != 0) || (newStage.vertexProgram != 0)) {
+            if (newStage.fragmentProgram != 0 || newStage.vertexProgram != 0) {
 ///		ss.newStage = (newShaderStage_t )Mem_Alloc( sizeof( newStage ) );
                 ss.newStage = newStage;
             }
 
             // successfully parsed a stage
-            this.numStages++;
+            numStages++;
 
             // select a compressed depth based on what the stage is
             if (td == TD_DEFAULT) {
@@ -2840,95 +2832,95 @@ public class Material {
         }
 
         private void ParseDeform(idLexer src) {
-            final idToken token = new idToken();
+            idToken token = new idToken();
 
             if (!src.ExpectAnyToken(token)) {
                 return;
             }
 
             if (0 == token.Icmp("sprite")) {
-                this.deform = DFRM_SPRITE;
-                this.cullType = CT_TWO_SIDED;
+                deform = DFRM_SPRITE;
+                cullType = CT_TWO_SIDED;
                 SetMaterialFlag(MF_NOSHADOWS);
                 return;
             }
             if (0 == token.Icmp("tube")) {
-                this.deform = DFRM_TUBE;
-                this.cullType = CT_TWO_SIDED;
+                deform = DFRM_TUBE;
+                cullType = CT_TWO_SIDED;
                 SetMaterialFlag(MF_NOSHADOWS);
                 return;
             }
             if (0 == token.Icmp("flare")) {
-                this.deform = DFRM_FLARE;
-                this.cullType = CT_TWO_SIDED;
-                this.deformRegisters[0] = ParseExpression(src);
+                deform = DFRM_FLARE;
+                cullType = CT_TWO_SIDED;
+                deformRegisters[0] = ParseExpression(src);
                 SetMaterialFlag(MF_NOSHADOWS);
                 return;
             }
             if (0 == token.Icmp("expand")) {
-                this.deform = DFRM_EXPAND;
-                this.deformRegisters[0] = ParseExpression(src);
+                deform = DFRM_EXPAND;
+                deformRegisters[0] = ParseExpression(src);
                 return;
             }
             if (0 == token.Icmp("move")) {
-                this.deform = DFRM_MOVE;
-                this.deformRegisters[0] = ParseExpression(src);
+                deform = DFRM_MOVE;
+                deformRegisters[0] = ParseExpression(src);
                 return;
             }
             if (0 == token.Icmp("turbulent")) {
-                this.deform = DFRM_TURB;
+                deform = DFRM_TURB;
 
                 if (!src.ExpectAnyToken(token)) {
                     src.Warning("deform particle missing particle name");
                     SetMaterialFlag(MF_DEFAULTED);
                     return;
                 }
-                this.deformDecl = declManager.FindType(DECL_TABLE, token, true);
+                deformDecl = declManager.FindType(DECL_TABLE, token, true);
 
-                this.deformRegisters[0] = ParseExpression(src);
-                this.deformRegisters[1] = ParseExpression(src);
-                this.deformRegisters[2] = ParseExpression(src);
+                deformRegisters[0] = ParseExpression(src);
+                deformRegisters[1] = ParseExpression(src);
+                deformRegisters[2] = ParseExpression(src);
                 return;
             }
             if (0 == token.Icmp("eyeBall")) {
-                this.deform = DFRM_EYEBALL;
+                deform = DFRM_EYEBALL;
                 return;
             }
             if (0 == token.Icmp("particle")) {
-                this.deform = DFRM_PARTICLE;
+                deform = DFRM_PARTICLE;
                 if (!src.ExpectAnyToken(token)) {
                     src.Warning("deform particle missing particle name");
                     SetMaterialFlag(MF_DEFAULTED);
                     return;
                 }
-                this.deformDecl = declManager.FindType(DECL_PARTICLE, token, true);
+                deformDecl = declManager.FindType(DECL_PARTICLE, token, true);
                 return;
             }
             if (0 == token.Icmp("particle2")) {
-                this.deform = DFRM_PARTICLE2;
+                deform = DFRM_PARTICLE2;
                 if (!src.ExpectAnyToken(token)) {
                     src.Warning("deform particle missing particle name");
                     SetMaterialFlag(MF_DEFAULTED);
                     return;
                 }
-                this.deformDecl = declManager.FindType(DECL_PARTICLE, token, true);
+                deformDecl = declManager.FindType(DECL_PARTICLE, token, true);
                 return;
             }
-            src.Warning("Bad deform type '%s'", token.getData());
+            src.Warning("Bad deform type '%s'", token.toString());
             SetMaterialFlag(MF_DEFAULTED);
         }
 
         private void ParseDecalInfo(idLexer src) {
 //	idToken token;
 
-            this.decalInfo.stayTime = (int) src.ParseFloat() * 1000;
-            this.decalInfo.fadeTime = (int) src.ParseFloat() * 1000;
+            decalInfo.stayTime = (int) src.ParseFloat() * 1000;
+            decalInfo.fadeTime = (int) src.ParseFloat() * 1000;
             final float[] start = new float[4], end = new float[4];
             src.Parse1DMatrix(4, start);
             src.Parse1DMatrix(4, end);
             for (int i = 0; i < 4; i++) {
-                this.decalInfo.start[i] = start[i];
-                this.decalInfo.end[i] = end[i];
+                decalInfo.start[i] = start[i];
+                decalInfo.end[i] = end[i];
             }
         }
 
@@ -2954,7 +2946,7 @@ public class Material {
             }
             String name;
             int clearSolid, surfaceFlags, contents;
-        }
+        };
         static final infoParm_t[] infoParms = {
             // game relevant attributes
             new infoParm_t("solid", 0, 0, CONTENTS_SOLID), // may need to override a clearSolid
@@ -3022,12 +3014,12 @@ public class Material {
                 if (0 == token.Icmp(infoParms[i].name)) {
                     if ((infoParms[i].surfaceFlags & SURF_TYPE_MASK) != 0) {
                         // ensure we only have one surface type set
-                        this.surfaceFlags &= ~SURF_TYPE_MASK;
+                        surfaceFlags &= ~SURF_TYPE_MASK;
                     }
-                    this.surfaceFlags |= infoParms[i].surfaceFlags;
-                    this.contentFlags |= infoParms[i].contents;
+                    surfaceFlags |= infoParms[i].surfaceFlags;
+                    contentFlags |= infoParms[i].contents;
                     if (infoParms[i].clearSolid != 0) {
-                        this.contentFlags &= ~CONTENTS_SOLID;
+                        contentFlags &= ~CONTENTS_SOLID;
                     }
                     return true;
                 }
@@ -3038,46 +3030,46 @@ public class Material {
         private int GetExpressionConstant(float f) {
             int i;
 
-            for (i = EXP_REG_NUM_PREDEFINED.ordinal(); i < this.numRegisters; i++) {
-                if (!this.pd.registerIsTemporary[i] && (this.pd.shaderRegisters[i] == f)) {
+            for (i = EXP_REG_NUM_PREDEFINED.ordinal(); i < numRegisters; i++) {
+                if (!pd.registerIsTemporary[i] && pd.shaderRegisters[i] == f) {
                     return i;
                 }
             }
-            if (this.numRegisters == MAX_EXPRESSION_REGISTERS) {
+            if (numRegisters == MAX_EXPRESSION_REGISTERS) {
                 common.Warning("GetExpressionConstant: material '%s' hit MAX_EXPRESSION_REGISTERS", GetName());
                 SetMaterialFlag(MF_DEFAULTED);
                 return 0;
             }
-            this.pd.registerIsTemporary[i] = false;
-            this.pd.shaderRegisters[i] = f;
+            pd.registerIsTemporary[i] = false;
+            pd.shaderRegisters[i] = f;
 //            if(dbg_count==131)
 //            TempDump.printCallStack(dbg_count + "****************************" + numRegisters);
-            this.numRegisters++;
+            numRegisters++;
 
             return i;
         }
 
         private int GetExpressionTemporary() {
-            if (this.numRegisters == MAX_EXPRESSION_REGISTERS) {
+            if (numRegisters == MAX_EXPRESSION_REGISTERS) {
                 common.Warning("GetExpressionTemporary: material '%s' hit MAX_EXPRESSION_REGISTERS", GetName());
                 SetMaterialFlag(MF_DEFAULTED);
                 return 0;
             }
 //            if(dbg_count==131)
 //            TempDump.printCallStack(dbg_count + "****************************" + numRegisters);
-            this.pd.registerIsTemporary[this.numRegisters] = true;
-            this.numRegisters++;
-            return this.numRegisters - 1;
+            pd.registerIsTemporary[numRegisters] = true;
+            numRegisters++;
+            return numRegisters - 1;
         }
 
         private expOp_t GetExpressionOp() {
-            if (this.numOps == MAX_EXPRESSION_OPS) {
+            if (numOps == MAX_EXPRESSION_OPS) {
                 common.Warning("GetExpressionOp: material '%s' hit MAX_EXPRESSION_OPS", GetName());
                 SetMaterialFlag(MF_DEFAULTED);
-                return this.pd.shaderOps[0];
+                return pd.shaderOps[0];
             }
 
-            return this.pd.shaderOps[this.numOps++];
+            return pd.shaderOps[numOps++];
         }
 
         private int EmitOp(int a, int b, expOpType_t opType) {
@@ -3085,31 +3077,31 @@ public class Material {
 
             // optimize away identity operations
             if (opType == OP_TYPE_ADD) {
-                if (!this.pd.registerIsTemporary[a] && (this.pd.shaderRegisters[a] == 0)) {
+                if (!pd.registerIsTemporary[a] && pd.shaderRegisters[a] == 0) {
                     return b;
                 }
-                if (!this.pd.registerIsTemporary[b] && (this.pd.shaderRegisters[b] == 0)) {
+                if (!pd.registerIsTemporary[b] && pd.shaderRegisters[b] == 0) {
                     return a;
                 }
-                if (!this.pd.registerIsTemporary[a] && !this.pd.registerIsTemporary[b]) {
-                    return GetExpressionConstant(this.pd.shaderRegisters[a] + this.pd.shaderRegisters[b]);
+                if (!pd.registerIsTemporary[a] && !pd.registerIsTemporary[b]) {
+                    return GetExpressionConstant(pd.shaderRegisters[a] + pd.shaderRegisters[b]);
                 }
             }
             if (opType == OP_TYPE_MULTIPLY) {
-                if (!this.pd.registerIsTemporary[a] && (this.pd.shaderRegisters[a] == 1)) {
+                if (!pd.registerIsTemporary[a] && pd.shaderRegisters[a] == 1) {
                     return b;
                 }
-                if (!this.pd.registerIsTemporary[a] && (this.pd.shaderRegisters[a] == 0)) {
+                if (!pd.registerIsTemporary[a] && pd.shaderRegisters[a] == 0) {
                     return a;
                 }
-                if (!this.pd.registerIsTemporary[b] && (this.pd.shaderRegisters[b] == 1)) {
+                if (!pd.registerIsTemporary[b] && pd.shaderRegisters[b] == 1) {
                     return a;
                 }
-                if (!this.pd.registerIsTemporary[b] && (this.pd.shaderRegisters[b] == 0)) {
+                if (!pd.registerIsTemporary[b] && pd.shaderRegisters[b] == 0) {
                     return b;
                 }
-                if (!this.pd.registerIsTemporary[a] && !this.pd.registerIsTemporary[b]) {
-                    return GetExpressionConstant(this.pd.shaderRegisters[a] * this.pd.shaderRegisters[b]);
+                if (!pd.registerIsTemporary[a] && !pd.registerIsTemporary[b]) {
+                    return GetExpressionConstant(pd.shaderRegisters[a] * pd.shaderRegisters[b]);
                 }
             }
 
@@ -3137,7 +3129,7 @@ public class Material {
          =================
          */
         private int ParseTerm(idLexer src) {
-            final idToken token = new idToken();
+            idToken token = new idToken();
             int a, b;
 
             src.ReadToken(token);
@@ -3149,87 +3141,87 @@ public class Material {
             }
 
             if (0 == token.Icmp("time")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_TIME.ordinal();
             }
             if (0 == token.Icmp("parm0")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_PARM0.ordinal();
             }
             if (0 == token.Icmp("parm1")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_PARM1.ordinal();
             }
             if (0 == token.Icmp("parm2")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_PARM2.ordinal();
             }
             if (0 == token.Icmp("parm3")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_PARM3.ordinal();
             }
             if (0 == token.Icmp("parm4")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_PARM4.ordinal();
             }
             if (0 == token.Icmp("parm5")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_PARM5.ordinal();
             }
             if (0 == token.Icmp("parm6")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_PARM6.ordinal();
             }
             if (0 == token.Icmp("parm7")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_PARM7.ordinal();
             }
             if (0 == token.Icmp("parm8")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_PARM8.ordinal();
             }
             if (0 == token.Icmp("parm9")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_PARM9.ordinal();
             }
             if (0 == token.Icmp("parm10")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_PARM10.ordinal();
             }
             if (0 == token.Icmp("parm11")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_PARM11.ordinal();
             }
             if (0 == token.Icmp("global0")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_GLOBAL0.ordinal();
             }
             if (0 == token.Icmp("global1")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_GLOBAL1.ordinal();
             }
             if (0 == token.Icmp("global2")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_GLOBAL2.ordinal();
             }
             if (0 == token.Icmp("global3")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_GLOBAL3.ordinal();
             }
             if (0 == token.Icmp("global4")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_GLOBAL4.ordinal();
             }
             if (0 == token.Icmp("global5")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_GLOBAL5.ordinal();
             }
             if (0 == token.Icmp("global6")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_GLOBAL6.ordinal();
             }
             if (0 == token.Icmp("global7")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EXP_REG_GLOBAL7.ordinal();
             }
             if (0 == token.Icmp("fragmentPrograms")) {
@@ -3237,23 +3229,23 @@ public class Material {
             }
 
             if (0 == token.Icmp("sound")) {
-                this.pd.registersAreConstant = false;
+                pd.registersAreConstant = false;
                 return EmitOp(0, 0, OP_TYPE_SOUND);
             }
 
             // parse negative numbers
             if (token.equals("-")) {
                 src.ReadToken(token);
-                if ((token.type == TT_NUMBER) || token.equals(".")) {
-                    return GetExpressionConstant(-token.GetFloatValue());
+                if (token.type == TT_NUMBER || token.equals(".")) {
+                    return GetExpressionConstant(-(float) token.GetFloatValue());
                 }
                 src.Warning("Bad negative number '%s'", token);
                 SetMaterialFlag(MF_DEFAULTED);
                 return 0;
             }
 
-            if ((token.type == TT_NUMBER) || token.equals(".") || token.equals("-")) {
-                final int dbg_bla = GetExpressionConstant(token.GetFloatValue());
+            if (token.type == TT_NUMBER || token.equals(".") || token.equals("-")) {
+                final int dbg_bla = GetExpressionConstant((float) token.GetFloatValue());
 //                System.out.printf("TT_NUMBER = %d\n", dbg_bla);
                 return dbg_bla;
             }
@@ -3287,7 +3279,7 @@ public class Material {
         private static int DBG_ParseExpressionPriority = 0;
 
         private int ParseExpressionPriority(idLexer src, int priority) {
-            final idToken token = new idToken();
+            idToken token = new idToken();
             int a;
 
             DBG_ParseExpressionPriority++;
@@ -3308,43 +3300,43 @@ public class Material {
                 return a;
             }
 
-            if ((priority == 1) && token.equals("*")) {
+            if (priority == 1 && token.equals("*")) {
                 return ParseEmitOp(src, a, OP_TYPE_MULTIPLY, priority);
             }
-            if ((priority == 1) && token.equals("/")) {
+            if (priority == 1 && token.equals("/")) {
                 return ParseEmitOp(src, a, OP_TYPE_DIVIDE, priority);
             }
-            if ((priority == 1) && token.equals("%")) {	// implied truncate both to integer
+            if (priority == 1 && token.equals("%")) {	// implied truncate both to integer
                 return ParseEmitOp(src, a, OP_TYPE_MOD, priority);
             }
-            if ((priority == 2) && token.equals("+")) {
+            if (priority == 2 && token.equals("+")) {
                 return ParseEmitOp(src, a, OP_TYPE_ADD, priority);
             }
-            if ((priority == 2) && token.equals("-")) {
+            if (priority == 2 && token.equals("-")) {
                 return ParseEmitOp(src, a, OP_TYPE_SUBTRACT, priority);
             }
-            if ((priority == 3) && token.equals(">=")) {
+            if (priority == 3 && token.equals(">=")) {
                 return ParseEmitOp(src, a, OP_TYPE_GE, priority);
             }
-            if ((priority == 3) && token.equals(">")) {
+            if (priority == 3 && token.equals(">")) {
                 return ParseEmitOp(src, a, OP_TYPE_GT, priority);
             }
-            if ((priority == 3) && token.equals("<=")) {
+            if (priority == 3 && token.equals("<=")) {
                 return ParseEmitOp(src, a, OP_TYPE_LE, priority);
             }
-            if ((priority == 3) && token.equals("<")) {
+            if (priority == 3 && token.equals("<")) {
                 return ParseEmitOp(src, a, OP_TYPE_LT, priority);
             }
-            if ((priority == 3) && token.equals("==")) {
+            if (priority == 3 && token.equals("==")) {
                 return ParseEmitOp(src, a, OP_TYPE_EQ, priority);
             }
-            if ((priority == 3) && token.equals("!=")) {
+            if (priority == 3 && token.equals("!=")) {
                 return ParseEmitOp(src, a, OP_TYPE_NE, priority);
             }
-            if ((priority == 4) && token.equals("&&")) {
+            if (priority == 4 && token.equals("&&")) {
                 return ParseEmitOp(src, a, OP_TYPE_AND, priority);
             }
-            if ((priority == 4) && token.equals("||")) {
+            if (priority == 4 && token.equals("||")) {
                 return ParseEmitOp(src, a, OP_TYPE_OR, priority);
             }
 
@@ -3421,19 +3413,19 @@ public class Material {
         }
 
         private void MultiplyTextureMatrix(textureStage_t ts, int[][] registers/*[2][3]*/) {	// FIXME: for some reason the const is bad for gcc and Mac
-            final int[][] old = new int[2][3];
+            int[][] old = new int[2][3];
 
             if (!ts.hasMatrix) {
                 ts.hasMatrix = true;
 //		memcpy( ts.matrix, registers, sizeof( ts.matrix ) );
-                Nio.arraycopy(registers[0], 0, ts.matrix[0], 0, ts.matrix[0].length);
-                Nio.arraycopy(registers[1], 0, ts.matrix[1], 0, ts.matrix[1].length);
+                System.arraycopy(registers[0], 0, ts.matrix[0], 0, ts.matrix[0].length);
+                System.arraycopy(registers[1], 0, ts.matrix[1], 0, ts.matrix[1].length);
                 return;
             }
 
 //	memcpy( old, ts.matrix, sizeof( old ) );
-            Nio.arraycopy(ts.matrix[0], 0, old[0], 0, old[0].length);
-            Nio.arraycopy(ts.matrix[1], 0, old[1], 0, old[1].length);
+            System.arraycopy(ts.matrix[0], 0, old[0], 0, old[0].length);
+            System.arraycopy(ts.matrix[1], 0, old[1], 0, old[1].length);
 
             // multiply the two maticies
             ts.matrix[0][0] = EmitOp(
@@ -3478,13 +3470,13 @@ public class Material {
         private void SortInteractionStages() {
             int j;
 
-            for (int i = 0; i < this.numStages; i = j) {
+            for (int i = 0; i < numStages; i = j) {
                 // find the next bump map
-                for (j = i + 1; j < this.numStages; j++) {
-                    if (this.pd.parseStages[j].lighting == SL_BUMP) {
+                for (j = i + 1; j < numStages; j++) {
+                    if (pd.parseStages[j].lighting == SL_BUMP) {
                         // if the very first stage wasn't a bumpmap,
                         // this bumpmap is part of the first group
-                        if (this.pd.parseStages[i].lighting != SL_BUMP) {
+                        if (pd.parseStages[i].lighting != SL_BUMP) {
                             continue;
                         }
                         break;
@@ -3492,14 +3484,14 @@ public class Material {
                 }
 
                 // bubble sort everything bump / diffuse / specular
-                for (int l = 1; l < (j - i); l++) {
-                    for (int k = i; k < (j - l); k++) {
-                        if (this.pd.parseStages[k].lighting.ordinal() > this.pd.parseStages[k + 1].lighting.ordinal()) {
+                for (int l = 1; l < j - i; l++) {
+                    for (int k = i; k < j - l; k++) {
+                        if (pd.parseStages[k].lighting.ordinal() > pd.parseStages[k + 1].lighting.ordinal()) {
                             shaderStage_t temp;
 
-                            temp = this.pd.parseStages[k];
-                            this.pd.parseStages[k] = this.pd.parseStages[k + 1];
-                            this.pd.parseStages[k + 1] = temp;
+                            temp = pd.parseStages[k];
+                            pd.parseStages[k] = pd.parseStages[k + 1];
+                            pd.parseStages[k + 1] = temp;
                         }
                     }
                 }
@@ -3523,23 +3515,23 @@ public class Material {
          */
         private void AddImplicitStages(final textureRepeat_t trpDefault /*= TR_REPEAT*/) {
             final char[] buffer = new char[1024];
-            final idLexer newSrc = new idLexer();
+            idLexer newSrc = new idLexer();
             boolean hasDiffuse = false;
             boolean hasSpecular = false;
             boolean hasBump = false;
             boolean hasReflection = false;
 
-            for (int i = 0; i < this.numStages; i++) {
-                if (this.pd.parseStages[i].lighting == SL_BUMP) {
+            for (int i = 0; i < numStages; i++) {
+                if (pd.parseStages[i].lighting == SL_BUMP) {
                     hasBump = true;
                 }
-                if (this.pd.parseStages[i].lighting == SL_DIFFUSE) {
+                if (pd.parseStages[i].lighting == SL_DIFFUSE) {
                     hasDiffuse = true;
                 }
-                if (this.pd.parseStages[i].lighting == SL_SPECULAR) {
+                if (pd.parseStages[i].lighting == SL_SPECULAR) {
                     hasSpecular = true;
                 }
-                if (this.pd.parseStages[i].texture.texgen == TG_REFLECT_CUBE) {
+                if (pd.parseStages[i].texture.texgen == TG_REFLECT_CUBE) {
                     hasReflection = true;
                 }
             }
@@ -3549,7 +3541,7 @@ public class Material {
                 return;
             }
 
-            if (this.numStages == MAX_SHADER_STAGES) {
+            if (numStages == MAX_SHADER_STAGES) {
                 return;
             }
 
@@ -3585,19 +3577,19 @@ public class Material {
          ==================
          */
         private void CheckForConstantRegisters() {
-            if (!this.pd.registersAreConstant) {
+            if (!pd.registersAreConstant) {
                 return;
             }
 
             // evaluate the registers once, and save them 
-            this.constantRegisters = new float[GetNumRegisters()];// R_ClearedStaticAlloc(GetNumRegisters() /* sizeof( float )*/);
+            constantRegisters = new float[GetNumRegisters()];// R_ClearedStaticAlloc(GetNumRegisters() /* sizeof( float )*/);
 
-            final float[] shaderParms = new float[MAX_ENTITY_SHADER_PARMS];
+            float[] shaderParms = new float[MAX_ENTITY_SHADER_PARMS];
 //	memset( shaderParms, 0, sizeof( shaderParms ) );
-            final viewDef_s viewDef = new viewDef_s();
+            viewDef_s viewDef = new viewDef_s();
 //	memset( &viewDef, 0, sizeof( viewDef ) );
 
-            EvaluateRegisters(this.constantRegisters, shaderParms, viewDef, null);
+            EvaluateRegisters(constantRegisters, shaderParms, viewDef, null);
         }
 
         /**
@@ -3632,10 +3624,10 @@ public class Material {
 
         @Override
         public String toString() {
-            return this + " idMaterial{" + "desc=" + this.desc + ", renderBump=" + this.renderBump + ", lightFalloffImage=" + this.lightFalloffImage + ", entityGui=" + this.entityGui + ", gui=" + this.gui + ", noFog=" + this.noFog + ", spectrum=" + this.spectrum + ", polygonOffset=" + this.polygonOffset + ", contentFlags=" + this.contentFlags + ", surfaceFlags=" + this.surfaceFlags + ", materialFlags=" + this.materialFlags + ", decalInfo=" + this.decalInfo + ", sort=" + this.sort + ", deform=" + this.deform + ", deformRegisters=" + this.deformRegisters + ", deformDecl=" + this.deformDecl + ", texGenRegisters=" + this.texGenRegisters + ", coverage=" + this.coverage + ", cullType=" + this.cullType + ", shouldCreateBackSides=" + this.shouldCreateBackSides + ", fogLight=" + this.fogLight + ", blendLight=" + this.blendLight + ", ambientLight=" + this.ambientLight + ", unsmoothedTangents=" + this.unsmoothedTangents + ", hasSubview=" + this.hasSubview + ", allowOverlays=" + this.allowOverlays + ", numOps=" + this.numOps + ", ops=" + this.ops + ", numRegisters=" + this.numRegisters + ", expressionRegisters=" + this.expressionRegisters + ", constantRegisters=" + this.constantRegisters + ", numStages=" + this.numStages + ", numAmbientStages=" + this.numAmbientStages + ", stages=" + this.stages + ", pd=" + this.pd + ", surfaceArea=" + this.surfaceArea + ", editorImageName=" + this.editorImageName + ", editorImage=" + this.editorImage + ", editorAlpha=" + this.editorAlpha + ", suppressInSubview=" + this.suppressInSubview + ", portalSky=" + this.portalSky + ", refCount=" + this.refCount + '}';
+            return this + " idMaterial{" + "desc=" + desc + ", renderBump=" + renderBump + ", lightFalloffImage=" + lightFalloffImage + ", entityGui=" + entityGui + ", gui=" + gui + ", noFog=" + noFog + ", spectrum=" + spectrum + ", polygonOffset=" + polygonOffset + ", contentFlags=" + contentFlags + ", surfaceFlags=" + surfaceFlags + ", materialFlags=" + materialFlags + ", decalInfo=" + decalInfo + ", sort=" + sort + ", deform=" + deform + ", deformRegisters=" + deformRegisters + ", deformDecl=" + deformDecl + ", texGenRegisters=" + texGenRegisters + ", coverage=" + coverage + ", cullType=" + cullType + ", shouldCreateBackSides=" + shouldCreateBackSides + ", fogLight=" + fogLight + ", blendLight=" + blendLight + ", ambientLight=" + ambientLight + ", unsmoothedTangents=" + unsmoothedTangents + ", hasSubview=" + hasSubview + ", allowOverlays=" + allowOverlays + ", numOps=" + numOps + ", ops=" + ops + ", numRegisters=" + numRegisters + ", expressionRegisters=" + expressionRegisters + ", constantRegisters=" + constantRegisters + ", numStages=" + numStages + ", numAmbientStages=" + numAmbientStages + ", stages=" + stages + ", pd=" + pd + ", surfaceArea=" + surfaceArea + ", editorImageName=" + editorImageName + ", editorImage=" + editorImage + ", editorAlpha=" + editorAlpha + ", suppressInSubview=" + suppressInSubview + ", portalSky=" + portalSky + ", refCount=" + refCount + '}';
         }
-    }
+    };
 
     public static class idMatList extends idList<idMaterial> {
-    }
+    };
 }

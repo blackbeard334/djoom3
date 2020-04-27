@@ -45,7 +45,6 @@ import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec4;
-import neo.open.Nio;
 import neo.sys.sys_public.sysEvent_s;
 import neo.ui.DeviceContext.idDeviceContext;
 import neo.ui.Rectangle.idRectangle;
@@ -74,20 +73,20 @@ public class EditWindow {
         private boolean wrap;
         private boolean readonly;
         private boolean numeric;
-        private final idStr sourceFile = new idStr();
+        private idStr sourceFile = new idStr();
         private idSliderWindow scroller;
-        private final idList<Integer> breaks = new idList<>();
+        private idList<Integer> breaks = new idList<>();
         private float sizeBias;
         private int textIndex;
         private int lastTextLength;
         private boolean forceScroll;
-        private final idWinBool password = new idWinBool();
+        private idWinBool password = new idWinBool();
         //
-        private final idWinStr cvarStr = new idWinStr();
+        private idWinStr cvarStr = new idWinStr();
         private idCVar cvar;
         //
-        private final idWinBool liveUpdate = new idWinBool();
-        private final idWinStr cvarGroup = new idWinStr();
+        private idWinBool liveUpdate = new idWinBool();
+        private idWinStr cvarGroup = new idWinStr();
         //
         //
 
@@ -108,56 +107,56 @@ public class EditWindow {
 
         @Override
         public void Draw(int time, float x, float y) {
-            idVec4 color = this.foreColor.oCastIdVec4();
+            idVec4 color = foreColor.oCastIdVec4();
 
             UpdateCvar(true);
 
-            final int len = this.text.Length();
-            if (len != this.lastTextLength) {
-                this.scroller.SetValue(0.0f);
+            int len = text.Length();
+            if (len != lastTextLength) {
+                scroller.SetValue(0.0f);
                 EnsureCursorVisible();
-                this.lastTextLength = len;
+                lastTextLength = len;
             }
-            final float scale = this.textScale.oCastFloat();
+            float scale = textScale.oCastFloat();
 
             String pass = "";
             final String buffer;
-            if (this.password != null) {
+            if (password != null) {
                 int temp = 0;//text;
-                for (; temp < this.text.Length(); temp++) {
+                for (; temp < text.Length(); temp++) {
                     pass += "*";
                 }
                 buffer = pass;
             } else {
-                buffer = this.text.c_str();
+                buffer = text.c_str();
             }
 
-            if (this.cursorPos > len) {
-                this.cursorPos = len;
+            if (cursorPos > len) {
+                cursorPos = len;
             }
 
-            final idRectangle rect = this.textRect;
+            idRectangle rect = textRect;
 
-            rect.x -= this.paintOffset;
-            rect.w += this.paintOffset;
+            rect.x -= paintOffset;
+            rect.w += paintOffset;
 
-            if (this.wrap && (this.scroller.GetHigh() > 0.0f)) {
-                final float lineHeight = GetMaxCharHeight() + 5;
-                rect.y -= this.scroller.GetValue() * lineHeight;
-                rect.w -= this.sizeBias;
-                rect.h = (this.breaks.Num() + 1) * lineHeight;
+            if (wrap && scroller.GetHigh() > 0.0f) {
+                float lineHeight = GetMaxCharHeight() + 5;
+                rect.y -= scroller.GetValue() * lineHeight;
+                rect.w -= sizeBias;
+                rect.h = (breaks.Num() + 1) * lineHeight;
             }
 
-            if (this.hover && !this.noEvents.oCastBoolean() && Contains(this.gui.CursorX(), this.gui.CursorY())) {
-                color = this.hoverColor.oCastIdVec4();
+            if (hover && !noEvents.oCastBoolean() && Contains(gui.CursorX(), gui.CursorY())) {
+                color = hoverColor.oCastIdVec4();
             } else {
-                this.hover = false;
+                hover = false;
             }
-            if ((this.flags & WIN_FOCUS) != 0) {
-                color = this.hoverColor.oCastIdVec4();
+            if ((flags & WIN_FOCUS) != 0) {
+                color = hoverColor.oCastIdVec4();
             }
 
-            this.dc.DrawText(buffer, scale, 0, color, rect, this.wrap, itob(this.flags & WIN_FOCUS) ? this.cursorPos : -1);
+            dc.DrawText(buffer, scale, 0, color, rect, wrap, itob(flags & WIN_FOCUS) ? cursorPos : -1);
         }
         private static char[] buffer = new char[MAX_EDITFIELD];
 
@@ -165,24 +164,24 @@ public class EditWindow {
         public String HandleEvent(final sysEvent_s event, boolean[] updateVisuals) {
             String ret = "";
 
-            if (this.wrap) {
+            if (wrap) {
                 // need to call this to allow proper focus and capturing on embedded children
                 ret = super.HandleEvent(event, updateVisuals);
-                if ((ret != null) && !ret.isEmpty()) {
+                if (ret != null && !ret.isEmpty()) {
                     return ret;
                 }
             }
 
-            if (((event.evType != SE_CHAR) && (event.evType != SE_KEY))) {
+            if ((event.evType != SE_CHAR && event.evType != SE_KEY)) {
                 return ret;
             }
 
-            idStr.Copynz(buffer, this.text.c_str(), buffer.length);
-            final int key = event.evValue;
-            int len = this.text.Length();
+            idStr.Copynz(buffer, text.c_str(), buffer.length);
+            int key = event.evValue;
+            int len = text.Length();
 
             if (event.evType == SE_CHAR) {
-                if ((event.evValue == Sys_GetConsoleKey(false)) || (event.evValue == Sys_GetConsoleKey(true))) {
+                if (event.evValue == Sys_GetConsoleKey(false) || event.evValue == Sys_GetConsoleKey(true)) {
                     return "";
                 }
 
@@ -190,37 +189,37 @@ public class EditWindow {
                     updateVisuals[0] = true;
                 }
 
-                if ((this.maxChars != 0) && (len > this.maxChars)) {
-                    len = this.maxChars;
+                if (maxChars != 0 && len > maxChars) {
+                    len = maxChars;
                 }
 
-                if (((key == K_ENTER) || (key == K_KP_ENTER)) && (event.evValue2 != 0)) {
+                if ((key == K_ENTER || key == K_KP_ENTER) && event.evValue2 != 0) {
                     RunScript(etoi(ON_ACTION));
                     RunScript(etoi(ON_ENTER));
-                    return this.cmd.getData();
+                    return cmd.toString();
                 }
 
                 if (key == K_ESCAPE) {
                     RunScript(etoi(ON_ESC));
-                    return this.cmd.getData();
+                    return cmd.toString();
                 }
 
-                if (this.readonly) {
+                if (readonly) {
                     return "";
                 }
 
-                if ((key == (('h' - 'a') + 1)) || (key == K_BACKSPACE)) {	// ctrl-h is backspace
-                    if (this.cursorPos > 0) {
-                        if (this.cursorPos >= len) {
+                if (key == 'h' - 'a' + 1 || key == K_BACKSPACE) {	// ctrl-h is backspace
+                    if (cursorPos > 0) {
+                        if (cursorPos >= len) {
                             buffer[len - 1] = 0;
-                            this.cursorPos = len - 1;
+                            cursorPos = len - 1;
                         } else {
 //					memmove( &buffer[ cursorPos - 1 ], &buffer[ cursorPos ], len + 1 - cursorPos);
-                            Nio.arraycopy(buffer, this.cursorPos, buffer, this.cursorPos - 1, (len + 1) - this.cursorPos);
-                            this.cursorPos--;
+                            System.arraycopy(buffer, cursorPos, buffer, cursorPos - 1, len + 1 - cursorPos);
+                            cursorPos--;
                         }
 
-                        this.text.data.oSet(buffer);
+                        text.data.oSet(buffer);
                         UpdateCvar(false);
                         RunScript(etoi(ON_ACTION));
                     }
@@ -231,54 +230,54 @@ public class EditWindow {
                 //
                 // ignore any non printable chars (except enter when wrap is enabled)
                 //
-                if (this.wrap && ((key == K_ENTER) || (key == K_KP_ENTER))) {
+                if (wrap && (key == K_ENTER || key == K_KP_ENTER)) {
                 } else if (!idStr.CharIsPrintable(key)) {
                     return "";
                 }
 
-                if (this.numeric) {
-                    if (((key < '0') || (key > '9')) && (key != '.')) {
+                if (numeric) {
+                    if ((key < '0' || key > '9') && key != '.') {
                         return "";
                     }
                 }
 
-                if (this.dc.GetOverStrike()) {
-                    if ((this.maxChars != 0) && (this.cursorPos >= this.maxChars)) {
+                if (dc.GetOverStrike()) {
+                    if (maxChars != 0 && cursorPos >= maxChars) {
                         return "";
                     }
                 } else {
-                    if ((len == (MAX_EDITFIELD - 1)) || ((this.maxChars != 0) && (len >= this.maxChars))) {
+                    if ((len == MAX_EDITFIELD - 1) || (maxChars != 0 && len >= maxChars)) {
                         return "";
                     }
 //			memmove( &buffer[ cursorPos + 1 ], &buffer[ cursorPos ], len + 1 - cursorPos );
-                    Nio.arraycopy(buffer, this.cursorPos, buffer, this.cursorPos + 1, (len + 1) - this.cursorPos);
+                    System.arraycopy(buffer, cursorPos, buffer, cursorPos + 1, len + 1 - cursorPos);
                 }
 
-                buffer[this.cursorPos] = (char) key;
+                buffer[cursorPos] = (char) key;
 
-                this.text.data.oSet(buffer);
+                text.data.oSet(buffer);
                 UpdateCvar(false);
                 RunScript(etoi(ON_ACTION));
 
-                if (this.cursorPos < (len + 1)) {
-                    this.cursorPos++;
+                if (cursorPos < len + 1) {
+                    cursorPos++;
                 }
                 EnsureCursorVisible();
 
-            } else if ((event.evType == SE_KEY) && (event.evValue2 != 0)) {
+            } else if (event.evType == SE_KEY && event.evValue2 != 0) {
 
                 if (updateVisuals != null) {
                     updateVisuals[0] = true;
                 }
 
                 if (key == K_DEL) {
-                    if (this.readonly) {
+                    if (readonly) {
                         return ret;
                     }
-                    if (this.cursorPos < len) {
+                    if (cursorPos < len) {
 //				memmove( &buffer[cursorPos], &buffer[cursorPos + 1], len - cursorPos);
-                        Nio.arraycopy(buffer, this.cursorPos + 1, buffer, this.cursorPos, len - this.cursorPos);
-                        this.text.data.oSet(buffer);
+                        System.arraycopy(buffer, cursorPos + 1, buffer, cursorPos, len - cursorPos);
+                        text.data.oSet(buffer);
                         UpdateCvar(false);
                         RunScript(etoi(ON_ACTION));
                     }
@@ -286,19 +285,19 @@ public class EditWindow {
                 }
 
                 if (key == K_RIGHTARROW) {
-                    if (this.cursorPos < len) {
+                    if (cursorPos < len) {
                         if (idKeyInput.IsDown(K_CTRL)) {
                             // skip to next word
-                            while ((this.cursorPos < len) && (buffer[ this.cursorPos] != ' ')) {
-                                this.cursorPos++;
+                            while ((cursorPos < len) && (buffer[ cursorPos] != ' ')) {
+                                cursorPos++;
                             }
 
-                            while ((this.cursorPos < len) && (buffer[ this.cursorPos] == ' ')) {
-                                this.cursorPos++;
+                            while ((cursorPos < len) && (buffer[ cursorPos] == ' ')) {
+                                cursorPos++;
                             }
                         } else {
-                            if (this.cursorPos < len) {
-                                this.cursorPos++;
+                            if (cursorPos < len) {
+                                cursorPos++;
                             }
                         }
                     }
@@ -311,16 +310,16 @@ public class EditWindow {
                 if (key == K_LEFTARROW) {
                     if (idKeyInput.IsDown(K_CTRL)) {
                         // skip to previous word
-                        while ((this.cursorPos > 0) && (buffer[ this.cursorPos - 1] == ' ')) {
-                            this.cursorPos--;
+                        while ((cursorPos > 0) && (buffer[ cursorPos - 1] == ' ')) {
+                            cursorPos--;
                         }
 
-                        while ((this.cursorPos > 0) && (buffer[ this.cursorPos - 1] != ' ')) {
-                            this.cursorPos--;
+                        while ((cursorPos > 0) && (buffer[ cursorPos - 1] != ' ')) {
+                            cursorPos--;
                         }
                     } else {
-                        if (this.cursorPos > 0) {
-                            this.cursorPos--;
+                        if (cursorPos > 0) {
+                            cursorPos--;
                         }
                     }
 
@@ -330,39 +329,39 @@ public class EditWindow {
                 }
 
                 if (key == K_HOME) {
-                    if (idKeyInput.IsDown(K_CTRL) || (this.cursorLine <= 0) || (this.cursorLine >= this.breaks.Num())) {
-                        this.cursorPos = 0;
+                    if (idKeyInput.IsDown(K_CTRL) || cursorLine <= 0 || (cursorLine >= breaks.Num())) {
+                        cursorPos = 0;
                     } else {
-                        this.cursorPos = this.breaks.oGet(this.cursorLine);
+                        cursorPos = breaks.oGet(cursorLine);
                     }
                     EnsureCursorVisible();
                     return ret;
                 }
 
                 if (key == K_END) {
-                    if (idKeyInput.IsDown(K_CTRL) || (this.cursorLine < -1) || (this.cursorLine >= (this.breaks.Num() - 1))) {
-                        this.cursorPos = len;
+                    if (idKeyInput.IsDown(K_CTRL) || (cursorLine < -1) || (cursorLine >= breaks.Num() - 1)) {
+                        cursorPos = len;
                     } else {
-                        this.cursorPos = this.breaks.oGet(this.cursorLine + 1) - 1;
+                        cursorPos = breaks.oGet(cursorLine + 1) - 1;
                     }
                     EnsureCursorVisible();
                     return ret;
                 }
 
                 if (key == K_INS) {
-                    if (!this.readonly) {
-                        this.dc.SetOverStrike(!this.dc.GetOverStrike());
+                    if (!readonly) {
+                        dc.SetOverStrike(!dc.GetOverStrike());
                     }
                     return ret;
                 }
 
                 if (key == K_DOWNARROW) {
                     if (idKeyInput.IsDown(K_CTRL)) {
-                        this.scroller.SetValue(this.scroller.GetValue() + 1.0f);
+                        scroller.SetValue(scroller.GetValue() + 1.0f);
                     } else {
-                        if (this.cursorLine < (this.breaks.Num() - 1)) {
-                            final int offset = this.cursorPos - this.breaks.oGet(this.cursorLine);
-                            this.cursorPos = this.breaks.oGet(this.cursorLine + 1) + offset;
+                        if (cursorLine < breaks.Num() - 1) {
+                            int offset = cursorPos - breaks.oGet(cursorLine);
+                            cursorPos = breaks.oGet(cursorLine + 1) + offset;
                             EnsureCursorVisible();
                         }
                     }
@@ -370,31 +369,31 @@ public class EditWindow {
 
                 if (key == K_UPARROW) {
                     if (idKeyInput.IsDown(K_CTRL)) {
-                        this.scroller.SetValue(this.scroller.GetValue() - 1.0f);
+                        scroller.SetValue(scroller.GetValue() - 1.0f);
                     } else {
-                        if (this.cursorLine > 0) {
-                            final int offset = this.cursorPos - this.breaks.oGet(this.cursorLine);
-                            this.cursorPos = this.breaks.oGet(this.cursorLine - 1) + offset;
+                        if (cursorLine > 0) {
+                            int offset = cursorPos - breaks.oGet(cursorLine);
+                            cursorPos = breaks.oGet(cursorLine - 1) + offset;
                             EnsureCursorVisible();
                         }
                     }
                 }
 
-                if ((key == K_ENTER) || (key == K_KP_ENTER)) {
+                if (key == K_ENTER || key == K_KP_ENTER) {
                     RunScript(etoi(ON_ACTION));
                     RunScript(etoi(ON_ENTER));
-                    return this.cmd.getData();
+                    return cmd.toString();
                 }
 
                 if (key == K_ESCAPE) {
                     RunScript(etoi(ON_ESC));
-                    return this.cmd.getData();
+                    return cmd.toString();
                 }
 
-            } else if ((event.evType == SE_KEY) && (0 == event.evValue2)) {
-                if ((key == K_ENTER) || (key == K_KP_ENTER)) {
+            } else if (event.evType == SE_KEY && 0 == event.evValue2) {
+                if (key == K_ENTER || key == K_KP_ENTER) {
                     RunScript(etoi(ON_ENTERRELEASE));
-                    return this.cmd.getData();
+                    return cmd.toString();
                 } else {
                     RunScript(etoi(ON_ACTIONRELEASE));
                 }
@@ -407,13 +406,13 @@ public class EditWindow {
         public void PostParse() {
             super.PostParse();
 
-            if (this.maxChars == 0) {
-                this.maxChars = 10;
+            if (maxChars == 0) {
+                maxChars = 10;
             }
-            if (this.sourceFile.Length() != 0) {
-                final ByteBuffer[] buffer = {null};
-                fileSystem.ReadFile(this.sourceFile, buffer);
-                this.text.data.oSet(new String(buffer[0].array()));
+            if (sourceFile.Length() != 0) {
+                ByteBuffer[] buffer = {null};
+                fileSystem.ReadFile(sourceFile, buffer);
+                text.data.oSet(new String(buffer[0].array()));
                 fileSystem.FreeFile(buffer);
             }
 
@@ -422,12 +421,12 @@ public class EditWindow {
 
             EnsureCursorVisible();
 
-            this.flags |= WIN_CANFOCUS;
+            flags |= WIN_CANFOCUS;
         }
 
         @Override
         public void GainFocus() {
-            this.cursorPos = this.text.Length();
+            cursorPos = text.Length();
             EnsureCursorVisible();
         }
 
@@ -439,16 +438,16 @@ public class EditWindow {
         @Override
         public idWinVar GetWinVarByName(final String _name, boolean winLookup /*= false*/, drawWin_t[] owner /*= NULL*/) {
             if (idStr.Icmp(_name, "cvar") == 0) {
-                return this.cvarStr;
+                return cvarStr;
             }
             if (idStr.Icmp(_name, "password") == 0) {
-                return this.password;
+                return password;
             }
             if (idStr.Icmp(_name, "liveUpdate") == 0) {
-                return this.liveUpdate;
+                return liveUpdate;
             }
             if (idStr.Icmp(_name, "cvarGroup") == 0) {
-                return this.cvarGroup;
+                return cvarGroup;
             }
             return super.GetWinVarByName(_name, winLookup, owner);
         }
@@ -473,13 +472,13 @@ public class EditWindow {
             if (0 == idStr.Cmpn(eventName, "cvar read ", 10)) {
                 event = new idStr(eventName);
                 group = event.Mid(10, event.Length() - 10);
-                if (NOT(group.Cmp(this.cvarGroup.data))) {
+                if (NOT(group.Cmp(cvarGroup.data))) {
                     UpdateCvar(true, true);
                 }
             } else if (0 == idStr.Cmpn(eventName, "cvar write ", 11)) {
                 event = new idStr(eventName);
                 group = event.Mid(11, event.Length() - 11);
-                if (NOT(group.Cmp(this.cvarGroup.data))) {
+                if (NOT(group.Cmp(cvarGroup.data))) {
                     UpdateCvar(false, true);
                 }
             }
@@ -488,35 +487,35 @@ public class EditWindow {
         @Override
         protected boolean ParseInternalVar(final String _name, idParser src) {
             if (idStr.Icmp(_name, "maxchars") == 0) {
-                this.maxChars = src.ParseInt();
+                maxChars = src.ParseInt();
                 return true;
             }
             if (idStr.Icmp(_name, "numeric") == 0) {
-                this.numeric = src.ParseBool();
+                numeric = src.ParseBool();
                 return true;
             }
             if (idStr.Icmp(_name, "wrap") == 0) {
-                this.wrap = src.ParseBool();
+                wrap = src.ParseBool();
                 return true;
             }
             if (idStr.Icmp(_name, "readonly") == 0) {
-                this.readonly = src.ParseBool();
+                readonly = src.ParseBool();
                 return true;
             }
             if (idStr.Icmp(_name, "forceScroll") == 0) {
-                this.forceScroll = src.ParseBool();
+                forceScroll = src.ParseBool();
                 return true;
             }
             if (idStr.Icmp(_name, "source") == 0) {
-                ParseString(src, this.sourceFile);
+                ParseString(src, sourceFile);
                 return true;
             }
             if (idStr.Icmp(_name, "password") == 0) {
-                this.password.data = src.ParseBool();
+                password.data = src.ParseBool();
                 return true;
             }
             if (idStr.Icmp(_name, "cvarMax") == 0) {
-                this.cvarMax = src.ParseInt();
+                cvarMax = src.ParseInt();
                 return true;
             }
 
@@ -524,17 +523,17 @@ public class EditWindow {
         }
 
         private void InitCvar() {
-            if (!isNotNullOrEmpty(this.cvarStr.data)) {
-                if (this.text.GetName() == null) {
-                    common.Warning("idEditWindow::InitCvar: gui '%s' window '%s' has an empty cvar string", this.gui.GetSourceFile(), this.name);
+            if (!isNotNullOrEmpty(cvarStr.data)) {
+                if (text.GetName() == null) {
+                    common.Warning("idEditWindow::InitCvar: gui '%s' window '%s' has an empty cvar string", gui.GetSourceFile(), name);
                 }
-                this.cvar = null;
+                cvar = null;
                 return;
             }
 
-            this.cvar = cvarSystem.Find(this.cvarStr.data.getData());
-            if (null == this.cvar) {
-                common.Warning("idEditWindow::InitCvar: gui '%s' window '%s' references undefined cvar '%s'", this.gui.GetSourceFile(), this.name, this.cvarStr.c_str());
+            cvar = cvarSystem.Find(cvarStr.data.toString());
+            if (null == cvar) {
+                common.Warning("idEditWindow::InitCvar: gui '%s' window '%s' references undefined cvar '%s'", gui.GetSourceFile(), name, cvarStr.c_str());
                 return;
             }
         }
@@ -543,14 +542,14 @@ public class EditWindow {
         // false: write to the cvar system
         // force == true overrides liveUpdate 0
         private void UpdateCvar(boolean read, boolean force /*= false*/) {
-            if (force || this.liveUpdate.oCastBoolean()) {
-                if (this.cvar != null) {
+            if (force || liveUpdate.oCastBoolean()) {
+                if (cvar != null) {
                     if (read) {
-                        this.text.data.oSet(this.cvar.GetString());
+                        text.data.oSet(cvar.GetString());
                     } else {
-                        this.cvar.SetString(this.text.data.getData());
-                        if ((this.cvarMax != 0) && (this.cvar.GetInteger() > this.cvarMax)) {
-                            this.cvar.SetInteger(this.cvarMax);
+                        cvar.SetString(text.data.toString());
+                        if (cvarMax != 0 && (cvar.GetInteger() > cvarMax)) {
+                            cvar.SetInteger(cvarMax);
                         }
                     }
                 }
@@ -562,102 +561,102 @@ public class EditWindow {
         }
 
         private void CommonInit() {
-            this.maxChars = 128;
-            this.numeric = false;
-            this.paintOffset = 0;
-            this.cursorPos = 0;
-            this.cursorLine = 0;
-            this.cvarMax = 0;
-            this.wrap = false;
-            this.sourceFile.oSet("");
-            this.scroller = null;
-            this.sizeBias = 0;
-            this.lastTextLength = 0;
-            this.forceScroll = false;
-            this.password.data = false;
-            this.cvar = null;
-            this.liveUpdate.data = true;
-            this.readonly = false;
+            maxChars = 128;
+            numeric = false;
+            paintOffset = 0;
+            cursorPos = 0;
+            cursorLine = 0;
+            cvarMax = 0;
+            wrap = false;
+            sourceFile.oSet("");
+            scroller = null;
+            sizeBias = 0;
+            lastTextLength = 0;
+            forceScroll = false;
+            password.data = false;
+            cvar = null;
+            liveUpdate.data = true;
+            readonly = false;
 
-            this.scroller = new idSliderWindow(this.dc, this.gui);
+            scroller = new idSliderWindow(dc, gui);
         }
 
         private void EnsureCursorVisible() {
-            if (this.readonly) {
-                this.cursorPos = -1;
-            } else if (this.maxChars == 1) {
-                this.cursorPos = 0;
+            if (readonly) {
+                cursorPos = -1;
+            } else if (maxChars == 1) {
+                cursorPos = 0;
             }
 
-            if (NOT(this.dc)) {
+            if (NOT(dc)) {
                 return;
             }
 
             SetFont();
-            if (!this.wrap) {
+            if (!wrap) {
                 int cursorX = 0;
-                if (this.password.data) {
-                    cursorX = this.cursorPos * this.dc.CharWidth('*', this.textScale.data);
+                if (password.data) {
+                    cursorX = cursorPos * dc.CharWidth('*', textScale.data);
                 } else {
                     int i = 0;
-                    while ((i < this.text.Length()) && (i < this.cursorPos)) {
-                        if (idStr.IsColor(ctos(this.text.data.oGet(i)))) {
+                    while (i < text.Length() && i < cursorPos) {
+                        if (idStr.IsColor(ctos(text.data.oGet(i)))) {
                             i += 2;
                         } else {
-                            cursorX += this.dc.CharWidth(this.text.data.oGet(i), this.textScale.data);
+                            cursorX += dc.CharWidth(text.data.oGet(i), textScale.data);
                             i++;
                         }
                     }
                 }
-                final int maxWidth = (int) GetMaxCharWidth();
-                final int left = cursorX - maxWidth;
-                final int right = (int) ((cursorX - this.textRect.w) + maxWidth);
+                int maxWidth = (int) GetMaxCharWidth();
+                int left = cursorX - maxWidth;
+                int right = (int) ((cursorX - textRect.w) + maxWidth);
 
-                if (this.paintOffset > left) {
+                if (paintOffset > left) {
                     // When we go past the left side, we want the text to jump 6 characters
-                    this.paintOffset = left - (maxWidth * 6);
+                    paintOffset = left - maxWidth * 6;
                 }
-                if (this.paintOffset < right) {
-                    this.paintOffset = right;
+                if (paintOffset < right) {
+                    paintOffset = right;
                 }
-                if (this.paintOffset < 0) {
-                    this.paintOffset = 0;
+                if (paintOffset < 0) {
+                    paintOffset = 0;
                 }
-                this.scroller.SetRange(0.0f, 0.0f, 1.0f);
+                scroller.SetRange(0.0f, 0.0f, 1.0f);
 
             } else {
                 // Word wrap
 
-                this.breaks.Clear();
-                final idRectangle rect = this.textRect;
-                rect.w -= this.sizeBias;
-                this.dc.DrawText(this.text.data, this.textScale.data, this.textAlign, colorWhite, rect, true, (itob(this.flags & WIN_FOCUS)) ? this.cursorPos : -1, true, this.breaks);
+                breaks.Clear();
+                idRectangle rect = textRect;
+                rect.w -= sizeBias;
+                dc.DrawText(text.data, textScale.data, textAlign, colorWhite, rect, true, (itob(flags & WIN_FOCUS)) ? cursorPos : -1, true, breaks);
 
-                final int fit = (int) (this.textRect.h / (GetMaxCharHeight() + 5));
-                if (fit < (this.breaks.Num() + 1)) {
-                    this.scroller.SetRange(0, (this.breaks.Num() + 1) - fit, 1);
+                int fit = (int) (textRect.h / (GetMaxCharHeight() + 5));
+                if (fit < breaks.Num() + 1) {
+                    scroller.SetRange(0, breaks.Num() + 1 - fit, 1);
                 } else {
                     // The text fits completely in the box
-                    this.scroller.SetRange(0.0f, 0.0f, 1.0f);
+                    scroller.SetRange(0.0f, 0.0f, 1.0f);
                 }
 
-                if (this.forceScroll) {
-                    this.scroller.SetValue(this.breaks.Num() - fit);
-                } else if (this.readonly) {
+                if (forceScroll) {
+                    scroller.SetValue(breaks.Num() - fit);
+                } else if (readonly) {
                 } else {
-                    this.cursorLine = 0;
-                    for (int i = 1; i < this.breaks.Num(); i++) {
-                        if (this.cursorPos >= this.breaks.oGet(i)) {
-                            this.cursorLine = i;
+                    cursorLine = 0;
+                    for (int i = 1; i < breaks.Num(); i++) {
+                        if (cursorPos >= breaks.oGet(i)) {
+                            cursorLine = i;
                         } else {
                             break;
                         }
                     }
-                    final int topLine = idMath.FtoiFast(this.scroller.GetValue());
-                    if (this.cursorLine < topLine) {
-                        this.scroller.SetValue(this.cursorLine);
-                    } else if (this.cursorLine >= (topLine + fit)) {
-                        this.scroller.SetValue((this.cursorLine - fit) + 1);
+                    int topLine = idMath.FtoiFast(scroller.GetValue());
+                    if (cursorLine < topLine) {
+                        scroller.SetValue(cursorLine);
+                    } else if (cursorLine >= topLine + fit) {
+                        scroller.SetValue((cursorLine - fit) + 1);
                     }
                 }
             }
@@ -671,7 +670,7 @@ public class EditWindow {
          ================
          */
         private void InitScroller(boolean horizontal) {
-            final String thumbImage = "guis/assets/scrollbar_thumb.tga";
+            String thumbImage = "guis/assets/scrollbar_thumb.tga";
             String barImage = "guis/assets/scrollbarv.tga";
             String scrollerName = "_scrollerWinV";
 
@@ -682,25 +681,25 @@ public class EditWindow {
 
             final idMaterial mat = declManager.FindMaterial(barImage);
             mat.SetSort(SS_GUI);
-            this.sizeBias = mat.GetImageWidth();
+            sizeBias = mat.GetImageWidth();
 
-            final idRectangle scrollRect = new idRectangle();
+            idRectangle scrollRect = new idRectangle();
             if (horizontal) {
-                this.sizeBias = mat.GetImageHeight();
+                sizeBias = mat.GetImageHeight();
                 scrollRect.x = 0;
-                scrollRect.y = (this.clientRect.h - this.sizeBias);
-                scrollRect.w = this.clientRect.w;
-                scrollRect.h = this.sizeBias;
+                scrollRect.y = (clientRect.h - sizeBias);
+                scrollRect.w = clientRect.w;
+                scrollRect.h = sizeBias;
             } else {
-                scrollRect.x = (this.clientRect.w - this.sizeBias);
+                scrollRect.x = (clientRect.w - sizeBias);
                 scrollRect.y = 0;
-                scrollRect.w = this.sizeBias;
-                scrollRect.h = this.clientRect.h;
+                scrollRect.w = sizeBias;
+                scrollRect.h = clientRect.h;
             }
 
-            this.scroller.InitWithDefaults(scrollerName, scrollRect, this.foreColor.data, this.matColor.data, mat.GetName(), thumbImage, !horizontal, true);
-            InsertChild(this.scroller, null);
-            this.scroller.SetBuddy(this);
+            scroller.InitWithDefaults(scrollerName, scrollRect, foreColor.data, matColor.data, mat.GetName(), thumbImage, !horizontal, true);
+            InsertChild(scroller, null);
+            scroller.SetBuddy(this);
         }
-    }
+    };
 }

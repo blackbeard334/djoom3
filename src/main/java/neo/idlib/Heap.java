@@ -887,7 +887,7 @@ public class Heap {
             this.maxSize = maxSize;
             this.totalSize = totalSize;
         }
-    }
+    };
 ////
 ////
 //
@@ -1237,7 +1237,7 @@ public class Heap {
 //
 //        private class block_t extends block_s {
 //        }
-    }
+    };
 
 //    /*
 //     ==============================================================================

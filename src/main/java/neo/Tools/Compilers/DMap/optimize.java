@@ -1,5 +1,14 @@
 package neo.Tools.Compilers.DMap;
 
+import static neo.Renderer.qgl.qglBegin;
+import static neo.Renderer.qgl.qglBlendFunc;
+import static neo.Renderer.qgl.qglColor3f;
+import static neo.Renderer.qgl.qglDisable;
+import static neo.Renderer.qgl.qglEnable;
+import static neo.Renderer.qgl.qglEnd;
+import static neo.Renderer.qgl.qglFlush;
+import static neo.Renderer.qgl.qglPointSize;
+import static neo.Renderer.qgl.qglVertex3fv;
 import static neo.TempDump.NOT;
 import static neo.Tools.Compilers.DMap.dmap.dmapGlobals;
 import static neo.Tools.Compilers.DMap.gldraw.Draw_ClearWindow;
@@ -15,21 +24,12 @@ import static neo.framework.Common.common;
 import static neo.idlib.math.Vector.DotProduct;
 import static neo.idlib.math.Vector.VectorMA;
 import static neo.idlib.math.Vector.VectorSubtract;
-import static neo.open.gl.QGL.qglBegin;
-import static neo.open.gl.QGL.qglBlendFunc;
-import static neo.open.gl.QGL.qglColor3f;
-import static neo.open.gl.QGL.qglDisable;
-import static neo.open.gl.QGL.qglEnable;
-import static neo.open.gl.QGL.qglEnd;
-import static neo.open.gl.QGL.qglFlush;
-import static neo.open.gl.QGL.qglPointSize;
-import static neo.open.gl.QGL.qglVertex3fv;
-import static neo.open.gl.QGLConstantsIfc.GL_BLEND;
-import static neo.open.gl.QGLConstantsIfc.GL_LINES;
-import static neo.open.gl.QGLConstantsIfc.GL_LINE_LOOP;
-import static neo.open.gl.QGLConstantsIfc.GL_ONE;
-import static neo.open.gl.QGLConstantsIfc.GL_POINTS;
-import static neo.open.gl.QGLConstantsIfc.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_LINES;
+import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
+import static org.lwjgl.opengl.GL11.GL_ONE;
+import static org.lwjgl.opengl.GL11.GL_POINTS;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 
 import java.util.Arrays;
 
@@ -77,7 +77,7 @@ public class optimize {
         optVertex_s islandLink;
         boolean addedToIsland;
         boolean emited;			// when regenerating triangles
-    }
+    };
 
     static class optEdge_s {
 
@@ -88,7 +88,7 @@ public class optimize {
         boolean combined;		// combined from two or more colinear edges
         optTri_s frontTri, backTri;
         optEdge_s v1link, v2link;
-    }
+    };
 
     static class optTri_s {
 
@@ -96,7 +96,7 @@ public class optimize {
         idVec3 midpoint;
         optVertex_s[] v = new optVertex_s[3];
         boolean filled;
-    }
+    };
 
     static class optIsland_t {
 
@@ -104,24 +104,24 @@ public class optimize {
         optVertex_s verts;
         optEdge_s edges;
         optTri_s tris;
-    }
+    };
 
     static class edgeLength_t {
 
         optVertex_s v1, v2;
         float length;
-    }
+    };
 
     static class originalEdges_t {
 
         optVertex_s v1, v2;
-    }
+    };
 
     static class edgeCrossing_s {
 
         edgeCrossing_s next;
         optVertex_s ov;
-    }
+    };
 
     /*
 
@@ -154,7 +154,7 @@ public class optimize {
                     common.Error("ValidateEdgeCounts: mislinked");
                 }
             }
-            if ((c != 2) && (c != 0)) {
+            if (c != 2 && c != 0) {
                 // this can still happen at diamond intersections
 //			common.Printf( "ValidateEdgeCounts: %i edges\n", c );
             }
@@ -274,7 +274,7 @@ public class optimize {
 
         // should we match based on the t-junction fixing hash verts?
         for (i = 0; i < numOptVerts; i++) {
-            if ((optVerts[i].pv.oGet(0) == x) && (optVerts[i].pv.oGet(1) == y)) {
+            if (optVerts[i].pv.oGet(0) == x && optVerts[i].pv.oGet(1) == y) {
                 return optVerts[i];
             }
         }
@@ -320,9 +320,9 @@ public class optimize {
                 continue;
             }
             qglColor3f(1, 0, 0);
-            qglVertex3fv(optEdges[i].v1.pv.toFloatBuffer());
+            qglVertex3fv(optEdges[i].v1.pv.ToFloatPtr());
             qglColor3f(0, 0, 0);
-            qglVertex3fv(optEdges[i].v2.pv.toFloatBuffer());
+            qglVertex3fv(optEdges[i].v2.pv.ToFloatPtr());
         }
         qglEnd();
         qglFlush();
@@ -348,7 +348,7 @@ public class optimize {
         qglPointSize(3);
         qglBegin(GL_POINTS);
         for (vert = island.verts; vert != null; vert = vert.islandLink) {
-            qglVertex3fv(vert.pv.toFloatBuffer());
+            qglVertex3fv(vert.pv.ToFloatPtr());
         }
         qglEnd();
         qglDisable(GL_BLEND);
@@ -375,9 +375,9 @@ public class optimize {
                 continue;
             }
             qglColor3f(1, 0, 0);
-            qglVertex3fv(edge.v1.pv.toFloatBuffer());
+            qglVertex3fv(edge.v1.pv.ToFloatPtr());
             qglColor3f(0, 0, 0);
-            qglVertex3fv(edge.v2.pv.toFloatBuffer());
+            qglVertex3fv(edge.v2.pv.ToFloatPtr());
         }
         qglEnd();
         qglFlush();
@@ -430,7 +430,7 @@ public class optimize {
         dir2 = p2.pv.oMinus(l2.pv);
         cross2 = dir1.Cross(dir2);
 
-        if ((cross1.oGet(2) - cross2.oGet(2)) == 0) {
+        if (cross1.oGet(2) - cross2.oGet(2) == 0) {
             return null;
         }
 
@@ -443,8 +443,8 @@ public class optimize {
         v.xyz = p1.v.xyz.oMultiply(1.0f - f).oPlus(p2.v.xyz.oMultiply(f));
         v.normal = p1.v.normal.oMultiply(1.0f - f).oPlus(p2.v.normal.oMultiply(f));
         v.normal.Normalize();
-        v.st.oSet(0, (p1.v.st.oGet(0) * (1.0f - f)) + (p2.v.st.oGet(0) * f));
-        v.st.oSet(1, (p1.v.st.oGet(1) * (1.0f - f)) + (p2.v.st.oGet(1) * f));
+        v.st.oSet(0, p1.v.st.oGet(0) * (1.0f - f) + p2.v.st.oGet(0) * f);
+        v.st.oSet(1, p1.v.st.oGet(1) * (1.0f - f) + p2.v.st.oGet(1) * f);
 
         return FindOptVertex(v, opt);
     }
@@ -472,12 +472,12 @@ public class optimize {
             s3 = (p1.pv.oMinus(l2.pv)).oMultiply(l2.pv.oMinus(l1.pv));
             s4 = (p2.pv.oMinus(l2.pv)).oMultiply(l2.pv.oMinus(l1.pv));
 
-            if ((s1 > 0) || (s2 > 0) || (s3 > 0) || (s4 > 0)) {
+            if (s1 > 0 || s2 > 0 || s3 > 0 || s4 > 0) {
                 positive = true;
             } else {
                 positive = false;
             }
-            if ((s1 < 0) || (s2 < 0) || (s3 < 0) || (s4 < 0)) {
+            if (s1 < 0 || s2 < 0 || s3 < 0 || s4 < 0) {
                 negative = true;
             } else {
                 negative = false;
@@ -556,8 +556,8 @@ public class optimize {
         if (dmapGlobals.drawflag) {
             qglBegin(GL_LINES);
             qglColor3f(0, (128 + orandom.RandomInt(127)) / 255.0f, 0);
-            qglVertex3fv(v1.pv.toFloatBuffer());
-            qglVertex3fv(v2.pv.toFloatBuffer());
+            qglVertex3fv(v1.pv.ToFloatPtr());
+            qglVertex3fv(v2.pv.ToFloatPtr());
             qglEnd();
             qglFlush();
         }
@@ -590,7 +590,7 @@ public class optimize {
             }
             return 0;
         }
-    }
+    };
 
     /*
      ==================
@@ -619,7 +619,7 @@ public class optimize {
         }
 
         // allocate space for all the lengths
-        lengths = new edgeLength_t[(c_verts * c_verts) / 2];// Mem_Alloc(c_verts * c_verts / 2);
+        lengths = new edgeLength_t[c_verts * c_verts / 2];// Mem_Alloc(c_verts * c_verts / 2);
         numLengths = 0;
         for (vert = island.verts; vert != null; vert = vert.islandLink) {
             if (NOT(vert.edges)) {
@@ -670,10 +670,10 @@ public class optimize {
     static void RemoveIfColinear(optVertex_s ov, optIsland_t island) {
         optEdge_s e, e1, e2;
         optVertex_s v1 = new optVertex_s(), v2, v3 = new optVertex_s();
-        final idVec3 dir1 = new idVec3(), dir2 = new idVec3();
+        idVec3 dir1 = new idVec3(), dir2 = new idVec3();
         float len, dist;
-        final idVec3 point = new idVec3();
-        final idVec3 offset = new idVec3();
+        idVec3 point = new idVec3();
+        idVec3 offset = new idVec3();
         float off;
 
         v2 = ov;
@@ -751,14 +751,14 @@ public class optimize {
         if (dmapGlobals.drawflag) {
             qglBegin(GL_LINES);
             qglColor3f(1, 1, 0);
-            qglVertex3fv(v1.pv.toFloatBuffer());
-            qglVertex3fv(v2.pv.toFloatBuffer());
+            qglVertex3fv(v1.pv.ToFloatPtr());
+            qglVertex3fv(v2.pv.ToFloatPtr());
             qglEnd();
             qglFlush();
             qglBegin(GL_LINES);
             qglColor3f(0, 1, 1);
-            qglVertex3fv(v2.pv.toFloatBuffer());
-            qglVertex3fv(v3.pv.toFloatBuffer());
+            qglVertex3fv(v2.pv.ToFloatPtr());
+            qglVertex3fv(v3.pv.ToFloatPtr());
             qglEnd();
             qglFlush();
         }
@@ -777,8 +777,8 @@ public class optimize {
         // sliver triangle out of existance, and all the edges
         // can be removed
         for (e = island.edges; e != null; e = e.islandLink) {
-            if (((e.v1 == v1) && (e.v2 == v3))
-                    || ((e.v1 == v3) && (e.v2 == v1))) {
+            if ((e.v1 == v1 && e.v2 == v3)
+                    || (e.v1 == v3 && e.v2 == v1)) {
                 UnlinkEdge(e, island);
                 RemoveIfColinear(v1, island);
                 RemoveIfColinear(v3, island);
@@ -1021,14 +1021,14 @@ public class optimize {
         if (dmapGlobals.drawflag) {
             qglColor3f(1, 1, 0);
             qglBegin(GL_LINES);
-            qglVertex3fv(e1.v1.pv.toFloatBuffer());
-            qglVertex3fv(e1.v2.pv.toFloatBuffer());
+            qglVertex3fv(e1.v1.pv.ToFloatPtr());
+            qglVertex3fv(e1.v2.pv.ToFloatPtr());
             qglEnd();
             qglFlush();
             qglColor3f(0, 1, 1);
             qglBegin(GL_LINES);
-            qglVertex3fv(e2.v1.pv.toFloatBuffer());
-            qglVertex3fv(e2.v2.pv.toFloatBuffer());
+            qglVertex3fv(e2.v1.pv.ToFloatPtr());
+            qglVertex3fv(e2.v2.pv.ToFloatPtr());
             qglEnd();
             qglFlush();
         }
@@ -1054,8 +1054,8 @@ public class optimize {
         if (dmapGlobals.drawflag) {
             qglColor3f(1, 0, 1);
             qglBegin(GL_LINES);
-            qglVertex3fv(opposite.v1.pv.toFloatBuffer());
-            qglVertex3fv(opposite.v2.pv.toFloatBuffer());
+            qglVertex3fv(opposite.v1.pv.ToFloatPtr());
+            qglVertex3fv(opposite.v2.pv.ToFloatPtr());
             qglEnd();
             qglFlush();
         }
@@ -1073,7 +1073,7 @@ public class optimize {
             qglColor3f(1, 1, 1);
             qglPointSize(4);
             qglBegin(GL_POINTS);
-            qglVertex3fv(optTri.midpoint.toFloatBuffer());
+            qglVertex3fv(optTri.midpoint.ToFloatPtr());
             qglEnd();
             qglFlush();
         }
@@ -1097,15 +1097,15 @@ public class optimize {
                 qglColor3f(0, (128 + orandom.RandomInt(127)) / 255.0f, 0);
             }
             qglBegin(GL_TRIANGLES);
-            qglVertex3fv(optTri.v[0].pv.toFloatBuffer());
-            qglVertex3fv(optTri.v[1].pv.toFloatBuffer());
-            qglVertex3fv(optTri.v[2].pv.toFloatBuffer());
+            qglVertex3fv(optTri.v[0].pv.ToFloatPtr());
+            qglVertex3fv(optTri.v[1].pv.ToFloatPtr());
+            qglVertex3fv(optTri.v[2].pv.ToFloatPtr());
             qglEnd();
             qglColor3f(1, 1, 1);
             qglBegin(GL_LINE_LOOP);
-            qglVertex3fv(optTri.v[0].pv.toFloatBuffer());
-            qglVertex3fv(optTri.v[1].pv.toFloatBuffer());
-            qglVertex3fv(optTri.v[2].pv.toFloatBuffer());
+            qglVertex3fv(optTri.v[0].pv.ToFloatPtr());
+            qglVertex3fv(optTri.v[1].pv.ToFloatPtr());
+            qglVertex3fv(optTri.v[2].pv.ToFloatPtr());
             qglEnd();
             qglFlush();
         }
@@ -1292,7 +1292,7 @@ public class optimize {
             tri.v[1] = optTri.v[1].v;
             tri.v[2] = optTri.v[2].v;
 
-            final idPlane plane = new idPlane();
+            idPlane plane = new idPlane();
             PlaneForTri(tri, plane);
             if (plane.Normal().oMultiply(dmapGlobals.mapPlanes.oGet(island.group.planeNum).Normal()) <= 0) {
                 // this can happen reasonably when a triangle is nearly degenerate in
@@ -1415,9 +1415,9 @@ public class optimize {
         qglBegin(GL_LINES);
         for (i = 0; i < numOriginalEdges; i++) {
             qglColor3f(1, 0, 0);
-            qglVertex3fv(originalEdges[i].v1.pv.toFloatBuffer());
+            qglVertex3fv(originalEdges[i].v1.pv.ToFloatPtr());
             qglColor3f(0, 0, 0);
-            qglVertex3fv(originalEdges[i].v2.pv.toFloatBuffer());
+            qglVertex3fv(originalEdges[i].v2.pv.ToFloatPtr());
         }
         qglEnd();
         qglFlush();
@@ -1452,10 +1452,10 @@ public class optimize {
             int j;
             // see if there is an existing one
             for (j = 0; j < numOriginalEdges; j++) {
-                if ((originalEdges[j].v1 == v1) && (originalEdges[j].v2 == v2)) {
+                if (originalEdges[j].v1 == v1 && originalEdges[j].v2 == v2) {
                     break;
                 }
-                if ((originalEdges[j].v2 == v1) && (originalEdges[j].v1 == v2)) {
+                if (originalEdges[j].v2 == v1 && originalEdges[j].v1 == v2) {
                     break;
                 }
             }
@@ -1476,7 +1476,7 @@ public class optimize {
      */
     static void AddOriginalEdges(optimizeGroup_s opt) {
         mapTri_s tri;
-        final optVertex_s[] v = new optVertex_s[3];
+        optVertex_s[] v = new optVertex_s[3];
         int numTris;
 
         if (dmapGlobals.verbose) {
@@ -1533,9 +1533,9 @@ public class optimize {
                 DrawOriginalEdges(numOriginalEdges, originalEdges);
                 qglBegin(GL_LINES);
                 qglColor3f(0, 1, 0);
-                qglVertex3fv(originalEdges[i].v1.pv.toFloatBuffer());
+                qglVertex3fv(originalEdges[i].v1.pv.ToFloatPtr());
                 qglColor3f(0, 0, 1);
-                qglVertex3fv(originalEdges[i].v2.pv.toFloatBuffer());
+                qglVertex3fv(originalEdges[i].v2.pv.ToFloatPtr());
                 qglEnd();
                 qglFlush();
             }
@@ -1647,7 +1647,7 @@ public class optimize {
             for (j = 0; j < numCross; j++) {
                 for (k = j + 1; k < numCross; k++) {
                     for (l = 0; l < numCross; l++) {
-                        if ((sorted[l] == sorted[j]) || (sorted[l] == sorted[k])) {
+                        if (sorted[l] == sorted[j] || sorted[l] == sorted[k]) {
                             continue;
                         }
                         if (sorted[j] == sorted[k]) {
@@ -1673,8 +1673,8 @@ public class optimize {
         // check for duplicated edges
         for (i = 0; i < numOptEdges; i++) {
             for (j = i + 1; j < numOptEdges; j++) {
-                if (((optEdges[i].v1 == optEdges[j].v1) && (optEdges[i].v2 == optEdges[j].v2))
-                        || ((optEdges[i].v1 == optEdges[j].v2) && (optEdges[i].v2 == optEdges[j].v1))) {
+                if ((optEdges[i].v1 == optEdges[j].v1 && optEdges[i].v2 == optEdges[j].v2)
+                        || (optEdges[i].v1 == optEdges[j].v2 && optEdges[i].v2 == optEdges[j].v1)) {
                     common.Printf("duplicated optEdge\n");
                 }
             }
@@ -1838,7 +1838,7 @@ public class optimize {
      */
     static void SeparateIslands(optimizeGroup_s opt) {
         int i;
-        final optIsland_t island = new optIsland_t();
+        optIsland_t island = new optIsland_t();
         int numIslands;
 
         DrawAllEdges();
@@ -1894,7 +1894,7 @@ public class optimize {
      */
     static boolean PointInSourceTris(float x, float y, float z, optimizeGroup_s opt) {
         mapTri_s tri;
-        final idBounds b = new idBounds();
+        idBounds b = new idBounds();
         idVec3 p;
 
         if (!opt.material.IsDrawn()) {

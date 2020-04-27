@@ -49,8 +49,8 @@ public class DeclEntityDef {
 
         @Override
         public boolean Parse(String text, int textLength) throws Lib.idException {
-            final idLexer src = new idLexer();
-            final idToken token = new idToken(), token2 = new idToken();
+            idLexer src = new idLexer();
+            idToken token = new idToken(), token2 = new idToken();
 
             src.LoadMemory(text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(DECL_LEXER_FLAGS);
@@ -65,7 +65,7 @@ public class DeclEntityDef {
                     break;
                 }
                 if (token.type != TT_STRING) {
-                    src.Warning("Expected quoted string, but found '%s'", token.getData());
+                    src.Warning("Expected quoted string, but found '%s'", token.toString());
                     MakeDefault();
                     return false;
                 }
@@ -76,24 +76,24 @@ public class DeclEntityDef {
                     return false;
                 }
 
-                if (this.dict.FindKey(token.getData()) != null) {
-                    src.Warning("'%s' already defined", token.getData());
+                if (dict.FindKey(token.toString()) != null) {
+                    src.Warning("'%s' already defined", token.toString());
                 }
-                this.dict.Set(token, token2);
+                dict.Set(token, token2);
             }
 
             // we always automatically set a "classname" key to our name
-            this.dict.Set("classname", GetName());
+            dict.Set("classname", GetName());
 
             // "inherit" keys will cause all values from another entityDef to be copied into this one
             // if they don't conflict.  We can't have circular recursions, because each entityDef will
             // never be parsed mroe than once
             // find all of the dicts first, because copying inherited values will modify the dict
-            final idList<idDeclEntityDef> defList = new idList<idDeclEntityDef>();
+            idList<idDeclEntityDef> defList = new idList<>();
 
             while (true) {
                 final idKeyValue kv;
-                kv = this.dict.MatchPrefix("inherit", null);
+                kv = dict.MatchPrefix("inherit", null);
                 if (null == kv) {
                     break;
                 }
@@ -106,18 +106,18 @@ public class DeclEntityDef {
                 }
 
                 // delete this key/value pair
-                this.dict.Delete(kv.GetKey().getData());
+                dict.Delete(kv.GetKey().toString());
             }
 
             // now copy over the inherited key / value pairs
             for (int i = 0; i < defList.Num(); i++) {
-                this.dict.SetDefaults(defList.oGet(i).dict);
+                dict.SetDefaults(defList.oGet(i).dict);
             }
 
             // precache all referenced media
             // do this as long as we arent in modview
             if (0 == (com_editors & (EDITOR_RADIANT | EDITOR_AAS))) {
-                game.CacheDictionaryMedia(this.dict);
+                game.CacheDictionaryMedia(dict);
             }
 
             return true;
@@ -125,7 +125,7 @@ public class DeclEntityDef {
 
         @Override
         public void FreeData() {
-            this.dict.Clear();
+            dict.Clear();
         }
 
         /*
@@ -137,7 +137,7 @@ public class DeclEntityDef {
          */
         @Override
         public void Print() throws idException {
-            this.dict.Print();
+            dict.Print();
         }
-    }
+    };
 }

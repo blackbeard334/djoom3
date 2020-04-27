@@ -210,14 +210,14 @@ public class CVarSystem {
 
         // Always use one of the following constructors.
         public idCVar(final String name, final String value, int flags, final String description) {
-            if ((null == this.valueCompletion) && ((flags & CVAR_BOOL) != 0)) {
-                this.valueCompletion = idCmdSystem.ArgCompletion_Boolean.getInstance();
+            if (null == valueCompletion && (flags & CVAR_BOOL) != 0) {
+                valueCompletion = idCmdSystem.ArgCompletion_Boolean.getInstance();
             }
             Init(name, value, flags, description, 1, -1, null, null);
         }
 
         public idCVar(final String name, final String value, int flags, final String description, argCompletion_t valueCompletion) {
-            if ((null == valueCompletion) && ((flags & CVAR_BOOL) != 0)) {
+            if (null == valueCompletion && (flags & CVAR_BOOL) != 0) {
                 valueCompletion = idCmdSystem.ArgCompletion_Boolean.getInstance();
             }
             Init(name, value, flags, description, 1, -1, null, valueCompletion);
@@ -243,79 +243,79 @@ public class CVarSystem {
 //
 
         public String GetName() {
-            return this.internalVar.name;
+            return internalVar.name;
         }
 
         public int GetFlags() {
-            return this.internalVar.flags;
+            return internalVar.flags;
         }
 
         public String GetDescription() {
-            return this.internalVar.description;
+            return internalVar.description;
         }
 
         public float GetMinValue() {
-            return this.internalVar.valueMin;
+            return internalVar.valueMin;
         }
 
         public float GetMaxValue() {
-            return this.internalVar.valueMax;
+            return internalVar.valueMax;
         }
 
         public String[] GetValueStrings() {
-            return this.valueStrings;
+            return valueStrings;
         }
 
         public argCompletion_t GetValueCompletion() {
-            return this.valueCompletion;
+            return valueCompletion;
         }
 
         public boolean IsModified() {
-            return (this.internalVar.flags & CVAR_MODIFIED) != 0;
+            return (internalVar.flags & CVAR_MODIFIED) != 0;
         }
 
         public void SetModified() {
-            this.internalVar.flags |= CVAR_MODIFIED;
+            internalVar.flags |= CVAR_MODIFIED;
         }
 
         public void ClearModified() {
-            this.internalVar.flags &= ~CVAR_MODIFIED;
+            internalVar.flags &= ~CVAR_MODIFIED;
         }
 
         public String GetString() {
-            return this.internalVar.value;
+            return internalVar.value;
         }
 
         public boolean GetBool() {
-            return (this.internalVar.integerValue != 0);
+            return (internalVar.integerValue != 0);
         }
 
         public int GetInteger() {
-            return this.internalVar.integerValue;
+            return internalVar.integerValue;
         }
 
         public float GetFloat() {
-            return this.internalVar.floatValue;
+            return internalVar.floatValue;
         }
 
         public void SetString(final String value) {
-            this.internalVar.InternalSetString(value);
+            internalVar.InternalSetString(value);
         }
 
         public void SetBool(final boolean value) {
-            this.internalVar.InternalSetBool(value);
+            internalVar.InternalSetBool(value);
         }
 
         public void SetInteger(final int value) {
-            this.internalVar.InternalSetInteger(value);
+            internalVar.InternalSetInteger(value);
         }
 
         public void SetFloat(final float value) {
-            this.internalVar.InternalSetFloat(value);
+            internalVar.InternalSetFloat(value);
         }
 
         public void SetInternalVar(idCVar cvar) {
-            this.internalVar = cvar;
+            internalVar = cvar;
         }
 
         /*
@@ -386,7 +386,7 @@ public class CVarSystem {
         protected void InternalSetFloat(final float newValue) {
         }
 
-    }
+    };
 
     /**
      * ===============================================================================
@@ -466,7 +466,7 @@ public class CVarSystem {
         public abstract idDict MoveCVarsToDict(int flags) throws idException;
 
         public abstract void SetCVarsFromDict(final idDict dict) throws idException;
-    }
+    };
 
     public static class idInternalCVar extends idCVar {
         // friend class idCVarSystemLocal;
@@ -482,39 +482,39 @@ public class CVarSystem {
         }
 
         public idInternalCVar(final String newName, final String newValue, int newFlags) {
-            this.nameString = new idStr(newName);
-            this.name = newName;
-            this.valueString = new idStr(newValue);
-            this.value = newValue;
-            this.resetString = new idStr(newValue);
-            this.descriptionString = new idStr();
-            this.description = "";
-            this.flags = (newFlags & ~CVAR_STATIC) | CVAR_MODIFIED;
-            this.valueMin = 1;
-            this.valueMax = -1;
-            this.valueStrings = null;
-            this.valueCompletion = null;
+            nameString = new idStr(newName);
+            name = newName;
+            valueString = new idStr(newValue);
+            value = newValue;
+            resetString = new idStr(newValue);
+            descriptionString = new idStr();
+            description = "";
+            flags = (newFlags & ~CVAR_STATIC) | CVAR_MODIFIED;
+            valueMin = 1;
+            valueMax = -1;
+            valueStrings = null;
+            valueCompletion = null;
             UpdateValue();
             UpdateCheat();
-            this.internalVar = this;
+            internalVar = this;
         }
 
         public idInternalCVar(final idCVar cvar) {
-            this.nameString = new idStr(cvar.GetName());
-            this.name = cvar.GetName();
-            this.valueString = new idStr(cvar.GetString());
-            this.value = cvar.GetString();
-            this.resetString = new idStr(cvar.GetString());
-            this.descriptionString = new idStr(cvar.GetDescription());
-            this.description = cvar.GetDescription();
-            this.flags = cvar.GetFlags() | CVAR_MODIFIED;
-            this.valueMin = cvar.GetMinValue();
-            this.valueMax = cvar.GetMaxValue();
-            this.valueStrings = CopyValueStrings(cvar.GetValueStrings());
-            this.valueCompletion = cvar.GetValueCompletion();
+            nameString = new idStr(cvar.GetName());
+            name = cvar.GetName();
+            valueString = new idStr(cvar.GetString());
+            value = cvar.GetString();
+            resetString = new idStr(cvar.GetString());
+            descriptionString = new idStr(cvar.GetDescription());
+            description = cvar.GetDescription();
+            flags = cvar.GetFlags() | CVAR_MODIFIED;
+            valueMin = cvar.GetMinValue();
+            valueMax = cvar.GetMaxValue();
+            valueStrings = CopyValueStrings(cvar.GetValueStrings());
+            valueCompletion = cvar.GetValueCompletion();
             UpdateValue();
             UpdateCheat();
-            this.internalVar = this;
+            internalVar = this;
         }
 //	// virtual					~idInternalCVar( void );
 //
@@ -554,124 +554,124 @@ public class CVarSystem {
             // if this is a statically declared variable
             if ((cvar.GetFlags() & CVAR_STATIC) != 0) {
 
-                if ((this.flags & CVAR_STATIC) != 0) {
+                if ((flags & CVAR_STATIC) != 0) {
 
                     // the code has more than one static declaration of the same variable, make sure they have the same properties
-                    if (this.resetString.Icmp(cvar.GetString()) != 0) {
-                        common.Warning("CVar '%s' declared multiple times with different initial value", this.nameString);
+                    if (resetString.Icmp(cvar.GetString()) != 0) {
+                        common.Warning("CVar '%s' declared multiple times with different initial value", nameString);
                     }
-                    if ((this.flags & (CVAR_BOOL | CVAR_INTEGER | CVAR_FLOAT)) != (cvar.GetFlags() & (CVAR_BOOL | CVAR_INTEGER | CVAR_FLOAT))) {
-                        common.Warning("CVar '%s' declared multiple times with different type", this.nameString);
+                    if ((flags & (CVAR_BOOL | CVAR_INTEGER | CVAR_FLOAT)) != (cvar.GetFlags() & (CVAR_BOOL | CVAR_INTEGER | CVAR_FLOAT))) {
+                        common.Warning("CVar '%s' declared multiple times with different type", nameString);
                     }
-                    if ((this.valueMin != cvar.GetMinValue()) || (this.valueMax != cvar.GetMaxValue())) {
-                        common.Warning("CVar '%s' declared multiple times with different minimum/maximum", this.nameString);
+                    if (valueMin != cvar.GetMinValue() || valueMax != cvar.GetMaxValue()) {
+                        common.Warning("CVar '%s' declared multiple times with different minimum/maximum", nameString);
                     }
 
                 }
 
                 // the code is now specifying a variable that the user already set a value for, take the new value as the reset value
-                this.resetString = new idStr(cvar.GetString());
-                this.descriptionString = new idStr(cvar.GetDescription());
-                this.description = cvar.GetDescription();
-                this.valueMin = cvar.GetMinValue();
-                this.valueMax = cvar.GetMaxValue();
+                resetString = new idStr(cvar.GetString());
+                descriptionString = new idStr(cvar.GetDescription());
+                description = cvar.GetDescription();
+                valueMin = cvar.GetMinValue();
+                valueMax = cvar.GetMaxValue();
 //                Mem_Free(valueStrings);
-                this.valueStrings = CopyValueStrings(cvar.GetValueStrings());
-                this.valueCompletion = cvar.GetValueCompletion();
+                valueStrings = CopyValueStrings(cvar.GetValueStrings());
+                valueCompletion = cvar.GetValueCompletion();
                 UpdateValue();
                 cvarSystem.SetModifiedFlags(cvar.GetFlags());
             }
 
-            this.flags |= cvar.GetFlags();
+            flags |= cvar.GetFlags();
 
             UpdateCheat();
 
             // only allow one non-empty reset string without a warning
-            if (this.resetString.Length() == 0) {
-                this.resetString = new idStr(cvar.GetString());
-            } else if ((cvar.GetString() != null) && (this.resetString.Cmp(cvar.GetString()) != 0)) {
-                common.Warning("cvar \"%s\" given initial values: \"%s\" and \"%s\"\n", this.nameString, this.resetString, cvar.GetString());
+            if (resetString.Length() == 0) {
+                resetString = new idStr(cvar.GetString());
+            } else if (cvar.GetString() != null && resetString.Cmp(cvar.GetString()) != 0) {
+                common.Warning("cvar \"%s\" given initial values: \"%s\" and \"%s\"\n", nameString, resetString, cvar.GetString());
             }
         }
 
         public void UpdateValue() {
             boolean clamped = false;
 
-            if ((this.flags & CVAR_BOOL) != 0) {
-                this.integerValue = (atoi(this.value) != 0 ? 1 : 0);
-                this.floatValue = this.integerValue;
-                if ((idStr.Icmp(this.value, "0") != 0) && (idStr.Icmp(this.value, "1") != 0)) {
-                    this.valueString = new idStr((this.integerValue != 0));
-                    this.value = this.valueString.getData();
+            if ((flags & CVAR_BOOL) != 0) {
+                integerValue = (atoi(value) != 0 ? 1 : 0);
+                floatValue = integerValue;
+                if (idStr.Icmp(value, "0") != 0 && idStr.Icmp(value, "1") != 0) {
+                    valueString = new idStr((integerValue != 0));
+                    value = valueString.toString();
                 }
-            } else if ((this.flags & CVAR_INTEGER) != 0) {
-                this.integerValue = atoi(this.value);
-                if (this.valueMin < this.valueMax) {
-                    if (this.integerValue < this.valueMin) {
-                        this.integerValue = (int) this.valueMin;
+            } else if ((flags & CVAR_INTEGER) != 0) {
+                integerValue = atoi(value);
+                if (valueMin < valueMax) {
+                    if (integerValue < valueMin) {
+                        integerValue = (int) valueMin;
                         clamped = true;
-                    } else if (this.integerValue > this.valueMax) {
-                        this.integerValue = (int) this.valueMax;
-                        clamped = true;
-                    }
-                }
-                if (clamped || !idStr.IsNumeric(this.value) || (idStr.FindChar(this.value, '.') != 0)) {
-                    this.valueString = new idStr(this.integerValue);
-                    this.value = this.valueString.getData();
-                }
-                this.floatValue = this.integerValue;
-            } else if ((this.flags & CVAR_FLOAT) != 0) {
-                this.floatValue = atof(this.value);
-                if (this.valueMin < this.valueMax) {
-                    if (this.floatValue < this.valueMin) {
-                        this.floatValue = this.valueMin;
-                        clamped = true;
-                    } else if (this.floatValue > this.valueMax) {
-                        this.floatValue = this.valueMax;
+                    } else if (integerValue > valueMax) {
+                        integerValue = (int) valueMax;
                         clamped = true;
                     }
                 }
-                if (clamped || !idStr.IsNumeric(this.value)) {
-                    this.valueString = new idStr(this.floatValue);
-                    this.value = this.valueString.getData();
+                if (clamped || !idStr.IsNumeric(value) || idStr.FindChar(value, '.') != 0) {
+                    valueString = new idStr(integerValue);
+                    value = valueString.toString();
                 }
-                this.integerValue = (int) this.floatValue;
+                floatValue = (float) integerValue;
+            } else if ((flags & CVAR_FLOAT) != 0) {
+                floatValue = atof(value);
+                if (valueMin < valueMax) {
+                    if (floatValue < valueMin) {
+                        floatValue = valueMin;
+                        clamped = true;
+                    } else if (floatValue > valueMax) {
+                        floatValue = valueMax;
+                        clamped = true;
+                    }
+                }
+                if (clamped || !idStr.IsNumeric(value)) {
+                    valueString = new idStr(floatValue);
+                    value = valueString.toString();
+                }
+                integerValue = (int) floatValue;
             } else {
-                if ((this.valueStrings != null) && (this.valueStrings.length > 0)) {
-                    this.integerValue = 0;
-                    for (int i = 0; this.valueStrings[i] != null; i++) {
-                        if (this.valueString.Icmp(this.valueStrings[i]) == 0) {
-                            this.integerValue = i;
+                if (valueStrings != null && valueStrings.length > 0) {
+                    integerValue = 0;
+                    for (int i = 0; valueStrings[i] != null; i++) {
+                        if (valueString.Icmp(valueStrings[i]) == 0) {
+                            integerValue = i;
                             break;
                         }
                     }
-                    this.valueString = new idStr(this.valueStrings[this.integerValue]);
-                    this.value = this.valueStrings[this.integerValue];
-                    this.floatValue = this.integerValue;
-                } else if (this.valueString.Length() < 32) {
-                    this.floatValue = atof(this.value);
-                    this.integerValue = (int) this.floatValue;
+                    valueString = new idStr(valueStrings[integerValue]);
+                    value = valueStrings[integerValue];
+                    floatValue = (float) integerValue;
+                } else if (valueString.Length() < 32) {
+                    floatValue = atof(value);
+                    integerValue = (int) floatValue;
                 } else {
-                    this.floatValue = 0.0f;
-                    this.integerValue = 0;
+                    floatValue = 0.0f;
+                    integerValue = 0;
                 }
             }
         }
 
         public void UpdateCheat() {
             // all variables are considered cheats except for a few types
-            if ((this.flags & (CVAR_NOCHEAT | CVAR_INIT | CVAR_ROM | CVAR_ARCHIVE | CVAR_USERINFO | CVAR_SERVERINFO | CVAR_NETWORKSYNC)) != 0) {
-                this.flags &= ~CVAR_CHEAT;
+            if ((flags & (CVAR_NOCHEAT | CVAR_INIT | CVAR_ROM | CVAR_ARCHIVE | CVAR_USERINFO | CVAR_SERVERINFO | CVAR_NETWORKSYNC)) != 0) {
+                flags &= ~CVAR_CHEAT;
             } else {
-                this.flags |= CVAR_CHEAT;
+                flags |= CVAR_CHEAT;
             }
         }
 
         public void Set(String newValue, boolean force, boolean fromServer) {
-            if ((session != null) && session.IsMultiplayer() && !fromServer) {
+            if (session != null && session.IsMultiplayer() && !fromServer) {
 // #ifndef ID_TYPEINFO
                 // if ( ( flags & CVAR_NETWORKSYNC ) && idAsyncNetwork::client.IsActive() ) {
-                // common.Printf( "%s is a synced over the network and cannot be changed on a multiplayer client.\n", nameString.getData() );
+                // common.Printf( "%s is a synced over the network and cannot be changed on a multiplayer client.\n", nameString.c_str() );
 // #if ID_ALLOW_CHEATS
                 // common.Printf( "ID_ALLOW_CHEATS override!\n" );
 // #else				
@@ -679,8 +679,8 @@ public class CVarSystem {
 // #endif
 //		}
 // #endif
-                if (((this.flags & CVAR_CHEAT) != 0) && !cvarSystem.GetCVarBool("net_allowCheats")) {
-                    common.Printf("%s cannot be changed in multiplayer.\n", this.nameString);
+                if ((flags & CVAR_CHEAT) != 0 && !cvarSystem.GetCVarBool("net_allowCheats")) {
+                    common.Printf("%s cannot be changed in multiplayer.\n", nameString);
 // #if ID_ALLOW_CHEATS
                     // common.Printf( "ID_ALLOW_CHEATS override!\n" );
 // #else				
@@ -690,36 +690,36 @@ public class CVarSystem {
             }
 
             if (null == newValue) {
-                newValue = this.resetString.getData();
+                newValue = resetString.toString();
             }
 
             if (!force) {
-                if ((this.flags & CVAR_ROM) != 0) {
-                    common.Printf("%s is read only.\n", this.nameString);
+                if ((flags & CVAR_ROM) != 0) {
+                    common.Printf("%s is read only.\n", nameString);
                     return;
                 }
 
-                if ((this.flags & CVAR_INIT) != 0) {
-                    common.Printf("%s is write protected.\n", this.nameString);
+                if ((flags & CVAR_INIT) != 0) {
+                    common.Printf("%s is write protected.\n", nameString);
                     return;
                 }
             }
 
-            if (this.valueString.Icmp(newValue) == 0) {
+            if (valueString.Icmp(newValue) == 0) {
                 return;
             }
 
-            this.valueString = new idStr(newValue);
-            this.value = newValue;
+            valueString = new idStr(newValue);
+            value = newValue;
             UpdateValue();
 
             SetModified();
-            cvarSystem.SetModifiedFlags(this.flags);
+            cvarSystem.SetModifiedFlags(flags);
         }
 
         public void Reset() {
-            this.valueString = this.resetString;
-            this.value = this.valueString.getData();
+            valueString = resetString;
+            value = valueString.toString();
             UpdateValue();
         }
 
@@ -746,7 +746,7 @@ public class CVarSystem {
         protected void InternalSetFloat(final float newValue) throws idException {
             Set(Float.toString(newValue), true, false);
         }
-    }
+    };
 
     /*
      ===============================================================================
@@ -758,8 +758,8 @@ public class CVarSystem {
     static class idCVarSystemLocal extends idCVarSystem {
 
         private boolean                initialized;
-        private final idList<idInternalCVar> cvars;
-        private final idHashIndex            cvarHash;
+        private idList<idInternalCVar> cvars;
+        private idHashIndex            cvarHash;
         private int                    modifiedFlags;
         // use a static dictionary to MoveCVarsToDict can be used from game
         private static idDict moveCVarsToDict = new idDict();
@@ -767,10 +767,10 @@ public class CVarSystem {
         //
 
         public idCVarSystemLocal() {
-            this.initialized = false;
-            this.cvars = new idList<idInternalCVar>();
-            this.cvarHash = new idHashIndex();
-            this.modifiedFlags = 0;
+            initialized = false;
+            cvars = new idList<>();
+            cvarHash = new idHashIndex();
+            modifiedFlags = 0;
         }
 //
 //public						~idCVarSystemLocal() {}
@@ -779,7 +779,7 @@ public class CVarSystem {
         @Override
         public void Init() throws idException {
 
-            this.modifiedFlags = 0;
+            modifiedFlags = 0;
 
             cmdSystem.AddCommand("toggle", Toggle_f.getInstance(), CMD_FL_SYSTEM, "toggles a cvar");
             cmdSystem.AddCommand("set", Set_f.getInstance(), CMD_FL_SYSTEM, "sets a cvar");
@@ -791,20 +791,20 @@ public class CVarSystem {
             cmdSystem.AddCommand("listCvars", List_f.getInstance(), CMD_FL_SYSTEM, "lists cvars");
             cmdSystem.AddCommand("cvar_restart", Restart_f.getInstance(), CMD_FL_SYSTEM, "restart the cvar system");
 
-            this.initialized = true;
+            initialized = true;
         }
 
         @Override
         public void Shutdown() {
-            this.cvars.DeleteContents(true);
-            this.cvarHash.Free();
+            cvars.DeleteContents(true);
+            cvarHash.Free();
             moveCVarsToDict.Clear();
-            this.initialized = false;
+            initialized = false;
         }
 
         @Override
         public boolean IsInitialized() {
-            return this.initialized;
+            return initialized;
         }
 
         @Override
@@ -820,8 +820,8 @@ public class CVarSystem {
                 internal.Update(cvar);
             } else {
                 internal = new idInternalCVar(cvar);
-                hash = this.cvarHash.GenerateKey(internal.nameString.getData(), false);
-                this.cvarHash.Add(hash, this.cvars.Append(internal));
+                hash = cvarHash.GenerateKey(internal.nameString.c_str(), false);
+                cvarHash.Add(hash, cvars.Append(internal));
             }
 
             cvar.SetInternalVar(internal);
@@ -876,7 +876,7 @@ public class CVarSystem {
 
         @Override
         public String GetCVarString(final String name) {
-            final idInternalCVar internal = FindInternal(name);
+            idInternalCVar internal = FindInternal(name);
             if (internal != null) {
                 return internal.GetString();
             }
@@ -885,7 +885,7 @@ public class CVarSystem {
 
         @Override
         public boolean GetCVarBool(final String name) {
-            final idInternalCVar internal = FindInternal(name);
+            idInternalCVar internal = FindInternal(name);
             if (internal != null) {
                 return internal.GetBool();
             }
@@ -894,7 +894,7 @@ public class CVarSystem {
 
         @Override
         public int GetCVarInteger(final String name) {
-            final idInternalCVar internal = FindInternal(name);
+            idInternalCVar internal = FindInternal(name);
             if (internal != null) {
                 return internal.GetInteger();
             }
@@ -903,7 +903,7 @@ public class CVarSystem {
 
         @Override
         public float GetCVarFloat(final String name) {
-            final idInternalCVar internal = FindInternal(name);
+            idInternalCVar internal = FindInternal(name);
             if (internal != null) {
                 return internal.GetFloat();
             }
@@ -935,23 +935,23 @@ public class CVarSystem {
 
         @Override
         public void CommandCompletion(void_callback<String> callback) throws idException {
-            for (int i = 0; i < this.cvars.Num(); i++) {
-                callback.run(this.cvars.oGet(i).GetName());
+            for (int i = 0; i < cvars.Num(); i++) {
+                callback.run(cvars.oGet(i).GetName());
             }
         }
 
         @Override
         public void ArgCompletion(final String cmdString, void_callback<String> callback) throws idException {
-            final idCmdArgs args = new idCmdArgs();
+            idCmdArgs args = new idCmdArgs();
 
             args.TokenizeString(cmdString, false);
 
-            for (int i = 0; i < this.cvars.Num(); i++) {
-                if (null == this.cvars.oGet(i).valueCompletion) {
+            for (int i = 0; i < cvars.Num(); i++) {
+                if (null == cvars.oGet(i).valueCompletion) {
                     continue;
                 }
-                if (idStr.Icmp(args.Argv(0), this.cvars.oGet(i).nameString.getData()) == 0) {
-                    this.cvars.oGet(i).valueCompletion.run(args, callback);
+                if (idStr.Icmp(args.Argv(0), cvars.oGet(i).nameString.toString()) == 0) {
+                    cvars.oGet(i).valueCompletion.run(args, callback);
                     break;
                 }
             }
@@ -959,23 +959,23 @@ public class CVarSystem {
 
         @Override
         public void SetModifiedFlags(int flags) {
-            this.modifiedFlags |= flags;
+            modifiedFlags |= flags;
         }
 
         @Override
         public int GetModifiedFlags() {
-            return this.modifiedFlags;
+            return modifiedFlags;
         }
 
         @Override
         public void ClearModifiedFlags(int flags) {
-            this.modifiedFlags &= ~flags;
+            modifiedFlags &= ~flags;
         }
 
         @Override
         public void ResetFlaggedVariables(int flags) throws idException {
-            for (int i = 0; i < this.cvars.Num(); i++) {
-                final idInternalCVar cvar = this.cvars.oGet(i);
+            for (int i = 0; i < cvars.Num(); i++) {
+                idInternalCVar cvar = cvars.oGet(i);
                 if ((cvar.GetFlags() & flags) != 0) {
                     cvar.Set(null, true, true);
                 }
@@ -984,8 +984,8 @@ public class CVarSystem {
 
         @Override
         public void RemoveFlaggedAutoCompletion(int flags) {
-            for (int i = 0; i < this.cvars.Num(); i++) {
-                final idInternalCVar cvar = this.cvars.oGet(i);
+            for (int i = 0; i < cvars.Num(); i++) {
+                idInternalCVar cvar = cvars.oGet(i);
                 if ((cvar.GetFlags() & flags) != 0) {
                     cvar.valueCompletion = null;
                 }
@@ -1002,8 +1002,8 @@ public class CVarSystem {
          */
         @Override
         public void WriteFlaggedVariables(int flags, final String setCmd, idFile f) {
-            for (int i = 0; i < this.cvars.Num(); i++) {
-                final idInternalCVar cvar = this.cvars.oGet(i);
+            for (int i = 0; i < cvars.Num(); i++) {
+                idInternalCVar cvar = cvars.oGet(i);
                 if ((cvar.GetFlags() & flags) != 0) {
                     f.Printf("%s %s \"%s\"\n", setCmd, cvar.GetName(), cvar.GetString());
                 }
@@ -1013,8 +1013,8 @@ public class CVarSystem {
         @Override
         public idDict MoveCVarsToDict(int flags) throws idException {
             moveCVarsToDict.Clear();
-            for (int i = 0; i < this.cvars.Num(); i++) {
-                final idCVar cvar = this.cvars.oGet(i);
+            for (int i = 0; i < cvars.Num(); i++) {
+                idCVar cvar = cvars.oGet(i);
                 if ((cvar.GetFlags() & flags) != 0) {
                     moveCVarsToDict.Set(cvar.GetName(), cvar.GetString());
                 }
@@ -1028,9 +1028,9 @@ public class CVarSystem {
 
             for (int i = 0; i < dict.GetNumKeyVals(); i++) {
                 final idKeyValue kv = dict.GetKeyVal(i);
-                internal = FindInternal(kv.GetKey().getData());
+                internal = FindInternal(kv.GetKey().toString());
                 if (internal != null) {
-                    internal.InternalServerSetString(kv.GetValue().getData());
+                    internal.InternalServerSetString(kv.GetValue().toString());
                 }
             }
         }
@@ -1038,10 +1038,10 @@ public class CVarSystem {
 //public	void					RegisterInternal( idCVar cvar );
 
         public idInternalCVar FindInternal(final String name) {
-            final int hash = this.cvarHash.GenerateKey(name, false);
-            for (int i = this.cvarHash.First(hash); i != -1; i = this.cvarHash.Next(i)) {
-                if (this.cvars.oGet(i).nameString.Icmp(name) == 0) {
-                    return this.cvars.oGet(i);
+            int hash = cvarHash.GenerateKey(name, false);
+            for (int i = cvarHash.First(hash); i != -1; i = cvarHash.Next(i)) {
+                if (cvars.oGet(i).nameString.Icmp(name) == 0) {
+                    return cvars.oGet(i);
                 }
             }
             return null;
@@ -1059,8 +1059,8 @@ public class CVarSystem {
                 internal.UpdateCheat();
             } else {
                 internal = new idInternalCVar(name, value, flags);
-                hash = this.cvarHash.GenerateKey(internal.nameString.getData(), false);
-                this.cvarHash.Add(hash, this.cvars.Append(internal));
+                hash = cvarHash.GenerateKey(internal.nameString.c_str(), false);
+                cvarHash.Add(hash, cvars.Append(internal));
             }
         }
 
@@ -1092,7 +1092,7 @@ public class CVarSystem {
                     return;
                 }
 
-                final idInternalCVar cvar = localCVarSystem.FindInternal(args.Argv(1));
+                idInternalCVar cvar = localCVarSystem.FindInternal(args.Argv(1));
 
                 if (null == cvar) {
                     common.Warning("Toggle_f: cvar \"%s\" not found", args.Argv(1));
@@ -1129,10 +1129,10 @@ public class CVarSystem {
                         current = 0.0f;
                     }
                     common.Printf("set %s = %f\n", args.Argv(1), current);
-                    cvar.Set(new idStr(current).getData(), false, false);
+                    cvar.Set(new idStr(current).toString(), false, false);
                 }
             }
-        }
+        };
 
         static class Set_f extends cmdFunction_t {
 
@@ -1149,7 +1149,7 @@ public class CVarSystem {
                 str = args.Args(2, args.Argc() - 1);
                 localCVarSystem.SetCVarString(args.Argv(1), str);
             }
-        }
+        };
 
         static class SetS_f extends cmdFunction_t {
 
@@ -1170,7 +1170,7 @@ public class CVarSystem {
                 }
                 cvar.flags |= CVAR_SERVERINFO | CVAR_ARCHIVE;
             }
-        }
+        };
 
         static class SetU_f extends cmdFunction_t {
 
@@ -1191,7 +1191,7 @@ public class CVarSystem {
                 }
                 cvar.flags |= CVAR_USERINFO | CVAR_ARCHIVE;
             }
-        }
+        };
 
         static class SetT_f extends cmdFunction_t {
 
@@ -1212,7 +1212,7 @@ public class CVarSystem {
                 }
                 cvar.flags |= CVAR_TOOL;
             }
-        }
+        };
 
         static class SetA_f extends cmdFunction_t {
 
@@ -1237,7 +1237,7 @@ public class CVarSystem {
                 // to be saved
 //	cvar->flags |= CVAR_ARCHIVE;
             }
-        }
+        };
 
         static class Reset_f extends cmdFunction_t {
 
@@ -1262,7 +1262,7 @@ public class CVarSystem {
 
                 cvar.Reset();
             }
-        }
+        };
 
         static enum show {
 
@@ -1270,24 +1270,23 @@ public class CVarSystem {
             SHOW_DESCRIPTION,
             SHOW_TYPE,
             SHOW_FLAGS
-        }
+        };
 
         static void ListByFlags(idCmdArgs args, long /*cvarFlags_t*/ flags) throws idException {
             int i, argNum;
-            idStr match;
-			final idStr indent = new idStr(), str = new idStr();
+            idStr match, indent = new idStr(), str = new idStr();
             String string;
             idInternalCVar cvar;
-            final idList<idInternalCVar> cvarList = new idList<idInternalCVar>();
+            idList<idInternalCVar> cvarList = new idList<>();
 
             argNum = 1;
             show show = SHOW_VALUE;
 
-            if ((idStr.Icmp(args.Argv(argNum), "-") == 0) || (idStr.Icmp(args.Argv(argNum), "/") == 0)) {
-                if ((idStr.Icmp(args.Argv(argNum + 1), "help") == 0) || (idStr.Icmp(args.Argv(argNum + 1), "?") == 0)) {
+            if (idStr.Icmp(args.Argv(argNum), "-") == 0 || idStr.Icmp(args.Argv(argNum), "/") == 0) {
+                if (idStr.Icmp(args.Argv(argNum + 1), "help") == 0 || idStr.Icmp(args.Argv(argNum + 1), "?") == 0) {
                     argNum = 3;
                     show = SHOW_DESCRIPTION;
-                } else if ((idStr.Icmp(args.Argv(argNum + 1), "type") == 0) || (idStr.Icmp(args.Argv(argNum + 1), "range") == 0)) {
+                } else if (idStr.Icmp(args.Argv(argNum + 1), "type") == 0 || idStr.Icmp(args.Argv(argNum + 1), "range") == 0) {
                     argNum = 3;
                     show = SHOW_TYPE;
                 } else if (idStr.Icmp(args.Argv(argNum + 1), "flags") == 0) {
@@ -1310,7 +1309,7 @@ public class CVarSystem {
                     continue;
                 }
 
-                if ((match.Length() != 0) && !cvar.nameString.Filter(match.getData(), false)) {
+                if (match.Length() != 0 && !cvar.nameString.Filter(match.toString(), false)) {
                     continue;
                 }
 
@@ -1333,7 +1332,7 @@ public class CVarSystem {
 
                     for (i = 0; i < cvarList.Num(); i++) {
                         cvar = cvarList.oGet(i);
-                        common.Printf(FORMAT_STRING + S_COLOR_WHITE + "%s\n", cvar.nameString, CreateColumn(cvar.GetDescription(), NUM_DESCRIPTION_CHARS, indent.getData(), str));
+                        common.Printf(FORMAT_STRING + S_COLOR_WHITE + "%s\n", cvar.nameString, CreateColumn(cvar.GetDescription(), NUM_DESCRIPTION_CHARS, indent.toString(), str));
                     }
                     break;
                 }
@@ -1350,7 +1349,7 @@ public class CVarSystem {
                             }
                         } else if ((cvar.GetFlags() & CVAR_FLOAT) != 0) {
                             if (cvar.GetMinValue() < cvar.GetMaxValue()) {
-                                common.Printf(FORMAT_STRING + S_COLOR_RED + "float " + S_COLOR_WHITE + "[%s, %s]\n", cvar.GetName(), new idStr(cvar.GetMinValue()).getData(), new idStr(cvar.GetMaxValue()).getData());
+                                common.Printf(FORMAT_STRING + S_COLOR_RED + "float " + S_COLOR_WHITE + "[%s, %s]\n", cvar.GetName(), new idStr(cvar.GetMinValue()).toString(), new idStr(cvar.GetMaxValue()).toString());
                             } else {
                                 common.Printf(FORMAT_STRING + S_COLOR_RED + "float\n", cvar.GetName());
                             }
@@ -1433,7 +1432,7 @@ public class CVarSystem {
             public void run(idCmdArgs args) throws idException {
                 ListByFlags(args, CVAR_ALL);
             }
-        }
+        };
 
         static class Restart_f extends cmdFunction_t {
 
@@ -1458,7 +1457,7 @@ public class CVarSystem {
 
                     // throw out any variables the user created
                     if (0 == (cvar.flags & CVAR_STATIC)) {
-                        hash = localCVarSystem.cvarHash.GenerateKey(cvar.nameString.getData(), false);
+                        hash = localCVarSystem.cvarHash.GenerateKey(cvar.nameString.toString(), false);
 //			delete cvar;
                         localCVarSystem.cvars.RemoveIndex(i);
                         localCVarSystem.cvarHash.RemoveIndex(hash, i);
@@ -1470,8 +1469,8 @@ public class CVarSystem {
                 }
 
             }
-        }
-    }
+        };
+    };
     //    
     //
     private static final int    NUM_COLUMNS           = 77;        // 78 - 1, or (80 x 2 - 2) / 2 - 2
@@ -1481,12 +1480,12 @@ public class CVarSystem {
 
     static String CreateColumn(final String textString, int columnWidth, final String indent, idStr string) {
         int i, lastLine;
-        final char[] text = textString.toCharArray();
+        char[] text = textString.toCharArray();
 
         string.Clear();
         for (lastLine = i = 0; /*text[i] != '\0'*/ i < text.length; i++) {
-            if (((i - lastLine) >= columnWidth) || (text[i] == '\n')) {
-                while ((i > 0) && (text[i] > ' ') && (text[i] != '/') && (text[i] != ',') && (text[i] != '\\')) {
+            if (i - lastLine >= columnWidth || text[i] == '\n') {
+                while (i > 0 && text[i] > ' ' && text[i] != '/' && text[i] != ',' && text[i] != '\\') {
                     i--;
                 }
                 while (lastLine < i) {
@@ -1499,7 +1498,7 @@ public class CVarSystem {
         while (lastLine < i) {
             string.Append(text[lastLine++]);
         }
-        return string.getData();
+        return string.toString();
     }
 
     /*

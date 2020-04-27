@@ -49,5 +49,5 @@ public class ListGUI {
         public abstract void SetStateChanges(boolean enable);
 
         public abstract void Shutdown();
-    }
+    };
 }
