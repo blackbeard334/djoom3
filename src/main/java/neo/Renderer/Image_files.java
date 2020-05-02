@@ -31,8 +31,10 @@ import org.lwjgl.BufferUtils;
 
 import neo.TempDump.TODO_Exception;
 import neo.Renderer.Image.cubeFiles_t;
+import neo.Renderer.Image.idImageManager;
 import neo.framework.File_h.idFile;
 import neo.idlib.Text.Str.idStr;
+import neo.open.Nio;
 
 /**
  *
@@ -110,7 +112,7 @@ public class Image_files {
      ================
      */
     // data is an 8 bit index into palette, which is RGB (no A)
-    static void R_WritePalTGA(final String filename, final byte[] data, final byte[] palette, int width, int height, boolean flipVertical) {
+    static void R_WritePalTGA(final String filename, final ByteBuffer data, final byte[] palette, int width, int height, boolean flipVertical) {
         throw new TODO_Exception();
 //	byte	*buffer;
 //	int		i;
@@ -151,7 +153,7 @@ public class Image_files {
 //	Mem_Free (buffer);
     }
 
-    static void R_WritePalTGA(final String filename, final byte[] data, final byte[] palette, int width, int height) {
+    static void R_WritePalTGA(final String filename, final ByteBuffer data, final byte[] palette, int width, int height) {
         R_WritePalTGA(filename, data, palette, width, height, false);
     }
 
@@ -163,8 +165,8 @@ public class Image_files {
     public static void R_WriteTGA(final String filename, final ByteBuffer data, int width, int height, boolean flipVertical) {
         ByteBuffer buffer;
         int i;
-        int bufferSize = width * height * 4 + 18;
-        int imgStart = 18;
+        final int bufferSize = (width * height * 4) + 18;
+        final int imgStart = 18;
 
         buffer = ByteBuffer.allocate(bufferSize);// Mem_Alloc(bufferSize);
 //	memset( buffer, 0, 18 );
@@ -180,10 +182,10 @@ public class Image_files {
 
         // swap rgb to bgr
         for (i = imgStart; i < bufferSize; i += 4) {
-            buffer.put(i, data.get(i - imgStart + 2));		// blue
-            buffer.put(i + 1, data.get(i - imgStart + 1));		// green
-            buffer.put(i + 2, data.get(i - imgStart + 0));		// red
-            buffer.put(i + 3, data.get(i - imgStart + 3));		// alpha
+            buffer.put(i, data.get((i - imgStart) + 2));		// blue
+            buffer.put(i + 1, data.get((i - imgStart) + 1));		// green
+            buffer.put(i + 2, data.get((i - imgStart) + 0));		// red
+            buffer.put(i + 3, data.get((i - imgStart) + 3));		// alpha
         }
 
         fileSystem.WriteFile(filename, buffer, bufferSize);
@@ -216,9 +218,9 @@ public class Image_files {
         ByteBuffer pixbuf;
         int row, column;
         ByteBuffer buf_p;
-        ByteBuffer[] buffer = {null};
+        final ByteBuffer[] buffer = {null};
         int length;
-        BMPHeader_t bmpHeader = new BMPHeader_t();
+        final BMPHeader_t bmpHeader = new BMPHeader_t();
         ByteBuffer bmpRGBA;
 
         if (NOT(width, height)) {
@@ -230,7 +232,7 @@ public class Image_files {
         // load the file
         //
         length = fileSystem.ReadFile(name, buffer, timestamp);
-        if (NOT(buffer)) {
+        if (NOT((Object[])buffer)) {
             return null;
         }
 
@@ -252,7 +254,7 @@ public class Image_files {
         bmpHeader.vRes = LittleLong(buf_p.getLong());//	buf_p += 4;
         bmpHeader.colors = LittleLong(buf_p.getLong());//	buf_p += 4;
         bmpHeader.importantColors = LittleLong(buf_p.getLong());//	buf_p += 4;
-        for (char[] palette : bmpHeader.palette) {
+        for (final char[] palette : bmpHeader.palette) {
             for (int a = 0; a < bmpHeader.palette[0].length; a++) {
 //	memcpy( bmpHeader.palette, buf_p, sizeof( bmpHeader.palette ) );
                 palette[a] = buf_p.getChar();//TODO:should this be getByte()????
@@ -263,7 +265,7 @@ public class Image_files {
             buf_p.position(buf_p.position() + 1024);
         }
 
-        if (bmpHeader.id[0] != 'B' && bmpHeader.id[1] != 'M') {
+        if ((bmpHeader.id[0] != 'B') && (bmpHeader.id[1] != 'M')) {
             common.Error("LoadBMP: only Windows-style BMP files supported (%s)\n", name);
         }
         if (bmpHeader.fileSize != length) {
@@ -290,7 +292,7 @@ public class Image_files {
             height[0] = rows;
         }
 
-        bmpRGBA = BufferUtils.createByteBuffer(numPixels * 4);//byte *)R_StaticAlloc( numPixels * 4 );
+        bmpRGBA = Nio.newByteBuffer(numPixels * 4);//byte *)R_StaticAlloc( numPixels * 4 );
 
         for (row = rows - 1; row >= 0; row--) {
             pixbuf = bmpRGBA.duplicate();
@@ -360,7 +362,7 @@ public class Image_files {
      ==============
      */
     private static void LoadPCX(final String filename, ByteBuffer[] pic, ByteBuffer[] palette, int[] width, int[] height, long[] timestamp) {
-        ByteBuffer[] raw = {null};
+        final ByteBuffer[] raw = {null};
         pcx_t pcx;
         int x, y;
         int len;
@@ -369,7 +371,7 @@ public class Image_files {
         ByteBuffer out, pix;
         int xmax, ymax;
 
-        if (NOT(pic)) {
+        if (NOT((Object[])pic)) {
             fileSystem.ReadFile(filename, null, timestamp);
             return;	// just getting timestamp
         }
@@ -381,7 +383,7 @@ public class Image_files {
         // load the file
         //
         len = fileSystem.ReadFile(filename, raw, timestamp);
-        if (NOT(raw)) {
+        if (NOT((Object[])raw)) {
             return;
         }
 
@@ -458,8 +460,8 @@ public class Image_files {
      ==============
      */
     static ByteBuffer LoadPCX32(final String filename, int[] width, int[] height, long[] timestamp) {
-        ByteBuffer[] palette = {null};
-        ByteBuffer[] pic8 = {null};
+        final ByteBuffer[] palette = {null};
+        final ByteBuffer[] pic8 = {null};
         ByteBuffer pic = null;
         int i, c, p;
 
@@ -473,12 +475,12 @@ public class Image_files {
         }
 
         c = width[0] * height[0];
-        pic = BufferUtils.createByteBuffer(4 * c);//(byte *)R_StaticAlloc(4 * c );
+        pic = Nio.newByteBuffer(4 * c);//(byte *)R_StaticAlloc(4 * c );
         for (i = 0; i < c; i++) {
             p = pic8[0].get(i);
             pic.put(0, palette[0].get(p * 3));
-            pic.put(1, palette[0].get(p * 3 + 1));
-            pic.put(2, palette[0].get(p * 3 + 2));
+            pic.put(1, palette[0].get((p * 3) + 1));
+            pic.put(2, palette[0].get((p * 3) + 2));
             pic.put(3, (byte) 255);
 //		pic += 4;
         }
@@ -506,8 +508,8 @@ public class Image_files {
         ByteBuffer pixbuf;
         int row, column;
         ByteBuffer buf_p;
-        ByteBuffer[] buffer = {null};
-        TargaHeader targa_header = new TargaHeader();
+        final ByteBuffer[] buffer = {null};
+        final TargaHeader targa_header = new TargaHeader();
         ByteBuffer targa_rgba;
 
         if (NOT(width, height)) {
@@ -540,7 +542,7 @@ public class Image_files {
         targa_header.pixel_size = buf_p.get();
         targa_header.attributes = buf_p.get();
 
-        if (targa_header.image_type != 2 && targa_header.image_type != 10 && targa_header.image_type != 3) {
+        if ((targa_header.image_type != 2) && (targa_header.image_type != 10) && (targa_header.image_type != 3)) {
             common.Error("LoadTGA( %s ): Only type 2 (RGB), 3 (gray), and 10 (RGB) TGA images supported\n", name);
         }
 
@@ -548,13 +550,13 @@ public class Image_files {
             common.Error("LoadTGA( %s ): colormaps not supported\n", name);
         }
 
-        if ((targa_header.pixel_size != 32 && targa_header.pixel_size != 24) && targa_header.image_type != 3) {
+        if (((targa_header.pixel_size != 32) && (targa_header.pixel_size != 24)) && (targa_header.image_type != 3)) {
             common.Error("LoadTGA( %s ): Only 32 or 24 bit images supported (no colormaps)\n", name);
         }
 
-        if (targa_header.image_type == 2 || targa_header.image_type == 3) {
+        if ((targa_header.image_type == 2) || (targa_header.image_type == 3)) {
             numBytes = targa_header.width * targa_header.height * (targa_header.pixel_size >> 3);
-            if (numBytes > fileSize - 18 - targa_header.id_length) {
+            if (numBytes > (fileSize - 18 - targa_header.id_length)) {
                 common.Error("LoadTGA( %s ): incomplete file\n", name);
             }
         }
@@ -570,13 +572,13 @@ public class Image_files {
             height[0] = rows;
         }
 
-        targa_rgba = BufferUtils.createByteBuffer(numPixels * 4);// (byte *)R_StaticAlloc(numPixels*4);
+        targa_rgba = Nio.newByteBuffer(numPixels * 4);// (byte *)R_StaticAlloc(numPixels*4);
 
         if (targa_header.id_length != 0) {
             buf_p.position(buf_p.position() + targa_header.id_length);  // skip TARGA image comment
         }
 
-        if (targa_header.image_type == 2 || targa_header.image_type == 3) {
+        if ((targa_header.image_type == 2) || (targa_header.image_type == 3)) {
             // Uncompressed RGB or gray scale image
             for (row = rows - 1; row >= 0; row--) {
                 pixbuf = targa_rgba.duplicate();
@@ -791,13 +793,13 @@ public class Image_files {
                 fileSystem.CloseFile(f);
                 return null;    // just getting timestamp
             }
-            fbuffer = BufferUtils.createByteBuffer(len + 4096);//(byte *)Mem_ClearedAlloc( len + 4096 );
+            fbuffer = Nio.newByteBuffer(len + 4096);//(byte *)Mem_ClearedAlloc( len + 4096 );
             f.Read(fbuffer/*, len*/);
             fileSystem.CloseFile(f);
         }
         try {
             buffer = ImageIO.read(new ByteArrayInputStream(fbuffer.array()));
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             Logger.getLogger(Image_files.class.getName()).log(Level.SEVERE, null, ex);
             common.Error("Failed to load JPEG ", filename);
             return null;
@@ -944,7 +946,7 @@ public class Image_files {
      */
     public static ByteBuffer R_LoadImage(final String cname, int[] width, int[] height, long[] timestamp, boolean makePowerOf2) {
 
-        idStr name = new idStr(cname);
+        final idStr name = new idStr(cname);
         ByteBuffer pic = null;
 
         if (timestamp != null) {
@@ -964,12 +966,12 @@ public class Image_files {
         }
 
         name.ToLower();
-        idStr ext = new idStr();
+        final idStr ext = new idStr();
         name.ExtractFileExtension(ext);
 
         if (ext.equals("tga")) {
             pic = LoadTGA(name.toString(), width, height, timestamp);            // try tga first
-            if ((pic != null && pic.capacity() == 0) || (timestamp != null && timestamp[0] == -1)) {
+            if (((pic != null) && (pic.capacity() == 0)) || ((timestamp != null) && (timestamp[0] == -1))) {
                 name.StripFileExtension();
                 name.DefaultFileExtension(".jpg");
                 pic = LoadJPG(name.toString(), width, height, timestamp);
@@ -982,8 +984,8 @@ public class Image_files {
             pic = LoadJPG(name.toString(), width, height, timestamp);
         }
 
-        if ((width != null && width[0] < 1)
-                || (height != null && height[0] < 1)) {
+        if (((width != null) && (width[0] < 1))
+                || ((height != null) && (height[0] < 1))) {
             if (pic != null) {
                 pic.clear();//R_StaticFree( *pic );
             }
@@ -992,7 +994,7 @@ public class Image_files {
         //
         // convert to exact power of 2 sizes
         //
-        if (pic != null && makePowerOf2) {
+        if ((pic != null) && makePowerOf2) {
             int w, h;
             int scaled_width, scaled_height;
             ByteBuffer resampledBuffer;
@@ -1004,11 +1006,11 @@ public class Image_files {
 
             for (scaled_height = 1; scaled_height < h; scaled_height <<= 1);
 
-            if (scaled_width != w || scaled_height != h) {
-                if (globalImages.image_roundDown.GetBool() && scaled_width > w) {
+            if ((scaled_width != w) || (scaled_height != h)) {
+                if (idImageManager.image_roundDown.GetBool() && (scaled_width > w)) {
                     scaled_width >>= 1;
                 }
-                if (globalImages.image_roundDown.GetBool() && scaled_height > h) {
+                if (idImageManager.image_roundDown.GetBool() && (scaled_height > h)) {
                     scaled_height >>= 1;
                 }
 
@@ -1032,11 +1034,11 @@ public class Image_files {
      */
     static boolean R_LoadCubeImages(final String imgName, cubeFiles_t extensions, ByteBuffer[] pics/*[6]*/, int[] outSize, /*ID_TIME_T */ long[] timestamp) {
         int i, j;
-        String[] cameraSides = {"_forward.tga", "_back.tga", "_left.tga", "_right.tga", "_up.tga", "_down.tga"};
-        String[] axisSides = {"_px.tga", "_nx.tga", "_py.tga", "_ny.tga", "_pz.tga", "_nz.tga"};
+        final String[] cameraSides = {"_forward.tga", "_back.tga", "_left.tga", "_right.tga", "_up.tga", "_down.tga"};
+        final String[] axisSides = {"_px.tga", "_nx.tga", "_py.tga", "_ny.tga", "_pz.tga", "_nz.tga"};
         String[] sides;
-        char[] fullName = new char[MAX_IMAGE_NAME];
-        int[] width = {0}, height = {0};
+        final char[] fullName = new char[MAX_IMAGE_NAME];
+        final int[] width = {0}, height = {0};
         int size = 0;
 
         if (extensions == CF_CAMERA) {
@@ -1058,7 +1060,7 @@ public class Image_files {
         for (i = 0; i < 6; i++) {
             idStr.snPrintf(fullName, fullName.length, "%s%s", imgName, sides[i]);
 
-            long[] thisTime = new long[1];
+            final long[] thisTime = new long[1];
             if (null == pics) {
                 // just checking timestamps
                 R_LoadImageProgram(ctos(fullName), width, height, thisTime);
@@ -1071,7 +1073,7 @@ public class Image_files {
             if (i == 0) {
                 size = width[0];
             }
-            if (width[0] != size || height[0] != size) {
+            if ((width[0] != size) || (height[0] != size)) {
                 common.Warning("Mismatched sizes on cube map '%s'", imgName);
                 break;
             }
@@ -1080,7 +1082,7 @@ public class Image_files {
                     timestamp[0] = thisTime[0];
                 }
             }
-            if (pics != null && extensions == CF_CAMERA) {
+            if ((pics != null) && (extensions == CF_CAMERA)) {
                 // convert from "camera" images to native cube map images
                 switch (i) {
                     case 0:	// forward

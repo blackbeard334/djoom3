@@ -79,6 +79,8 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_GEN_T;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL13.GL_REFLECTION_MAP;
 
+import java.nio.FloatBuffer;
+
 import neo.Renderer.Cinematic.cinData_t;
 import neo.Renderer.Image.idImage;
 import neo.Renderer.Material.idMaterial;
@@ -93,6 +95,7 @@ import neo.Renderer.tr_local.viewLight_s;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.Nio;
 
 /**
  *
@@ -130,12 +133,12 @@ public class tr_render {
      */
     public static void RB_DrawElementsImmediate(final srfTriangles_s tri) {
         backEnd.pc.c_drawElements++;
-        backEnd.pc.c_drawIndexes += tri.numIndexes;
+        backEnd.pc.c_drawIndexes += tri.getIndexes().getNumValues();
         backEnd.pc.c_drawVertexes += tri.numVerts;
 
         if (tri.ambientSurface != null) {
-            if (tri.indexes == tri.ambientSurface.indexes) {
-                backEnd.pc.c_drawRefIndexes += tri.numIndexes;
+            if (tri.getIndexes().getValues() == tri.ambientSurface.getIndexes().getValues()) {
+                backEnd.pc.c_drawRefIndexes += tri.getIndexes().getNumValues();
             }
             if (tri.verts == tri.ambientSurface.verts) {
                 backEnd.pc.c_drawRefVertexes += tri.numVerts;
@@ -143,9 +146,9 @@ public class tr_render {
         }
 
         qglBegin(GL_TRIANGLES);
-        for (int i = 0; i < tri.numIndexes; i++) {
-            qglTexCoord2fv(tri.verts[tri.indexes[i]].st.ToFloatPtr());
-            qglVertex3fv(tri.verts[tri.indexes[i]].xyz.ToFloatPtr());
+        for (int i = 0; i < tri.getIndexes().getNumValues(); i++) {
+            qglTexCoord2fv(tri.verts[tri.getIndexes().getValues().get(i)].st.toFloatBuffer());
+            qglVertex3fv(tri.verts[tri.getIndexes().getValues().get(i)].xyz.toFloatBuffer());
         }
         qglEnd();
     }
@@ -159,30 +162,30 @@ public class tr_render {
     public static void RB_DrawElementsWithCounters(final srfTriangles_s tri) {
 
         backEnd.pc.c_drawElements++;
-        backEnd.pc.c_drawIndexes += tri.numIndexes;
+        backEnd.pc.c_drawIndexes += tri.getIndexes().getNumValues();
         backEnd.pc.c_drawVertexes += tri.numVerts;
         DEBUG_RB_DrawElementsWithCounters++;
 //        TempDump.printCallStack("" + DEBUG_RB_DrawElementsWithCounters);
 
         if (tri.ambientSurface != null) {
-            if (tri.indexes == tri.ambientSurface.indexes) {
-                backEnd.pc.c_drawRefIndexes += tri.numIndexes;
+            if (tri.getIndexes().getValues() == tri.ambientSurface.getIndexes().getValues()) {
+                backEnd.pc.c_drawRefIndexes += tri.getIndexes().getNumValues();
             }
             if (tri.verts == tri.ambientSurface.verts) {
                 backEnd.pc.c_drawRefVertexes += tri.numVerts;
             }
         }
 
-        final int count = r_singleTriangle.GetBool() ? 3 : tri.numIndexes;
+        final int count = r_singleTriangle.GetBool() ? 3 : tri.getIndexes().getNumValues();
         if (tri.indexCache != null && r_useIndexBuffers.GetBool()) {
             qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE, vertexCache.Position(tri.indexCache));
-            backEnd.pc.c_vboIndexes += tri.numIndexes;
+            backEnd.pc.c_vboIndexes += tri.getIndexes().getNumValues();
         } else {
             if (r_useIndexBuffers.GetBool()) {
                 vertexCache.UnbindIndex();
             }
 //            if(tri.DBG_count!=11)
-            qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE/*GL_UNSIGNED_INT*/, tri.indexes);
+            qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE/*GL_UNSIGNED_INT*/, tri.getIndexes().getValues());
         }
     }
 
@@ -211,7 +214,7 @@ public class tr_render {
             qglDrawElements(GL_TRIANGLES,
                     r_singleTriangle.GetBool() ? 3 : numIndexes,
                     GL_INDEX_TYPE,
-                    tri.indexes);
+                    tri.getIndexes().getValues());
         }
     }
 
@@ -263,10 +266,11 @@ public class tr_render {
     public static void RB_EnterWeaponDepthHack() {
         qglDepthRange(0, 0.5);
 
-        float[] matrix = new float[16];
+        FloatBuffer matrix = Nio.newFloatBuffer(16);
 
 //	memcpy( matrix, backEnd.viewDef.projectionMatrix, sizeof( matrix ) );
-        System.arraycopy(backEnd.viewDef.projectionMatrix, 0, matrix, 0, matrix.length);
+        //System.arraycopy(backEnd.viewDef.projectionMatrix, 0, matrix, 0, matrix.length);
+        Nio.buffercopy(backEnd.viewDef.projectionMatrix, 0, matrix, 0, matrix.capacity());
 
         qglMatrixMode(GL_PROJECTION);
         qglLoadMatrixf(matrix);
@@ -281,12 +285,13 @@ public class tr_render {
     public static void RB_EnterModelDepthHack(float depth) {
         qglDepthRange(0.0f, 1.0f);
 
-        float[] matrix = new float[16];
+       FloatBuffer matrix = Nio.newFloatBuffer(16);
 
 //	memcpy( matrix, backEnd.viewDef.projectionMatrix, sizeof( matrix ) );
-        System.arraycopy(backEnd.viewDef.projectionMatrix, 0, matrix, 0, matrix.length);
+       //System.arraycopy(backEnd.viewDef.projectionMatrix, 0, matrix, 0, matrix.length);
+       Nio.buffercopy(backEnd.viewDef.projectionMatrix, 0, matrix, 0, matrix.capacity());
 
-        matrix[14] -= depth;
+       matrix.put(15, matrix.get(14) - depth);
 
         qglMatrixMode(GL_PROJECTION);
         qglLoadMatrixf(matrix);
@@ -407,11 +412,12 @@ public class tr_render {
      RB_GetShaderTextureMatrix
      ======================
      */private static int DBG_RB_GetShaderTextureMatrix = 0;
-    public static void RB_GetShaderTextureMatrix(final float[] shaderRegisters, final textureStage_t texture, float[] matrix/*[16]*/) {
-        matrix[0] = shaderRegisters[texture.matrix[0][0]];
-        matrix[4] = shaderRegisters[texture.matrix[0][1]];
-        matrix[8] = 0;
-        matrix[12] = shaderRegisters[texture.matrix[0][2]];
+   public static void RB_GetShaderTextureMatrix(final float[] shaderRegisters, final textureStage_t texture, FloatBuffer matrix/*[16]*/) {
+       matrix.put(0, shaderRegisters[texture.matrix[0][0]]);
+       matrix.put(4, shaderRegisters[texture.matrix[0][1]]);
+       matrix.put(8, 0);
+       float temp = shaderRegisters[texture.matrix[0][2]];
+       matrix.put(12, temp);
         
         DBG_RB_GetShaderTextureMatrix++;
 //        System.out.println(">>>>>>" + DBG_RB_GetShaderTextureMatrix);
@@ -421,27 +427,28 @@ public class tr_render {
 
         // we attempt to keep scrolls from generating incredibly large texture values, but
         // center rotations and center scales can still generate offsets that need to be > 1
-        if (matrix[12] < -40 || matrix[12] > 40) {
-            matrix[12] -= (int) matrix[12];
-        }
+       if ((temp < -40) || (temp > 40)) {
+           matrix.put(12, temp - ((int) temp));
+       }
 
-        matrix[1] = shaderRegisters[texture.matrix[1][0]];
-        matrix[5] = shaderRegisters[texture.matrix[1][1]];
-        matrix[9] = 0;
-        matrix[13] = shaderRegisters[texture.matrix[1][2]];
-        if (matrix[13] < -40 || matrix[13] > 40) {
-            matrix[13] -= (int) matrix[13];
-        }
+       matrix.put(1, shaderRegisters[texture.matrix[1][0]]);
+       matrix.put(5, shaderRegisters[texture.matrix[1][1]]);
+       matrix.put(9, 0);
+       temp = shaderRegisters[texture.matrix[1][2]];
+       matrix.put(13, temp);
+       if ((temp < -40) || (temp > 40)) {
+           matrix.put(13, temp - ((int) temp));
+       }
 
-        matrix[2] = 0;
-        matrix[6] = 0;
-        matrix[10] = 1;
-        matrix[14] = 0;
+       matrix.put(2, 0);
+       matrix.put(6, 0);
+       matrix.put(10, 1);
+       matrix.put(14, 0);
 
-        matrix[3] = 0;
-        matrix[7] = 0;
-        matrix[11] = 0;
-        matrix[15] = 1;
+       matrix.put(3, 0);
+       matrix.put(7, 0);
+       matrix.put(11, 0);
+       matrix.put(15, 1);
     }
 
     /*
@@ -449,8 +456,8 @@ public class tr_render {
      RB_LoadShaderTextureMatrix
      ======================
      */
-    public static void RB_LoadShaderTextureMatrix(final float[] shaderRegisters, final textureStage_t texture) {
-        final float[] matrix = new float[16];
+   public static void RB_LoadShaderTextureMatrix(final float[] shaderRegisters, final textureStage_t texture) {
+       final FloatBuffer matrix = Nio.newFloatBuffer(16);
 
         RB_GetShaderTextureMatrix(shaderRegisters, texture, matrix);
 //        final float[] m = matrix;
@@ -521,8 +528,8 @@ public class tr_render {
 
         // texgens
         if (texture.texgen == TG_DIFFUSE_CUBE) {
-            idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));//TODO:figure out how to work these damn casts.
-            qglTexCoordPointer(3, GL_FLOAT, idDrawVert.BYTES, vert.normal.ToFloatPtr());
+            final idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));//TODO:figure out how to work these damn casts.
+            qglTexCoordPointer(3, GL_FLOAT, idDrawVert.BYTES, vert.normal.toFloatBuffer());
 
         }
         if (texture.texgen == TG_SKYBOX_CUBE || texture.texgen == TG_WOBBLESKY_CUBE) {
@@ -540,7 +547,7 @@ public class tr_render {
             qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, vert.normalOffset());
 
             qglMatrixMode(GL_TEXTURE);
-            float[] mat = new float[16];
+            FloatBuffer mat = Nio.newFloatBuffer(16);
 
             R_TransposeGLMatrix(backEnd.viewDef.worldSpace.modelViewMatrix, mat);
 
@@ -562,10 +569,10 @@ public class tr_render {
     public static void RB_FinishStageTexture(final textureStage_t texture, final drawSurf_s surf) {
         if (texture.texgen == TG_DIFFUSE_CUBE || texture.texgen == TG_SKYBOX_CUBE
                 || texture.texgen == TG_WOBBLESKY_CUBE) {
-            idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));// {//TODO:figure out how to work these damn casts.
+            final idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));// {//TODO:figure out how to work these damn casts.
             qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES,
                     //			(void *)&(((idDrawVert *)vertexCache.Position( surf.geo.ambientCache )).st) );
-                    vert.st.ToFloatPtr());//TODO:WDF?
+                    vert.st.toFloatBuffer());//TODO:WDF?
         }
 
         if (texture.texgen == TG_REFLECT_CUBE) {
@@ -633,7 +640,7 @@ public class tr_render {
             for (i = 0; i < numStages; i++) {
                 stage = shader.GetStage(i);
                 for (j = 0; j < 3; j++) {
-                    float v = r_lightScale.GetFloat() * vLight.shaderRegisters[stage.color.registers[j]];
+                    final float v = r_lightScale.GetFloat() * vLight.shaderRegisters[stage.color.registers[j]];
                     if (v > max) {
                         max = v;
                     }
@@ -798,7 +805,7 @@ public class tr_render {
         final viewLight_s vLight = backEnd.vLight;
         final idMaterial lightShader = vLight.lightShader;
         final float[] lightRegs = vLight.shaderRegisters;
-        drawInteraction_t inter = new drawInteraction_t();
+        final drawInteraction_t inter = new drawInteraction_t();
 
         if (r_skipInteractions.GetBool() || NOT(surf.geo) || NOT(surf.geo.ambientCache)) {
             return;
@@ -842,7 +849,7 @@ public class tr_render {
         inter.ambientLight = btoi(lightShader.IsAmbientLight());
 
         // the base projections may be modified by texture matrix on light stages
-        idPlane[] lightProject = idPlane.generateArray(4);
+        final idPlane[] lightProject = idPlane.generateArray(4);
         for (int i = 0; i < 4; i++) {
             R_GlobalPlaneToLocal(surf.space.modelMatrix, backEnd.vLight.lightProject[i], lightProject[i]);
         }
@@ -873,7 +880,7 @@ public class tr_render {
             inter.diffuseColor.Set(0, 0, 0, 0);
             inter.specularColor.Set(0, 0, 0, 0);
 
-            float[] lightColor = new float[4];
+            final float[] lightColor = new float[4];
 
             // backEnd.lightScale is calculated so that lightColor[] will never exceed
             // tr.backEndRendererMaxLight
@@ -901,7 +908,7 @@ public class tr_render {
                         inter.diffuseImage = null;
                         inter.specularImage = null;
                         {
-                            idImage[] bumpImage = {null};
+                            final idImage[] bumpImage = {null};
                             R_SetDrawInteraction(surfaceStage, surfaceRegs, bumpImage, inter.bumpMatrix, null);
                             inter.bumpImage = bumpImage[0];
                         }
@@ -916,7 +923,7 @@ public class tr_render {
                             RB_SubmittInteraction(inter, drawInteraction);
                         }
                         {
-                            idImage[] diffuseImage = {null};
+                            final idImage[] diffuseImage = {null};
                             R_SetDrawInteraction(surfaceStage, surfaceRegs, diffuseImage, inter.diffuseMatrix, inter.diffuseColor);
                             inter.diffuseImage = diffuseImage[0];
                         }

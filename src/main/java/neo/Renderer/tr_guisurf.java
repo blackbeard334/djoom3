@@ -41,10 +41,10 @@ public class tr_guisurf {
      */
     public static void R_SurfaceToTextureAxis(final srfTriangles_s tri, idVec3 origin, idVec3[] axis/*[3]*/) {
         float area, inva;
-        float[] d0 = new float[5], d1 = new float[5];
+        final float[] d0 = new float[5], d1 = new float[5];
         idDrawVert a, b, c;
-        float[][] bounds = new float[2][2];
-        float[] boundsOrg = new float[2];
+        final float[][] bounds = new float[2][2];
+        final float[] boundsOrg = new float[2];
         int i, j;
         float v;
 
@@ -70,9 +70,9 @@ public class tr_guisurf {
         boundsOrg[1] = (float) Math.floor((bounds[0][1] + bounds[1][1]) * 0.5);
 
         // determine the world S and T vectors from the first drawSurf triangle
-        a = tri.verts[tri.indexes[0]];
-        b = tri.verts[tri.indexes[1]];
-        c = tri.verts[tri.indexes[2]];
+        a = tri.verts[tri.getIndexes().getValues().get(0)];
+        b = tri.verts[tri.getIndexes().getValues().get(1)];
+        c = tri.verts[tri.getIndexes().getValues().get(2)];
 
         VectorSubtract(b.xyz, a.xyz, d0);
         d0[3] = b.st.oGet(0) - a.st.oGet(0);
@@ -98,7 +98,7 @@ public class tr_guisurf {
         axis[1].oSet(1, (d0[3] * d1[1] - d0[1] * d1[3]) * inva);
         axis[1].oSet(2, (d0[3] * d1[2] - d0[2] * d1[3]) * inva);
 
-        idPlane plane = new idPlane();
+        final idPlane plane = new idPlane();
         plane.FromPoints(a.xyz, b.xyz, c.xyz);
         axis[2].oSet(0, plane.oGet(0));
         axis[2].oSet(1, plane.oGet(1));
@@ -118,8 +118,8 @@ public class tr_guisurf {
      =================
      */
     public static void R_RenderGuiSurf(idUserInterface gui, drawSurf_s drawSurf) {
-        idVec3 origin = new idVec3();
-        idVec3[] axis = {new idVec3(), new idVec3(), new idVec3()};
+        final idVec3 origin = new idVec3();
+        final idVec3[] axis = {new idVec3(), new idVec3(), new idVec3()};
 
         // for testing the performance hit
         if (r_skipGuiShaders.GetInteger() == 1) {
@@ -136,8 +136,8 @@ public class tr_guisurf {
         // create the new matrix to draw on this surface
         R_SurfaceToTextureAxis(drawSurf.geo, origin, axis);
 
-        float[] guiModelMatrix = new float[16];
-        float[] modelMatrix = new float[16];
+        final float[] guiModelMatrix = new float[16];
+        final float[] modelMatrix = new float[16];
 
         guiModelMatrix[0] = axis[0].oGet(0) / 640.0f;
         guiModelMatrix[4] = axis[1].oGet(0) / 480.0f;
@@ -232,5 +232,5 @@ public class tr_guisurf {
         public void run(idCmdArgs args) {
             uiManager.ListGuis();
         }
-    };
+    }
 }

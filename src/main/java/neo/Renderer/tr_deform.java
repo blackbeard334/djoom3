@@ -32,6 +32,7 @@ import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.Nio;
 
 /**
  *
@@ -81,10 +82,12 @@ public class tr_deform {
     public static void R_AutospriteDeform(drawSurf_s surf) {
         int i;
         idDrawVert v;
-        idVec3 mid = new idVec3(), delta;
+        final idVec3 mid = new idVec3();
+		idVec3 delta;
         float radius;
         idVec3 left, up;
-        idVec3 leftDir = new idVec3(), upDir = new idVec3();
+        idVec3 leftDir = new idVec3();
+		final idVec3 upDir = new idVec3();
         final srfTriangles_s tri;
         srfTriangles_s newTri;
 
@@ -94,7 +97,7 @@ public class tr_deform {
             common.Warning("R_AutospriteDeform: shader had odd vertex count");
             return;
         }
-        if (tri.numIndexes != (tri.numVerts >> 2) * 6) {
+        if (tri.getIndexes().getNumValues() != ((tri.numVerts >> 2) * 6)) {
             common.Warning("R_AutospriteDeform: autosprite had odd index count");
             return;
         }
@@ -110,10 +113,10 @@ public class tr_deform {
         // memory, and will be automatically disposed of
         newTri = new srfTriangles_s();// R_ClearedFrameAlloc(sizeof(newTri));
         newTri.numVerts = tri.numVerts;
-        newTri.numIndexes = tri.numIndexes;
-        newTri.indexes = new int[newTri.numIndexes];// R_FrameAlloc(newTri.numIndexes);
+        newTri.getIndexes().setNumValues(tri.getIndexes().getNumValues());
+        newTri.getIndexes().createValues(newTri.getIndexes().getNumValues());// R_FrameAlloc(newTri.numIndexes);
 
-        idDrawVert[] ac = Stream.generate(idDrawVert::new).limit(newTri.numVerts).toArray(idDrawVert[]::new);
+        final idDrawVert[] ac = Stream.generate(idDrawVert::new).limit(newTri.numVerts).toArray(idDrawVert[]::new);
 
         for (i = 0; i < tri.numVerts; i += 4) {
             // find the midpoint
@@ -145,13 +148,13 @@ public class tr_deform {
             ac[i + 3].st.oSet(0, 0);
             ac[i + 3].st.oSet(1, 1);
 
-            newTri.indexes[6 * (i >> 2) + 0] = i;
-            newTri.indexes[6 * (i >> 2) + 1] = i + 1;
-            newTri.indexes[6 * (i >> 2) + 2] = i + 2;
+            newTri.getIndexes().getValues().put((6 * (i >> 2)) + 0, i);
+            newTri.getIndexes().getValues().put((6 * (i >> 2)) + 1, i + 1);
+            newTri.getIndexes().getValues().put((6 * (i >> 2)) + 2, i + 2);
 
-            newTri.indexes[6 * (i >> 2) + 3] = i;
-            newTri.indexes[6 * (i >> 2) + 4] = i + 2;
-            newTri.indexes[6 * (i >> 2) + 5] = i + 3;
+            newTri.getIndexes().getValues().put((6 * (i >> 2)) + 3, i);
+            newTri.getIndexes().getValues().put((6 * (i >> 2)) + 4, i + 2);
+            newTri.getIndexes().getValues().put((6 * (i >> 2)) + 5, i + 3);
         }
 
         R_FinishDeform(surf, newTri, ac);
@@ -188,33 +191,35 @@ public class tr_deform {
         if ((tri.numVerts & 3) != 0) {
             common.Error("R_AutospriteDeform: shader had odd vertex count");
         }
-        if (tri.numIndexes != (tri.numVerts >> 2) * 6) {
+        if (tri.getIndexes().getNumValues() != ((tri.numVerts >> 2) * 6)) {
             common.Error("R_AutospriteDeform: autosprite had odd index count");
         }
 
         // we need the view direction to project the minor axis of the tube
         // as the view changes
-        idVec3 localView = new idVec3();
+        final idVec3 localView = new idVec3();
         R_GlobalPointToLocal(surf.space.modelMatrix, tr.viewDef.renderView.vieworg, localView);
 
         // this srfTriangles_t and all its indexes and caches are in frame
         // memory, and will be automatically disposed of
-        srfTriangles_s newTri = new srfTriangles_s();// R_ClearedFrameAlloc(sizeof(newTri));
+        final srfTriangles_s newTri = new srfTriangles_s();// R_ClearedFrameAlloc(sizeof(newTri));
         newTri.numVerts = tri.numVerts;
-        newTri.numIndexes = tri.numIndexes;
-        newTri.indexes = new int[newTri.numIndexes];// R_FrameAlloc(newTri.numIndexes);
-        System.arraycopy(tri.indexes, 0, newTri.indexes, 0, newTri.numIndexes);//memcpy( newTri.indexes, tri.indexes, newTri.numIndexes * sizeof( newTri.indexes[0] ) );
+        newTri.getIndexes().setNumValues(tri.getIndexes().getNumValues());
+        newTri.getIndexes().createValues(newTri.getIndexes().getNumValues());// R_FrameAlloc(newTri.numIndexes);
+        //System.arraycopy(tri.getIndexes().getValues(), 0, newTri.getIndexes().getValues(), 0, newTri.getIndexes().getNumValues());//memcpy( newTri.indexes, tri.indexes, newTri.numIndexes * sizeof( newTri.indexes[0] ) );
+        Nio.buffercopy(tri.getIndexes().getValues(), 0, newTri.getIndexes().getValues(), 0, newTri.getIndexes().getNumValues());//memcpy( newTri.indexes, tri.indexes, newTri.numIndexes * sizeof( newTri.indexes[0] ) );
 
-        idDrawVert[] ac = Stream.generate(idDrawVert::new).limit(newTri.numVerts).toArray(idDrawVert[]::new);//memset( ac, 0, sizeof( idDrawVert ) * newTri.numVerts );
+        final idDrawVert[] ac = Stream.generate(idDrawVert::new).limit(newTri.numVerts).toArray(idDrawVert[]::new);//memset( ac, 0, sizeof( idDrawVert ) * newTri.numVerts );
 
         // this is a lot of work for two triangles...
         // we could precalculate a lot if it is an issue, but it would mess up
         // the shader abstraction
         for (i = 0, indexes = 0; i < tri.numVerts; i += 4, indexes += 6) {
-            float[] lengths = new float[2];
-            int[] nums = new int[2];
-            idVec3[] mid = new idVec3[2];
-            idVec3 major, minor = new idVec3();
+            final float[] lengths = new float[2];
+            final int[] nums = new int[2];
+            final idVec3[] mid = new idVec3[2];
+            idVec3 major;
+			final idVec3 minor = new idVec3();
             idDrawVert v1, v2;
 
             // identify the two shortest edges out of the six defined by the indexes
@@ -224,8 +229,8 @@ public class tr_deform {
             for (j = 0; j < 6; j++) {
                 float l;
 
-                v1 = tri.verts[tri.indexes[i + edgeVerts[j][0]]];
-                v2 = tri.verts[tri.indexes[i + edgeVerts[j][1]]];
+                v1 = tri.verts[tri.getIndexes().getValues().get(i + edgeVerts[j][0])];
+                v2 = tri.verts[tri.getIndexes().getValues().get(i + edgeVerts[j][1])];
 
                 l = (v1.xyz.oMinus(v2.xyz)).Length();
                 if (l < lengths[0]) {
@@ -242,8 +247,8 @@ public class tr_deform {
             // find the midpoints of the two short edges, which
             // will give us the major axis in object coordinates
             for (j = 0; j < 2; j++) {
-                v1 = tri.verts[tri.indexes[i + edgeVerts[nums[j]][0]]];
-                v2 = tri.verts[tri.indexes[i + edgeVerts[nums[j]][1]]];
+                v1 = tri.verts[tri.getIndexes().getValues().get(i + edgeVerts[nums[j]][0])];
+                v2 = tri.verts[tri.getIndexes().getValues().get(i + edgeVerts[nums[j]][1])];
 
                 mid[j] = new idVec3(
                         0.5f * (v1.xyz.oGet(0) + v2.xyz.oGet(0)),
@@ -257,18 +262,18 @@ public class tr_deform {
             // re-project the points
             for (j = 0; j < 2; j++) {
                 float l;
-                int i1 = tri.indexes[i + edgeVerts[nums[j]][0]];
-                int i2 = tri.indexes[i + edgeVerts[nums[j]][1]];
+                final int i1 = tri.getIndexes().getValues().get(i + edgeVerts[nums[j]][0]);
+                final int i2 = tri.getIndexes().getValues().get(i + edgeVerts[nums[j]][1]);
 
-                idDrawVert av1 = ac[i1] = tri.verts[i1];
-                idDrawVert av2 = ac[i2] = tri.verts[i2];
+                final idDrawVert av1 = ac[i1] = tri.verts[i1];
+                final idDrawVert av2 = ac[i2] = tri.verts[i2];
 //                av1 = tri.verts[i1];
 //                av2 = tri.verts[i2];
 
                 l = 0.5f * lengths[j];
 
                 // cross this with the view direction to get minor axis
-                idVec3 dir = mid[j].oMinus(localView);
+                final idVec3 dir = mid[j].oMinus(localView);
                 minor.Cross(major, dir);
                 minor.Normalize();
 
@@ -296,19 +301,19 @@ public class tr_deform {
     public static int R_WindingFromTriangles(final srfTriangles_s tri, int[]/*glIndex_t*/ indexes/*[MAX_TRI_WINDING_INDEXES]*/) {
         int i, j, k, l;
 
-        indexes[0] = tri.indexes[0];
+        indexes[0] = tri.getIndexes().getValues().get(0);
         int numIndexes = 1;
-        int numTris = tri.numIndexes / 3;
+        final int numTris = tri.getIndexes().getNumValues() / 3;
 
         do {
             // find an edge that goes from the current index to another
             // index that isn't already used, and isn't an internal edge
             for (i = 0; i < numTris; i++) {
                 for (j = 0; j < 3; j++) {
-                    if (tri.indexes[i * 3 + j] != indexes[numIndexes - 1]) {
+                    if (tri.getIndexes().getValues().get((i * 3) + j) != indexes[numIndexes - 1]) {
                         continue;
                     }
-                    int next = tri.indexes[i * 3 + (j + 1) % 3];
+                    final int next = tri.getIndexes().getValues().get((i * 3) + ((j + 1) % 3));
 
                     // make sure it isn't already used
                     if (numIndexes == 1) {
@@ -334,11 +339,11 @@ public class tr_deform {
                         for (l = 0; l < 3; l++) {
                             int a, b;
 
-                            a = tri.indexes[k * 3 + l];
+                            a = tri.getIndexes().getValues().get((k * 3) + l);
                             if (a != next) {
                                 continue;
                             }
-                            b = tri.indexes[k * 3 + (l + 1) % 3];
+                            b = tri.getIndexes().getValues().get((k * 3) + ((l + 1) % 3));
                             if (b != indexes[numIndexes - 1]) {
                                 continue;
                             }
@@ -539,14 +544,14 @@ public class tr_deform {
     public static void R_FlareDeform(drawSurf_s surf) {
         final srfTriangles_s tri;
         srfTriangles_s newTri;
-        idPlane plane = new idPlane();
+        final idPlane plane = new idPlane();
         float dot;
-        idVec3 localViewer = new idVec3();
+        final idVec3 localViewer = new idVec3();
         int j;
 
         tri = surf.geo;
 
-        if (tri.numVerts != 4 || tri.numIndexes != 6) {
+        if ((tri.numVerts != 4) || (tri.getIndexes().getNumValues() != 6)) {
             //FIXME: temp hack for flares on tripleted models
             common.Warning("R_FlareDeform: not a single quad");
             return;
@@ -556,19 +561,19 @@ public class tr_deform {
         // memory, and will be automatically disposed of
         newTri = new srfTriangles_s();// R_ClearedFrameAlloc(sizeof(newTri));
         newTri.numVerts = 16;
-        newTri.numIndexes = 18 * 3;
-        newTri.indexes = new int[newTri.numIndexes];
+        newTri.getIndexes().setNumValues(18 * 3);
+        newTri.getIndexes().createValues(newTri.getIndexes().getNumValues());
 
-        idDrawVert[] ac = new idDrawVert[newTri.numVerts];
+        final idDrawVert[] ac = new idDrawVert[newTri.numVerts];
 
         // find the plane
-        plane.FromPoints(tri.verts[tri.indexes[0]].xyz, tri.verts[tri.indexes[1]].xyz, tri.verts[tri.indexes[2]].xyz);
+        plane.FromPoints(tri.verts[tri.getIndexes().getValues().get(0)].xyz, tri.verts[tri.getIndexes().getValues().get(1)].xyz, tri.verts[tri.getIndexes().getValues().get(2)].xyz);
 
         // if viewer is behind the plane, draw nothing
         R_GlobalPointToLocal(surf.space.modelMatrix, tr.viewDef.renderView.vieworg, localViewer);
-        float distFromPlane = localViewer.oMultiply(plane.Normal()) + plane.oGet(3);
+        final float distFromPlane = localViewer.oMultiply(plane.Normal()) + plane.oGet(3);
         if (distFromPlane <= 0) {
-            newTri.numIndexes = 0;
+            newTri.getIndexes().setNumValues(0);
             surf.geo = newTri;
             return;
         }
@@ -592,14 +597,15 @@ public class tr_deform {
         }
         for (j = 0; j < newTri.numVerts; j++) {
             ac[j] = new idDrawVert();
-            ac[j].color[0] = ac[j].color[1] = ac[j].color[2] = (byte) color;
-            ac[j].color[3] = (byte) 255;
+    		for (int i = 0; i < 4; i++) {
+    			ac[j].color.put(i, (byte) 255);
+    		}
         }
 
-        float spread = surf.shaderRegisters[ surf.material.GetDeformRegister(0)] * RenderSystem_init.r_flareSize.GetFloat();
-        idVec3[][] edgeDir = new idVec3[4][3];
-        int[]/*glIndex_t*/ indexes = new int[MAX_TRI_WINDING_INDEXES];
-        int numIndexes = R_WindingFromTriangles(tri, indexes);
+        final float spread = surf.shaderRegisters[ surf.material.GetDeformRegister(0)] * RenderSystem_init.r_flareSize.GetFloat();
+        final idVec3[][] edgeDir = new idVec3[4][3];
+        final int[]/*glIndex_t*/ indexes = new int[MAX_TRI_WINDING_INDEXES];
+        final int numIndexes = R_WindingFromTriangles(tri, indexes);
 
         // only deal with quads
         if (numIndexes != 4) {
@@ -611,17 +617,17 @@ public class tr_deform {
             ac[i].xyz = tri.verts[ indexes[i]].xyz;
             ac[i].st.oSet(0, ac[i].st.oSet(1, 0.5f));
 
-            idVec3 toEye = tri.verts[indexes[i]].xyz.oMinus(localViewer);
+            final idVec3 toEye = tri.verts[indexes[i]].xyz.oMinus(localViewer);
             toEye.Normalize();
 
-            idVec3 d1 = tri.verts[indexes[(i + 1) % 4]].xyz.oMinus(localViewer);
+            final idVec3 d1 = tri.verts[indexes[(i + 1) % 4]].xyz.oMinus(localViewer);
             d1.Normalize();
             edgeDir[i][1] = new idVec3();
             edgeDir[i][1].Cross(toEye, d1);
             edgeDir[i][1].Normalize();
             edgeDir[i][1] = getVec3_origin().oMinus(edgeDir[i][1]);
 
-            idVec3 d2 = tri.verts[indexes[(i + 3) % 4]].xyz.oMinus(localViewer);
+            final idVec3 d2 = tri.verts[indexes[(i + 3) % 4]].xyz.oMinus(localViewer);
             d2.Normalize();
             edgeDir[i][0] = new idVec3();
             edgeDir[i][0].Cross(toEye, d2);
@@ -683,14 +689,14 @@ public class tr_deform {
 
         for (i = 4; i < 16; i++) {
             dir = ac[i].xyz.oMinus(localViewer);
-            float len = dir.Normalize();
+            final float len = dir.Normalize();
 
-            float ang = dir.oMultiply(plane.Normal());
+            final float ang = dir.oMultiply(plane.Normal());
 
 //		ac[i].xyz -= dir * spread * 2;
-            float newLen = -(distFromPlane / ang);
+            final float newLen = -(distFromPlane / ang);
 
-            if (newLen > 0 && newLen < len) {
+            if ((newLen > 0) && (newLen < len)) {
                 ac[i].xyz = localViewer.oPlus(dir.oMultiply(newLen));
             }
 
@@ -711,7 +717,8 @@ public class tr_deform {
 //	};
 //}
 //        memcpy(newTri.indexes, triIndexes, sizeof(triIndexes));
-        System.arraycopy(triIndexes, 0, newTri.indexes, 0, triIndexes.length);
+        //System.arraycopy(triIndexes, 0, newTri.getIndexes().getValues(), 0, triIndexes.length);
+        Nio.arraycopy(triIndexes, 0, newTri.getIndexes().getValues(), 0, triIndexes.length);
 
         R_FinishDeform(surf, newTri, ac);
     }
@@ -734,12 +741,12 @@ public class tr_deform {
         // memory, and will be automatically disposed of
         newTri = new srfTriangles_s();// R_ClearedFrameAlloc(sizeof(newTri));
         newTri.numVerts = tri.numVerts;
-        newTri.numIndexes = tri.numIndexes;
-        newTri.indexes = tri.indexes;
+        newTri.getIndexes().setNumValues(tri.getIndexes().getNumValues());
+        newTri.getIndexes().setValues(tri.getIndexes().getValues());
 
-        idDrawVert[] ac = new idDrawVert[newTri.numVerts];
+        final idDrawVert[] ac = new idDrawVert[newTri.numVerts];
 
-        float dist = surf.shaderRegisters[ surf.material.GetDeformRegister(0)];
+        final float dist = surf.shaderRegisters[ surf.material.GetDeformRegister(0)];
         for (i = 0; i < tri.numVerts; i++) {
             ac[i] = tri.verts[i];
             ac[i].xyz = tri.verts[i].xyz.oPlus(tri.verts[i].normal.oMultiply(dist));
@@ -766,12 +773,12 @@ public class tr_deform {
         // memory, and will be automatically disposed of
         newTri = new srfTriangles_s();// R_ClearedFrameAlloc(sizeof(newTri));
         newTri.numVerts = tri.numVerts;
-        newTri.numIndexes = tri.numIndexes;
-        newTri.indexes = tri.indexes;
+        newTri.getIndexes().setNumValues(tri.getIndexes().getNumValues());
+        newTri.getIndexes().setValues(tri.getIndexes().getValues());
 
-        idDrawVert[] ac = new idDrawVert[newTri.numVerts];
+        final idDrawVert[] ac = new idDrawVert[newTri.numVerts];
 
-        float dist = surf.shaderRegisters[ surf.material.GetDeformRegister(0)];
+        final float dist = surf.shaderRegisters[ surf.material.GetDeformRegister(0)];
         for (i = 0; i < tri.numVerts; i++) {
             ac[i] = tri.verts[i];
             ac[i].xyz.oPluSet(0, dist);
@@ -800,16 +807,16 @@ public class tr_deform {
         // memory, and will be automatically disposed of
         newTri = new srfTriangles_s();// R_ClearedFrameAlloc(sizeof(newTri));
         newTri.numVerts = tri.numVerts;
-        newTri.numIndexes = tri.numIndexes;
-        newTri.indexes = tri.indexes;
+        newTri.getIndexes().setNumValues(tri.getIndexes().getNumValues());
+        newTri.getIndexes().setValues(tri.getIndexes().getValues());
 
-        idDrawVert[] ac = new idDrawVert[newTri.numVerts];
+        final idDrawVert[] ac = new idDrawVert[newTri.numVerts];
 
-        idDeclTable table = (idDeclTable) surf.material.GetDeformDecl();
-        float range = surf.shaderRegisters[ surf.material.GetDeformRegister(0)];
-        float timeOfs = surf.shaderRegisters[ surf.material.GetDeformRegister(1)];
-        float domain = surf.shaderRegisters[ surf.material.GetDeformRegister(2)];
-        float tOfs = 0.5f;
+        final idDeclTable table = (idDeclTable) surf.material.GetDeformDecl();
+        final float range = surf.shaderRegisters[ surf.material.GetDeformRegister(0)];
+        final float timeOfs = surf.shaderRegisters[ surf.material.GetDeformRegister(1)];
+        final float domain = surf.shaderRegisters[ surf.material.GetDeformRegister(2)];
+        final float tOfs = 0.5f;
 
         for (i = 0; i < tri.numVerts; i++) {
             float f = tri.verts[i].xyz.oGet(0) * 0.003f
@@ -864,28 +871,28 @@ public class tr_deform {
         island.numTris++;
 
         // recurse into all neighbors
-        a = tri.indexes[triangleNum * 3];
-        b = tri.indexes[triangleNum * 3 + 1];
-        c = tri.indexes[triangleNum * 3 + 2];
+        a = tri.getIndexes().getValues().get(triangleNum * 3);
+        b = tri.getIndexes().getValues().get((triangleNum * 3) + 1);
+        c = tri.getIndexes().getValues().get((triangleNum * 3) + 2);
 
         island.bounds.AddPoint(tri.verts[a].xyz);
         island.bounds.AddPoint(tri.verts[b].xyz);
         island.bounds.AddPoint(tri.verts[c].xyz);
 
-        int numTri = tri.numIndexes / 3;
+        final int numTri = tri.getIndexes().getNumValues() / 3;
         for (int i = 0; i < numTri; i++) {
             if (usedList[i]) {
                 continue;
             }
-            if (tri.indexes[i * 3 + 0] == a
-                    || tri.indexes[i * 3 + 1] == a
-                    || tri.indexes[i * 3 + 2] == a
-                    || tri.indexes[i * 3 + 0] == b
-                    || tri.indexes[i * 3 + 1] == b
-                    || tri.indexes[i * 3 + 2] == b
-                    || tri.indexes[i * 3 + 0] == c
-                    || tri.indexes[i * 3 + 1] == c
-                    || tri.indexes[i * 3 + 2] == c) {
+            if ((tri.getIndexes().getValues().get((i * 3) + 0) == a)
+                    || (tri.getIndexes().getValues().get((i * 3) + 1) == a)
+                    || (tri.getIndexes().getValues().get((i * 3) + 2) == a)
+                    || (tri.getIndexes().getValues().get((i * 3) + 0) == b)
+                    || (tri.getIndexes().getValues().get((i * 3) + 1) == b)
+                    || (tri.getIndexes().getValues().get((i * 3) + 2) == b)
+                    || (tri.getIndexes().getValues().get((i * 3) + 0) == c)
+                    || (tri.getIndexes().getValues().get((i * 3) + 1) == c)
+                    || (tri.getIndexes().getValues().get((i * 3) + 2) == c)) {
                 AddTriangleToIsland_r(tri, i, usedList, island);
             }
         }
@@ -903,15 +910,15 @@ public class tr_deform {
         int i, j, k;
         final srfTriangles_s tri;
         srfTriangles_s newTri;
-        eyeIsland_t[] islands = new eyeIsland_t[MAX_EYEBALL_ISLANDS];
+        final eyeIsland_t[] islands = new eyeIsland_t[MAX_EYEBALL_ISLANDS];
         int numIslands;
-        boolean[] triUsed = new boolean[MAX_EYEBALL_ISLANDS * MAX_EYEBALL_TRIS];
+        final boolean[] triUsed = new boolean[MAX_EYEBALL_ISLANDS * MAX_EYEBALL_TRIS];
 
         tri = surf.geo;
 
         // separate all the triangles into islands
-        int numTri = tri.numIndexes / 3;
-        if (numTri > MAX_EYEBALL_ISLANDS * MAX_EYEBALL_TRIS) {
+        final int numTri = tri.getIndexes().getNumValues() / 3;
+        if (numTri > (MAX_EYEBALL_ISLANDS * MAX_EYEBALL_TRIS)) {
             common.Printf("R_EyeballDeform: too many triangles in surface");
             return;
         }
@@ -943,11 +950,11 @@ public class tr_deform {
         // the surface cannot have more indexes or verts than the original
         newTri = new srfTriangles_s();// R_ClearedFrameAlloc(sizeof(newTri));
         newTri.numVerts = tri.numVerts;
-        newTri.numIndexes = tri.numIndexes;
-        newTri.indexes = new int[tri.numIndexes];
-        idDrawVert[] ac = Stream.generate(idDrawVert::new).limit(tri.numVerts).toArray(idDrawVert[]::new);
+        newTri.getIndexes().setNumValues(tri.getIndexes().getNumValues());
+        newTri.getIndexes().createValues(tri.getIndexes().getNumValues());
+        final idDrawVert[] ac = Stream.generate(idDrawVert::new).limit(tri.numVerts).toArray(idDrawVert[]::new);
 
-        newTri.numIndexes = 0;
+        newTri.getIndexes().setNumValues(0);
 
         // decide which islands are the eyes and points
         for (i = 0; i < numIslands; i++) {
@@ -955,7 +962,7 @@ public class tr_deform {
         }
 
         for (i = 0; i < numIslands; i++) {
-            eyeIsland_t island = islands[i];
+            final eyeIsland_t island = islands[i];
 
             if (island.numTris == 1) {
                 continue;
@@ -965,19 +972,19 @@ public class tr_deform {
             // and the next-to-farthest will be the focal point
             idVec3 origin, focus;
             int originIsland = 0;
-            float[] dist = new float[MAX_EYEBALL_ISLANDS];
-            int[] sortOrder = new int[MAX_EYEBALL_ISLANDS];
+            final float[] dist = new float[MAX_EYEBALL_ISLANDS];
+            final int[] sortOrder = new int[MAX_EYEBALL_ISLANDS];
 
             for (j = 0; j < numIslands; j++) {
-                idVec3 dir = islands[j].mid.oMinus(island.mid);
+                final idVec3 dir = islands[j].mid.oMinus(island.mid);
                 dist[j] = dir.Length();
                 sortOrder[j] = j;
                 for (k = j - 1; k >= 0; k--) {
                     if (dist[k] > dist[k + 1]) {
-                        int temp = sortOrder[k];
+                        final int temp = sortOrder[k];
                         sortOrder[k] = sortOrder[k + 1];
                         sortOrder[k + 1] = temp;
-                        float ftemp = dist[k];
+                        final float ftemp = dist[k];
                         dist[k] = dist[k + 1];
                         dist[k + 1] = ftemp;
                     }
@@ -990,20 +997,20 @@ public class tr_deform {
             focus = islands[sortOrder[2]].mid;
 
             // determine the projection directions based on the origin island triangle
-            idVec3 dir = focus.oMinus(origin);
+            final idVec3 dir = focus.oMinus(origin);
             dir.Normalize();
 
-            final idVec3 p1 = tri.verts[tri.indexes[islands[originIsland].tris[0] + 0]].xyz;
-            final idVec3 p2 = tri.verts[tri.indexes[islands[originIsland].tris[0] + 1]].xyz;
-            final idVec3 p3 = tri.verts[tri.indexes[islands[originIsland].tris[0] + 2]].xyz;
+            final idVec3 p1 = tri.verts[tri.getIndexes().getValues().get(islands[originIsland].tris[0] + 0)].xyz;
+            final idVec3 p2 = tri.verts[tri.getIndexes().getValues().get(islands[originIsland].tris[0] + 1)].xyz;
+            final idVec3 p3 = tri.verts[tri.getIndexes().getValues().get(islands[originIsland].tris[0] + 2)].xyz;
 
-            idVec3 v1 = p2.oMinus(p1);
+            final idVec3 v1 = p2.oMinus(p1);
             v1.Normalize();
-            idVec3 v2 = p3.oMinus(p1);
+            final idVec3 v2 = p3.oMinus(p1);
             v2.Normalize();
 
             // texVec[0] will be the normal to the origin triangle
-            idVec3[] texVec = {new idVec3(), new idVec3()};
+            final idVec3[] texVec = {new idVec3(), new idVec3()};
 
             texVec[0].Cross(v1, v2);
 
@@ -1019,12 +1026,12 @@ public class tr_deform {
                 for (k = 0; k < 3; k++) {
                     int index = islands[i].tris[j] * 3;
 
-                    index = tri.indexes[index + k];
-                    newTri.indexes[newTri.numIndexes++] = index;
+                    index = tri.getIndexes().getValues().get(index + k);
+                    newTri.getIndexes().getValues().put(newTri.getIndexes().incNumValues(), index);
 
                     ac[index].xyz.oSet(tri.verts[index].xyz);
 
-                    idVec3 local = tri.verts[index].xyz.oMinus(origin);
+                    final idVec3 local = tri.verts[index].xyz.oMinus(origin);
 
                     ac[index].st.oSet(0, 0.5f + local.oMultiply(texVec[0]));
                     ac[index].st.oSet(1, 0.5f + local.oMultiply(texVec[1]));
@@ -1062,7 +1069,7 @@ public class tr_deform {
         //
         // calculate the area of all the triangles
         //
-        int numSourceTris = surf.geo.numIndexes / 3;
+        final int numSourceTris = surf.geo.getIndexes().getNumValues() / 3;
         float totalArea = 0;
         Float[] sourceTriAreas = null;
         final srfTriangles_s srcTri = surf.geo;
@@ -1070,9 +1077,9 @@ public class tr_deform {
         if (useArea) {
             sourceTriAreas = new Float[numSourceTris];
             int triNum = 0;
-            for (int i = 0; i < srcTri.numIndexes; i += 3, triNum++) {
+            for (int i = 0; i < srcTri.getIndexes().getNumValues(); i += 3, triNum++) {
                 float area;
-                area = idWinding.TriangleArea(srcTri.verts[srcTri.indexes[i]].xyz, srcTri.verts[srcTri.indexes[i + 1]].xyz, srcTri.verts[srcTri.indexes[i + 2]].xyz);
+                area = idWinding.TriangleArea(srcTri.verts[srcTri.getIndexes().getValues().get(i)].xyz, srcTri.verts[srcTri.getIndexes().getValues().get(i + 1)].xyz, srcTri.verts[srcTri.getIndexes().getValues().get(i + 2)].xyz);
                 sourceTriAreas[triNum] = totalArea;
                 totalArea += area;
             }
@@ -1081,7 +1088,7 @@ public class tr_deform {
         //
         // create the particles almost exactly the way idRenderModelPrt does
         //
-        particleGen_t g = new particleGen_t();
+        final particleGen_t g = new particleGen_t();
 
         g.renderEnt = renderEntity;
         g.renderView = viewDef.renderView;
@@ -1091,7 +1098,7 @@ public class tr_deform {
         for (int currentTri = 0; currentTri < ((useArea) ? 1 : numSourceTris); currentTri++) {
 
             for (int stageNum = 0; stageNum < particleSystem.stages.Num(); stageNum++) {
-                idParticleStage stage = particleSystem.stages.oGet(stageNum);
+                final idParticleStage stage = particleSystem.stages.oGet(stageNum);
 
                 if (null == stage.material) {
                     continue;
@@ -1105,29 +1112,29 @@ public class tr_deform {
 
                 // we interpret stage.totalParticles as "particles per map square area"
                 // so the systems look the same on different size surfaces
-                int totalParticles = (int) ((useArea) ? stage.totalParticles * totalArea / 4096.0 : (stage.totalParticles));
+                final int totalParticles = (int) ((useArea) ? (stage.totalParticles * totalArea) / 4096.0 : (stage.totalParticles));
 
-                int count = totalParticles * stage.NumQuadsPerParticle();
+                final int count = totalParticles * stage.NumQuadsPerParticle();
 
                 // allocate a srfTriangles in temp memory that can hold all the particles
                 srfTriangles_s tri;
 
                 tri = new srfTriangles_s();// R_ClearedFrameAlloc(sizeof(tri));
                 tri.numVerts = 4 * count;
-                tri.numIndexes = 6 * count;
+                tri.getIndexes().setNumValues(6 * count);
                 tri.verts = new idDrawVert[tri.numVerts];// R_FrameAlloc(tri.numVerts);
-                tri.indexes = new int[tri.numIndexes];// R_FrameAlloc(tri.numIndexes);
+                tri.getIndexes().createValues(tri.getIndexes().getNumValues());// R_FrameAlloc(tri.numIndexes);
 
                 // just always draw the particles
                 tri.bounds.oSet(stage.bounds);
 
                 tri.numVerts = 0;
 
-                idRandom steppingRandom = new idRandom(), steppingRandom2 = new idRandom();
+                final idRandom steppingRandom = new idRandom(), steppingRandom2 = new idRandom();
 
-                int stageAge = (int) (g.renderView.time + renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] * 1000 - stage.timeOffset * 1000);
-                int stageCycle = stageAge / stage.cycleMsec;
-                int inCycleTime = stageAge - stageCycle * stage.cycleMsec;
+                final int stageAge = (int) ((g.renderView.time + (renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] * 1000)) - (stage.timeOffset * 1000));
+                final int stageCycle = stageAge / stage.cycleMsec;
+                int inCycleTime = stageAge - (stageCycle * stage.cycleMsec);
 
                 // some particles will be in this cycle, some will be in the previous cycle
                 steppingRandom.SetSeed(((stageCycle << 10) & idRandom.MAX_RAND) ^ (int) (renderEntity.shaderParms[SHADERPARM_DIVERSITY] * idRandom.MAX_RAND));
@@ -1141,10 +1148,10 @@ public class tr_deform {
                     steppingRandom2.RandomInt();
 
                     // calculate local age for this index 
-                    int bunchOffset = (int) (stage.particleLife * 1000 * stage.spawnBunching * index / totalParticles);
+                    final int bunchOffset = (int) ((stage.particleLife * 1000 * stage.spawnBunching * index) / totalParticles);
 
-                    int particleAge = stageAge - bunchOffset;
-                    int particleCycle = particleAge / stage.cycleMsec;
+                    final int particleAge = stageAge - bunchOffset;
+                    final int particleCycle = particleAge / stage.cycleMsec;
                     if (particleCycle < 0) {
                         // before the particleSystem spawned
                         continue;
@@ -1190,15 +1197,15 @@ public class tr_deform {
                     }
 
                     // now pick a random point inside pointTri
-                    final idDrawVert v1 = srcTri.verts[srcTri.indexes[pointTri * 3 + 0]];
-                    final idDrawVert v2 = srcTri.verts[srcTri.indexes[pointTri * 3 + 1]];
-                    final idDrawVert v3 = srcTri.verts[srcTri.indexes[pointTri * 3 + 2]];
+                    final idDrawVert v1 = srcTri.verts[srcTri.getIndexes().getValues().get((pointTri * 3) + 0)];
+                    final idDrawVert v2 = srcTri.verts[srcTri.getIndexes().getValues().get((pointTri * 3) + 1)];
+                    final idDrawVert v3 = srcTri.verts[srcTri.getIndexes().getValues().get((pointTri * 3) + 2)];
 
                     float f1 = g.random.RandomFloat();
                     float f2 = g.random.RandomFloat();
                     float f3 = g.random.RandomFloat();
 
-                    float ft = 1.0f / (f1 + f2 + f3 + 0.0001f);
+                    final float ft = 1.0f / (f1 + f2 + f3 + 0.0001f);
 
                     f1 *= ft;
                     f2 *= ft;
@@ -1224,15 +1231,15 @@ public class tr_deform {
                     // build the index list
                     int indexes = 0;
                     for (int i = 0; i < tri.numVerts; i += 4) {
-                        tri.indexes[indexes + 0] = i;
-                        tri.indexes[indexes + 1] = i + 2;
-                        tri.indexes[indexes + 2] = i + 3;
-                        tri.indexes[indexes + 3] = i;
-                        tri.indexes[indexes + 4] = i + 3;
-                        tri.indexes[indexes + 5] = i + 1;
+                        tri.getIndexes().getValues().put(indexes + 0, i);
+                        tri.getIndexes().getValues().put(indexes + 1, i + 2);
+                        tri.getIndexes().getValues().put(indexes + 2, i + 3);
+                        tri.getIndexes().getValues().put(indexes + 3, i);
+                        tri.getIndexes().getValues().put(indexes + 4, i + 3);
+                        tri.getIndexes().getValues().put(indexes + 5, i + 1);
                         indexes += 6;
                     }
-                    tri.numIndexes = indexes;
+                    tri.getIndexes().setNumValues(indexes);
                     tri.ambientCache = vertexCache.AllocFrameTemp(tri.verts, tri.numVerts * idDrawVert.BYTES);
                     if (tri.ambientCache != null) {
                         // add the drawsurf

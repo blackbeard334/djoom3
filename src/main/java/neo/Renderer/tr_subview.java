@@ -18,7 +18,6 @@ import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Material.shaderStage_t;
 import neo.Renderer.Material.textureStage_t;
 import neo.Renderer.Model.srfTriangles_s;
-import neo.Renderer.RenderWorld.renderView_s;
 import neo.Renderer.tr_local.drawSurf_s;
 import neo.Renderer.tr_local.idScreenRect;
 import neo.Renderer.tr_local.viewDef_s;
@@ -90,9 +89,9 @@ public class tr_subview {
     public static void R_PlaneForSurface(final srfTriangles_s tri, idPlane plane) {
         idDrawVert v1, v2, v3;
 
-        v1 = tri.verts[tri.indexes[0]];
-        v2 = tri.verts[tri.indexes[1]];
-        v3 = tri.verts[tri.indexes[2]];
+        v1 = tri.verts[tri.getIndexes().getValues().get(0)];
+        v2 = tri.verts[tri.getIndexes().getValues().get(1)];
+        v3 = tri.verts[tri.getIndexes().getValues().get(2)];
         plane.FromPoints(v1.xyz, v2.xyz, v3.xyz);
     }
 
@@ -112,12 +111,12 @@ public class tr_subview {
     public static boolean R_PreciseCullSurface(final drawSurf_s drawSurf, idBounds ndcBounds) {
         final srfTriangles_s tri;
         int numTriangles;
-        idPlane clip = new idPlane(), eye = new idPlane();
+        final idPlane clip = new idPlane(), eye = new idPlane();
         int i, j;
         int pointOr;
         int pointAnd;
-        idVec3 localView = new idVec3();
-        idFixedWinding w = new idFixedWinding();
+        final idVec3 localView = new idVec3();
+        final idFixedWinding w = new idFixedWinding();
 
         tri = drawSurf.geo;
 
@@ -153,18 +152,18 @@ public class tr_subview {
         }
 
         // backface and frustum cull
-        numTriangles = tri.numIndexes / 3;
+        numTriangles = tri.getIndexes().getNumValues() / 3;
 
         R_GlobalPointToLocal(drawSurf.space.modelMatrix, tr.viewDef.renderView.vieworg, localView);
 
-        for (i = 0; i < tri.numIndexes; i += 3) {
+        for (i = 0; i < tri.getIndexes().getNumValues(); i += 3) {
             idVec3 dir, normal;
             float dot;
             idVec3 d1, d2;
 
-            final idVec3 v1 = tri.verts[tri.indexes[i]].xyz;
-            final idVec3 v2 = tri.verts[tri.indexes[i + 1]].xyz;
-            final idVec3 v3 = tri.verts[tri.indexes[i + 2]].xyz;
+            final idVec3 v1 = tri.verts[tri.getIndexes().getValues().get(i)].xyz;
+            final idVec3 v2 = tri.verts[tri.getIndexes().getValues().get(i + 1)].xyz;
+            final idVec3 v3 = tri.verts[tri.getIndexes().getValues().get(i + 2)].xyz;
 
             // this is a hack, because R_GlobalPointToLocal doesn't work with the non-normalized
             // axis that we get from the gui view transform.  It doesn't hurt anything, because
@@ -197,7 +196,7 @@ public class tr_subview {
                 }
             }
             for (j = 0; j < w.GetNumPoints(); j++) {
-                idVec3 screen = new idVec3();
+                final idVec3 screen = new idVec3();
 
                 R_GlobalToNormalizedDeviceCoordinates(w.oGet(j).ToVec3(), screen);
                 ndcBounds.AddPoint(screen);
@@ -219,8 +218,8 @@ public class tr_subview {
      */
     public static viewDef_s R_MirrorViewBySurface(drawSurf_s drawSurf) {
         viewDef_s parms;
-        orientation_t surface = new orientation_t(), camera = new orientation_t();
-        idPlane originalPlane = new idPlane(), plane = new idPlane();
+        final orientation_t surface = new orientation_t(), camera = new orientation_t();
+        final idPlane originalPlane = new idPlane(), plane = new idPlane();
 
         // copy the viewport size from the original
         parms = new viewDef_s(tr.viewDef);//        parms = (viewDef_s) R_FrameAlloc(sizeof(parms));
@@ -251,7 +250,7 @@ public class tr_subview {
         R_MirrorVector(tr.viewDef.renderView.viewaxis.oGet(2), surface, camera, parms.renderView.viewaxis.oGet(2));
 
         // make the view origin 16 units away from the center of the surface
-        idVec3 viewOrigin = (drawSurf.geo.bounds.oGet(0).oPlus(drawSurf.geo.bounds.oGet(1))).oMultiply(0.5f);
+        final idVec3 viewOrigin = (drawSurf.geo.bounds.oGet(0).oPlus(drawSurf.geo.bounds.oGet(1))).oMultiply(0.5f);
         viewOrigin.oPluSet(originalPlane.Normal().oMultiply(16));
 
         parms.initialViewAreaOrigin = R_LocalPointToGlobal(drawSurf.space.modelMatrix, viewOrigin);
@@ -312,7 +311,7 @@ public class tr_subview {
         parms.isSubview = true;
         parms.isMirror = false;
 
-        parms.renderView = (renderView_s) surf.space.entityDef.parms.remoteRenderView;
+        parms.renderView = surf.space.entityDef.parms.remoteRenderView;
         parms.renderView.viewID = 0;	// clear to allow player bodies to show up, and suppress view weapons
         parms.initialViewAreaOrigin.oSet(parms.renderView.vieworg);
 
@@ -452,7 +451,7 @@ public class tr_subview {
      ==================
      */
     public static boolean R_GenerateSurfaceSubview(drawSurf_s drawSurf) {
-        idBounds ndcBounds = new idBounds();
+        final idBounds ndcBounds = new idBounds();
         viewDef_s parms;
         final idMaterial shader;
 
@@ -481,9 +480,9 @@ public class tr_subview {
         }
 
         // crop the scissor bounds based on the precise cull
-        idScreenRect scissor = new idScreenRect();
+        final idScreenRect scissor = new idScreenRect();
 
-        idScreenRect v = tr.viewDef.viewport;
+        final idScreenRect v = tr.viewDef.viewport;
         scissor.x1 = v.x1 + (int) ((v.x2 - v.x1 + 1) * 0.5f * (ndcBounds.oGet(0, 0) + 1.0f));
         scissor.y1 = v.y1 + (int) ((v.y2 - v.y1 + 1) * 0.5f * (ndcBounds.oGet(0, 1) + 1.0f));
         scissor.x2 = v.x1 + (int) ((v.x2 - v.x1 + 1) * 0.5f * (ndcBounds.oGet(1, 0) + 1.0f));
@@ -513,6 +512,9 @@ public class tr_subview {
                     case DI_XRAY_RENDER:
                         R_XrayRender(drawSurf, /*const_cast<textureStage_t *>*/ (stage.texture), scissor);
                         break;
+				default:
+					// TODO check unused Enum case labels
+					break;
                 }
             }
             return true;

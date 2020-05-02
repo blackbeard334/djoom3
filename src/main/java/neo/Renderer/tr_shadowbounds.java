@@ -523,23 +523,31 @@ public class tr_shadowbounds {
     }
 
     public static void world_to_hclip(final viewDef_s viewDef, final idVec4 global, idVec4 clip) {
-        int i;
+        int i, j;
         idVec4 view = new idVec4();
 
         for (i = 0; i < 4; i++) {
+            j = 0;
             view.oSet(i,
-                    global.oGet(0) * viewDef.worldSpace.modelViewMatrix[ i + 0 * 4]
-                    + global.oGet(1) * viewDef.worldSpace.modelViewMatrix[ i + 1 * 4]
-                    + global.oGet(2) * viewDef.worldSpace.modelViewMatrix[ i + 2 * 4]
-                    + global.oGet(3) * viewDef.worldSpace.modelViewMatrix[ i + 3 * 4]);
+                    (global.oGet(j) * viewDef.worldSpace.modelViewMatrix.get(i + (j * 4)))
+                    // increment j
+                    + (global.oGet(++j) * viewDef.worldSpace.modelViewMatrix.get(i + (j * 4)))
+                    // increment j
+                    + (global.oGet(++j) * viewDef.worldSpace.modelViewMatrix.get(i + (j * 4)))
+                    // increment j
+                    + (global.oGet(++j) * viewDef.worldSpace.modelViewMatrix.get(i + (j * 4))));
         }
 
         for (i = 0; i < 4; i++) {
+            j = 0;
             clip.oSet(i,
-                    view.oGet(0) * viewDef.projectionMatrix[ i + 0 * 4]
-                    + view.oGet(1) * viewDef.projectionMatrix[ i + 1 * 4]
-                    + view.oGet(2) * viewDef.projectionMatrix[ i + 2 * 4]
-                    + view.oGet(3) * viewDef.projectionMatrix[ i + 3 * 4]);
+                    (view.oGet(j) * viewDef.projectionMatrix.get(i + (j * 4)))
+                    // increment j
+                    + (view.oGet(++j) * viewDef.projectionMatrix.get(i + (j * 4)))
+                    // increment j
+                    + (view.oGet(++j) * viewDef.projectionMatrix.get(i + (j * 4)))
+                    // increment j
+                    + (view.oGet(++j) * viewDef.projectionMatrix.get(i + (j * 4))));
         }
     }
 

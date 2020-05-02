@@ -107,9 +107,9 @@ public class Model_liquid {
         @Override
         public void InitFromFile(String fileName) throws idException {
             int i, x, y;
-            idToken token = new idToken();
-            idParser parser = new idParser(LEXFL_ALLOWPATHNAMES | LEXFL_NOSTRINGESCAPECHARS);
-            idList<Integer> tris = new idList<>();
+            final idToken token = new idToken();
+            final idParser parser = new idParser(LEXFL_ALLOWPATHNAMES | LEXFL_NOSTRINGESCAPECHARS);
+            final idList<Integer> tris = new idList<>();
             float size_x, size_y;
             float rate;
 
@@ -351,7 +351,7 @@ public class Model_liquid {
             srfTriangles_s tri;
             int i, base;
             idDrawVert vert;
-            modelSurface_s surf = new modelSurface_s();
+            final modelSurface_s surf = new modelSurface_s();
             float inv_lerp;
 
             inv_lerp = 1.0f - lerp;
@@ -362,15 +362,15 @@ public class Model_liquid {
 
             tr.pc.c_deformedSurfaces++;
             tr.pc.c_deformedVerts += deformInfo.numOutputVerts;
-            tr.pc.c_deformedIndexes += deformInfo.numIndexes;
+            tr.pc.c_deformedIndexes += deformInfo.getIndexes().getNumValues();
 
             tri = R_AllocStaticTriSurf();
 
             // note that some of the data is references, and should not be freed
             tri.deformedSurface = true;
 
-            tri.numIndexes = deformInfo.numIndexes;
-            tri.indexes = deformInfo.indexes;
+            tri.getIndexes().setNumValues(this.deformInfo.getIndexes().getNumValues());
+            tri.getIndexes().setValues(this.deformInfo.getIndexes().getValues());
             tri.silIndexes = deformInfo.silIndexes;
             tri.numMirroredVerts = deformInfo.numMirroredVerts;
             tri.mirroredVerts = deformInfo.mirroredVerts;
@@ -411,8 +411,8 @@ public class Model_liquid {
             int cx, cy;
             int left, top, right, bottom;
             int square;
-            int radsquare = drop_radius * drop_radius;
-            float invlength = 1.0f / (float) radsquare;
+            final int radsquare = this.drop_radius * this.drop_radius;
+            final float invlength = 1.0f / radsquare;
             float dist;
 
             if (x < 0) {

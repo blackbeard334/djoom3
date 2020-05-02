@@ -19,6 +19,7 @@ import neo.framework.DemoFile.idDemoFile;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec2;
+import neo.open.Nio;
 
 /**
  *
@@ -92,7 +93,7 @@ public class ModelOverlay {
         // texture since no new clip vertexes are generated.
         public void CreateOverlay(final idRenderModel model, final idPlane[] localTextureAxis/*[2]*/, final idMaterial mtr) {
             int i, maxVerts, maxIndexes, surfNum;
-            idRenderModelOverlay overlay = null;
+            final idRenderModelOverlay overlay = null;
 
             // count up the maximum possible vertices and indexes per surface
             maxVerts = 0;
@@ -102,14 +103,14 @@ public class ModelOverlay {
                 if (surf.geometry.numVerts > maxVerts) {
                     maxVerts = surf.geometry.numVerts;
                 }
-                if (surf.geometry.numIndexes > maxIndexes) {
-                    maxIndexes = surf.geometry.numIndexes;
+                if (surf.geometry.getIndexes().getNumValues() > maxIndexes) {
+                    maxIndexes = surf.geometry.getIndexes().getNumValues();
                 }
             }
 
             // make temporary buffers for the building process
-            overlayVertex_s[] overlayVerts = new overlayVertex_s[maxVerts];
-            int[]/*glIndex_t*/ overlayIndexes = new int[maxIndexes];
+            final overlayVertex_s[] overlayVerts = new overlayVertex_s[maxVerts];
+            final int[]/*glIndex_t*/ overlayIndexes = new int[maxIndexes];
 
             // pull out the triangles we need from the base surfaces
             for (surfNum = 0; surfNum < model.NumBaseSurfaces(); surfNum++) {
@@ -139,22 +140,22 @@ public class ModelOverlay {
                     continue;
                 }
 
-                byte[] cullBits = new byte[stri.numVerts];
-                idVec2[] texCoords = new idVec2[stri.numVerts];
+                final byte[] cullBits = new byte[stri.numVerts];
+                final idVec2[] texCoords = new idVec2[stri.numVerts];
 
                 SIMDProcessor.OverlayPointCull(cullBits, texCoords, localTextureAxis, stri.verts, stri.numVerts);
 
-                int[]/*glIndex_t */ vertexRemap = new int[stri.numVerts];
+                final int[]/*glIndex_t */ vertexRemap = new int[stri.numVerts];
                 SIMDProcessor.Memset(vertexRemap, -1, stri.numVerts);
 
                 // find triangles that need the overlay
                 int numVerts = 0;
                 int numIndexes = 0;
                 int triNum = 0;
-                for (int index = 0; index < stri.numIndexes; index += 3, triNum++) {
-                    int v1 = stri.indexes[index + 0];
-                    int v2 = stri.indexes[index + 1];
-                    int v3 = stri.indexes[index + 2];
+                for (int index = 0; index < stri.getIndexes().getNumValues(); index += 3, triNum++) {
+                    final int v1 = stri.getIndexes().getValues().get(index + 0);
+                    final int v2 = stri.getIndexes().getValues().get(index + 1);
+                    final int v3 = stri.getIndexes().getValues().get(index + 2);
 
                     // skip triangles completely off one side
                     if ((cullBits[v1] & cullBits[v2] & cullBits[v3]) != 0) {
@@ -164,7 +165,7 @@ public class ModelOverlay {
                     // we could do more precise triangle culling, like the light interaction does, if desired
                     // keep this triangle
                     for (int vnum = 0; vnum < 3; vnum++) {
-                        int ind = stri.indexes[index + vnum];
+                        final int ind = stri.getIndexes().getValues().get(index + vnum);
                         if (vertexRemap[ind] == -1) {
                             vertexRemap[ind] = numVerts;
 
@@ -182,7 +183,7 @@ public class ModelOverlay {
                     continue;
                 }
 
-                overlaySurface_s s = new overlaySurface_s();// Mem_Alloc(sizeof(overlaySurface_t));
+                final overlaySurface_s s = new overlaySurface_s();// Mem_Alloc(sizeof(overlaySurface_t));
                 s.surfaceNum[0] = surfNum;
                 s.surfaceId = surf.id;
                 s.verts = new overlayVertex_s[numVerts];// Mem_Alloc(numVerts);
@@ -191,7 +192,7 @@ public class ModelOverlay {
                 s.numVerts = numVerts;
                 s.indexes = new int[numIndexes];///*(glIndex_t *)*/Mem_Alloc(numIndexes);
 //                memcpy(s.indexes, overlayIndexes, numIndexes * sizeof(s.indexes[0]));
-                System.arraycopy(overlayIndexes, 0, s.indexes, 0, numIndexes);
+                Nio.arraycopy(overlayIndexes, 0, s.indexes, 0, numIndexes);
                 s.numIndexes = numIndexes;
 
                 for (i = 0; i < materials.Num(); i++) {
@@ -268,7 +269,7 @@ public class ModelOverlay {
                     newSurf.id = -1 - k;
                 }
 
-                if (newSurf.geometry == null || newSurf.geometry.numVerts < numVerts || newSurf.geometry.numIndexes < numIndexes) {
+                if ((newSurf.geometry == null) || (newSurf.geometry.numVerts < numVerts) || (newSurf.geometry.getIndexes().getNumValues() < numIndexes)) {
                     R_FreeStaticTriSurf(newSurf.geometry);
                     newSurf.geometry = R_AllocStaticTriSurf();
                     R_AllocStaticTriSurfVerts(newSurf.geometry, numVerts);
@@ -307,13 +308,13 @@ public class ModelOverlay {
 
                     // copy indexes;
                     for (j = 0; j < surf.numIndexes; j++) {
-                        newTri.indexes[numIndexes + j] = numVerts + surf.indexes[j];
+                        newTri.getIndexes().getValues().put(numIndexes + j, numVerts + surf.indexes[j]);
                     }
                     numIndexes += surf.numIndexes;
 
                     // copy vertices
                     for (j = 0; j < surf.numVerts; j++) {
-                        overlayVertex_s overlayVert = surf.verts[j];
+                        final overlayVertex_s overlayVert = surf.verts[j];
 
                         newTri.verts[numVerts].st.oSet(0, overlayVert.st[0]);
                         newTri.verts[numVerts].st.oSet(1, overlayVert.st[1]);
@@ -332,7 +333,7 @@ public class ModelOverlay {
                 }
 
                 newTri.numVerts = numVerts;
-                newTri.numIndexes = numIndexes;
+                newTri.getIndexes().setNumValues(numIndexes);
                 R_BoundTriSurf(newTri);
 
                 staticModel.overlaysAdded++;	// so we don't create an overlay on an overlay surface
@@ -372,5 +373,5 @@ public class ModelOverlay {
             }
             surface.clear();
         }
-    };
+    }
 }

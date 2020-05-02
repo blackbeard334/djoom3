@@ -219,7 +219,7 @@ public class Model_md3 {
             md3St_t st;
             md3XyzNormal_t xyz;
             md3Tag_s tag;
-            ByteBuffer[] buffer = {null};
+            final ByteBuffer[] buffer = {null};
             int version;
             int size;
 
@@ -455,20 +455,20 @@ public class Model_md3 {
                 for (md3Triangle_t triangle : surface.triangles) {
 //                triangles = (int[]) ((byte[]) surface + surface.ofsTriangles);
                     for (/*j = 0*/; j < indexes; j++) {
-                        tri.indexes[j] = triangle.indexes[j];
+                        tri.getIndexes().getValues().put(j, triangle.indexes[j]);
                     }
-                    tri.numIndexes += indexes;
+                    tri.getIndexes().setNumValues(tri.getIndexes().getNumValues() + indexes);
                 }
 
                 numVerts = surface.numVerts;
                 j = 0;
-                for (md3St_t texCoords : surface.verts) {
+                for (final md3St_t texCoords : surface.verts) {
 //                texCoords = (float[]) ((byte[]) surface + surface.ofsSt);
 
                     for (/*j = 0*/; j < numVerts; j++) {
-                        idDrawVert stri = tri.verts[j];
-                        stri.st.oSet(0, texCoords.st[j * 2 + 0]);
-                        stri.st.oSet(1, texCoords.st[j * 2 + 1]);
+                        final idDrawVert stri = tri.verts[j];
+                        stri.st.oSet(0, texCoords.st[(j * 2) + 0]);
+                        stri.st.oSet(1, texCoords.st[(j * 2) + 1]);
                     }
                 }
 
@@ -487,7 +487,7 @@ public class Model_md3 {
 
         @Override
         public idBounds Bounds(renderEntity_s ent) {
-            idBounds ret = new idBounds();
+            final idBounds ret = new idBounds();
 
             ret.Clear();
 
@@ -499,7 +499,7 @@ public class Model_md3 {
             }
 
 //            md3Frame_s frame = (md3Frame_t) ((byte[]) md3 + md3.ofsFrames);
-            md3Frame_s frame = md3.frames[0];
+            final md3Frame_s frame = md3.frames[0];
 
             ret.AddPoint(frame.bounds[0]);
             ret.AddPoint(frame.bounds[1]);
@@ -525,7 +525,7 @@ public class Model_md3 {
                 //
                 for (vertNum = 0; vertNum < numVerts; newXyz = surf.normals[++frame], vertNum++) {
 
-                    idDrawVert outvert = tri.verts[tri.numVerts];
+                    final idDrawVert outvert = tri.verts[tri.numVerts];
 
                     outvert.xyz.x = newXyz.xyz[0] * newXyzScale;
                     outvert.xyz.y = newXyz.xyz[1] * newXyzScale;
@@ -544,7 +544,7 @@ public class Model_md3 {
 
                 for (vertNum = 0; vertNum < numVerts; vertNum++, oldXyz = surf.normals[++oldframe], newXyz = surf.normals[++frame]) {
 
-                    idDrawVert outvert = tri.verts[tri.numVerts];
+                    final idDrawVert outvert = tri.verts[tri.numVerts];
 
                     // interpolate the xyz
                     outvert.xyz.x = oldXyz.xyz[0] * oldXyzScale + newXyz.xyz[0] * newXyzScale;

@@ -1,11 +1,9 @@
 package neo.Renderer;
 
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static neo.Renderer.qgl.GL_UNSIGNED_INT;
 
 import java.nio.ByteBuffer;
 import java.util.stream.Stream;
-
-import org.lwjgl.BufferUtils;
 
 import neo.TempDump.SERiAL;
 import neo.Renderer.Material.idMaterial;
@@ -22,6 +20,8 @@ import neo.idlib.geometry.JointTransform.idJointQuat;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.NeoIntBuffer;
+import neo.open.Nio;
 
 /**
  *
@@ -89,9 +89,9 @@ public class Model {
         }
 
         public static ByteBuffer toByteBuffer(lightingCache_s[] cache) {
-            ByteBuffer data = BufferUtils.createByteBuffer(lightingCache_s.BYTES * cache.length);
+            final ByteBuffer data = Nio.newByteBuffer(lightingCache_s.BYTES * cache.length);
 
-            for (lightingCache_s c : cache) {
+            for (final lightingCache_s c : cache) {
                 data.put(c.localLightVector.Write());
             }
 
@@ -114,15 +114,16 @@ public class Model {
         }
 
         public static ByteBuffer toByteBuffer(shadowCache_s[] cache) {
-            ByteBuffer data = BufferUtils.createByteBuffer(shadowCache_s.BYTES * cache.length);
+            final ByteBuffer data = Nio.newByteBuffer(shadowCache_s.BYTES * cache.length);
 
-            for (shadowCache_s c : cache) {
+            for (final shadowCache_s c : cache) {
                 data.put(c.xyz.Write());
             }
 
             return (ByteBuffer) data.flip();
         }
-    };
+    }
+
     static final int SHADOW_CAP_INFINITE = 64;
 
     // our only drawing geometry type
@@ -142,8 +143,9 @@ public class Model {
         public int                 numVerts;    // number of vertices
         public idDrawVert[]        verts;       // vertices, allocated with special allocator
 
-        public int                 numIndexes;  // for shadows, this has both front and rear end caps and silhouette planes
-        public int /*glIndex_t*/[] indexes;     // indexes, allocated with special allocator
+        //public int                 numIndexes;  // for shadows, this has both front and rear end caps and silhouette planes
+        //public int /*glIndex_t*/[] indexes;     // indexes, allocated with special allocator
+        private NeoIntBuffer         indexes;     // for shadows, this has both front and rear end caps and silhouette planes
 
         public int/*glIndex_t*/[]  silIndexes;  // indexes changed to be the first vertex with same XYZ, ignoring normal and texcoords
 
@@ -195,8 +197,7 @@ public class Model {
             this.deformedSurface = false;
             this.numVerts = 0;
             this.verts = null;
-            this.numIndexes = 0;
-            this.indexes = null;
+            this.indexes = new NeoIntBuffer();
             this.silIndexes = null;
             this.numMirroredVerts = 0;
             this.mirroredVerts = null;
@@ -217,7 +218,12 @@ public class Model {
             this.lightingCache = null;
             this.shadowCache = null;
         }
-    };
+
+		public NeoIntBuffer getIndexes() {
+			return this.indexes;
+		}
+
+    }
 
     static class idTriList extends idList<srfTriangles_s> {
     };
@@ -232,9 +238,9 @@ public class Model {
         public final   int DBG_count   = DBG_counter++;
         
         public modelSurface_s(){
-            int a = 1;
+            final int a = 1;
         }
-    };
+    }
 
     public enum dynamicModel_t {
 

@@ -128,6 +128,8 @@ import static org.lwjgl.opengl.GL31.GL_TEXTURE_RECTANGLE;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
 
@@ -171,6 +173,7 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrList.idStrList;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.Nio;
 
 /**
  *
@@ -612,7 +615,7 @@ public class Image {
             frameUsed = backEnd.frameCount;
             bindCount++;
 
-            tmu_t tmu = backEnd.glState.tmu[backEnd.glState.currenttmu];
+            final tmu_t tmu = backEnd.glState.tmu[backEnd.glState.currenttmu];
 
             // enable or disable apropriate texture modes
             if (tmu.textureType != type && (backEnd.glState.currenttmu < glConfig.maxTextureUnits)) {
@@ -656,8 +659,9 @@ public class Image {
             }
 
             if (com_purgeAll.GetBool()) {
-                float/*GLclampf*/ priority = 1.0f;
-                qglPrioritizeTextures(1, texNum, priority);
+                final FloatBuffer/*GLclampf*/ priority = (FloatBuffer) Nio.newFloatBuffer(1).put(1.0f);
+                final IntBuffer/*GLuint*/       texNum = (IntBuffer) Nio.newIntBuffer(1).put(this.texNum);
+                qglPrioritizeTextures(texNum, priority);
             }
         }
         private static int DBG_Bind = 0;
@@ -732,8 +736,8 @@ public class Image {
                 // sometimes is NULL when exiting with an error
 //                if (qglDeleteTextures) {
                 try {
-                    qglDeleteTextures(1, texNum);// this should be the ONLY place it is ever called!
-                } catch (RuntimeException e) {//TODO:deal with this.
+                    qglDeleteTextures(1, this.texNum);// this should be the ONLY place it is ever called!
+                } catch (final RuntimeException e) {//TODO:deal with this.
 //                    e.printStackTrace();
                 }
 //                }
@@ -787,7 +791,7 @@ public class Image {
                 textureRepeat_t repeatParm, textureDepth_t depthParm) {
             boolean preserveBorder;
             ByteBuffer scaledBuffer;
-            int[] scaled_width = {0}, scaled_height = {0};
+            final int[] scaled_width = {0}, scaled_height = {0};
             ByteBuffer shrunk;
 
             PurgeImage();
@@ -835,8 +839,8 @@ public class Image {
             if ((scaled_width[0] == width) && (scaled_height[0] == height)) {
                 // we must copy even if unchanged, because the border zeroing
                 // would otherwise modify const data
-                scaledBuffer = BufferUtils.createByteBuffer(width * height * 4);// R_StaticAlloc(scaled_width[0] * scaled_height[0]);
-                byte[] temp = new byte[width * height * 4];
+                scaledBuffer = Nio.newByteBuffer(width * height * 4);// R_StaticAlloc(scaled_width[0] * scaled_height[0]);
+                final byte[] temp = new byte[width * height * 4];
 //		memcpy (scaledBuffer, pic, width*height*4);
                 pic.rewind();
                 pic.get(temp);
@@ -898,8 +902,8 @@ public class Image {
             if (generatorFunction == null && (depth == TD_BUMP && globalImages.image_writeNormalTGA.GetBool() || depth != TD_BUMP && globalImages.image_writeTGA.GetBool())) {
                 // Optionally write out the texture to a .tga
 //                String[] filename = {null};
-                String[] filename = new String[1];
-                ImageProgramStringToCompressedFileName(imgName.toString(), filename);
+                final String[] filename = new String[1];
+                ImageProgramStringToCompressedFileName(this.imgName.toString(), filename);
                 final int ext = filename[0].lastIndexOf('.');
                 if (ext > -1) {
 //			strcpy( ext, ".tga" );
@@ -1298,7 +1302,7 @@ public class Image {
                     // we need to create a dummy image with power of two dimensions,
                     // then do a qglCopyTexSubImage2D of the data we want
                     // this might be a 16+ meg allocation, which could fail on _alloca
-                    junk = BufferUtils.createByteBuffer(potWidth[0] * potHeight[0] * 4);// Mem_Alloc(potWidth[0] * potHeight[0] * 4);
+                    junk = Nio.newByteBuffer(potWidth[0] * potHeight[0] * 4);// Mem_Alloc(potWidth[0] * potHeight[0] * 4);
 //			memset( junk, 0, potWidth * potHeight * 4 );		//!@#
 //                    if (false) { // Disabling because it's unnecessary and introduces a green strip on edge of _currentRender
 //			for ( int i = 0 ; i < potWidth * potHeight * 4 ; i+=4 ) {
@@ -1359,7 +1363,7 @@ public class Image {
                 } else {
                     // we need to create a dummy image with power of two dimensions,
                     // then do a qglCopyTexSubImage2D of the data we want
-                    qglTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, potWidth, potHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, (byte[]) null);
+                    qglTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, potWidth, potHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, (ByteBuffer) null);
                     qglCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, x, y, imageWidth, imageHeight);
                 }
             } else {
@@ -1639,7 +1643,7 @@ public class Image {
 
             // check file times
             if (!force) {
-                long[]/*ID_TIME_T*/ current = {0};
+                final long[]/*ID_TIME_T*/ current = {0};
 
                 if (cubeFiles != CF_2D) {
                     R_LoadCubeImages(imgName.toString(), cubeFiles, null, null, current);
@@ -1738,7 +1742,7 @@ public class Image {
 
         public void MakeDefault() {	// fill with a grid pattern
             int x, y;
-            byte[][][] data = new byte[DEFAULT_SIZE][DEFAULT_SIZE][4];
+            final byte[][][] data = new byte[DEFAULT_SIZE][DEFAULT_SIZE][4];
 
             if (com_developer.GetBool()) {
                 // grey center
@@ -1894,7 +1898,7 @@ public class Image {
                 return false;
             }
 
-            int len = f.Length();
+            final int len = f.Length();
             fileSystem.CloseFile(f);
 
             if (len <= globalImages.image_cacheMinK.GetInteger() * 1024) {
@@ -1930,7 +1934,7 @@ public class Image {
             ImageProgramStringToCompressedFileName(imgName.toString(), filename0);
             final String filename = filename0[0];
 
-            int numLevels = NumLevelsForImageSize(uploadWidth, uploadHeight);
+            final int numLevels = NumLevelsForImageSize(this.uploadWidth, this.uploadHeight);
             if (numLevels > MAX_TEXTURE_LEVELS) {
                 common.Warning("R_WritePrecompressedImage: level > MAX_TEXTURE_LEVELS for image %s", filename);
                 return;
@@ -1975,9 +1979,9 @@ public class Image {
                     }
             }
 
-            if (globalImages.image_useOffLineCompression.GetBool() && FormatIsDXT(altInternalFormat)) {
-                String outFile = fileSystem.RelativePathToOSPath(filename, "fs_basepath");
-                idStr inFile = new idStr(outFile);
+            if (idImageManager.image_useOffLineCompression.GetBool() && FormatIsDXT(altInternalFormat)) {
+                final String outFile = fileSystem.RelativePathToOSPath(filename, "fs_basepath");
+                final idStr inFile = new idStr(outFile);
                 inFile.StripFileExtension();
                 inFile.SetFileExtension("tga");
                 String format = null;
@@ -2079,7 +2083,7 @@ public class Image {
                 }
             }
 
-            idFile f = fileSystem.OpenFileWrite(filename);
+            final idFile f = fileSystem.OpenFileWrite(filename);
             if (f == null) {
                 common.Warning("Could not open %s trying to write precompressed image", filename);
                 return;
@@ -2216,17 +2220,17 @@ public class Image {
                 len = globalImages.image_cacheMinK.GetInteger() * 1024;
             }
 
-            ByteBuffer data = ByteBuffer.allocate(len);// R_StaticAlloc(len);
+            final ByteBuffer data = ByteBuffer.allocate(len);// R_StaticAlloc(len);
 
             f.Read(data);
 
             fileSystem.CloseFile(f);
 
             data.order(ByteOrder.LITTLE_ENDIAN);
-            long magic = LittleLong(data.getInt());
+            final long magic = LittleLong(data.getInt());
             data.position(4);//, 4);
-            ddsFileHeader_t _header = new ddsFileHeader_t(data);
-            int ddspf_dwFlags = LittleLong(_header.ddspf.dwFlags);
+            final ddsFileHeader_t _header = new ddsFileHeader_t(data);
+            final int ddspf_dwFlags = LittleLong(_header.ddspf.dwFlags);
 
             if (magic != DDS_MAKEFOURCC('D', 'D', 'S', ' ')) {
                 common.Printf("CheckPrecompressedImage( %s ): magic != 'DDS '\n", imgName.toString());
@@ -2259,7 +2263,7 @@ public class Image {
          */private static ByteBuffer DBG_UploadPrecompressedImage;
         public void UploadPrecompressedImage(ByteBuffer data, int len) {
             data.position(4);//, 4)
-            ddsFileHeader_t header = new ddsFileHeader_t(data);
+            final ddsFileHeader_t header = new ddsFileHeader_t(data);
 
             // ( not byte swapping dwReserved1 dwReserved2 )
             header.dwSize = LittleLong(header.dwSize);
@@ -2373,7 +2377,7 @@ public class Image {
 
             // We may skip some mip maps if we are downsizing
             int skipMip = 0;
-            int[] uploadWidth2 = {uploadWidth}, uploadHeight2 = {uploadHeight};
+            final int[] uploadWidth2 = {this.uploadWidth}, uploadHeight2 = {this.uploadHeight};
             GetDownsize(uploadWidth2, uploadHeight2);
             uploadWidth = uploadWidth2[0];
             uploadHeight = uploadHeight2[0];
@@ -2391,7 +2395,7 @@ public class Image {
                 if (uw > uploadWidth || uh > uploadHeight) {
                     skipMip++;
                 } else {
-                    ByteBuffer imageData = BufferUtils.createByteBuffer(size);
+                    final ByteBuffer imageData = Nio.newByteBuffer(size);
                     imageData.put(data.array(), offset, size);
                     imageData.order(ByteOrder.BIG_ENDIAN);//TODO: should ByteOrder be reverted? <data> uses LITTLE_ENDIAN.
                     imageData.flip();//FUCKME: the lwjgl version of <glCompressedTexImage2DARB> uses bytebuffer.remaining() as size.
@@ -2453,8 +2457,8 @@ public class Image {
             //
             // load the image from disk
             //
-            if (cubeFiles != CF_2D) {
-                ByteBuffer[] pics = new ByteBuffer[6];//TODO:FIXME!
+            if (this.cubeFiles != CF_2D) {
+                final ByteBuffer[] pics = new ByteBuffer[6];//TODO:FIXME!
 
                 // we don't check for pre-compressed cube images currently
                 R_LoadCubeImages(imgName.toString(), cubeFiles, pics, width, timestamp);
@@ -2485,8 +2489,8 @@ public class Image {
                 }
 
                 {
-                    textureDepth_t[] depth = {this.depth};
-                    pic = R_LoadImageProgram(imgName.toString(), width, height, timestamp, depth);
+                    final textureDepth_t[] depth = {this.depth};
+                    pic = R_LoadImageProgram(this.imgName.toString(), width, height, this.timestamp, depth);
                     this.depth = depth[0];
                 }
 
@@ -2540,8 +2544,8 @@ public class Image {
             bglNext = globalImages.backgroundImageLoads;
             globalImages.backgroundImageLoads = this;
 
-            String[] filename = {null};
-            ImageProgramStringToCompressedFileName(imgName, filename);
+            final String[] filename = {null};
+            ImageProgramStringToCompressedFileName(this.imgName, filename);
 
             bgl.completed = false;
             bgl.f = fileSystem.OpenFileRead(filename[0]);
@@ -2567,14 +2571,14 @@ public class Image {
             for (idImage check = globalImages.cacheLRU.cacheUsageNext; check != globalImages.cacheLRU; check = check.cacheUsageNext) {
                 totalSize += check.StorageSize();
             }
-            int needed = this.StorageSize();
+            final int needed = this.StorageSize();
 
-            while ((totalSize + needed) > globalImages.image_cacheMegs.GetFloat() * 1024 * 1024) {
+            while ((totalSize + needed) > (idImageManager.image_cacheMegs.GetFloat() * 1024 * 1024)) {
                 // purge the least recently used
-                idImage check = globalImages.cacheLRU.cacheUsagePrev;
+                final idImage check = globalImages.cacheLRU.cacheUsagePrev;
                 if (check.texNum != TEXTURE_NOT_LOADED) {
                     totalSize -= check.StorageSize();
-                    if (globalImages.image_showBackgroundLoads.GetBool()) {
+                    if (idImageManager.image_showBackgroundLoads.GetBool()) {
                         common.Printf("purging %s\n", check.imgName.toString());
                     }
                     check.PurgeImage();
@@ -2648,7 +2652,7 @@ public class Image {
          ==================
          */
         public void UploadCompressedNormalMap(int width, int height, final byte[] rgba, int mipLevel) {
-            byte[] normals;
+            ByteBuffer normals;
             int in;
             int out;
             int i, j;
@@ -2658,7 +2662,7 @@ public class Image {
             // OpenGL's pixel packing rule
             row = Math.max(width, 4);
 
-            normals = new byte[row * height];
+            normals = Nio.newByteBuffer(row * height);
             if (NOT(normals)) {
                 common.Error("R_UploadCompressedNormalMap: _alloca failed");
             }
@@ -2667,12 +2671,12 @@ public class Image {
             out = 0;
             for (i = 0; i < height; i++, out += row, in += width * 4) {
                 for (j = 0; j < width; j++) {
-                    x = rgba[in + j * 4 + 0];
-                    y = rgba[in + j * 4 + 1];
-                    z = rgba[in + j * 4 + 2];
+                    x = rgba[in + (j * 4) + 0];
+                    y = rgba[in + (j * 4) + 1];
+                    z = rgba[in + (j * 4) + 2];
 
                     int c;
-                    if (x == 128 && y == 128 && z == 128) {
+                    if ((x == 128) && (y == 128) && (z == 128)) {
                         // the "nullnormal" color
                         c = 255;
                     } else {
@@ -2681,16 +2685,16 @@ public class Image {
                             c = 254;	// don't use the nullnormal color
                         }
                     }
-                    normals[out + j] = (byte) c;
+                    normals.put((byte) c);
                 }
             }
 
             if (mipLevel == 0) {
                 // Optionally write out the paletized normal map to a .tga
-                if (globalImages.image_writeNormalTGAPalletized.GetBool()) {
-                    String[] filename = {null};
-                    ImageProgramStringToCompressedFileName(imgName, filename);
-                    int ext = filename[0].lastIndexOf('.');
+                if (idImageManager.image_writeNormalTGAPalletized.GetBool()) {
+                    final String[] filename = {null};
+                    ImageProgramStringToCompressedFileName(this.imgName, filename);
+                    final int ext = filename[0].lastIndexOf('.');
                     if (ext != -1) {
                         filename[0] = filename[0].substring(0, ext) + "_pal.tga";//strcpy(ext, "_pal.tga");
                         R_WritePalTGA(filename[0], normals, globalImages.compressedPalette, width, height);
@@ -3353,7 +3357,7 @@ public class Image {
 
         // reloads all apropriate images after a vid_restart
         public void ReloadAllImages() {
-            idCmdArgs args = new idCmdArgs();
+            final idCmdArgs args = new idCmdArgs();
 
             // build the compressed normal map palette
             SetNormalPalette();
@@ -3397,8 +3401,8 @@ public class Image {
         public void BeginLevelLoad() {
             insideLevelLoad = true;
 
-            for (int i = 0; i < images.Num(); i++) {
-                idImage image = images.oGet(i);
+            for (int i = 0; i < this.images.Num(); i++) {
+                final idImage image = this.images.oGet(i);
 
                 // generator function images are always kept around
                 if (image.generatorFunction != null) {
@@ -3433,7 +3437,7 @@ public class Image {
         // worth of data present at one time.
         // Called only by renderSystem::EndLevelLoad
         public void EndLevelLoad() {
-            int start = Sys_Milliseconds();
+            final int start = Sys_Milliseconds();
 
             insideLevelLoad = false;
             if (idAsyncNetwork.serverDedicated.GetInteger() != 0) {
@@ -3447,8 +3451,8 @@ public class Image {
             int loadCount = 0;
 
             // purge the ones we don't need
-            for (int i = 0; i < images.Num(); i++) {
-                idImage image = images.oGet(i);
+            for (int i = 0; i < this.images.Num(); i++) {
+                final idImage image = this.images.oGet(i);
                 if (image.generatorFunction != null) {
                     continue;
                 }
@@ -3464,8 +3468,8 @@ public class Image {
             }
 
             // load the ones we do need, if we are preloading
-            for (int i = 0; i < images.Num(); i++) {
-                idImage image = images.oGet(i);
+            for (int i = 0; i < this.images.Num(); i++) {
+                final idImage image = this.images.oGet(i);
                 if (image.generatorFunction != null) {
                     continue;
                 }
@@ -3481,7 +3485,7 @@ public class Image {
                 }
             }
 
-            int end = Sys_Milliseconds();
+            final int end = Sys_Milliseconds();
             common.Printf("%5d purged from previous\n", purgeCount);
             common.Printf("%5d kept from previous\n", keepCount);
             common.Printf("%5d new loaded\n", loadCount);
@@ -3499,15 +3503,15 @@ public class Image {
             idFile batchFile;
             if (removeDups) {
                 ddsList.Clear();
-                ByteBuffer[] buffer = {null};
+                final ByteBuffer[] buffer = {null};
                 fileSystem.ReadFile("makedds.bat", buffer);
                 if (buffer[0] != null) {
                     idStr str = new idStr(new String(buffer[0].array()));
                     while (str.Length() != 0) {
-                        int n = str.Find('\n');
+                        final int n = str.Find('\n');
                         if (n > 0) {
-                            idStr line = str.Left(n + 1);
-                            idStr right = new idStr();
+                            final idStr line = str.Left(n + 1);
+                            final idStr right = new idStr();
                             str.Right(str.Length() - n - 1, right);
                             str = right;
                             ddsList.AddUnique(line);
@@ -3520,7 +3524,7 @@ public class Image {
             batchFile = fileSystem.OpenFileWrite((removeDups) ? "makedds2.bat" : "makedds.bat");
             if (batchFile != null) {
                 int i;
-                int ddsNum = ddsList.Num();
+                final int ddsNum = this.ddsList.Num();
 
                 for (i = 0; i < ddsNum; i++) {
                     batchFile.WriteFloatString("%s", ddsList.oGet(i).toString());
@@ -3572,10 +3576,10 @@ public class Image {
                 sortIndex[i] = i;
             }
 
-            for (i = 0; i < images.Num() - 1; i++) {
-                for (j = i + 1; j < images.Num(); j++) {
-                    if (images.oGet(sortIndex[i]).StorageSize() < images.oGet(sortIndex[j]).StorageSize()) {
-                        int temp = sortIndex[i];
+            for (i = 0; i < (this.images.Num() - 1); i++) {
+                for (j = i + 1; j < this.images.Num(); j++) {
+                    if (this.images.oGet(sortIndex[i]).StorageSize() < this.images.oGet(sortIndex[j]).StorageSize()) {
+                        final int temp = sortIndex[i];
                         sortIndex[i] = sortIndex[j];
                         sortIndex[j] = temp;
                     }
@@ -3583,8 +3587,8 @@ public class Image {
             }
 
             // print next
-            for (i = 0; i < images.Num(); i++) {
-                idImage im = images.oGet(sortIndex[i]);
+            for (i = 0; i < this.images.Num(); i++) {
+                final idImage im = this.images.oGet(sortIndex[i]);
                 int size;
 
                 size = im.StorageSize();
@@ -3696,11 +3700,11 @@ public class Image {
          */
         public void SetNormalPalette() {
             int i, j;
-            idVec3 v = new idVec3();
+            final idVec3 v = new idVec3();
             float t;
             //byte temptable[768];
-            byte[] temptable = compressedPalette;
-            int[] compressedToOriginal = new int[16];
+            final byte[] temptable = this.compressedPalette;
+            final int[] compressedToOriginal = new int[16];
 
             // make an ad-hoc separable compression mapping scheme
             for (i = 0; i < 8; i++) {
@@ -3785,7 +3789,7 @@ public class Image {
                     256,
                     GL_RGB,
                     GL_UNSIGNED_BYTE,
-                    temptable);
+                    (ByteBuffer) Nio.newByteBuffer(temptable.length).put(temptable).flip());
 
             qglEnable(GL_SHARED_TEXTURE_PALETTE_EXT);
         }

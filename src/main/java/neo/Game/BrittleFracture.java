@@ -40,6 +40,7 @@ import java.util.Map;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
+import neo.Game.Game_local.idGameLocal;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t1;
 import neo.Game.GameSys.Class.eventCallback_t2;
@@ -138,12 +139,12 @@ public class BrittleFracture {
         private float                 density;
         private float                 friction;
         private float                 bouncyness;
-        private idStr                 fxFracture;
+        private final idStr                 fxFracture;
         //
         // state
         private idPhysics_StaticMulti physicsObj;
-        private idList<shard_s>       shards;
-        private idBounds              bounds;
+        private final idList<shard_s>       shards;
+        private final idBounds              bounds;
         private boolean               disableFracture;
         //
         // for rendering
@@ -182,7 +183,7 @@ public class BrittleFracture {
             int i, j;
 
             savefile.WriteInt(health);
-            entityFlags_s flags = fl;
+            final entityFlags_s flags = fl;
             LittleBitField(flags);
             savefile.Write(flags);
 
@@ -241,7 +242,7 @@ public class BrittleFracture {
         @Override
         public void Restore(idRestoreGame savefile) {
             int i, j;
-            int[] num = new int[1];
+            final int[] num = new int[1];
 
             renderEntity.hModel = renderModelManager.AllocModel();
             renderEntity.hModel.InitEmpty(brittleFracture_SnapshotName);
@@ -324,7 +325,7 @@ public class BrittleFracture {
 
         @Override
         public void Spawn() {
-            float[] d = {0}, f = {0}, b = {0};
+            final float[] d = {0}, f = {0}, b = {0};
 
             // get shard properties
             decalMaterial = declManager.FindMaterial(spawnArgs.GetString("mtr_decal"));
@@ -506,10 +507,11 @@ public class BrittleFracture {
         public void ProjectDecal(final idVec3 point, final idVec3 dir, final int time, final String damageDefName) {
             int i, j, bits, clipBits;
             float a, c, s;
-            idVec2[] st = new idVec2[MAX_POINTS_ON_WINDING];
+            final idVec2[] st = new idVec2[MAX_POINTS_ON_WINDING];
             idVec3 origin;
-            idMat3 axis = new idMat3(), axisTemp = new idMat3();
-            idPlane[] textureAxis = new idPlane[2];
+            idMat3 axis = new idMat3();
+            final idMat3 axisTemp = new idMat3();
+            final idPlane[] textureAxis = new idPlane[2];
 
             if (gameLocal.isServer) {
                 idBitMsg msg = new idBitMsg();
@@ -561,14 +563,14 @@ public class BrittleFracture {
             textureAxis[1].oSet(3, -(point.oMultiply(textureAxis[1].Normal())) + 0.5f);
 
             for (i = 0; i < shards.Num(); i++) {
-                idFixedWinding winding = shards.oGet(i).winding;
+                final idFixedWinding winding = shards.oGet(i).winding;
                 origin = shards.oGet(i).clipModel.GetOrigin();
                 axis = shards.oGet(i).clipModel.GetAxis();
                 float d0, d1;
 
                 clipBits = -1;
                 for (j = 0; j < winding.GetNumPoints(); j++) {
-                    idVec3 p = origin.oPlus(winding.oGet(j).ToVec3().oMultiply(axis));
+                    final idVec3 p = origin.oPlus(winding.oGet(j).ToVec3().oMultiply(axis));
 
                     st[j].x = d0 = textureAxis[0].Distance(p);
                     st[j].y = d1 = textureAxis[1].Distance(p);
@@ -587,7 +589,7 @@ public class BrittleFracture {
                     continue;
                 }
 
-                idFixedWinding decal = new idFixedWinding();
+                final idFixedWinding decal = new idFixedWinding();
                 shards.oGet(i).decals.Append(decal);
 
                 decal.SetNumPoints(winding.GetNumPoints());
@@ -617,7 +619,7 @@ public class BrittleFracture {
 
         @Override
         public boolean ClientReceiveEvent(int event, int time, final idBitMsg msg) {
-            idVec3 point = new idVec3(), dir = new idVec3();
+            final idVec3 point = new idVec3(), dir = new idVec3();
 
             switch (event) {
                 case EVENT_PROJECT_DECAL: {
@@ -655,7 +657,7 @@ public class BrittleFracture {
             srfTriangles_s tris, decalTris;
             modelSurface_s surface;
             idDrawVert v;
-            idPlane plane = new idPlane();
+            final idPlane plane = new idPlane();
             idMat3 tangents;
 
             // this may be triggered by a model trace or other non-view related source,
@@ -747,15 +749,15 @@ public class BrittleFracture {
                     v.tangents[1] = tangents.oGet(2);
                     v.SetColor(packedColor);
 
-                    tris.indexes[tris.numIndexes++] = tris.numVerts - 3;
-                    tris.indexes[tris.numIndexes++] = tris.numVerts - 2;
-                    tris.indexes[tris.numIndexes++] = tris.numVerts - 1;
+                    tris.getIndexes().getValues().put(tris.getIndexes().incNumValues(), tris.numVerts - 3);
+                    tris.getIndexes().getValues().put(tris.getIndexes().incNumValues(), tris.numVerts - 2);
+                    tris.getIndexes().getValues().put(tris.getIndexes().incNumValues(), tris.numVerts - 1);
 
                     if (material.ShouldCreateBackSides()) {
 
-                        tris.indexes[tris.numIndexes++] = tris.numVerts - 2;
-                        tris.indexes[tris.numIndexes++] = tris.numVerts - 3;
-                        tris.indexes[tris.numIndexes++] = tris.numVerts - 1;
+                        tris.getIndexes().getValues().put(tris.getIndexes().incNumValues(), tris.numVerts - 2);
+                        tris.getIndexes().getValues().put(tris.getIndexes().incNumValues(), tris.numVerts - 3);
+                        tris.getIndexes().getValues().put(tris.getIndexes().incNumValues(), tris.numVerts - 1);
                     }
                 }
 
@@ -794,15 +796,15 @@ public class BrittleFracture {
                         v.tangents[1] = tangents.oGet(2);
                         v.SetColor(packedColor);
 
-                        decalTris.indexes[decalTris.numIndexes++] = decalTris.numVerts - 3;
-                        decalTris.indexes[decalTris.numIndexes++] = decalTris.numVerts - 2;
-                        decalTris.indexes[decalTris.numIndexes++] = decalTris.numVerts - 1;
+                        decalTris.getIndexes().getValues().put(decalTris.getIndexes().incNumValues(), decalTris.numVerts - 3);
+                        decalTris.getIndexes().getValues().put(decalTris.getIndexes().incNumValues(), decalTris.numVerts - 2);
+                        decalTris.getIndexes().getValues().put(decalTris.getIndexes().incNumValues(), decalTris.numVerts - 1);
 
                         if (decalMaterial.ShouldCreateBackSides()) {
 
-                            decalTris.indexes[decalTris.numIndexes++] = decalTris.numVerts - 2;
-                            decalTris.indexes[decalTris.numIndexes++] = decalTris.numVerts - 3;
-                            decalTris.indexes[decalTris.numIndexes++] = decalTris.numVerts - 1;
+                            decalTris.getIndexes().getValues().put(decalTris.getIndexes().incNumValues(), decalTris.numVerts - 2);
+                            decalTris.getIndexes().getValues().put(decalTris.getIndexes().incNumValues(), decalTris.numVerts - 3);
+                            decalTris.getIndexes().getValues().put(decalTris.getIndexes().incNumValues(), decalTris.numVerts - 1);
                         }
                     }
                 }
@@ -848,7 +850,7 @@ public class BrittleFracture {
 
                 ent = (idBrittleFracture) gameLocal.entities[e.entityNum];
                 if (null == ent) {
-                    gameLocal.Error("idBrittleFracture::ModelCallback: callback with NULL game entity");
+                    idGameLocal.Error("idBrittleFracture::ModelCallback: callback with NULL game entity");
                 }
 
                 return ent.UpdateRenderEntity(e, v);
@@ -871,7 +873,7 @@ public class BrittleFracture {
         };
 
         private void AddShard(idClipModel clipModel, idFixedWinding w) {
-            shard_s shard = new shard_s();
+            final shard_s shard = new shard_s();
             shard.clipModel = clipModel;
             shard.droppedTime = -1;
             shard.winding = w;
@@ -959,8 +961,8 @@ public class BrittleFracture {
             float m;
 
             if (gameLocal.isServer) {
-                idBitMsg msg = new idBitMsg();
-                ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
+                final idBitMsg msg = new idBitMsg();
+                final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
 
                 msg.Init(msgBuf, MAX_EVENT_PARAM_SIZE);
                 msg.BeginWriting();
@@ -1084,11 +1086,11 @@ public class BrittleFracture {
             int i, j, bestPlane;
             float a, c, s, dist, bestDist;
             idVec3 origin;
-            idPlane windingPlane = new idPlane();
-            idPlane[] splitPlanes = new idPlane[2];
-            idMat3 axis = new idMat3(), axistemp = new idMat3();
-            idFixedWinding back = new idFixedWinding();
-            idTraceModel trm = new idTraceModel();
+            final idPlane windingPlane = new idPlane();
+            final idPlane[] splitPlanes = new idPlane[2];
+            final idMat3 axis = new idMat3(), axistemp = new idMat3();
+            final idFixedWinding back = new idFixedWinding();
+            final idTraceModel trm = new idTraceModel();
             idClipModel clipModel;
 
             while (true) {
@@ -1154,7 +1156,7 @@ public class BrittleFracture {
             int i, j, k;
             modelSurface_s surf;
             idDrawVert v;
-            idFixedWinding w = new idFixedWinding();
+            final idFixedWinding w = new idFixedWinding();
 
             if (NOT(renderModel)) {
                 return;
@@ -1168,10 +1170,10 @@ public class BrittleFracture {
                 surf = renderModel.Surface(i);
                 material = surf.shader;
 
-                for (j = 0; j < surf.geometry.numIndexes; j += 3) {
+                for (j = 0; j < surf.geometry.getIndexes().getNumValues(); j += 3) {
                     w.Clear();
                     for (k = 0; k < 3; k++) {
-                        v = surf.geometry.verts[ surf.geometry.indexes[ j + 2 - k]];
+                        v = surf.geometry.verts[ surf.geometry.getIndexes().getValues().get( (j + 2) - k)];
                         w.AddPoint(v.xyz);
                         w.oGet(k).s = v.st.oGet(0);
                         w.oGet(k).t = v.st.oGet(1);
@@ -1188,11 +1190,11 @@ public class BrittleFracture {
             int i, j, k, l;
             idVec3 p1, p2, dir;
             idMat3 axis;
-            idPlane[] plane = new idPlane[4];
+            final idPlane[] plane = new idPlane[4];
 
             for (i = 0; i < shards.Num(); i++) {
 
-                shard_s shard1 = shards.oGet(i);
+                final shard_s shard1 = shards.oGet(i);
                 final idWinding w1 = shard1.winding;
                 final idVec3 origin1 = shard1.clipModel.GetOrigin();
                 final idMat3 axis1 = shard1.clipModel.GetAxis();
@@ -1220,7 +1222,7 @@ public class BrittleFracture {
                             continue;
                         }
 
-                        shard_s shard2 = shards.oGet(j);
+                        final shard_s shard2 = shards.oGet(j);
 
                         for (l = 0; l < shard1.neighbours.Num(); l++) {
                             if (shard1.neighbours.oGet(l).equals(shard2)) {
@@ -1274,8 +1276,8 @@ public class BrittleFracture {
         }
 
         private void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> _trace) {
-            idEntity other = _other.value;
-            trace_s trace = _trace.value;
+            final idEntity other = _other.value;
+            final trace_s trace = _trace.value;
             idVec3 point, impulse;
 
             if (!IsBroken()) {

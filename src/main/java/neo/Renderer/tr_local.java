@@ -84,13 +84,12 @@ import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
-
-import org.lwjgl.BufferUtils;
 
 import neo.Renderer.Cinematic.idCinematic;
 import neo.Renderer.GuiModel.idGuiModel;
@@ -130,6 +129,8 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.NeoIntBuffer;
+import neo.open.Nio;
 
 /**
  *
@@ -707,7 +708,8 @@ public class tr_local {
         public float               modelDepthHack;
         //
         public float[]             modelMatrix     = new float[16];         // local coords to global coords
-        public float[]             modelViewMatrix = new float[16];         // local coords to eye coords
+        //public float[]             modelViewMatrix = new float[16];         // local coords to eye coords
+        public final FloatBuffer  modelViewMatrix = Nio.newFloatBuffer(16);         // local coords to eye coords
 
         private static int DBG_COUNTER = 0;
         private final  int DBG_COUNT   = DBG_COUNTER++;
@@ -722,8 +724,10 @@ public class tr_local {
             this.scissorRect = new idScreenRect(v.scissorRect);
             this.weaponDepthHack = v.weaponDepthHack;
             this.modelDepthHack = v.modelDepthHack;
-            System.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
-            System.arraycopy(v.modelViewMatrix, 0, this.modelViewMatrix, 0, 16);
+            //System.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
+            Nio.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
+            //System.arraycopy(v.modelViewMatrix, 0, this.modelViewMatrix, 0, 16);
+            Nio.buffercopy(v.modelViewMatrix, 0, this.modelViewMatrix, 0, 16);
         }
 
         public void memSetZero() {
@@ -742,7 +746,8 @@ public class tr_local {
 
         public renderView_s       renderView;
 //
-        public float[]            projectionMatrix = new float[16];
+        //public float[]            projectionMatrix = new float[16];
+        public final FloatBuffer projectionMatrix = Nio.newFloatBuffer(16);
         public viewEntity_s       worldSpace;
 //
         public idRenderWorldLocal renderWorld;
@@ -810,7 +815,8 @@ public class tr_local {
 
         public viewDef_s(final viewDef_s v) {
             this.renderView = new renderView_s(v.renderView);
-            System.arraycopy(v.projectionMatrix, 0, this.projectionMatrix, 0, 16);
+            //System.arraycopy(v.projectionMatrix, 0, this.projectionMatrix, 0, 16);
+            Nio.buffercopy(v.projectionMatrix, 0, this.projectionMatrix, 0, 16);
             this.worldSpace = new viewEntity_s(v.worldSpace);
             this.renderWorld = v.renderWorld;
             this.floatTime = v.floatTime;
@@ -839,7 +845,8 @@ public class tr_local {
             this.areaNum = v.areaNum;
             if (v.connectedAreas != null) {
                 this.connectedAreas = new boolean[v.connectedAreas.length];
-                System.arraycopy(v.connectedAreas, 0, this.connectedAreas, 0, v.connectedAreas.length);
+                //System.arraycopy(v.connectedAreas, 0, this.connectedAreas, 0, v.connectedAreas.length);
+                Nio.arraycopy(v.connectedAreas, 0, this.connectedAreas, 0, v.connectedAreas.length);
             }
         }
     }
@@ -1065,8 +1072,10 @@ public class tr_local {
 //
         viewLight_s vLight;
         int depthFunc;			// GLS_DEPTHFUNC_EQUAL, or GLS_DEPTHFUNC_LESS for translucent
-        float[] lightTextureMatrix = new float[16];	// only if lightStage->texture.hasMatrix
-        float[] lightColor = new float[4];		// evaluation of current light's color stage
+        //float[] lightTextureMatrix = new float[16];	// only if lightStage->texture.hasMatrix
+        final FloatBuffer lightTextureMatrix = Nio.newFloatBuffer(16);	// only if lightStage->texture.hasMatrix
+        //float[] lightColor = new float[4];		// evaluation of current light's color stage
+        final FloatBuffer lightColor = Nio.newFloatBuffer(16);		// evaluation of current light's color stage
 //
         float lightScale;			// Every light color calaculation will be multiplied by this,
         // which will guarantee that the result is < tr.backEndRendererMaxLight
@@ -1426,9 +1435,9 @@ public class tr_local {
             renderModelManager.Init();
 
             // set the identity space
-            identitySpace.modelMatrix[0 * 4 + 0] = 1.0f;
-            identitySpace.modelMatrix[1 * 4 + 1] = 1.0f;
-            identitySpace.modelMatrix[2 * 4 + 2] = 1.0f;
+            this.identitySpace.modelMatrix[(0 * 4) + 0] = 1.0f;
+            this.identitySpace.modelMatrix[(1 * 4) + 1] = 1.0f;
+            this.identitySpace.modelMatrix[(2 * 4) + 2] = 1.0f;
 
             // determine which back end we will use
             // ??? this is invalid here as there is not enough information to set it up correctly
@@ -1581,11 +1590,11 @@ public class tr_local {
 //            idMaterial h;
 //            float max;
 //}
-            ByteBuffer[] faceData = {null};
-            long[] fTime = {0};
+            final ByteBuffer[] faceData = {null};
+            final long[] fTime = {0};
             int i, len, fontCount;
 //	char name[1024];
-            StringBuilder name = new StringBuilder(1024);
+            final StringBuilder name = new StringBuilder(1024);
 
             int pointSize = 12;
             /*
@@ -1655,7 +1664,7 @@ public class tr_local {
                     outFont.glyphs[i].t = readFloat();
                     outFont.glyphs[i].s2 = readFloat();
                     outFont.glyphs[i].t2 = readFloat();
-                    int junk /* font.glyphs[i].glyph */ = readInt();
+                    final int junk /* font.glyphs[i].glyph */ = readInt();
                     //FIXME: the +6, -6 skips the embedded fonts/ 
 //                    memcpy(outFont.glyphs[i].shaderName, fdFile[fdOffset + 6], 32 - 6);
                     outFont.glyphs[i].shaderName = new String(Arrays.copyOfRange(fdFile, fdOffset + 6, fdOffset + 32));
@@ -2187,7 +2196,7 @@ public class tr_local {
             if (blends <= 1) {
                 R_ReadTiledPixels(width, height, buffer, 18, ref);
             } else {
-                short[] shortBuffer = new short[pix * 2 * 3];// R_StaticAlloc(pix * 2 * 3);
+                final short[] shortBuffer = new short[pix * 2 * 3];// R_StaticAlloc(pix * 2 * 3);
 //		memset (shortBuffer, 0, pix*2*3);
 
                 // enable anti-aliasing jitter
@@ -2275,13 +2284,13 @@ public class tr_local {
             }
 
             // convert from virtual SCREEN_WIDTH/SCREEN_HEIGHT coordinates to physical OpenGL pixels
-            renderView_s renderView = new renderView_s();
+            final renderView_s renderView = new renderView_s();
             renderView.x = 0;
             renderView.y = 0;
             renderView.width = width;
             renderView.height = height;
 
-            idScreenRect r = new idScreenRect();
+            final idScreenRect r = new idScreenRect();
             RenderViewToViewport(renderView, r);
 
             width = r.x2 - r.x1 + 1;
@@ -2300,7 +2309,7 @@ public class tr_local {
                 // FIXME: megascreenshots with offset viewports don't work right with this yet
             }
 
-            renderCrop_t rc = renderCrops[currentRenderCrop];
+            final renderCrop_t rc = this.renderCrops[this.currentRenderCrop];
 
             // we might want to clip these to the crop window instead
             while (width > glConfig.vidWidth) {
@@ -2345,9 +2354,9 @@ public class tr_local {
 
             // look up the image before we create the render command, because it
             // may need to sync to create the image
-            idImage image = globalImages.ImageFromFile(imageName, TF_DEFAULT, true, TR_REPEAT, TD_DEFAULT);
+            final idImage image = globalImages.ImageFromFile(imageName, TF_DEFAULT, true, TR_REPEAT, TD_DEFAULT);
 
-            renderCrop_t rc = renderCrops[currentRenderCrop];
+            final renderCrop_t rc = this.renderCrops[this.currentRenderCrop];
 
             copyRenderCommand_t cmd;
             R_GetCommandBuffer(cmd = new copyRenderCommand_t()/*sizeof(cmd)*/);
@@ -2376,8 +2385,8 @@ public class tr_local {
             qglReadBuffer(GL_BACK);
 
             // include extra space for OpenGL padding to word boundaries
-            int c = (rc.width + 3) * rc.height;
-            ByteBuffer data = BufferUtils.createByteBuffer(c * 3);// R_StaticAlloc(c * 3);
+            final int c = (rc.width + 3) * rc.height;
+            ByteBuffer data = Nio.newByteBuffer(c * 3);// R_StaticAlloc(c * 3);
 
             qglReadPixels(rc.x, rc.y, rc.width, rc.height, GL_RGB, GL_UNSIGNED_BYTE, data);
 
@@ -2385,9 +2394,9 @@ public class tr_local {
 
             for (int i = 0; i < c; i++) {
                 data2.put(i * 4, data.get(i * 3));
-                data2.put(i * 4 + 1, data.get(i * 3 + 1));
-                data2.put(i * 4 + 2, data.get(i * 3 + 2));
-                data2.put(i * 4 + 3, (byte) 0xff);
+                data2.put((i * 4) + 1, data.get((i * 3) + 1));
+                data2.put((i * 4) + 2, data.get((i * 3) + 2));
+                data2.put((i * 4) + 3, (byte) 0xff);
             }
 
             R_WriteTGA(fileName, data2, rc.width, rc.height, true);
@@ -2630,8 +2639,9 @@ public class tr_local {
         int   numMirroredVerts;
         int[] mirroredVerts;
         //
-        int   numIndexes;
-        int[]/*glIndex_t */ indexes;
+        //int   numIndexes;
+        //int[]/*glIndex_t */ indexes;
+        private NeoIntBuffer indexes = new NeoIntBuffer();
         //
         int[]/*glIndex_t */ silIndexes;
         //
@@ -2642,7 +2652,11 @@ public class tr_local {
         silEdge_t[]     silEdges;
         //
         dominantTri_s[] dominantTris;
-    };
+
+        public NeoIntBuffer getIndexes() {
+			return this.indexes;
+		}
+    }
 
     /*
      =============================================================

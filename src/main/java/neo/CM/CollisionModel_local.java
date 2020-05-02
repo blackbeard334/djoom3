@@ -131,6 +131,7 @@ import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 
 /**
  *
@@ -594,7 +595,7 @@ public class CollisionModel_local {
         private cm_model_s[]      models;
         // polygons and brush for trm model
         private cm_polygonRef_s[] trmPolygons = new cm_polygonRef_s[MAX_TRACEMODEL_POLYS];
-        private cm_brushRef_s[]   trmBrushes  = new cm_brushRef_s[1];
+        private final cm_brushRef_s[]   trmBrushes  = new cm_brushRef_s[1];
         private idMaterial        trmMaterial;
         // for data pruning
         private int               numProcNodes;
@@ -736,7 +737,7 @@ public class CollisionModel_local {
             cm_edge_s edge;
             cm_polygon_s poly;
             cm_model_s model;
-            traceModelVert_t trmVert;
+            final traceModelVert_t trmVert;
             traceModelEdge_t trmEdge;
             traceModelPoly_t trmPoly;
 
@@ -921,7 +922,8 @@ public class CollisionModel_local {
             int i, j;
             float dist;
             boolean model_rotated, trm_rotated;
-            idVec3 dir1, dir2, dir;
+            final idVec3 dir1, dir2;
+			idVec3 dir;
             idMat3 invModelAxis = new idMat3(), tmpAxis;
             cm_trmPolygon_s poly;
             cm_trmEdge_s edge;
@@ -1267,7 +1269,7 @@ public class CollisionModel_local {
                         entered = 1;
                         // if the trm is stuck in the model
                         if ((this.Contents(results[0].endpos, trm, trmAxis, -1, model, modelOrigin, modelAxis) & contentMask) != 0) {
-                            trace_s[] tr = new trace_s[1];
+                            final trace_s[] tr = new trace_s[1];
 
                             // test where the trm is stuck in the model
                             this.Contents(results[0].endpos, trm, trmAxis, -1, model, modelOrigin, modelAxis);
@@ -1345,7 +1347,7 @@ public class CollisionModel_local {
                         entered = 1;
                         // if the trm is stuck in the model
                         if ((this.Contents(results[0].endpos, trm, results[0].endAxis, -1, model, modelOrigin, modelAxis) & contentMask) != 0) {
-                            trace_s[] tr = new trace_s[1];
+                            final trace_s[] tr = new trace_s[1];
 
                             // test where the trm is stuck in the model
                             this.Contents(results[0].endpos, trm, results[0].endAxis, -1, model, modelOrigin, modelAxis);
@@ -1361,7 +1363,7 @@ public class CollisionModel_local {
         @Override// returns the contents the trm is stuck in or 0 if the trm is in free space
         public int Contents(final idVec3 start, final idTraceModel trm, final idMat3 trmAxis,
                 int contentMask, int model, final idVec3 modelOrigin, final idMat3 modelAxis) {
-            trace_s[] results = {new trace_s()};
+            final trace_s[] results = {new trace_s()};
 
             if (model < 0 || model > this.maxModels || model > MAX_SUBMODELS) {
                 common.Printf("idCollisionModelManagerLocal::Contents: invalid model handle\n");
@@ -1385,7 +1387,7 @@ public class CollisionModel_local {
         @Override// stores all contact points of the trm with the model, returns the number of contacts
         public int Contacts(contactInfo_t[] contacts, final int maxContacts, final idVec3 start, final idVec6 dir, final float depth,
                 final idTraceModel trm, final idMat3 trmAxis, int contentMask, int model, final idVec3 modelOrigin, final idMat3 modelAxis) {
-            trace_s[] results = new trace_s[1];
+            final trace_s[] results = new trace_s[1];
             idVec3 end;
 
             // same as Translation but instead of storing the first collision we store all collisions as contacts
@@ -1442,11 +1444,12 @@ public class CollisionModel_local {
             int i, k, t;
 //            char[] buf = new char[128];
             String buf;
-            idVec3 end = new idVec3();
-            idAngles boxAngles = new idAngles();
-            idMat3 modelAxis = new idMat3(), boxAxis;
-            idBounds bounds = new idBounds();
-            trace_s[] trace = new trace_s[1];
+            final idVec3 end = new idVec3();
+            final idAngles boxAngles = new idAngles();
+            final idMat3 modelAxis = new idMat3();
+			idMat3 boxAxis;
+            final idBounds bounds = new idBounds();
+            final trace_s[] trace = new trace_s[1];
             Scanner sscanf;
 
             if (!cm_testCollision.GetBool()) {
@@ -1469,6 +1472,7 @@ public class CollisionModel_local {
             } else {
                 sscanf = new Scanner(cm_testOrigin.GetString());
                 start.Set(sscanf.nextFloat(), sscanf.nextFloat(), sscanf.nextFloat());
+                sscanf.close();
 //		sscanf( cm_testOrigin.GetString(), "%f %f %f", &start[0], &start[1], &start[2] );
             }
 
@@ -1476,15 +1480,16 @@ public class CollisionModel_local {
             bounds.set(sscanf.nextFloat(), sscanf.nextFloat(), sscanf.nextFloat(), sscanf.nextFloat(), sscanf.nextFloat(), sscanf.nextFloat());
 //	sscanf( cm_testBox.GetString(), "%f %f %f %f %f %f", &bounds[0][0], &bounds[0][1], &bounds[0][2],
 //										&bounds[1][0], &bounds[1][1], &bounds[1][2] );
+            sscanf.close();
             sscanf = new Scanner(cm_testBoxRotation.GetString());
             boxAngles.Set(sscanf.nextFloat(), sscanf.nextFloat(), sscanf.nextFloat());
 //	sscanf( cm_testBoxRotation.GetString(), "%f %f %f", &boxAngles[0], &boxAngles[1], &boxAngles[2] );
             boxAxis = boxAngles.ToMat3();
             modelAxis.Identity();
 
-            idTraceModel itm = new idTraceModel(bounds);
-            idRandom random = new idRandom(0);
-            idTimer timer = new idTimer();
+            final idTraceModel itm = new idTraceModel(bounds);
+            final idRandom random = new idRandom(0);
+            final idTimer timer = new idTimer();
 
             if (cm_testRandomMany.GetBool()) {
                 // if many traces in one random direction
@@ -1545,9 +1550,9 @@ public class CollisionModel_local {
 
             if (cm_testRotation.GetBool()) {
                 // rotational collision detection
-                idVec3 vec = new idVec3(random.CRandomFloat(), random.CRandomFloat(), random.RandomFloat());
+                final idVec3 vec = new idVec3(random.CRandomFloat(), random.CRandomFloat(), random.RandomFloat());
                 vec.Normalize();
-                idRotation rotation = new idRotation(getVec3_origin(), vec, cm_testAngle.GetFloat());
+                final idRotation rotation = new idRotation(getVec3_origin(), vec, cm_testAngle.GetFloat());
 
                 timer.Clear();
                 timer.Start();
@@ -1604,7 +1609,7 @@ public class CollisionModel_local {
 
         @Override// print model information, use -1 handle for accumulated model info
         public void ModelInfo( /*cmHandle_t*/int model) {
-            cm_model_s modelInfo = new cm_model_s();
+            final cm_model_s modelInfo = new cm_model_s();
 
             if (model == -1) {
                 AccumulateModelInfo(modelInfo);
@@ -1679,7 +1684,7 @@ public class CollisionModel_local {
             fileSystem.CloseFile(fp);
 
             if (testTraceModel) {
-                idTraceModel trm = new idTraceModel();
+                final idTraceModel trm = new idTraceModel();
                 TrmFromModel(model, trm);
             }
 
@@ -1829,11 +1834,13 @@ public class CollisionModel_local {
         private void TranslateTrmEdgeThroughPolygon(cm_traceWork_s tw, cm_polygon_s poly, cm_trmEdge_s trmEdge) {        DBG_TranslateTrmEdgeThroughPolygon++;
             int i, edgeNum;
             float dist, d1, d2;
-            idVec3 start, end, normal = new idVec3();
+            idVec3 start, end;
+			final idVec3 normal = new idVec3();
             cm_edge_s edge;
             cm_vertex_s v1, v2;
-            idPluecker pl, epsPl = new idPluecker();
-            float[] f1 = new float[1], f2 = new float[1];
+            idPluecker pl;
+			final idPluecker epsPl = new idPluecker();
+            final float[] f1 = new float[1], f2 = new float[1];
 
             // check edges for a collision
             for (i = 0; i < poly.numEdges; i++) {
@@ -1968,7 +1975,7 @@ public class CollisionModel_local {
             int i, edgeNum;
             float f;
             cm_edge_s edge;
-            idPluecker pl = new idPluecker();
+            final idPluecker pl = new idPluecker();
 
             f = CM_TranslationPlaneFraction(poly.plane, v.p, v.endp);
             if (f < tw.trace.fraction) {
@@ -2138,7 +2145,7 @@ public class CollisionModel_local {
                     }
                     // pluecker coordinate for vertex movement vector
                     tw.polygonVertexPlueckerCache[i].FromRay(v.p, tw.dir.oNegative());
-                    int bla = 0;
+                    final int bla = 0;
                 }
                 // copy first to last so we can easily cycle through for the edges
                 tw.polygonVertexPlueckerCache[p.numEdges].Set(tw.polygonVertexPlueckerCache[0]);
@@ -2224,7 +2231,8 @@ public class CollisionModel_local {
         }
 
         private void SetupTranslationHeartPlanes(cm_traceWork_s tw) {
-            idVec3 dir, normal1 = new idVec3(), normal2 = new idVec3();
+            idVec3 dir;
+			final idVec3 normal1 = new idVec3(), normal2 = new idVec3();
 
             // calculate trace heart planes
             dir = new idVec3(tw.dir);
@@ -2237,7 +2245,8 @@ public class CollisionModel_local {
         }
 
         private void SetupTrm(cm_traceWork_s tw, final idTraceModel trm) {
-            int i, j;
+            int i;
+			final int j;
 
             // vertices
             tw.numVerts = trm.numVerts;
@@ -2256,7 +2265,7 @@ public class CollisionModel_local {
             tw.numPolys = trm.numPolys;
             for (i = 0; i < trm.numPolys; i++) {
                 tw.polys[i].numEdges = trm.polys[i].numEdges;
-                System.arraycopy(trm.polys[i].edges, 0, tw.polys[i].edges, 0, trm.polys[i].numEdges);
+                Nio.arraycopy(trm.polys[i].edges, 0, tw.polys[i].edges, 0, trm.polys[i].numEdges);
                 tw.polys[i].plane.SetNormal(trm.polys[i].normal);
                 tw.polys[i].used = 0;//false;
             }
@@ -2289,7 +2298,7 @@ public class CollisionModel_local {
                 final idVec3 vd, float tanHalfAngle, idVec3 collisionPoint, idVec3 collisionNormal) {
             float d1, d2, d;
             idVec3 at, bt, dir, dir1, dir2;
-            idPluecker pl1 = new idPluecker(), pl2 = new idPluecker();
+            final idPluecker pl1 = new idPluecker(), pl2 = new idPluecker();
 
             at = new idVec3(va);
             bt = new idVec3(vb);
@@ -2353,7 +2362,7 @@ public class CollisionModel_local {
                 final idVec3 vc, final idVec3 vd, final float minTan, float[] tanHalfAngle) {
             double v0, v1, v2, a, b, c, d, sqrtd, q, frac1, frac2;
             idVec3 ct, dt;
-            idPluecker pl2 = new idPluecker();
+            final idPluecker pl2 = new idPluecker();
 
             /*
 
@@ -2519,7 +2528,7 @@ public class CollisionModel_local {
                 final idVec3 vc, final idVec3 vd, float[] tanHalfAngle, float[] dir) {
             double v0, v1, v2, a, b, c, d, sqrtd, q, frac1, frac2;
             idVec3 ct, dt;
-            idPluecker pl2 = new idPluecker();
+            final idPluecker pl2 = new idPluecker();
 
             /*
 
@@ -2624,12 +2633,13 @@ public class CollisionModel_local {
         private void RotateTrmEdgeThroughPolygon(cm_traceWork_s tw, cm_polygon_s poly, cm_trmEdge_s trmEdge) {
             int i, j, edgeNum;
             float f1, f2;
-            float[] startTan = new float[1], dir = new float[1], tanHalfAngle = new float[1];
+            final float[] startTan = new float[1], dir = new float[1], tanHalfAngle = new float[1];
             cm_edge_s edge;
             cm_vertex_s v1, v2;
-            idVec3 collisionPoint = new idVec3(), collisionNormal = new idVec3(), origin, epsDir;
-            idPluecker epsPl = new idPluecker();
-            idBounds bounds = new idBounds();
+            final idVec3 collisionPoint = new idVec3(), collisionNormal = new idVec3();
+			idVec3 origin, epsDir;
+            final idPluecker epsPl = new idPluecker();
+            final idBounds bounds = new idBounds();
 
             // if the trm is convex and the rotation axis intersects the trm
             if (tw.isConvex && tw.axisIntersectsTrm) {
@@ -2964,7 +2974,7 @@ public class CollisionModel_local {
                 final idPlane plane, final float angle, final idVec3 origin,
                 float[] tanHalfAngle, idVec3 collisionPoint, idVec3 endDir) {
             float d;
-            float[] dir = new float[1], startTan = new float[1];
+            final float[] dir = new float[1], startTan = new float[1];
             idVec3 vec, startDir;
             idPlane epsPlane;
 
@@ -3045,9 +3055,9 @@ public class CollisionModel_local {
 
         private void RotateTrmVertexThroughPolygon(cm_traceWork_s tw, cm_polygon_s poly, cm_trmVertex_s v, int vertexNum) {
             int i;
-            float[] tanHalfAngle = new float[1];
-            idVec3 endDir = new idVec3(), collisionPoint = new idVec3();
-            idPluecker pl = new idPluecker();
+            final float[] tanHalfAngle = new float[1];
+            final idVec3 endDir = new idVec3(), collisionPoint = new idVec3();
+            final idPluecker pl = new idPluecker();
 
             // if the trm vertex is behind the polygon plane it cannot collide with the polygon within a 180 degrees rotation
             if (tw.isConvex && tw.axisIntersectsTrm && v.polygonSide != 0) {
@@ -3099,9 +3109,10 @@ public class CollisionModel_local {
 
         private void RotateVertexThroughTrmPolygon(cm_traceWork_s tw, cm_trmPolygon_s trmpoly, cm_polygon_s poly, cm_vertex_s v, idVec3 rotationOrigin) {
             int i, edgeNum;
-            float[] tanHalfAngle = new float[1];
-            idVec3 dir, endp, endDir = new idVec3(), collisionPoint = new idVec3();
-            idPluecker pl = new idPluecker();
+            final float[] tanHalfAngle = new float[1];
+            idVec3 dir, endp;
+			final idVec3 endDir = new idVec3(), collisionPoint = new idVec3();
+            final idPluecker pl = new idPluecker();
             cm_trmEdge_s edge;
 
             // if the polygon vertex is behind the trm plane it cannot collide with the trm polygon within a 180 degrees rotation
@@ -3362,15 +3373,19 @@ public class CollisionModel_local {
             int i, j, edgeNum;
             float d, maxErr, initialTan;
             boolean model_rotated, trm_rotated;
-            idVec3 dir, dir1, dir2, tmp, vr = new idVec3(), vup = new idVec3(), org, at, bt;
-            idMat3 invModelAxis = new idMat3(), endAxis, tmpAxis;
-            idRotation startRotation = new idRotation(), endRotation = new idRotation();
-            idPluecker plaxis = new idPluecker();
+            final idVec3 dir, dir1, dir2, tmp, vr = new idVec3(), vup = new idVec3(), org;
+			idVec3 at, bt;
+            idMat3 invModelAxis = new idMat3();
+			final idMat3 endAxis;
+			idMat3 tmpAxis;
+            final idRotation startRotation = new idRotation(), endRotation = new idRotation();
+            final idPluecker plaxis = new idPluecker();
             cm_trmPolygon_s poly;
             cm_trmEdge_s edge;
             cm_trmVertex_s vert;
-            int v_index, e_index, p_index = 0;
+            final int v_index, e_index;
 //	ALIGN16( static cm_traceWork_t tw );
+			int p_index = 0;
 
             if (model < 0 || model > MAX_SUBMODELS || model > this.maxModels) {
                 common.Printf("idCollisionModelManagerLocal::Rotation180: invalid model handle\n");
@@ -3798,7 +3813,7 @@ public class CollisionModel_local {
          */
         private boolean TestTrmInPolygon(cm_traceWork_s tw, cm_polygon_s p, final int modelFeature) {
             int i, j, k, edgeNum, flip, trmEdgeNum, bitNum, bestPlane;
-            int[] sides = new int[MAX_TRACEMODEL_VERTS];
+            final int[] sides = new int[MAX_TRACEMODEL_VERTS];
             float d, bestd;
             cm_trmEdge_s trmEdge;
             cm_edge_s edge;
@@ -4295,7 +4310,7 @@ public class CollisionModel_local {
             float t1, t2, offset;
             float frac, frac2;
             float idist;
-            idVec3 mid = new idVec3();
+            final idVec3 mid = new idVec3();
             int side;
             float midf;
 
@@ -4396,7 +4411,7 @@ public class CollisionModel_local {
             float d;
             int i, numSteps;
             idVec3 start, end;
-            idRotation rot = new idRotation();
+            final idRotation rot = new idRotation();
 
             if (!tw.rotation) {
                 // trace through spatial subdivision and then through leafs
@@ -4699,10 +4714,10 @@ public class CollisionModel_local {
         private cm_polygon_s TryMergePolygons(cm_model_s model, cm_polygon_s p1, cm_polygon_s p2) {
             int i, j, nexti, prevj;
             int p1BeforeShare, p1AfterShare, p2BeforeShare, p2AfterShare;
-            int[] newEdges = new int[CM_MAX_POLYGON_EDGES];
+            final int[] newEdges = new int[CM_MAX_POLYGON_EDGES];
             int newNumEdges;
             int edgeNum, edgeNum1, edgeNum2;
-            int[] newEdgeNum1 = new int[1], newEdgeNum2 = new int[1];
+            final int[] newEdgeNum1 = new int[1], newEdgeNum2 = new int[1];
             cm_edge_s edge;
             cm_polygon_s newp;
             idVec3 delta, normal;
@@ -4853,7 +4868,7 @@ public class CollisionModel_local {
 
             newp = AllocPolygon(model, newNumEdges);
             newp.oSet(p1);//memcpy( newp, p1, sizeof(cm_polygon_t) );
-            System.arraycopy(newEdges, 0, newp.edges, 0, newNumEdges);//memcpy( newp.edges, newEdges, newNumEdges * sizeof(int) );
+            Nio.arraycopy(newEdges, 0, newp.edges, 0, newNumEdges);//memcpy( newp.edges, newEdges, newNumEdges * sizeof(int) );
             newp.numEdges = newNumEdges;
             newp.checkcount = 0;
             // increase usage count for the edges of this polygon
@@ -5168,7 +5183,7 @@ public class CollisionModel_local {
         private void FindContainedEdges(cm_model_s model, cm_polygon_s p) {
             int i, edgeNum;
             cm_edge_s edge;
-            idFixedWinding w = new idFixedWinding();
+            final idFixedWinding w = new idFixedWinding();
 
             for (i = 0; i < p.numEdges; i++) {
                 edgeNum = p.edges[i];
@@ -5226,7 +5241,7 @@ public class CollisionModel_local {
          */
         private void LoadProcBSP(final String name) {
             idStr filename;
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idLexer src;
 
             // load it
@@ -5287,7 +5302,7 @@ public class CollisionModel_local {
         // removal of contained polygons
         private boolean R_ChoppedAwayByProcBSP(int nodeNum, idFixedWinding w, final idVec3 normal, final idVec3 origin, final float radius) {
             int res;
-            idFixedWinding back = new idFixedWinding();
+            final idFixedWinding back = new idFixedWinding();
             cm_procNode_s node;
             float dist;
 
@@ -5335,7 +5350,7 @@ public class CollisionModel_local {
 
         private boolean ChoppedAwayByProcBSP(final idFixedWinding w, final idPlane plane, int contents) {
             idFixedWinding neww;
-            idBounds bounds = new idBounds();
+            final idBounds bounds = new idBounds();
             float radius;
             idVec3 origin;
 
@@ -5366,10 +5381,11 @@ public class CollisionModel_local {
          */
         private void ChopWindingListWithBrush(cm_windingList_s list, cm_brush_s b) {
             int i, k, res, startPlane, planeNum, bestNumWindings;
-            idFixedWinding back = new idFixedWinding(), front;
+            final idFixedWinding back = new idFixedWinding();
+			idFixedWinding front;
             idPlane plane;
             boolean chopped;
-            int[] sidedness = new int[MAX_POINTS_ON_WINDING];
+            final int[] sidedness = new int[MAX_POINTS_ON_WINDING];
             float dist;
 
             if (b.numPlanes > MAX_POINTS_ON_WINDING) {
@@ -5872,8 +5888,8 @@ public class CollisionModel_local {
          ================
          */
         private cm_node_s R_CreateAxialBSPTree(cm_model_s model, cm_node_s node, final idBounds bounds) {
-            int[] planeType = new int[1];
-            float[] planeDist = new float[1];
+            final int[] planeType = new int[1];
+            final float[] planeDist = new float[1];
             cm_polygonRef_s pref, nextpref, prevpref;
             cm_brushRef_s bref, nextbref, prevbref;
             cm_node_s frontNode, backNode, n;
@@ -5947,7 +5963,7 @@ public class CollisionModel_local {
         private cm_node_s CreateAxialBSPTree(cm_model_s model, cm_node_s node) {
             cm_polygonRef_s pref;
             cm_brushRef_s bref;
-            idBounds bounds = new idBounds();
+            final idBounds bounds = new idBounds();
 
             // get head node bounds
             bounds.Clear();
@@ -6043,7 +6059,8 @@ public class CollisionModel_local {
 
         private boolean GetVertex(cm_model_s model, final idVec3 v, int[] vertexNum) {
             int i, hashKey, vn;
-            idVec3 vert = new idVec3(), p;
+            final idVec3 vert = new idVec3();
+			idVec3 p;
 
             for (i = 0; i < 3; i++) {
                 if (idMath.Fabs(v.oGet(i) - idMath.Rint(v.oGet(i))) < INTEGRAL_EPSILON) {
@@ -6094,7 +6111,8 @@ public class CollisionModel_local {
         private boolean GetEdge(cm_model_s model, final idVec3 v1, final idVec3 v2, int[] edgeNum, final int edgeOffset, int[] v1num) {
             int hashKey, e;
             boolean found;
-            int[] vertexNum, v2num = new int[1];
+            int[] vertexNum;
+			final int[] v2num = new int[1];
 
             // the first edge is a dummy
             if (model.numEdges == 0) {
@@ -6174,10 +6192,10 @@ public class CollisionModel_local {
 
         private void CreatePolygon(cm_model_s model, idFixedWinding w, final idPlane plane, final idMaterial material, int primitiveNum) {
             int i, j, edgeNum;
-            int[] v1num = new int[1];
+            final int[] v1num = new int[1];
             int numPolyEdges;
-            int[] polyEdges = new int[MAX_POINTS_ON_WINDING];
-            idBounds bounds = new idBounds();
+            final int[] polyEdges = new int[MAX_POINTS_ON_WINDING];
+            final idBounds bounds = new idBounds();
             cm_polygon_s p;
 
             // turn the winding into a sequence of edges
@@ -6340,8 +6358,8 @@ public class CollisionModel_local {
             int i, j;
             float dot;
             int v1, v2, v3, v4;
-            idFixedWinding w = new idFixedWinding();
-            idPlane plane = new idPlane();
+            final idFixedWinding w = new idFixedWinding();
+            final idPlane plane = new idPlane();
             idVec3 d1, d2;
 
             for (i = 0; i < mesh.GetWidth() - 1; i++) {
@@ -6424,7 +6442,7 @@ public class CollisionModel_local {
         private void ConvertBrushSides(cm_model_s model, final idMapBrush mapBrush, int primitiveNum) {
             int i, j;
             idMapBrushSide mapSide;
-            idFixedWinding w = new idFixedWinding();
+            final idFixedWinding w = new idFixedWinding();
             idPlane[] planes;
             idMaterial material;
 
@@ -6459,11 +6477,11 @@ public class CollisionModel_local {
 
         private void ConvertBrush(cm_model_s model, final idMapBrush mapBrush, int primitiveNum) {
             int i, j, contents;
-            idBounds bounds = new idBounds();
+            final idBounds bounds = new idBounds();
             idMapBrushSide mapSide;
             cm_brush_s brush;
             idPlane[] planes;
-            idFixedWinding w = new idFixedWinding();
+            final idFixedWinding w = new idFixedWinding();
             idMaterial material = null;
 
             contents = 0;
@@ -6683,7 +6701,7 @@ public class CollisionModel_local {
             int i;
             idMapEntity mapEnt;
 
-            idTimer timer = new idTimer();
+            final idTimer timer = new idTimer();
             timer.Start();
 
             if (!LoadCollisionModelFile(mapFile.GetNameStr(), mapFile.GetGeometryCRC())) {
@@ -6720,7 +6738,7 @@ public class CollisionModel_local {
             timer.Stop();
 
             // print statistics on collision data
-            cm_model_s model = new cm_model_s();
+            final cm_model_s model = new cm_model_s();
             AccumulateModelInfo(model);
             common.Printf("collision data:\n");
             common.Printf("%6d models\n", numModels);
@@ -6746,8 +6764,8 @@ public class CollisionModel_local {
 
         private cm_model_s CollisionModelForMapEntity(final idMapEntity mapEnt) {	// brush/patch model from .map
             cm_model_s model;
-            idBounds bounds = new idBounds();
-            String[] name = new String[1];
+            final idBounds bounds = new idBounds();
+            final String[] name = new String[1];
             int i, brushCount;
 
             // if the entity has no primitives
@@ -6841,13 +6859,13 @@ public class CollisionModel_local {
             int i, j;
             idRenderModel renderModel;
             modelSurface_s surf;
-            idFixedWinding w = new idFixedWinding();
+            final idFixedWinding w = new idFixedWinding();
             cm_node_s node;
             cm_model_s model;
             idPlane plane = new idPlane();
             idBounds bounds;
             boolean collisionSurface;
-            idStr extension = new StrPool.idPoolStr();
+            final idStr extension = new StrPool.idPoolStr();
 
             // only load ASE and LWO models
             new idStr(fileName).ExtractFileExtension(extension);
@@ -6894,7 +6912,7 @@ public class CollisionModel_local {
                 }
                 // get max verts and edges
                 model.maxVertices += surf.geometry.numVerts;
-                model.maxEdges += surf.geometry.numIndexes;
+                model.maxEdges += surf.geometry.getIndexes().getNumValues();
             }
 
             model.vertices = cm_vertex_s.generateArray(model.maxVertices);
@@ -6919,11 +6937,11 @@ public class CollisionModel_local {
                     continue;
                 }
 
-                for (j = 0; j < surf.geometry.numIndexes; j += 3) {
+                for (j = 0; j < surf.geometry.getIndexes().getNumValues(); j += 3) {
                     w.Clear();
-                    w.oPluSet(surf.geometry.verts[surf.geometry.indexes[j + 2]].xyz);
-                    w.oPluSet(surf.geometry.verts[surf.geometry.indexes[j + 1]].xyz);
-                    w.oPluSet(surf.geometry.verts[surf.geometry.indexes[j + 0]].xyz);
+                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes().getValues().get(j + 2)].xyz);
+                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes().getValues().get(j + 1)].xyz);
+                    w.oPluSet(surf.geometry.verts[surf.geometry.getIndexes().getValues().get(j + 0)].xyz);
                     w.GetPlane(plane);
                     plane = plane.oNegative();
                     PolygonFromWinding(model, w, plane, surf.shader, 1);
@@ -6994,7 +7012,7 @@ public class CollisionModel_local {
          */
         private boolean TrmFromModel(final cm_model_s model, idTraceModel trm) {
             int i, j;
-            int[] numEdgeUsers = new int[MAX_TRACEMODEL_EDGES + 1];
+            final int[] numEdgeUsers = new int[MAX_TRACEMODEL_EDGES + 1];
 
             // if the model has too many vertices to fit in a trace model
             if (model.numVertices > MAX_TRACEMODEL_VERTS) {
@@ -7328,8 +7346,8 @@ public class CollisionModel_local {
         private void ParsePolygons(idLexer src, cm_model_s model) {
             cm_polygon_s p;
             int i, numEdges;
-            idVec3 normal = new idVec3();
-            idToken token = new idToken();
+            final idVec3 normal = new idVec3();
+            final idToken token = new idToken();
 
             if (src.CheckTokenType(TT_NUMBER, 0, token) != 0) {
                 model.polygonBlock = new cm_polygonBlock_s();
@@ -7366,8 +7384,8 @@ public class CollisionModel_local {
         private void ParseBrushes(idLexer src, cm_model_s model) {
             cm_brush_s b;
             int i, numPlanes;
-            idVec3 normal = new idVec3();
-            idToken token = new idToken();
+            final idVec3 normal = new idVec3();
+            final idToken token = new idToken();
 
             if (src.CheckTokenType(TT_NUMBER, 0, token) != 0) {
                 model.brushBlock = new cm_brushBlock_s();
@@ -7406,7 +7424,7 @@ public class CollisionModel_local {
 
         private boolean ParseCollisionModel(idLexer src) {
             cm_model_s model;
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             if (numModels >= MAX_SUBMODELS) {
                 common.Error("LoadModel: no free slots");
@@ -7473,7 +7491,7 @@ public class CollisionModel_local {
 
         private boolean LoadCollisionModelFile(final idStr name, int mapFileCRC) {
             idStr fileName;
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idLexer src;
             int crc;
 
@@ -7532,8 +7550,8 @@ public class CollisionModel_local {
         // CollisionMap_debug
         private int ContentsFromString(final String string) {
             int i, contents = 0;
-            idLexer src = new idLexer(string, string.length(), "ContentsFromString");
-            idToken token = new idToken();
+            final idLexer src = new idLexer(string, string.length(), "ContentsFromString");
+            final idToken token = new idToken();
 
             while (src.ReadToken(token)) {
                 if (token.equals(",")) {
@@ -7644,7 +7662,7 @@ public class CollisionModel_local {
             }
 
             if (cm_drawFilled.GetBool()) {
-                idFixedWinding winding = new idFixedWinding();
+                final idFixedWinding winding = new idFixedWinding();
                 for (i = p.numEdges - 1; i >= 0; i--) {
                     edgeNum = p.edges[i];
                     edge = model.edges[Math.abs(edgeNum)];
@@ -7710,7 +7728,7 @@ public class CollisionModel_local {
                 }
             }
         }
-    };
+    }
 
     public static void setCollisionModelManager(idCollisionModelManager collisionModelManager) {
         CollisionModel_local.collisionModelManager

@@ -127,8 +127,8 @@ public class usurface {
      */
     static void TexVecForTri(textureVectors_t texVec, mapTri_s tri) {
         float area, inva;
-        idVec3 temp = new idVec3();
-        idVec5 d0 = new idVec5(), d1 = new idVec5();
+        final idVec3 temp = new idVec3();
+        final idVec5 d0 = new idVec5(), d1 = new idVec5();
         idDrawVert a, b, c;
 
         a = tri.v[0];
@@ -292,7 +292,7 @@ public class usurface {
      ====================
      */
     static void ClipSideByTree_r(idWinding w, side_s side, node_s node) {
-        idWinding front = new idWinding(), back = new idWinding();
+        final idWinding front = new idWinding(), back = new idWinding();
 
         if (NOT(w)) {
             return;
@@ -386,7 +386,7 @@ public class usurface {
      ====================
      */
     static void ClipTriIntoTree_r(idWinding w, mapTri_s originalTri, uEntity_t e, node_s node) {
-        idWinding front = new idWinding(), back = new idWinding();
+        final idWinding front = new idWinding(), back = new idWinding();
 
         if (NOT(w)) {
             return;
@@ -406,8 +406,8 @@ public class usurface {
         if (!node.opaque && node.area >= 0) {
             mapTri_s list;
             int planeNum;
-            idPlane plane = new idPlane();
-            textureVectors_t texVec = new textureVectors_t();
+            final idPlane plane = new idPlane();
+            final textureVectors_t texVec = new textureVectors_t();
 
             list = WindingToTriList(w, originalTri);
 
@@ -435,7 +435,7 @@ public class usurface {
      ====================
      */
     static int CheckWindingInAreas_r(final idWinding w, node_s node) {
-        idWinding front = new idWinding(), back = new idWinding();
+        final idWinding front = new idWinding(), back = new idWinding();
 
         if (NOT(w)) {
             return -1;
@@ -486,7 +486,7 @@ public class usurface {
      ====================
      */
     static void PutWindingIntoAreas_r(uEntity_t e, final idWinding w, side_s side, node_s node) {
-        idWinding front = new idWinding(), back = new idWinding();
+        final idWinding front = new idWinding(), back = new idWinding();
         int area;
 
         if (NOT(w)) {
@@ -574,9 +574,9 @@ public class usurface {
         }
         if (area >= 0) {
             mapTri_s newTri;
-            idPlane plane = new idPlane();
+            final idPlane plane = new idPlane();
             int planeNum;
-            textureVectors_t texVec = new textureVectors_t();
+            final textureVectors_t texVec = new textureVectors_t();
 
             // put in single area
             newTri = CopyMapTri(tri);
@@ -639,10 +639,10 @@ public class usurface {
 
         // optionally inline some of the func_static models
         if (dmapGlobals.entityNum == 0) {
-            boolean inlineAll = dmapGlobals.uEntities[0].mapEntity.epairs.GetBool("inlineAllStatics");
+            final boolean inlineAll = dmapGlobals.uEntities[0].mapEntity.epairs.GetBool("inlineAllStatics");
 
             for (int eNum = 1; eNum < dmapGlobals.num_entities; eNum++) {
-                uEntity_t entity = dmapGlobals.uEntities[eNum];
+                final uEntity_t entity = dmapGlobals.uEntities[eNum];
                 final String className = entity.mapEntity.epairs.GetString("classname");
                 if (idStr.Icmp(className, "func_static") != 0) {
                     continue;
@@ -654,14 +654,14 @@ public class usurface {
                 if (isNotNullOrEmpty(modelName)) {
                     continue;
                 }
-                idRenderModel model = renderModelManager.FindModel(modelName);
+                final idRenderModel model = renderModelManager.FindModel(modelName);
 
                 common.Printf("inlining %s.\n", entity.mapEntity.epairs.GetString("name"));
 
                 idMat3 axis = new idMat3();
                 // get the rotation matrix in either full form, or single angle form
                 if (!entity.mapEntity.epairs.GetMatrix("rotation", "1 0 0 0 1 0 0 0 1", axis)) {
-                    float angle = entity.mapEntity.epairs.GetFloat("angle");
+                    final float angle = entity.mapEntity.epairs.GetFloat("angle");
                     if (angle != 0.0f) {
                         axis = new idAngles(0.0f, angle, 0.0f).ToMat3();
                     } else {
@@ -669,27 +669,27 @@ public class usurface {
                     }
                 }
 
-                idVec3 origin = entity.mapEntity.epairs.GetVector("origin");
+                final idVec3 origin = entity.mapEntity.epairs.GetVector("origin");
 
                 for (i = 0; i < model.NumSurfaces(); i++) {
                     final modelSurface_s surface = model.Surface(i);
                     final srfTriangles_s tri2 = surface.geometry;
 
-                    mapTri_s mapTri = new mapTri_s();
+                    final mapTri_s mapTri = new mapTri_s();
                     //				memset( &mapTri, 0, sizeof( mapTri ) );
                     mapTri.material = surface.shader;
                     // don't let discretes (autosprites, etc) merge together
                     if (mapTri.material.IsDiscrete()) {
                         mapTri.mergeGroup = surface;
                     }
-                    for (int j = 0; j < tri2.numIndexes; j += 3) {
+                    for (int j = 0; j < tri2.getIndexes().getNumValues(); j += 3) {
                         for (int k = 0; k < 3; k++) {
-                            idVec3 v = tri2.verts[tri2.indexes[j + k]].xyz;
+                            final idVec3 v = tri2.verts[tri2.getIndexes().getValues().get(j + k)].xyz;
 
                             mapTri.v[k].xyz = v.oMultiply(axis).oPlus(origin);
 
-                            mapTri.v[k].normal = tri2.verts[tri2.indexes[j + k]].normal.oMultiply(axis);
-                            mapTri.v[k].st = tri2.verts[tri2.indexes[j + k]].st;
+                            mapTri.v[k].normal = tri2.verts[tri2.getIndexes().getValues().get(j + k)].normal.oMultiply(axis);
+                            mapTri.v[k].st = tri2.verts[tri2.getIndexes().getValues().get(j + k)].st;
                         }
                         AddMapTriToAreas(mapTri, e);
                     }
@@ -717,7 +717,7 @@ public class usurface {
      */
     static void ClipTriByLight(final mapLight_t light, final mapTri_s tri, mapTri_s in, mapTri_s out) {
         idWinding inside, oldInside;
-        idWinding[] outside = new idWinding[6];
+        final idWinding[] outside = new idWinding[6];
         boolean hasOutside;
         int i;
 
@@ -851,7 +851,7 @@ public class usurface {
                     // light frustum
                     shadowers = null;
                     for (tri = group.triList; tri != null; tri = tri.next) {
-                        mapTri_s in = new mapTri_s(), out = new mapTri_s();
+                        final mapTri_s in = new mapTri_s(), out = new mapTri_s();
 
                         // clip it to the light frustum
                         ClipTriByLight(light, tri, in, out);
@@ -898,10 +898,10 @@ public class usurface {
         // take the shadower group list and create a beam tree and shadow volume
         light.shadowTris = CreateLightShadow(shadowerGroups, light);
 
-        if (light.shadowTris != null && hasPerforatedSurface) {
+        if ((light.shadowTris != null) && hasPerforatedSurface) {
             // can't ever remove front faces, because we can see through some of them
             light.shadowTris.numShadowIndexesNoCaps = light.shadowTris.numShadowIndexesNoFrontCaps
-                    = light.shadowTris.numIndexes;
+                    = light.shadowTris.getIndexes().getNumValues();
         }
 
         // we don't need the original shadower triangles for anything else
@@ -949,7 +949,7 @@ public class usurface {
                 // it won't get carved at all
                 if (!light.def.lightShader.LightEffectsBackSides()
                         && !group.material.ReceivesLightingOnBackSides()
-                        && dmapGlobals.mapPlanes.oGet(group.planeNum).Distance(light.def.parms.origin) <= 0) {
+                        && (dmapGlobals.mapPlanes.oGet(group.planeNum).Distance(light.def.parms.origin) <= 0)) {
 
                     group.nextGroup = carvedGroups;
                     carvedGroups = group;
@@ -961,7 +961,7 @@ public class usurface {
                 outside = null;
 
                 for (tri = group.triList; tri != null; tri = tri.next) {
-                    mapTri_s in = new mapTri_s(), out = new mapTri_s();
+                    final mapTri_s in = new mapTri_s(), out = new mapTri_s();
 
                     ClipTriByLight(light, tri, in, out);
                     inside = MergeTriLists(inside, in);
@@ -1020,7 +1020,7 @@ public class usurface {
 
             // calc bounds for all the groups to speed things up
             for (i = 0; i < e.numAreas; i++) {
-                uArea_t area = e.areas[i];
+                final uArea_t area = e.areas[i];
 
                 for (optimizeGroup_s group = area.groups; group != null; group = group.nextGroup) {
                     BoundOptimizeGroup(group);

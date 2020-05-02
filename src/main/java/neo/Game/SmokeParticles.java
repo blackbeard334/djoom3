@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import neo.Game.Game_local.idGameLocal;
 import neo.Renderer.Model.modelSurface_s;
 import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.RenderWorld.deferredEntityCallback_t;
@@ -77,9 +78,9 @@ public class SmokeParticles {
         private int            renderEntityHandle;        // handle to static renderer model
         //
         private static final int             MAX_SMOKE_PARTICLES = 10000;
-        private              singleSmoke_t[] smokes;
+        private final        singleSmoke_t[] smokes;
         //
-        private idList<activeSmokeStage_t> activeStages;
+        private final idList<activeSmokeStage_t> activeStages;
         private singleSmoke_t              freeSmokes;
         private int                        numActiveSmokes;
         private int                        currentParticleTime;    // don't need to recalculate if == view time
@@ -183,7 +184,7 @@ public class SmokeParticles {
                 return false;
             }
 
-            idRandom steppingRandom = new idRandom((int) (0xffff * diversity));
+            final idRandom steppingRandom = new idRandom((int) (0xffff * diversity));
 
             // for each stage in the smoke that is still emitting particles, emit a new singleSmoke_t
             for (int stageNum = 0; stageNum < smoke.stages.Num(); stageNum++) {
@@ -203,8 +204,8 @@ public class SmokeParticles {
 
                 // see how many particles we should emit this tic
                 // FIXME: 			smoke.privateStartTime += stage.timeOffset;
-                int finalParticleTime = (int) (stage.cycleMsec * stage.spawnBunching);
-                int deltaMsec = gameLocal.time - systemStartTime;
+                final int finalParticleTime = (int) (stage.cycleMsec * stage.spawnBunching);
+                final int deltaMsec = gameLocal.time - systemStartTime;
 
                 int nowCount = 0, prevCount;
                 if (finalParticleTime == 0) {
@@ -247,7 +248,7 @@ public class SmokeParticles {
                 }
                 if (i == activeStages.Num()) {
                     // add a new one
-                    activeSmokeStage_t newActive = new activeSmokeStage_t();
+                    final activeSmokeStage_t newActive = new activeSmokeStage_t();
 
                     newActive.smokes = null;
                     newActive.stage = stage;
@@ -261,7 +262,7 @@ public class SmokeParticles {
                         gameLocal.Printf("idSmokeParticles::EmitSmoke: no free smokes with %d active stages\n", activeStages.Num());
                         return true;
                     }
-                    singleSmoke_t newSmoke = freeSmokes;
+                    final singleSmoke_t newSmoke = freeSmokes;
                     freeSmokes = freeSmokes.next;
                     numActiveSmokes++;
 
@@ -285,13 +286,13 @@ public class SmokeParticles {
             for (int activeStageNum = 0; activeStageNum < activeStages.Num(); activeStageNum++) {
                 singleSmoke_t smoke, next, last;
 
-                activeSmokeStage_t active = activeStages.oGet(activeStageNum);
+                final activeSmokeStage_t active = activeStages.oGet(activeStageNum);
                 final idParticleStage stage = active.stage;
 
                 for (last = null, smoke = active.smokes; smoke != null; smoke = next) {
                     next = smoke.next;
 
-                    float frac = (float) (gameLocal.time - smoke.privateStartTime) / (stage.particleLife * 1000);
+                    final float frac = (float) (gameLocal.time - smoke.privateStartTime) / (stage.particleLife * 1000);
                     if (frac >= 1.0f) {
                         // remove the particle from the stage list
                         if (last != null) {
@@ -334,7 +335,7 @@ public class SmokeParticles {
             }
             currentParticleTime = renderView.time;
 
-            particleGen_t g = new particleGen_t();
+            final particleGen_t g = new particleGen_t();
 
             g.renderEnt = renderEntity;
             g.renderView = renderView;
@@ -342,7 +343,7 @@ public class SmokeParticles {
             for (int activeStageNum = 0; activeStageNum < activeStages.Num(); activeStageNum++) {
                 singleSmoke_t smoke, next, last;
 
-                activeSmokeStage_t active = activeStages.oGet(activeStageNum);
+                final activeSmokeStage_t active = activeStages.oGet(activeStageNum);
                 final idParticleStage stage = active.stage;
 
                 if (null == stage.material) {
@@ -354,9 +355,9 @@ public class SmokeParticles {
                 for (smoke = active.smokes; smoke != null; smoke = smoke.next) {
                     count++;
                 }
-                int quads = count * stage.NumQuadsPerParticle();
-                srfTriangles_s tri = renderEntity.hModel.AllocSurfaceTriangles(quads * 4, quads * 6);
-                tri.numIndexes = quads * 6;
+                final int quads = count * stage.NumQuadsPerParticle();
+                final srfTriangles_s tri = renderEntity.hModel.AllocSurfaceTriangles(quads * 4, quads * 6);
+                tri.getIndexes().setNumValues(quads * 6);
                 tri.numVerts = quads * 4;
 
                 // just always draw the particles
@@ -400,7 +401,7 @@ public class SmokeParticles {
                     last = smoke;
                 }
                 if (tri.numVerts > quads * 4) {
-                    gameLocal.Error("idSmokeParticles::UpdateRenderEntity: miscounted verts");
+                    idGameLocal.Error("idSmokeParticles::UpdateRenderEntity: miscounted verts");
                 }
 
                 if (tri.numVerts == 0) {
@@ -417,17 +418,17 @@ public class SmokeParticles {
                     // build the index list
                     int indexes = 0;
                     for (int i = 0; i < tri.numVerts; i += 4) {
-                        tri.indexes[indexes + 0] = i;
-                        tri.indexes[indexes + 1] = i + 2;
-                        tri.indexes[indexes + 2] = i + 3;
-                        tri.indexes[indexes + 3] = i;
-                        tri.indexes[indexes + 4] = i + 3;
-                        tri.indexes[indexes + 5] = i + 1;
+                        tri.getIndexes().getValues().put(indexes + 0, i);
+                        tri.getIndexes().getValues().put(indexes + 1, i + 2);
+                        tri.getIndexes().getValues().put(indexes + 2, i + 3);
+                        tri.getIndexes().getValues().put(indexes + 3, i);
+                        tri.getIndexes().getValues().put(indexes + 4, i + 3);
+                        tri.getIndexes().getValues().put(indexes + 5, i + 1);
                         indexes += 6;
                     }
-                    tri.numIndexes = indexes;
+                    tri.getIndexes().setNumValues(indexes);
 
-                    modelSurface_s surf = new modelSurface_s();
+                    final modelSurface_s surf = new modelSurface_s();
                     surf.geometry = tri;
                     surf.shader = stage.material;
                     surf.id = 0;
@@ -473,6 +474,6 @@ public class SmokeParticles {
             public ByteBuffer Write() {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
-        };
-    };
+        }
+    }
 }

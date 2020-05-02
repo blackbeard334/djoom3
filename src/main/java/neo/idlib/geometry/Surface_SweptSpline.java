@@ -126,8 +126,10 @@ public class Surface_SweptSpline {
                     v.tangents[1] = splineD1.ToVec3();
                     v.normal = v.tangents[1].Cross(v.tangents[0]);
                     v.normal.Normalize();
-                    v.color[0] = v.color[1] = v.color[2] = v.color[3] = 0;
-                }
+            		for (int k = 0; k < 4; k++) {
+            			v.color.put(k, (byte) 0);
+            		}
+            	}
             }
 
             indexes.SetNum(splineDiv * sweptSplineDiv * 2 * 3, false);

@@ -95,7 +95,7 @@ public class Model_md5 {
     public static class idMD5Mesh {
         // friend class				idRenderModelMD5;
 
-        private idList<idVec2> texCoords;    // texture coordinates
+        private final idList<idVec2> texCoords;    // texture coordinates
         private int            numWeights;   // number of weights
         private idVec4[]       scaledWeights;// joint weights
         private int[]          weightIndex;  // pairs of: joint offset + bool true if next weight is for next vertex
@@ -118,18 +118,18 @@ public class Model_md5 {
         // ~idMD5Mesh();
 
         public void ParseMesh(idLexer parser, int numJoints, final idJointMat[] joints) throws Lib.idException {
-            idToken token = new idToken();
-            idToken name = new idToken();
+            final idToken token = new idToken();
+            final idToken name = new idToken();
             int num;
             int count;
             int jointnum;
             idStr shaderName;
             int i, j;
-            idList<Integer> tris = new idList<>();
-            idList<Integer> firstWeightForVertex = new idList<>();
-            idList<Integer> numWeightsForVertex = new idList<>();
+            final idList<Integer> tris = new idList<>();
+            final idList<Integer> firstWeightForVertex = new idList<>();
+            final idList<Integer> numWeightsForVertex = new idList<>();
             int maxweight;
-            idList<vertexWeight_s> tempWeights = new idList<>();
+            final idList<vertexWeight_s> tempWeights = new idList<>();
 
             parser.ExpectTokenString("{");
 
@@ -285,14 +285,14 @@ public class Model_md5 {
 
             tr.pc.c_deformedSurfaces++;
             tr.pc.c_deformedVerts += deformInfo.numOutputVerts;
-            tr.pc.c_deformedIndexes += deformInfo.numIndexes;
+            tr.pc.c_deformedIndexes += deformInfo.getIndexes().getNumValues();
 
             surf.shader = shader;
 
             if (surf.geometry != null) {
                 // if the number of verts and indexes are the same we can re-use the triangle surface
                 // the number of indexes must be the same to assure the correct amount of memory is allocated for the facePlanes
-                if (surf.geometry.numVerts == deformInfo.numOutputVerts && surf.geometry.numIndexes == deformInfo.numIndexes) {
+                if (surf.geometry.numVerts == deformInfo.numOutputVerts && surf.geometry.getIndexes().getNumValues() == deformInfo.getIndexes().getNumValues()) {
                     R_FreeStaticTriSurfVertexCaches(surf.geometry);
                 } else {
                     R_FreeStaticTriSurf(surf.geometry);
@@ -309,8 +309,8 @@ public class Model_md5 {
             tri.tangentsCalculated = false;
             tri.facePlanesCalculated = false;
 
-            tri.numIndexes = deformInfo.numIndexes;
-            tri.indexes = deformInfo.indexes;
+            tri.getIndexes().setNumValues(this.deformInfo.getIndexes().getNumValues());
+            tri.getIndexes().setValues(this.deformInfo.getIndexes().getValues());
             tri.silIndexes = deformInfo.silIndexes;
             tri.numMirroredVerts = deformInfo.numMirroredVerts;
             tri.mirroredVerts = deformInfo.mirroredVerts;
@@ -354,8 +354,8 @@ public class Model_md5 {
         }
 
         public idBounds CalcBounds(final idJointMat[] entJoints) {
-            idBounds bounds = new idBounds();
-            idDrawVert[] verts = new idDrawVert[texCoords.Num()];
+            final idBounds bounds = new idBounds();
+            final idDrawVert[] verts = new idDrawVert[texCoords.Num()];
 
             TransformVerts(verts, entJoints);
 
@@ -422,7 +422,7 @@ public class Model_md5 {
          ====================
          */
         private void TransformScaledVerts(idDrawVert[] verts, final idJointMat[] entJoints, float scale) {
-            idVec4[] scaledWeights = new idVec4[numWeights];
+            final idVec4[] scaledWeights = new idVec4[numWeights];
             SIMDProcessor.Mul(scaledWeights[0].ToFloatPtr(), scale, scaledWeights[0].ToFloatPtr(), numWeights * 4);
             SIMDProcessor.TransformVerts(verts, texCoords.Num(), entJoints, scaledWeights, weightIndex, numWeights);
         }
@@ -431,9 +431,9 @@ public class Model_md5 {
     public static class idRenderModelMD5 extends idRenderModelStatic {
         public static final int BYTES = Integer.BYTES * 3;
 
-        private idList<idMD5Joint> joints;
-        private idList<idJointQuat> defaultPose;
-        private idList<idMD5Mesh> meshes;
+        private final idList<idMD5Joint> joints;
+        private final idList<idJointQuat> defaultPose;
+        private final idList<idMD5Mesh> meshes;
         //
         //
 
@@ -569,8 +569,8 @@ public class Model_md5 {
             int i;
             int num;
             int parentNum;
-            idToken token = new idToken();
-            idLexer parser = new idLexer(LEXFL_ALLOWPATHNAMES | LEXFL_NOSTRINGESCAPECHARS);
+            final idToken token = new idToken();
+            final idLexer parser = new idLexer(LEXFL_ALLOWPATHNAMES | LEXFL_NOSTRINGESCAPECHARS);
             idJointMat[] poseMat3;
 
             if (!purged) {
@@ -620,8 +620,8 @@ public class Model_md5 {
             parser.ExpectTokenString("joints");
             parser.ExpectTokenString("{");
             for (i = 0; i < joints.Num(); i++) {
-                idJointQuat pose = defaultPose.oSet(i, new idJointQuat());
-                idMD5Joint joint = joints.oSet(i, new idMD5Joint());
+                final idJointQuat pose = defaultPose.oSet(i, new idJointQuat());
+                final idMD5Joint joint = joints.oSet(i, new idMD5Joint());
                 ParseJoint(parser, joint, pose);
                 poseMat3[i] = new idJointMat();
                 poseMat3[i].SetRotation(pose.q.ToMat3());
@@ -635,7 +635,7 @@ public class Model_md5 {
             parser.ExpectTokenString("}");
 
             for( i = 0; i < meshes.Num(); i++ ) {
-                idMD5Mesh mesh = meshes.oSet(i, new idMD5Mesh());
+                final idMD5Mesh mesh = meshes.oSet(i, new idMD5Mesh());
                 parser.ExpectTokenString("mesh");
                 mesh.ParseMesh(parser, defaultPose.Num(), poseMat3);
             }
@@ -676,7 +676,7 @@ public class Model_md5 {
 
         @Override
         public idRenderModel InstantiateDynamicModel(final renderEntity_s ent, final viewDef_s view, idRenderModel cachedModel) {
-            int[] surfaceNum = {0};
+            final int[] surfaceNum = {0};
             idRenderModelStatic staticModel;
 
             if (cachedModel != null && !r_useCachedDynamicModels.GetBool()) {
@@ -724,7 +724,7 @@ public class Model_md5 {
 
             // create all the surfaces
             for (int i = 0; i < meshes.Num(); i++) {
-                idMD5Mesh mesh = meshes.Ptr(idMD5Mesh[].class)[i];
+                final idMD5Mesh mesh = meshes.Ptr(idMD5Mesh[].class)[i];
                         
 		// avoid deforming the surface if it will be a nodraw due to a skin remapping
                 // FIXME: may have to still deform clipping hulls
@@ -759,7 +759,7 @@ public class Model_md5 {
 
                 staticModel.bounds.AddPoint(surf.geometry.bounds.oGet(0));
                 staticModel.bounds.AddPoint(surf.geometry.bounds.oGet(1));
-                int a = 0;
+                final int a = 0;
             }
 
             return staticModel;
@@ -823,7 +823,7 @@ public class Model_md5 {
             bounds.Clear();
             for (i = 0; i < meshes.Num(); ++i) {
                 bounds.AddBounds(meshes.oGet(i).CalcBounds(entJoints));
-                int a = 0;
+                final int a = 0;
             }
         }
 
@@ -852,13 +852,13 @@ public class Model_md5 {
                 session.rw.DebugLine(colorBlue, pos, pos.oPlus(joint.ToMat3().oGet(2).oMultiply(2.0f).oMultiply(ent.axis)));
             }
 
-            idBounds bounds = new idBounds();
+            final idBounds bounds = new idBounds();
 
             bounds.FromTransformedBounds(ent.bounds, getVec3_zero(), ent.axis);
             session.rw.DebugBounds(colorMagenta, bounds, ent.origin);
 
             if ((RenderSystem_init.r_jointNameScale.GetFloat() != 0.0f) && (bounds.Expand(128.0f).ContainsPoint(view.renderView.vieworg.oMinus(ent.origin)))) {
-                idVec3 offset = new idVec3(0, 0, RenderSystem_init.r_jointNameOffset.GetFloat());
+                final idVec3 offset = new idVec3(0, 0, RenderSystem_init.r_jointNameOffset.GetFloat());
                 float scale;
 
                 scale = RenderSystem_init.r_jointNameScale.GetFloat();

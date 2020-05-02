@@ -6,10 +6,6 @@ import static neo.Renderer.VertexCache.vertBlockTag_t.TAG_FIXED;
 import static neo.Renderer.VertexCache.vertBlockTag_t.TAG_FREE;
 import static neo.Renderer.VertexCache.vertBlockTag_t.TAG_TEMP;
 import static neo.Renderer.VertexCache.vertBlockTag_t.TAG_USED;
-import static neo.Renderer.qgl.qglBindBufferARB;
-import static neo.Renderer.qgl.qglBufferDataARB;
-import static neo.Renderer.qgl.qglBufferSubDataARB;
-import static neo.Renderer.qgl.qglGenBuffersARB;
 import static neo.Renderer.tr_local.glConfig;
 import static neo.Renderer.tr_local.tr;
 import static neo.framework.CVarSystem.CVAR_INTEGER;
@@ -18,19 +14,21 @@ import static neo.framework.CmdSystem.CMD_FL_RENDERER;
 import static neo.framework.CmdSystem.cmdSystem;
 import static neo.framework.Common.common;
 import static neo.idlib.math.Simd.SIMDProcessor;
-import static org.lwjgl.opengl.ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB;
-import static org.lwjgl.opengl.ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB;
-import static org.lwjgl.opengl.ARBVertexBufferObject.GL_STATIC_DRAW_ARB;
-import static org.lwjgl.opengl.ARBVertexBufferObject.GL_STREAM_DRAW_ARB;
+import static neo.Renderer.qgl.qglBindBufferARB;
+import static neo.Renderer.qgl.qglBufferDataARB;
+import static neo.Renderer.qgl.qglBufferSubDataARB;
+import static neo.Renderer.qgl.qglGenBuffersARB;
+import static neo.Renderer.qgl.GL_ARRAY_BUFFER_ARB;
+import static neo.Renderer.qgl.GL_ELEMENT_ARRAY_BUFFER_ARB;
+import static neo.Renderer.qgl.GL_STATIC_DRAW_ARB;
+import static neo.Renderer.qgl.GL_STREAM_DRAW_ARB;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.lwjgl.BufferUtils;
-
-import neo.TempDump.Deprecation_Exception;
 import neo.Renderer.Model.lightingCache_s;
 import neo.Renderer.Model.shadowCache_s;
 import neo.framework.CVarSystem.idCVar;
@@ -40,6 +38,7 @@ import neo.idlib.geometry.DrawVert;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.open.Nio;
 
 /**
  *
@@ -62,7 +61,7 @@ public class VertexCache {
     static class vertCache_s implements Iterable<vertCache_s> {//TODO:use iterators for all our makeshift linked lists.
 
         private int /*GLuint*/ vbo = 0;
-        private int /*GLuint*/ vao = 0;
+        private final int /*GLuint*/ vao = 0;
         private ByteBuffer     virtMem;    // only one of vbo / virtMem will be set
         private boolean        indexBuffer;// holds indexes instead of vertexes
         private int            offset;
@@ -75,16 +74,16 @@ public class VertexCache {
 
         @Override
         public Iterator<vertCache_s> iterator() {
-            Iterator i = new Iterator() {
+            final Iterator<vertCache_s> i = new Iterator<vertCache_s>() {
 
                 @Override
                 public boolean hasNext() {
-                    return next != null;
+                    return vertCache_s.this.next != null;
                 }
 
                 @Override
-                public Object next() {
-                    return next;
+                public vertCache_s next() {
+                    return vertCache_s.this.next;
                 }
 
                 @Override
@@ -101,7 +100,7 @@ public class VertexCache {
          * NULL.
          */
         public static vertCache_s[] toArray(vertCache_s cache_s) {
-            List<vertCache_s> array = new ArrayList<>(10);
+            final List<vertCache_s> array = new ArrayList<>(10);
             Iterator<vertCache_s> iterator;
 
             if (cache_s != null) {
@@ -116,7 +115,6 @@ public class VertexCache {
         }
     }
 
-    ;
     //
     static final int FRAME_MEMORY_BYTES = 0x200000;
     static final int EXPAND_HEADERS     = 1024;
@@ -144,8 +142,6 @@ public class VertexCache {
         }
     }
 
-    ;
-
     //================================================================================
     public static class idVertexCache {
 
@@ -172,11 +168,11 @@ public class VertexCache {
         //
 //        private final idBlockAlloc<vertCache_s> headerAllocator = new idBlockAlloc<>(1024);
         //
-        private       vertCache_s   freeStaticHeaders;      // head of doubly linked list
-        private       vertCache_s   freeDynamicHeaders;     // head of doubly linked list
-        private       vertCache_s   dynamicHeaders;         // head of doubly linked list
-        private       vertCache_s   deferredFreeList;       // head of doubly linked list
-        private       vertCache_s   staticHeaders;          // head of doubly linked list in MRU order,
+        private final       vertCache_s   freeStaticHeaders;      // head of doubly linked list
+        private final       vertCache_s   freeDynamicHeaders;     // head of doubly linked list
+        private final       vertCache_s   dynamicHeaders;         // head of doubly linked list
+        private final       vertCache_s   deferredFreeList;       // head of doubly linked list
+        private final       vertCache_s   staticHeaders;          // head of doubly linked list in MRU order,
         // staticHeaders.next is most recently used
         //
         private       int           frameBytes;             // for each of NUM_VERTEX_FRAMES frames
@@ -221,7 +217,7 @@ public class VertexCache {
             frameBytes = FRAME_MEMORY_BYTES;
             staticAllocTotal = 0;
 
-            ByteBuffer junk = BufferUtils.createByteBuffer(frameBytes);// Mem_Alloc(frameBytes);
+            ByteBuffer junk = Nio.newByteBuffer(this.frameBytes);// Mem_Alloc(frameBytes);
             for (int i = 0; i < NUM_VERTEX_FRAMES; i++) {
                 allocatingTempBuffer = true;    // force the alloc to use GL_STREAM_DRAW_ARB
                 tempBuffers[i] = Alloc(junk, frameBytes);
@@ -357,17 +353,24 @@ public class VertexCache {
             return buffer;
         }
 
-        @Deprecated
-        public void Alloc(int[] data, int size, vertCache_s buffer, boolean indexBuffer /*= false*/) {
-            ByteBuffer byteData = ByteBuffer.allocate(data.length * 4);
-            byteData.asIntBuffer().put(data);
+//        @Deprecated
+//        public void Alloc(int[] data, int size, vertCache_s buffer, boolean indexBuffer /*= false*/) {
+//            final ByteBuffer byteData = ByteBuffer.allocate(data.length * 4);
+//            byteData.asIntBuffer().put(data);
+//
+////            Alloc(byteData, size, buffer, indexBuffer);
+//            throw new Deprecation_Exception();
+//        }
 
-//            Alloc(byteData, size, buffer, indexBuffer);
-            throw new Deprecation_Exception();
-        }
+//        public vertCache_s Alloc(int[] data, int size, boolean indexBuffer) {
+//            final ByteBuffer byteData = Nio.newByteBuffer(size * Integer.BYTES);
+//            byteData.asIntBuffer().put(data);
+//
+//            return Alloc(byteData, size, indexBuffer);
+//        }
 
-        public vertCache_s Alloc(int[] data, int size, boolean indexBuffer) {
-            ByteBuffer byteData = BufferUtils.createByteBuffer(size);
+        public vertCache_s Alloc(IntBuffer data, int size, boolean indexBuffer) {
+            final ByteBuffer byteData = Nio.newByteBuffer(size * Integer.BYTES);
             byteData.asIntBuffer().put(data);
 
             return Alloc(byteData, size, indexBuffer);

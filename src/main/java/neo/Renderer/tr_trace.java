@@ -2,12 +2,6 @@ package neo.Renderer;
 
 import static neo.Renderer.Image.globalImages;
 import static neo.Renderer.RenderSystem_init.r_showTrace;
-import static neo.Renderer.qgl.qglBegin;
-import static neo.Renderer.qgl.qglColor4f;
-import static neo.Renderer.qgl.qglDisableClientState;
-import static neo.Renderer.qgl.qglEnd;
-import static neo.Renderer.qgl.qglLoadMatrixf;
-import static neo.Renderer.qgl.qglVertex3f;
 import static neo.Renderer.tr_backend.GL_State;
 import static neo.Renderer.tr_backend.GL_TexEnv;
 import static neo.Renderer.tr_local.GLS_DEPTHFUNC_ALWAYS;
@@ -20,9 +14,15 @@ import static neo.Renderer.tr_rendertools.RB_DrawBounds;
 import static neo.Renderer.tr_trisurf.R_DeriveFacePlanes;
 import static neo.framework.Common.common;
 import static neo.idlib.math.Simd.SIMDProcessor;
-import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
-import static org.lwjgl.opengl.GL11.GL_MODULATE;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY;
+import static neo.Renderer.qgl.qglBegin;
+import static neo.Renderer.qgl.qglColor4f;
+import static neo.Renderer.qgl.qglDisableClientState;
+import static neo.Renderer.qgl.qglEnd;
+import static neo.Renderer.qgl.qglLoadMatrixf;
+import static neo.Renderer.qgl.qglVertex3f;
+import static neo.Renderer.qgl.GL_LINE_LOOP;
+import static neo.Renderer.qgl.GL_MODULATE;
+import static neo.Renderer.qgl.GL_TEXTURE_COORD_ARRAY;
 
 import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.tr_local.drawSurf_s;
@@ -50,11 +50,11 @@ public class tr_trace {
     public static localTrace_t R_LocalTrace(final idVec3 start, final idVec3 end, final float radius, final srfTriangles_s tri) {
         int i, j;
         byte[] cullBits;
-        idPlane[] planes = idPlane.generateArray(4);
-        localTrace_t hit = new localTrace_t();
+        final idPlane[] planes = idPlane.generateArray(4);
+        final localTrace_t hit = new localTrace_t();
         int c_testEdges, c_testPlanes, c_intersect;
         idVec3 startDir;
-        byte[] totalOr = new byte[1];
+        final byte[] totalOr = new byte[1];
         float radiusSqr;
         idTimer trace_timer = null;
 
@@ -106,20 +106,20 @@ public class tr_trace {
             R_DeriveFacePlanes(tri);
         }
 
-        for (i = 0, j = 0; i < tri.numIndexes; i += 3, j++) {
+        for (i = 0, j = 0; i < tri.getIndexes().getNumValues(); i += 3, j++) {
             float d1, d2, f, d;
             float edgeLengthSqr;
             idPlane plane;
             idVec3 point;
-            idVec3[] dir = new idVec3[3];
+            final idVec3[] dir = new idVec3[3];
             idVec3 cross;
             idVec3 edge;
             byte triOr;
 
             // get sidedness info for the triangle
-            triOr = cullBits[tri.indexes[i + 0]];
-            triOr |= cullBits[tri.indexes[i + 1]];
-            triOr |= cullBits[tri.indexes[i + 2]];
+            triOr = cullBits[tri.getIndexes().getValues().get(i + 0)];
+            triOr |= cullBits[tri.getIndexes().getValues().get(i + 1)];
+            triOr |= cullBits[tri.getIndexes().getValues().get(i + 2)];
 
             // if we don't have points on both sides of both the ray planes, no intersection
             if (((triOr ^ (triOr >> 4)) & 3) != 0) {
@@ -166,8 +166,8 @@ public class tr_trace {
 
             // see if the point is within the three edges
             // if radius > 0 the triangle is expanded with a circle in the triangle plane
-            dir[0] = tri.verts[tri.indexes[i + 0]].xyz.oMinus(point);
-            dir[1] = tri.verts[tri.indexes[i + 1]].xyz.oMinus(point);
+            dir[0] = tri.verts[tri.getIndexes().getValues().get(i + 0)].xyz.oMinus(point);
+            dir[1] = tri.verts[tri.getIndexes().getValues().get(i + 1)].xyz.oMinus(point);
 
             cross = dir[0].Cross(dir[1]);
             d = plane.Normal().oMultiply(cross);
@@ -175,14 +175,14 @@ public class tr_trace {
                 if (radiusSqr <= 0.0f) {
                     continue;
                 }
-                edge = tri.verts[tri.indexes[i + 0]].xyz.oMinus(tri.verts[tri.indexes[i + 1]].xyz);
+                edge = tri.verts[tri.getIndexes().getValues().get(i + 0)].xyz.oMinus(tri.verts[tri.getIndexes().getValues().get(i + 1)].xyz);
                 edgeLengthSqr = edge.LengthSqr();
-                if (cross.LengthSqr() > edgeLengthSqr * radiusSqr) {
+                if (cross.LengthSqr() > (edgeLengthSqr * radiusSqr)) {
                     continue;
                 }
                 d = dir[0].oMultiply(edge);
                 if (d < 0.0f) {
-                    edge = tri.verts[tri.indexes[i + 0]].xyz.oMinus(tri.verts[tri.indexes[i + 2]].xyz);
+                    edge = tri.verts[tri.getIndexes().getValues().get(i + 0)].xyz.oMinus(tri.verts[tri.getIndexes().getValues().get(i + 2)].xyz);
                     d = dir[0].oMultiply(edge);
                     if (d < 0.0f) {
                         if (dir[0].LengthSqr() > radiusSqr) {
@@ -190,7 +190,7 @@ public class tr_trace {
                         }
                     }
                 } else if (d > edgeLengthSqr) {
-                    edge = tri.verts[tri.indexes[i + 1]].xyz.oMinus(tri.verts[tri.indexes[i + 2]].xyz);
+                    edge = tri.verts[tri.getIndexes().getValues().get(i + 1)].xyz.oMinus(tri.verts[tri.getIndexes().getValues().get(i + 2)].xyz);
                     d = dir[1].oMultiply(edge);
                     if (d < 0.0f) {
                         if (dir[1].LengthSqr() > radiusSqr) {
@@ -200,7 +200,7 @@ public class tr_trace {
                 }
             }
 
-            dir[2] = tri.verts[tri.indexes[i + 2]].xyz.oMinus(point);
+            dir[2] = tri.verts[tri.getIndexes().getValues().get(i + 2)].xyz.oMinus(point);
 
             cross = dir[1].Cross(dir[2]);
             d = plane.Normal().oMultiply(cross);
@@ -208,14 +208,14 @@ public class tr_trace {
                 if (radiusSqr <= 0.0f) {
                     continue;
                 }
-                edge = tri.verts[tri.indexes[i + 1]].xyz.oMinus(tri.verts[tri.indexes[i + 2]].xyz);
+                edge = tri.verts[tri.getIndexes().getValues().get(i + 1)].xyz.oMinus(tri.verts[tri.getIndexes().getValues().get(i + 2)].xyz);
                 edgeLengthSqr = edge.LengthSqr();
-                if (cross.LengthSqr() > edgeLengthSqr * radiusSqr) {
+                if (cross.LengthSqr() > (edgeLengthSqr * radiusSqr)) {
                     continue;
                 }
                 d = dir[1].oMultiply(edge);
                 if (d < 0.0f) {
-                    edge = tri.verts[tri.indexes[i + 1]].xyz.oMinus(tri.verts[tri.indexes[i + 0]].xyz);
+                    edge = tri.verts[tri.getIndexes().getValues().get(i + 1)].xyz.oMinus(tri.verts[tri.getIndexes().getValues().get(i + 0)].xyz);
                     d = dir[1].oMultiply(edge);
                     if (d < 0.0f) {
                         if (dir[1].LengthSqr() > radiusSqr) {
@@ -223,7 +223,7 @@ public class tr_trace {
                         }
                     }
                 } else if (d > edgeLengthSqr) {
-                    edge = tri.verts[tri.indexes[i + 2]].xyz.oMinus(tri.verts[tri.indexes[i + 0]].xyz);
+                    edge = tri.verts[tri.getIndexes().getValues().get(i + 2)].xyz.oMinus(tri.verts[tri.getIndexes().getValues().get(i + 0)].xyz);
                     d = dir[2].oMultiply(edge);
                     if (d < 0.0f) {
                         if (dir[2].LengthSqr() > radiusSqr) {
@@ -239,14 +239,14 @@ public class tr_trace {
                 if (radiusSqr <= 0.0f) {
                     continue;
                 }
-                edge = tri.verts[tri.indexes[i + 2]].xyz.oMinus(tri.verts[tri.indexes[i + 0]].xyz);
+                edge = tri.verts[tri.getIndexes().getValues().get(i + 2)].xyz.oMinus(tri.verts[tri.getIndexes().getValues().get(i + 0)].xyz);
                 edgeLengthSqr = edge.LengthSqr();
-                if (cross.LengthSqr() > edgeLengthSqr * radiusSqr) {
+                if (cross.LengthSqr() > (edgeLengthSqr * radiusSqr)) {
                     continue;
                 }
                 d = dir[2].oMultiply(edge);
                 if (d < 0.0f) {
-                    edge = tri.verts[tri.indexes[i + 2]].xyz.oMinus(tri.verts[tri.indexes[i + 1]].xyz);
+                    edge = tri.verts[tri.getIndexes().getValues().get(i + 2)].xyz.oMinus(tri.verts[tri.getIndexes().getValues().get(i + 1)].xyz);
                     d = dir[2].oMultiply(edge);
                     if (d < 0.0f) {
                         if (dir[2].LengthSqr() > radiusSqr) {
@@ -254,7 +254,7 @@ public class tr_trace {
                         }
                     }
                 } else if (d > edgeLengthSqr) {
-                    edge = tri.verts[tri.indexes[i + 0]].xyz.oMinus(tri.verts[tri.indexes[i + 1]].xyz);
+                    edge = tri.verts[tri.getIndexes().getValues().get(i + 0)].xyz.oMinus(tri.verts[tri.getIndexes().getValues().get(i + 1)].xyz);
                     d = dir[0].oMultiply(edge);
                     if (d < 0.0f) {
                         if (dir[0].LengthSqr() > radiusSqr) {
@@ -270,9 +270,9 @@ public class tr_trace {
             hit.fraction = f;
             hit.normal = plane.Normal();
             hit.point = point;
-            hit.indexes[0] = tri.indexes[i];
-            hit.indexes[1] = tri.indexes[i + 1];
-            hit.indexes[2] = tri.indexes[i + 2];
+            hit.indexes[0] = tri.getIndexes().getValues().get(i);
+            hit.indexes[1] = tri.getIndexes().getValues().get(i + 1);
+            hit.indexes[2] = tri.getIndexes().getValues().get(i + 2);
         }
 
         if (TEST_TRACE) {
@@ -291,15 +291,15 @@ public class tr_trace {
      */
     public static void RB_DrawExpandedTriangles(final srfTriangles_s tri, final float radius, final idVec3 vieworg) {
         int i, j, k;
-        idVec3[] dir = new idVec3[6];
+        final idVec3[] dir = new idVec3[6];
         idVec3 normal, point;
 
-        for (i = 0; i < tri.numIndexes; i += 3) {
+        for (i = 0; i < tri.getIndexes().getNumValues(); i += 3) {
 
-            idVec3[] p/*[3]*/ = {
-                        tri.verts[tri.indexes[i + 0]].xyz,
-                        tri.verts[tri.indexes[i + 1]].xyz,
-                        tri.verts[tri.indexes[i + 2]].xyz};
+            final idVec3[] p/*[3]*/ = {
+                        tri.verts[tri.getIndexes().getValues().get(i + 0)].xyz,
+                        tri.verts[tri.getIndexes().getValues().get(i + 1)].xyz,
+                        tri.verts[tri.getIndexes().getValues().get(i + 2)].xyz};
 
             dir[0] = p[0].oMinus(p[1]);
             dir[1] = p[1].oMinus(p[2]);
@@ -365,7 +365,7 @@ public class tr_trace {
         srfTriangles_s tri;
         drawSurf_s surf;
         idVec3 start, end;
-        idVec3 localStart = new idVec3(), localEnd = new idVec3();
+        final idVec3 localStart = new idVec3(), localEnd = new idVec3();
         localTrace_t hit;
         float radius;
 

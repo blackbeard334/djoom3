@@ -61,6 +61,7 @@ import static neo.idlib.math.Plane.SIDE_BACK;
 import static neo.idlib.math.Plane.SIDE_FRONT;
 import static neo.idlib.math.Simd.SIMDProcessor;
 
+import java.nio.IntBuffer;
 import java.util.stream.Stream;
 
 import neo.Renderer.Material.idMaterial;
@@ -107,9 +108,9 @@ public class Interaction {
     static {
         final srfTriangles_s s = LIGHT_TRIS_DEFERRED = new srfTriangles_s();
         s.ambientViewCount = s.numDupVerts = s.numVerts =
-                s.numMirroredVerts = s.numIndexes = s.numShadowIndexesNoCaps =
+                s.numMirroredVerts = s.getIndexes().setNumValues(s.numShadowIndexesNoCaps =
                         s.numShadowIndexesNoFrontCaps = s.numSilEdges = s.shadowCapPlaneBits =
-                                -03146;
+                                -03146);
 
     }
 
@@ -566,7 +567,7 @@ public class Interaction {
                             }
 
                             if (NOT(lightTris.indexCache) && r_useIndexBuffers.GetBool()) {
-                                lightTris.indexCache = vertexCache.Alloc(lightTris.indexes, lightTris.numIndexes * Integer.BYTES, true);
+                                lightTris.indexCache = vertexCache.Alloc(lightTris.getIndexes().getValues(), lightTris.getIndexes().getNumValues(), true);
                             }
                             if (lightTris.indexCache != null) {
                                 vertexCache.Touch(lightTris.indexCache);
@@ -590,7 +591,7 @@ public class Interaction {
                     }
                 }
 
-                srfTriangles_s shadowTris = sint.shadowTris;
+                final srfTriangles_s shadowTris = sint.shadowTris;
 
                 // the shadows will always have to be added, unless we can tell they
                 // are from a surface in an unconnected area
@@ -644,7 +645,7 @@ public class Interaction {
                     vertexCache.Touch(shadowTris.shadowCache);
 
                     if (NOT(shadowTris.indexCache) && r_useIndexBuffers.GetBool()) {
-                        shadowTris.indexCache = vertexCache.Alloc(shadowTris.indexes, shadowTris.numIndexes * Integer.BYTES, true);
+                        shadowTris.indexCache = vertexCache.Alloc(shadowTris.getIndexes().getValues(), shadowTris.getIndexes().getNumValues(), true);
 
                         vertexCache.Touch(shadowTris.indexCache);
                     }
@@ -773,8 +774,8 @@ public class Interaction {
                                 // if any surface is a shadow-casting perforated or translucent surface, or the
                                 // base surface is suppressed in the view (world weapon shadows) we can't use
                                 // the external shadow optimizations because we can see through some of the faces
-                                sint.shadowTris.numShadowIndexesNoCaps = sint.shadowTris.numIndexes;
-                                sint.shadowTris.numShadowIndexesNoFrontCaps = sint.shadowTris.numIndexes;
+                                sint.shadowTris.numShadowIndexesNoCaps = sint.shadowTris.getIndexes().getNumValues();
+                                sint.shadowTris.numShadowIndexesNoFrontCaps = sint.shadowTris.getIndexes().getNumValues();
                             }
                         }
                         interactionGenerated = true;
@@ -980,7 +981,7 @@ public class Interaction {
 
         R_GlobalPointToLocal(ent.modelMatrix, light.globalLightOrigin, localLightOrigin);
 
-        int numFaces = tri.numIndexes / 3;
+        final int numFaces = tri.getIndexes().getNumValues() / 3;
 
         if (NOT(tri.facePlanes) || !tri.facePlanesCalculated) {
             R_DeriveFacePlanes( /*const_cast<srfTriangles_s *>*/(tri));
@@ -989,7 +990,7 @@ public class Interaction {
         cullInfo.facing = new byte[numFaces + 1];// R_StaticAlloc((numFaces + 1) * sizeof(cullInfo.facing[0]));
 
         // calculate back face culling
-        float[] planeSide = new float[numFaces];
+        final float[] planeSide = new float[numFaces];
 
         // exact geometric cull against face
         SIMDProcessor.Dot(planeSide, localLightOrigin, tri.facePlanes, numFaces);
@@ -1037,7 +1038,7 @@ public class Interaction {
         cullInfo.cullBits = new byte[tri.numVerts];// R_StaticAlloc(tri.numVerts /* sizeof(cullInfo.cullBits[0])*/);
         SIMDProcessor.Memset(cullInfo.cullBits, 0, tri.numVerts /* sizeof(cullInfo.cullBits[0])*/);
 
-        float[] planeSide = new float[tri.numVerts];
+        final float[] planeSide = new float[tri.numVerts];
 
         for (i = 0; i < 6; i++) {
             // if completely infront of this clipping plane
@@ -1088,12 +1089,12 @@ public class Interaction {
      */
     static int R_ChopWinding(clipTri_t[] clipTris/*[2]*/, int inNum, final idPlane plane) {
         clipTri_t in, out;
-        float[] dists = new float[MAX_CLIPPED_POINTS];
-        int[] sides = new int[MAX_CLIPPED_POINTS];
-        int[] counts = new int[3];
+        final float[] dists = new float[MAX_CLIPPED_POINTS];
+        final int[] sides = new int[MAX_CLIPPED_POINTS];
+        final int[] counts = new int[3];
         float dot;
         int i, j;
-        idVec3 mid = new idVec3();
+        final idVec3 mid = new idVec3();
         boolean front;
 
         in = clipTris[inNum];
@@ -1132,7 +1133,7 @@ public class Interaction {
 
         out.numVerts = 0;
         for (i = 0; i < in.numVerts; i++) {
-            idVec3 p1 = in.verts[i];
+            final idVec3 p1 = in.verts[i];
 
             if (sides[i] == SIDE_FRONT) {
                 out.verts[out.numVerts] = p1;
@@ -1144,7 +1145,7 @@ public class Interaction {
             }
 
             // generate a split point
-            idVec3 p2 = in.verts[i + 1];
+            final idVec3 p2 = in.verts[i + 1];
 
             dot = dists[i] / (dists[i] - dists[i + 1]);
             for (j = 0; j < 3; j++) {
@@ -1168,7 +1169,7 @@ public class Interaction {
      */
     static boolean R_ClipTriangleToLight(final idVec3 a, final idVec3 b, final idVec3 c, int planeBits, final idPlane[] frustum/*[6]*/) {
         int i;
-        clipTri_t[] pingPong = new clipTri_t[2];
+        final clipTri_t[] pingPong = new clipTri_t[2];
         int p;
 
         pingPong[0].numVerts = 3;
@@ -1202,7 +1203,7 @@ public class Interaction {
             final idMaterial shader, srfCullInfo_t cullInfo) {
         int i;
         int numIndexes;
-        int/*glIndex_t*/[] indexes;
+        IntBuffer/*glIndex_t*/ indexes;
         srfTriangles_s newTri;
         int c_backfaced;
         int c_distance;
@@ -1251,26 +1252,27 @@ public class Interaction {
 
                 // the whole surface is lit so the light surface just references the indexes of the ambient surface
                 R_ReferenceStaticTriSurfIndexes(newTri, tri);
-                numIndexes = tri.numIndexes;
+                numIndexes = tri.getIndexes().getNumValues();
                 bounds = new idBounds(tri.bounds);
 
             } else {
 
                 // the light tris indexes are going to be a subset of the original indexes so we generally
                 // allocate too much memory here but we decrease the memory block when the number of indexes is known
-                R_AllocStaticTriSurfIndexes(newTri, tri.numIndexes);
+                R_AllocStaticTriSurfIndexes(newTri, tri.getIndexes().getNumValues());
 
                 // back face cull the individual triangles
-                indexes = newTri.indexes;
+                indexes = newTri.getIndexes().getValues();
                 final byte[] facing = cullInfo.facing;
-                for (faceNum = i = 0; i < tri.numIndexes; i += 3, faceNum++) {
+                int j;
+                for (faceNum = i = 0; i < tri.getIndexes().getNumValues(); i += 3, faceNum++) {
                     if (0 == facing[ faceNum]) {
                         c_backfaced++;
                         continue;
                     }
-                    indexes[numIndexes + 0] = tri.indexes[i + 0];
-                    indexes[numIndexes + 1] = tri.indexes[i + 1];
-                    indexes[numIndexes + 2] = tri.indexes[i + 2];
+                    for (j = 0; j < 3; j++) {
+                        indexes.put(numIndexes + j, tri.getIndexes().getValues().get(i + j));
+                    }
                     numIndexes += 3;
                 }
 
@@ -1285,13 +1287,13 @@ public class Interaction {
 
             // the light tris indexes are going to be a subset of the original indexes so we generally
             // allocate too much memory here but we decrease the memory block when the number of indexes is known
-            R_AllocStaticTriSurfIndexes(newTri, tri.numIndexes);
+            R_AllocStaticTriSurfIndexes(newTri, tri.getIndexes().getNumValues());
 
             // cull individual triangles
-            indexes = newTri.indexes;
+            indexes = newTri.getIndexes().getValues();
             final byte[] facing = cullInfo.facing;
             final byte[] cullBits = cullInfo.cullBits;
-            for (faceNum = i = 0; i < tri.numIndexes; i += 3, faceNum++) {
+            for (faceNum = i = 0; i < tri.getIndexes().getNumValues(); i += 3, faceNum++) {
                 int i1, i2, i3;
 
                 // if we aren't self shadowing, let back facing triangles get
@@ -1304,9 +1306,9 @@ public class Interaction {
                     }
                 }
 
-                i1 = tri.indexes[i + 0];
-                i2 = tri.indexes[i + 1];
-                i3 = tri.indexes[i + 2];
+                i1 = tri.getIndexes().getValues().get(i + 0);
+                i2 = tri.getIndexes().getValues().get(i + 1);
+                i3 = tri.getIndexes().getValues().get(i + 2);
 
                 // fast cull outside the frustum
                 // if all three points are off one plane side, it definately isn't visible
@@ -1319,7 +1321,7 @@ public class Interaction {
                     // do a precise clipped cull if none of the points is completely inside the frustum
                     // note that we do not actually use the clipped triangle, which would have Z fighting issues.
                     if ((cullBits[i1] & cullBits[i2] & cullBits[i3]) != 0) {
-                        int cull = cullBits[i1] | cullBits[i2] | cullBits[i3];
+                        final int cull = cullBits[i1] | cullBits[i2] | cullBits[i3];
                         if (!R_ClipTriangleToLight(tri.verts[i1].xyz, tri.verts[i2].xyz, tri.verts[i3].xyz, cull, cullInfo.localClipPlanes)) {
                             continue;
                         }
@@ -1327,9 +1329,9 @@ public class Interaction {
                 }
 
                 // add to the list
-                indexes[numIndexes + 0] = i1;
-                indexes[numIndexes + 1] = i2;
-                indexes[numIndexes + 2] = i3;
+                indexes.put(numIndexes + 0, i1);
+                indexes.put(numIndexes + 1, i2);
+                indexes.put(numIndexes + 2, i3);
                 numIndexes += 3;
             }
 
@@ -1345,7 +1347,7 @@ public class Interaction {
             return null;
         }
 
-        newTri.numIndexes = numIndexes;
+        newTri.getIndexes().setNumValues(numIndexes);
 
         newTri.bounds.oSet(bounds);
 
@@ -1383,7 +1385,7 @@ public class Interaction {
             int shadowTriIndexes = 0;
 
             for (int i = 0; i < tr.primaryWorld.entityDefs.Num(); i++) {
-                idRenderEntityLocal def = tr.primaryWorld.entityDefs.oGet(i);
+                final idRenderEntityLocal def = tr.primaryWorld.entityDefs.oGet(i);
                 if (NOT(def)) {
                     continue;
                 }
@@ -1406,17 +1408,17 @@ public class Interaction {
                     }
 
                     for (int j = 0; j < inter.numSurfaces; j++) {
-                        surfaceInteraction_t srf = inter.surfaces[j];
+                        final surfaceInteraction_t srf = inter.surfaces[j];
 
                         if (srf.lightTris != null && srf.lightTris != LIGHT_TRIS_DEFERRED) {
                             lightTris++;
                             lightTriVerts += srf.lightTris.numVerts;
-                            lightTriIndexes += srf.lightTris.numIndexes;
+                            lightTriIndexes += srf.lightTris.getIndexes().getNumValues();
                         }
                         if (srf.shadowTris != null) {
                             shadowTris++;
                             shadowTriVerts += srf.shadowTris.numVerts;
-                            shadowTriIndexes += srf.shadowTris.numIndexes;
+                            shadowTriIndexes += srf.shadowTris.getIndexes().getNumValues();
                         }
                     }
                 }
@@ -1438,7 +1440,7 @@ public class Interaction {
      ======================
      */
     static boolean R_PotentiallyInsideInfiniteShadow(final srfTriangles_s occluder, final idVec3 localView, final idVec3 localLight) {
-        idBounds exp = new idBounds();
+        final idBounds exp = new idBounds();
 
         // expand the bounds to account for the near clip plane, because the
         // view could be mathematically outside, but if the near clip plane
@@ -1447,7 +1449,7 @@ public class Interaction {
         if (tr.viewDef.renderView.cramZNear) {
             znear *= 0.25f;
         }
-        float stretch = znear * 2;	// in theory, should vary with FOV
+        final float stretch = znear * 2;	// in theory, should vary with FOV
         exp.oSet(0, 0, occluder.bounds.oGet(0, 0) - stretch);
         exp.oSet(0, 1, occluder.bounds.oGet(0, 1) - stretch);
         exp.oSet(0, 2, occluder.bounds.oGet(0, 2) - stretch);
@@ -1464,7 +1466,7 @@ public class Interaction {
 
         // if the ray from localLight to localView intersects a face of the
         // expanded bounds, we will be inside the projection
-        idVec3 ray = localView.oMinus(localLight);
+        final idVec3 ray = localView.oMinus(localLight);
 
         // intersect the ray from the view to the light with the near side of the bounds
         for (int axis = 0; axis < 3; axis++) {

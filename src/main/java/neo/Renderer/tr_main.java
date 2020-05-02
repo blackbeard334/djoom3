@@ -31,6 +31,8 @@ import static neo.idlib.math.Vector.VectorSubtract;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
@@ -52,6 +54,7 @@ import neo.idlib.math.Vector.idVec;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 
 /**
  *
@@ -66,7 +69,7 @@ public class tr_main {
      ======================
      */
     public static idScreenRect R_ScreenRectFromViewFrustumBounds(final idBounds bounds) {
-        idScreenRect screenRect = new idScreenRect();
+        final idScreenRect screenRect = new idScreenRect();
 
         screenRect.x1 = idMath.FtoiFast(0.5f * (1.0f - bounds.oGet(1).y) * (tr.viewDef.viewport.x2 - tr.viewDef.viewport.x1));
         screenRect.x2 = idMath.FtoiFast(0.5f * (1.0f - bounds.oGet(0).y) * (tr.viewDef.viewport.x2 - tr.viewDef.viewport.x1));
@@ -242,7 +245,7 @@ public class tr_main {
      */
     @Deprecated
     private static <T> T[] R_ClearedStaticAlloc(int length, Class<T> clazz) {
-        T[] array = (T[]) Array.newInstance(clazz, length);
+        final T[] array = (T[]) Array.newInstance(clazz, length);
 
         for (int a = 0; a < length; a++) {
             try {
@@ -502,18 +505,18 @@ public class tr_main {
     }
 
     // transform Z in eye coordinates to window coordinates
-    public static void R_TransformEyeZToWin(float src_z, final float[] projectionMatrix, float[] dst_z) {
+    public static void R_TransformEyeZToWin(float src_z, final FloatBuffer projectionMatrix, float[] dst_z) {
         final float clip_z, clip_w;
 
         // projection
-        clip_z = src_z * projectionMatrix[2 + 2 * 4] + projectionMatrix[2 + 3 * 4];
-        clip_w = src_z * projectionMatrix[3 + 2 * 4] + projectionMatrix[3 + 3 * 4];
+        clip_z = (src_z * projectionMatrix.get(2 + (2 * 4))) + projectionMatrix.get(2 + (3 * 4));
+        clip_w = (src_z * projectionMatrix.get(3 + (2 * 4))) + projectionMatrix.get(3 + (3 * 4));
 
         if (clip_w <= 0.0f) {
             dst_z[0] = 0.0f;					// clamp to near plane
         } else {
             dst_z[0] = clip_z / clip_w;
-            dst_z[0] = dst_z[0] * 0.5f + 0.5f;	// convert to window coords
+            dst_z[0] = (dst_z[0] * 0.5f) + 0.5f;	// convert to window coords
         }
     }
 
@@ -537,7 +540,7 @@ public class tr_main {
         }
 
         // transform the surface bounds into world space
-        idVec3 localOrigin = (bounds.oGet(0).oPlus(bounds.oGet(1))).oMultiply(0.5f);
+        final idVec3 localOrigin = (bounds.oGet(0).oPlus(bounds.oGet(1))).oMultiply(0.5f);
 
         worldOrigin = R_LocalPointToGlobal(modelMatrix, localOrigin);
 
@@ -565,9 +568,9 @@ public class tr_main {
      */    private static int DBG_R_CornerCullLocalBox = 0;
     public static boolean R_CornerCullLocalBox(final idBounds bounds, final float[] modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
         int i, j;
-        idVec3[] transformed = idVec3.generateArray(8);
-        float[] dists = new float[8];
-        idVec3 v = new idVec3();
+        final idVec3[] transformed = idVec3.generateArray(8);
+        final float[] dists = new float[8];
+        final idVec3 v = new idVec3();
         idPlane frust;
         
         DBG_R_CornerCullLocalBox++;
@@ -635,23 +638,31 @@ public class tr_main {
      R_TransformModelToClip
      ==========================
      */
-    public static void R_TransformModelToClip(final idVec3 src, final float[] modelMatrix, final float[] projectionMatrix, idPlane eye, idPlane dst) {
-        int i;
+    public static void R_TransformModelToClip(final idVec3 src, final FloatBuffer modelMatrix, final FloatBuffer projectionMatrix, idPlane eye, idPlane dst) {
+        int i, j;
 
         for (i = 0; i < 4; i++) {
+            j = 0;
             eye.oSet(i,
-                    src.oGet(0) * modelMatrix[i + 0 * 4]
-                    + src.oGet(1) * modelMatrix[i + 1 * 4]
-                    + src.oGet(2) * modelMatrix[i + 2 * 4]
-                    + 1 * modelMatrix[i + 3 * 4]);
+                    (src.oGet(j) * modelMatrix.get(i + (j * 4)))
+                    // increment j
+                    + (src.oGet(++j) * modelMatrix.get(i + (j * 4)))
+                    // increment j
+                    + (src.oGet(++j) * modelMatrix.get(i + (j * 4)))
+                    // increment j
+                    + (modelMatrix.get(i + (++j * 4))));
         }
 
         for (i = 0; i < 4; i++) {
+            j = 0;
             dst.oSet(i,
-                    eye.oGet(0) * projectionMatrix[i + 0 * 4]
-                    + eye.oGet(1) * projectionMatrix[i + 1 * 4]
-                    + eye.oGet(2) * projectionMatrix[i + 2 * 4]
-                    + eye.oGet(3) * projectionMatrix[i + 3 * 4]);
+                    (eye.oGet(j) * projectionMatrix.get(i + (j * 4)))
+                    // increment j
+                    + (eye.oGet(++j) * projectionMatrix.get(i + (j * 4)))
+                    // increment j
+                    + (eye.oGet(++j) * projectionMatrix.get(i + (j * 4)))
+                    // increment j
+                    + (eye.oGet(++j) * projectionMatrix.get(i + (j * 4))));
         }
     }
 
@@ -663,48 +674,46 @@ public class tr_main {
      ==========================
      */
     public static void R_GlobalToNormalizedDeviceCoordinates(final idVec3 global, idVec3 ndc) {
-        int i;
-        idPlane view = new idPlane();
-        idPlane clip = new idPlane();
+    	int j;
+    	idPlane view = new idPlane();
+    	final idPlane clip = new idPlane();
+        FloatBuffer modelViewMatrix;
+        FloatBuffer projectionMatrix;
 
         // _D3XP added work on primaryView when no viewDef
         if (null == tr.viewDef) {
 
-            for (i = 0; i < 4; i++) {
-                view.oSet(i,
-                        global.oGet(0) * tr.primaryView.worldSpace.modelViewMatrix[i + 0 * 4]
-                        + global.oGet(1) * tr.primaryView.worldSpace.modelViewMatrix[i + 1 * 4]
-                        + global.oGet(2) * tr.primaryView.worldSpace.modelViewMatrix[i + 2 * 4]
-                        + tr.primaryView.worldSpace.modelViewMatrix[i + 3 * 4]);
-            }
-
-            for (i = 0; i < 4; i++) {
-                clip.oSet(i,
-                        view.oGet(0) * tr.primaryView.projectionMatrix[i + 0 * 4]
-                        + view.oGet(1) * tr.primaryView.projectionMatrix[i + 1 * 4]
-                        + view.oGet(2) * tr.primaryView.projectionMatrix[i + 2 * 4]
-                        + view.oGet(3) * tr.primaryView.projectionMatrix[i + 3 * 4]);
-            }
+            modelViewMatrix = tr.primaryView.worldSpace.modelViewMatrix;
+            projectionMatrix = tr.primaryView.projectionMatrix;
 
         } else {
 
-            for (i = 0; i < 4; i++) {
-                view.oSet(i,
-                        global.oGet(0) * tr.viewDef.worldSpace.modelViewMatrix[i + 0 * 4]
-                        + global.oGet(1) * tr.viewDef.worldSpace.modelViewMatrix[i + 1 * 4]
-                        + global.oGet(2) * tr.viewDef.worldSpace.modelViewMatrix[i + 2 * 4]
-                        + tr.viewDef.worldSpace.modelViewMatrix[i + 3 * 4]);
-            }
-
-            for (i = 0; i < 4; i++) {
-                clip.oSet(i,
-                        view.oGet(0) * tr.viewDef.projectionMatrix[i + 0 * 4]
-                        + view.oGet(1) * tr.viewDef.projectionMatrix[i + 1 * 4]
-                        + view.oGet(2) * tr.viewDef.projectionMatrix[i + 2 * 4]
-                        + view.oGet(3) * tr.viewDef.projectionMatrix[i + 3 * 4]);
-            }
+            modelViewMatrix = tr.viewDef.worldSpace.modelViewMatrix;
+            projectionMatrix = tr.viewDef.projectionMatrix;
 
         }
+
+		for (int i = 0; i < 4; i++) {
+			j = 0;
+			view.oSet(i, (global.oGet(j) * modelViewMatrix.get(i + (j * 4)))
+					// increment j
+					+ (global.oGet(++j) * modelViewMatrix.get(i + (j * 4)))
+					// increment j
+					+ (global.oGet(++j) * modelViewMatrix.get(i + (j * 4)))
+					// increment j
+					+ (global.oGet(++j) * modelViewMatrix.get(i + (j * 4))));
+		}
+
+		for (int i = 0; i < 4; i++) {
+			j = 0;
+			clip.oSet(i, (view.oGet(j) * projectionMatrix.get(i + (j * 4)))
+					// increment j
+					+ (view.oGet(++j) * projectionMatrix.get(i + (j * 4)))
+					// increment j
+					+ (view.oGet(++j) * projectionMatrix.get(i + (j * 4)))
+					// increment j
+					+ (view.oGet(++j) * projectionMatrix.get(i + (j * 4))));
+		}
 
         ndc.oSet(0, clip.oGet(0) / clip.oGet(3));
         ndc.oSet(1, clip.oGet(1) / clip.oGet(3));
@@ -729,8 +738,8 @@ public class tr_main {
      myGlMultMatrix
      ==========================
      */
-    public static void myGlMultMatrix(final float[] a/*[16]*/, final float[] b/*[16]*/, float[] out/*[16]*/) {
-        if (false) {
+    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final FloatBuffer b/*[16]*/, FloatBuffer out/*[16]*/) {
+        if (false) { //if (TempDump.isDeadCodeTrue()) {
 //            int i, j;
 //
 //            for (i = 0; i < 4; i++) {
@@ -743,23 +752,107 @@ public class tr_main {
 //                }
 //            }
         } else {
-            out[0 * 4 + 0] = a[0 * 4 + 0] * b[0 * 4 + 0] + a[0 * 4 + 1] * b[1 * 4 + 0] + a[0 * 4 + 2] * b[2 * 4 + 0] + a[0 * 4 + 3] * b[3 * 4 + 0];
-            out[0 * 4 + 1] = a[0 * 4 + 0] * b[0 * 4 + 1] + a[0 * 4 + 1] * b[1 * 4 + 1] + a[0 * 4 + 2] * b[2 * 4 + 1] + a[0 * 4 + 3] * b[3 * 4 + 1];
-            out[0 * 4 + 2] = a[0 * 4 + 0] * b[0 * 4 + 2] + a[0 * 4 + 1] * b[1 * 4 + 2] + a[0 * 4 + 2] * b[2 * 4 + 2] + a[0 * 4 + 3] * b[3 * 4 + 2];
-            out[0 * 4 + 3] = a[0 * 4 + 0] * b[0 * 4 + 3] + a[0 * 4 + 1] * b[1 * 4 + 3] + a[0 * 4 + 2] * b[2 * 4 + 3] + a[0 * 4 + 3] * b[3 * 4 + 3];
-            out[1 * 4 + 0] = a[1 * 4 + 0] * b[0 * 4 + 0] + a[1 * 4 + 1] * b[1 * 4 + 0] + a[1 * 4 + 2] * b[2 * 4 + 0] + a[1 * 4 + 3] * b[3 * 4 + 0];
-            out[1 * 4 + 1] = a[1 * 4 + 0] * b[0 * 4 + 1] + a[1 * 4 + 1] * b[1 * 4 + 1] + a[1 * 4 + 2] * b[2 * 4 + 1] + a[1 * 4 + 3] * b[3 * 4 + 1];
-            out[1 * 4 + 2] = a[1 * 4 + 0] * b[0 * 4 + 2] + a[1 * 4 + 1] * b[1 * 4 + 2] + a[1 * 4 + 2] * b[2 * 4 + 2] + a[1 * 4 + 3] * b[3 * 4 + 2];
-            out[1 * 4 + 3] = a[1 * 4 + 0] * b[0 * 4 + 3] + a[1 * 4 + 1] * b[1 * 4 + 3] + a[1 * 4 + 2] * b[2 * 4 + 3] + a[1 * 4 + 3] * b[3 * 4 + 3];
-            out[2 * 4 + 0] = a[2 * 4 + 0] * b[0 * 4 + 0] + a[2 * 4 + 1] * b[1 * 4 + 0] + a[2 * 4 + 2] * b[2 * 4 + 0] + a[2 * 4 + 3] * b[3 * 4 + 0];
-            out[2 * 4 + 1] = a[2 * 4 + 0] * b[0 * 4 + 1] + a[2 * 4 + 1] * b[1 * 4 + 1] + a[2 * 4 + 2] * b[2 * 4 + 1] + a[2 * 4 + 3] * b[3 * 4 + 1];
-            out[2 * 4 + 2] = a[2 * 4 + 0] * b[0 * 4 + 2] + a[2 * 4 + 1] * b[1 * 4 + 2] + a[2 * 4 + 2] * b[2 * 4 + 2] + a[2 * 4 + 3] * b[3 * 4 + 2];
-            out[2 * 4 + 3] = a[2 * 4 + 0] * b[0 * 4 + 3] + a[2 * 4 + 1] * b[1 * 4 + 3] + a[2 * 4 + 2] * b[2 * 4 + 3] + a[2 * 4 + 3] * b[3 * 4 + 3];
-            out[3 * 4 + 0] = a[3 * 4 + 0] * b[0 * 4 + 0] + a[3 * 4 + 1] * b[1 * 4 + 0] + a[3 * 4 + 2] * b[2 * 4 + 0] + a[3 * 4 + 3] * b[3 * 4 + 0];
-            out[3 * 4 + 1] = a[3 * 4 + 0] * b[0 * 4 + 1] + a[3 * 4 + 1] * b[1 * 4 + 1] + a[3 * 4 + 2] * b[2 * 4 + 1] + a[3 * 4 + 3] * b[3 * 4 + 1];
-            out[3 * 4 + 2] = a[3 * 4 + 0] * b[0 * 4 + 2] + a[3 * 4 + 1] * b[1 * 4 + 2] + a[3 * 4 + 2] * b[2 * 4 + 2] + a[3 * 4 + 3] * b[3 * 4 + 2];
-            out[3 * 4 + 3] = a[3 * 4 + 0] * b[0 * 4 + 3] + a[3 * 4 + 1] * b[1 * 4 + 3] + a[3 * 4 + 2] * b[2 * 4 + 3] + a[3 * 4 + 3] * b[3 * 4 + 3];
+            out.put((0 * 4) + 0, (a.get((0 * 4) + 0) * b.get((0 * 4) + 0)) + (a.get((0 * 4) + 1) * b.get((1 * 4) + 0)) + (a.get((0 * 4) + 2) * b.get((2 * 4) + 0)) + (a.get((0 * 4) + 3) * b.get((3 * 4) + 0)));
+            out.put((0 * 4) + 1, (a.get((0 * 4) + 0) * b.get((0 * 4) + 1)) + (a.get((0 * 4) + 1) * b.get((1 * 4) + 1)) + (a.get((0 * 4) + 2) * b.get((2 * 4) + 1)) + (a.get((0 * 4) + 3) * b.get((3 * 4) + 1)));
+            out.put((0 * 4) + 2, (a.get((0 * 4) + 0) * b.get((0 * 4) + 2)) + (a.get((0 * 4) + 1) * b.get((1 * 4) + 2)) + (a.get((0 * 4) + 2) * b.get((2 * 4) + 2)) + (a.get((0 * 4) + 3) * b.get((3 * 4) + 2)));
+            out.put((0 * 4) + 3, (a.get((0 * 4) + 0) * b.get((0 * 4) + 3)) + (a.get((0 * 4) + 1) * b.get((1 * 4) + 3)) + (a.get((0 * 4) + 2) * b.get((2 * 4) + 3)) + (a.get((0 * 4) + 3) * b.get((3 * 4) + 3)));
+            out.put((1 * 4) + 0, (a.get((1 * 4) + 0) * b.get((0 * 4) + 0)) + (a.get((1 * 4) + 1) * b.get((1 * 4) + 0)) + (a.get((1 * 4) + 2) * b.get((2 * 4) + 0)) + (a.get((1 * 4) + 3) * b.get((3 * 4) + 0)));
+            out.put((1 * 4) + 1, (a.get((1 * 4) + 0) * b.get((0 * 4) + 1)) + (a.get((1 * 4) + 1) * b.get((1 * 4) + 1)) + (a.get((1 * 4) + 2) * b.get((2 * 4) + 1)) + (a.get((1 * 4) + 3) * b.get((3 * 4) + 1)));
+            out.put((1 * 4) + 2, (a.get((1 * 4) + 0) * b.get((0 * 4) + 2)) + (a.get((1 * 4) + 1) * b.get((1 * 4) + 2)) + (a.get((1 * 4) + 2) * b.get((2 * 4) + 2)) + (a.get((1 * 4) + 3) * b.get((3 * 4) + 2)));
+            out.put((1 * 4) + 3, (a.get((1 * 4) + 0) * b.get((0 * 4) + 3)) + (a.get((1 * 4) + 1) * b.get((1 * 4) + 3)) + (a.get((1 * 4) + 2) * b.get((2 * 4) + 3)) + (a.get((1 * 4) + 3) * b.get((3 * 4) + 3)));
+            out.put((2 * 4) + 0, (a.get((2 * 4) + 0) * b.get((0 * 4) + 0)) + (a.get((2 * 4) + 1) * b.get((1 * 4) + 0)) + (a.get((2 * 4) + 2) * b.get((2 * 4) + 0)) + (a.get((2 * 4) + 3) * b.get((3 * 4) + 0)));
+            out.put((2 * 4) + 1, (a.get((2 * 4) + 0) * b.get((0 * 4) + 1)) + (a.get((2 * 4) + 1) * b.get((1 * 4) + 1)) + (a.get((2 * 4) + 2) * b.get((2 * 4) + 1)) + (a.get((2 * 4) + 3) * b.get((3 * 4) + 1)));
+            out.put((2 * 4) + 2, (a.get((2 * 4) + 0) * b.get((0 * 4) + 2)) + (a.get((2 * 4) + 1) * b.get((1 * 4) + 2)) + (a.get((2 * 4) + 2) * b.get((2 * 4) + 2)) + (a.get((2 * 4) + 3) * b.get((3 * 4) + 2)));
+            out.put((2 * 4) + 3, (a.get((2 * 4) + 0) * b.get((0 * 4) + 3)) + (a.get((2 * 4) + 1) * b.get((1 * 4) + 3)) + (a.get((2 * 4) + 2) * b.get((2 * 4) + 3)) + (a.get((2 * 4) + 3) * b.get((3 * 4) + 3)));
+            out.put((3 * 4) + 0, (a.get((3 * 4) + 0) * b.get((0 * 4) + 0)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 0)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 0)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 0)));
+            out.put((3 * 4) + 1, (a.get((3 * 4) + 0) * b.get((0 * 4) + 1)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 1)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 1)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 1)));
+            out.put((3 * 4) + 2, (a.get((3 * 4) + 0) * b.get((0 * 4) + 2)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 2)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 2)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 2)));
+            out.put((3 * 4) + 3, (a.get((3 * 4) + 0) * b.get((0 * 4) + 3)) + (a.get((3 * 4) + 1) * b.get((1 * 4) + 3)) + (a.get((3 * 4) + 2) * b.get((2 * 4) + 3)) + (a.get((3 * 4) + 3) * b.get((3 * 4) + 3)));
         }
+    }
+
+    /**
+     * TBD - delete method after converting float[] to FloatBuffer
+     *  
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
+     */
+    public static void myGlMultMatrix(final float[] a/*[16]*/, final float[] b/*[16]*/, FloatBuffer out/*[16]*/) {
+    	myGlMultMatrix(Nio.wrap(a), Nio.wrap(b), out);
+    }
+
+    /**
+     * TBD - delete method after converting float[] to FloatBuffer
+     * 
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
+     */
+    public static void myGlMultMatrix(final float[] a/*[16]*/, final FloatBuffer b/*[16]*/, FloatBuffer out/*[16]*/) {
+    	myGlMultMatrix(Nio.wrap(a), b, out);
+    }
+
+    /**
+     * TBD - delete method after converting float[] to FloatBuffer
+     * 
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
+     */
+    public static void myGlMultMatrix(final float[] a/*[16]*/, final float[] b/*[16]*/, float[] out/*[16]*/) {
+    	myGlMultMatrix(Nio.wrap(a), Nio.wrap(b), out);
+    }
+
+    /**
+     * TBD - delete method after converting float[] to FloatBuffer
+     * 
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
+     */
+    public static void myGlMultMatrix(final float[] a/*[16]*/, final FloatBuffer b/*[16]*/, float[] out/*[16]*/) {
+    	myGlMultMatrix(Nio.wrap(a), b, out);
+    }
+
+    /**
+     * TBD - delete method after converting float[] to FloatBuffer
+     * 
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
+     */
+    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final float[] b/*[16]*/, float[] out/*[16]*/) {
+    	myGlMultMatrix(a, Nio.wrap(b), out);
+    }
+
+    /**
+     * TBD - delete method after converting float[] to FloatBuffer
+     * 
+     * @param a
+     * @param b
+     * @param out
+     * 
+     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
+     */
+    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final FloatBuffer b/*[16]*/, float[] out/*[16]*/) {
+		ByteBuffer bb = ByteBuffer.allocate(16 * Nio.SIZEOF_FLOAT);
+		bb.order(ByteOrder.nativeOrder());
+		FloatBuffer fb = bb.asFloatBuffer();
+		myGlMultMatrix(a, b, fb);
+		for (int i = 0; i < out.length; i++) {
+			out[i] = fb.get(i);
+		}
     }
 
     /*
@@ -767,12 +860,13 @@ public class tr_main {
      R_TransposeGLMatrix
      ================
      */
-    public static void R_TransposeGLMatrix(final float[] in/*[16]*/, float[] out/*[16]*/) {
+    public static void R_TransposeGLMatrix(final FloatBuffer in, FloatBuffer out/*[16]*/) {
         int i, j;
 
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
-                out[i * 4 + j] = in[j * 4 + i];
+                //out[i * 4 + j] = in[j * 4 + i];
+            	out.put(i * 4 + j, in.get(j * 4 + i));
             }
         }
     }
@@ -881,28 +975,28 @@ public class tr_main {
         ymin += jittery;
         ymax += jittery;
 
-        tr.viewDef.projectionMatrix[ 0] = 2 * zNear / width;
-        tr.viewDef.projectionMatrix[ 4] = 0;
-        tr.viewDef.projectionMatrix[ 8] = (xmax + xmin) / width;	// normally 0
-        tr.viewDef.projectionMatrix[12] = 0;
+        tr.viewDef.projectionMatrix.put( 0, (2 * zNear) / width);
+        tr.viewDef.projectionMatrix.put( 4, 0);
+        tr.viewDef.projectionMatrix.put( 8, (xmax + xmin) / width);	// normally 0
+        tr.viewDef.projectionMatrix.put(12, 0);
 
-        tr.viewDef.projectionMatrix[ 1] = 0;
-        tr.viewDef.projectionMatrix[ 5] = 2 * zNear / height;
-        tr.viewDef.projectionMatrix[ 9] = (ymax + ymin) / height;	// normally 0
-        tr.viewDef.projectionMatrix[13] = 0;
+        tr.viewDef.projectionMatrix.put( 1, 0);
+        tr.viewDef.projectionMatrix.put( 5, (2 * zNear) / height);
+        tr.viewDef.projectionMatrix.put( 9, (ymax + ymin) / height);	// normally 0
+        tr.viewDef.projectionMatrix.put(13, 0);
 
         // this is the far-plane-at-infinity formulation, and
         // crunches the Z range slightly so w=0 vertexes do not
         // rasterize right at the wraparound point
-        tr.viewDef.projectionMatrix[ 2] = 0;
-        tr.viewDef.projectionMatrix[ 6] = 0;
-        tr.viewDef.projectionMatrix[10] = -0.999f;
-        tr.viewDef.projectionMatrix[14] = -2.0f * zNear;
+        tr.viewDef.projectionMatrix.put( 2, 0);
+        tr.viewDef.projectionMatrix.put( 6, 0);
+        tr.viewDef.projectionMatrix.put(10, -0.999f);
+        tr.viewDef.projectionMatrix.put(14, -2.0f * zNear);
 
-        tr.viewDef.projectionMatrix[ 3] = 0;
-        tr.viewDef.projectionMatrix[ 7] = 0;
-        tr.viewDef.projectionMatrix[11] = -1;
-        tr.viewDef.projectionMatrix[15] = 0;
+        tr.viewDef.projectionMatrix.put( 3, 0);
+        tr.viewDef.projectionMatrix.put( 7, 0);
+        tr.viewDef.projectionMatrix.put(11, -1);
+        tr.viewDef.projectionMatrix.put(15, 0);
     }
 
     /*

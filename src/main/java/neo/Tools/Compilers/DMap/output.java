@@ -238,12 +238,12 @@ public class output {
                     uTri.verts[j].st.oSet(1, dv.st.oGet(1));
                 }
 
-                uTri.indexes[numIndexes++] = j;
+                uTri.getIndexes().getValues().put(numIndexes++, j);
             }
         }
 
         uTri.numVerts = numVerts;
-        uTri.numIndexes = numIndexes;
+        uTri.getIndexes().setNumValues(numIndexes);
 
         return uTri;
     }
@@ -278,12 +278,12 @@ public class output {
 
         // emit this chain
         procFile.WriteFloatString("/* numVerts = */ %d /* numIndexes = */ %d\n",
-                uTris.numVerts, uTris.numIndexes);
+                uTris.numVerts, uTris.getIndexes().getNumValues());
 
         // verts
         col = 0;
         for (i = 0; i < uTris.numVerts; i++) {
-            float[] vec = new float[8];
+            final float[] vec = new float[8];
             final idDrawVert dv;
 
             dv = uTris.verts[i];
@@ -309,8 +309,8 @@ public class output {
 
         // indexes
         col = 0;
-        for (i = 0; i < uTris.numIndexes; i++) {
-            procFile.WriteFloatString("%d ", uTris.indexes[i]);
+        for (i = 0; i < uTris.getIndexes().getNumValues(); i++) {
+            procFile.WriteFloatString("%d ", uTris.getIndexes().getValues().get(i));
 
             if (++col == 18) {
                 col = 0;
@@ -336,7 +336,7 @@ public class output {
 
         // emit this chain
         procFile.WriteFloatString("/* numVerts = */ %d /* noCaps = */ %d /* noFrontCaps = */ %d /* numIndexes = */ %d /* planeBits = */ %d\n",
-                tri.numVerts, tri.numShadowIndexesNoCaps, tri.numShadowIndexesNoFrontCaps, tri.numIndexes, tri.shadowCapPlaneBits);
+                tri.numVerts, tri.numShadowIndexesNoCaps, tri.numShadowIndexesNoFrontCaps, tri.getIndexes().getNumValues(), tri.shadowCapPlaneBits);
 
         // verts
         col = 0;
@@ -354,8 +354,8 @@ public class output {
 
         // indexes
         col = 0;
-        for (i = 0; i < tri.numIndexes; i++) {
-            procFile.WriteFloatString("%d ", tri.indexes[i]);
+        for (i = 0; i < tri.getIndexes().getNumValues(); i++) {
+            procFile.WriteFloatString("%d ", tri.getIndexes().getValues().get(i));
 
             if (++col == 18) {
                 col = 0;
@@ -407,7 +407,7 @@ public class output {
             interactionTris_s next;
             mapTri_s triList;
             mapLight_t light;
-        };
+        }
 
         interactionTris_s interactions, checkInter; //, *nextInter;
 
@@ -420,7 +420,7 @@ public class output {
             procFile.WriteFloatString("model { /* name = */ \"_area%d\" /* numSurfaces = */ %d\n\n",
                     areaNum, numSurfaces);
         } else {
-            String[] name = {null};
+            final String[] name = {null};
 
             entity.epairs.GetString("name", "", name);
             if (isNotNullOrEmpty(name[0])) {
@@ -511,7 +511,7 @@ public class output {
      ===============
      */
     static void WriteNode_r(node_s node) {
-        int[] child = new int[2];
+        final int[] child = new int[2];
         int i;
         idPlane plane;
 
@@ -629,7 +629,7 @@ public class output {
         }
 
         // we will completely skip the portals and nodes if it is a single area
-        if (entityNum == 0 && e.numAreas > 1) {
+        if ((entityNum == 0) && (e.numAreas > 1)) {
             // output the area portals
             WriteOutputPortals(e);
 
@@ -676,7 +676,7 @@ public class output {
 
         // write the shadow volumes
         for (i = 0; i < dmapGlobals.mapLights.Num(); i++) {
-            mapLight_t light = dmapGlobals.mapLights.oGet(i);
+            final mapLight_t light = dmapGlobals.mapLights.oGet(i);
             if (NOT(light.shadowTris)) {
                 continue;
             }

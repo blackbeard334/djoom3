@@ -5,6 +5,7 @@ import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import neo.TempDump;
@@ -21,6 +22,7 @@ import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Vector.idVecX;
 import neo.idlib.math.Matrix.idMatX;
+import neo.open.Nio;
 
 /**
  *
@@ -71,7 +73,8 @@ public class Simd_Generic {
 //#define OPER(X) dst[(X)] = src[(X)] + constant;
 //	UNROLL4(OPER)
 //#undef OPER
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] = src[_IX + 0] + constant;
                 dst[_IX + 1] = src[_IX + 1] + constant;
@@ -92,7 +95,8 @@ public class Simd_Generic {
          */
         @Override
         public void Add(float[] dst, float[] src0, float[] src1, int count) {
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] = src0[_IX + 0] + src1[_IX + 0];
                 dst[_IX + 1] = src0[_IX + 1] + src1[_IX + 1];
@@ -114,7 +118,8 @@ public class Simd_Generic {
         @Override
         public void Sub(float[] dst, float constant, float[] src, int count) {
             final double c = constant;
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] = (float) (c - src[_IX + 0]);
                 dst[_IX + 1] = (float) (c - src[_IX + 1]);
@@ -135,7 +140,8 @@ public class Simd_Generic {
          */
         @Override
         public void Sub(float[] dst, float[] src0, float[] src1, int count) {
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] = src0[_IX + 0] - src1[_IX + 0];
                 dst[_IX + 1] = src0[_IX + 1] - src1[_IX + 1];
@@ -157,7 +163,8 @@ public class Simd_Generic {
         @Override
         public void Mul(float[] dst, float constant, float[] src, int count) {
             final double c = constant;
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] = (float) (c * src[_IX + 0]);
                 dst[_IX + 1] = (float) (c * src[_IX + 1]);
@@ -178,7 +185,8 @@ public class Simd_Generic {
          */
         @Override
         public void Mul(float[] dst, float[] src0, float[] src1, int count) {
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] = src0[_IX + 0] * src1[_IX + 0];
                 dst[_IX + 1] = src0[_IX + 1] * src1[_IX + 1];
@@ -200,7 +208,8 @@ public class Simd_Generic {
         @Override
         public void Div(float[] dst, float constant, float[] src, int count) {
             final double c = constant;
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] = (float) (c / src[_IX + 0]);
                 dst[_IX + 1] = (float) (c / src[_IX + 1]);
@@ -221,7 +230,8 @@ public class Simd_Generic {
          */
         @Override
         public void Div(float[] dst, float[] src0, float[] src1, int count) {
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] = src0[_IX + 0] / src1[_IX + 0];
                 dst[_IX + 1] = src0[_IX + 1] / src1[_IX + 1];
@@ -243,7 +253,8 @@ public class Simd_Generic {
         @Override
         public void MulAdd(float[] dst, float constant, float[] src, int count) {
             final double c = constant;
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] += c * src[_IX + 0];
                 dst[_IX + 1] += c * src[_IX + 1];
@@ -264,7 +275,8 @@ public class Simd_Generic {
          */
         @Override
         public void MulAdd(float[] dst, float[] src0, float[] src1, int count) {
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] += src0[_IX + 0] * src1[_IX + 0];
                 dst[_IX + 1] += src0[_IX + 1] * src1[_IX + 1];
@@ -286,7 +298,8 @@ public class Simd_Generic {
         @Override
         public void MulSub(float[] dst, float constant, float[] src, int count) {
             final double c = constant;
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] -= c * src[_IX + 0];
                 dst[_IX + 1] -= c * src[_IX + 1];
@@ -307,7 +320,8 @@ public class Simd_Generic {
          */
         @Override
         public void MulSub(float[] dst, float[] src0, float[] src1, int count) {
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] -= src0[_IX + 0] * src1[_IX + 0];
                 dst[_IX + 1] -= src0[_IX + 1] * src1[_IX + 1];
@@ -516,7 +530,8 @@ public class Simd_Generic {
          */
         @Override
         public void CmpGT(boolean[] dst, float[] src0, float constant, int count) {
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] = src0[_IX + 0] > constant;
                 dst[_IX + 1] = src0[_IX + 1] > constant;
@@ -537,7 +552,8 @@ public class Simd_Generic {
          */
         @Override
         public void CmpGT(byte[] dst, byte bitNum, float[] src0, float constant, int count) {
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             final byte _bitNum = (byte) (1 << bitNum);//TODO:check byte signage
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] |= src0[_IX + 0] > constant ? _bitNum : 0;
@@ -559,7 +575,8 @@ public class Simd_Generic {
          */
         @Override
         public void CmpGE(boolean[] dst, float[] src0, float constant, int count) {
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] = src0[_IX + 0] >= constant;
                 dst[_IX + 1] = src0[_IX + 1] >= constant;
@@ -580,7 +597,8 @@ public class Simd_Generic {
          */
         @Override
         public void CmpGE(byte[] dst, byte bitNum, float[] src0, float constant, int count) {
-            int _IX, _NM = count & 0xfffffffc;
+            int _IX;
+			final int _NM = count & 0xfffffffc;
             final byte _bitNum = (byte) (1 << bitNum);//TODO:check byte signage
             for (_IX = 0; _IX < _NM; _IX += 4) {
                 dst[_IX + 0] |= src0[_IX + 0] >= constant ? _bitNum : 0;
@@ -727,17 +745,29 @@ public class Simd_Generic {
         }
 
         @Override
-        public void MinMax(idVec3 min, idVec3 max, idDrawVert[] src, int[] indexes, int count) {
+        public void MinMax(idVec3 min, idVec3 max, idDrawVert[] src, IntBuffer indexes, int count) {
             min.x = min.y = min.z = idMath.INFINITY;
             max.x = max.y = max.z = -idMath.INFINITY;
             for (int _IX = 0; _IX < count; _IX++) {
-                final idVec3 v = src[indexes[_IX]].xyz;
-                if (v.oGet(0) < min.x) min.x = v.oGet(0);
-                if (v.oGet(0) > max.x) max.x = v.oGet(0);
-                if (v.oGet(1) < min.y) min.y = v.oGet(1);
-                if (v.oGet(1) > max.y) max.y = v.oGet(1);
-                if (v.oGet(2) < min.z) min.z = v.oGet(2);
-                if (v.oGet(2) > max.z) max.z = v.oGet(2);
+                final idVec3 v = src[indexes.get(_IX)].xyz;
+                if (v.oGet(0) < min.x) {
+					min.x = v.oGet(0);
+				}
+                if (v.oGet(0) > max.x) {
+					max.x = v.oGet(0);
+				}
+                if (v.oGet(1) < min.y) {
+					min.y = v.oGet(1);
+				}
+                if (v.oGet(1) > max.y) {
+					max.y = v.oGet(1);
+				}
+                if (v.oGet(2) < min.z) {
+					min.z = v.oGet(2);
+				}
+                if (v.oGet(2) > max.z) {
+					max.z = v.oGet(2);
+				}
             }
         }
 
@@ -2653,18 +2683,18 @@ public class Simd_Generic {
          ============
          */
         @Override
-        public void DeriveTriPlanes(idPlane[] planes, idDrawVert[] verts, int numVerts, int[] indexes, int numIndexes) {
+        public void DeriveTriPlanes(idPlane[] planes, idDrawVert[] verts, int numVerts, IntBuffer indexes, int numIndexes) {
             int i, planePtr;
 
             for (i = planePtr = 0; i < numIndexes; i += 3) {
                 final idDrawVert a, b, c;
-                float[] d0 = new float[3], d1 = new float[3];
+                final float[] d0 = new float[3], d1 = new float[3];
                 float f;
                 idVec3 n;
 
-                a = verts[indexes[i + 0]];
-                b = verts[indexes[i + 1]];
-                c = verts[indexes[i + 2]];
+                a = verts[indexes.get(i + 0)];
+                b = verts[indexes.get(i + 1)];
+                c = verts[indexes.get(i + 2)];
 
                 d0[0] = b.xyz.oGet(0) - a.xyz.oGet(0);
                 d0[1] = b.xyz.oGet(1) - a.xyz.oGet(1);
@@ -2675,11 +2705,11 @@ public class Simd_Generic {
                 d1[2] = c.xyz.oGet(2) - a.xyz.oGet(2);
 
                 n = new idVec3(
-                        d1[1] * d0[2] - d1[2] * d0[1],
-                        d1[2] * d0[0] - d1[0] * d0[2],
-                        d1[0] * d0[1] - d1[1] * d0[0]);
+                        (d1[1] * d0[2]) - (d1[2] * d0[1]),
+                        (d1[2] * d0[0]) - (d1[0] * d0[2]),
+                        (d1[0] * d0[1]) - (d1[1] * d0[0]));
 
-                f = idMath.RSqrt(n.x * n.x + n.y * n.y + n.z * n.z);
+                f = idMath.RSqrt((n.x * n.x) + (n.y * n.y) + (n.z * n.z));
 
                 n.x *= f;
                 n.y *= f;
@@ -2702,22 +2732,23 @@ public class Simd_Generic {
          ============
          */
         @Override
-        public void DeriveTangents(idPlane[] planes, idDrawVert[] verts, int numVerts, int[] indexes, int numIndexes) {
+        public void DeriveTangents(idPlane[] planes, idDrawVert[] verts, int numVerts, IntBuffer indexes, int numIndexes) {
             int i, planesPtr;
 
-            boolean[] used = new boolean[numVerts];
+            final boolean[] used = new boolean[numVerts];
 //	memset( used, 0, numVerts * sizeof( used[0] ) );
 
             for (i = planesPtr = 0; i < numIndexes; i += 3) {
                 idDrawVert a, b, c;
                 int signBit;
-                float[] d0 = new float[5], d1 = new float[5];
+                final float[] d0 = new float[5], d1 = new float[5];
                 float f, area;
-                idVec3 n, t0 = new idVec3(), t1 = new idVec3();
+                idVec3 n;
+				final idVec3 t0 = new idVec3(), t1 = new idVec3();
 
-                int v0 = indexes[i + 0];
-                int v1 = indexes[i + 1];
-                int v2 = indexes[i + 2];
+                final int v0 = indexes.get(i + 0);
+                final int v1 = indexes.get(i + 1);
+                final int v2 = indexes.get(i + 2);
 
                 a = verts[v0];
                 b = verts[v1];
@@ -2737,11 +2768,11 @@ public class Simd_Generic {
 
                 // normal
                 n = new idVec3(
-                        d1[1] * d0[2] - d1[2] * d0[1],
-                        d1[2] * d0[0] - d1[0] * d0[2],
-                        d1[0] * d0[1] - d1[1] * d0[0]);
+                        (d1[1] * d0[2]) - (d1[2] * d0[1]),
+                        (d1[2] * d0[0]) - (d1[0] * d0[2]),
+                        (d1[0] * d0[1]) - (d1[1] * d0[0]));
 
-                f = idMath.RSqrt(n.x * n.x + n.y * n.y + n.z * n.z);
+                f = idMath.RSqrt((n.x * n.x) + (n.y * n.y) + (n.z * n.z));
 
                 n.x *= f;
                 n.y *= f;
@@ -2752,15 +2783,27 @@ public class Simd_Generic {
                 planesPtr++;
 
                 // area sign bit
-                area = d0[3] * d1[4] - d0[4] * d1[3];
+                area = (d0[3] * d1[4]) - (d0[4] * d1[3]);
                 signBit = Float.floatToIntBits(area) & (1 << 31);
 
                 // first tangent
-                t0.oSet(0, d0[0] * d1[4] - d0[4] * d1[0]);
-                t0.oSet(1, d0[1] * d1[4] - d0[4] * d1[1]);
-                t0.oSet(2, d0[2] * d1[4] - d0[4] * d1[2]);
+                t0.oSet(0, (d0[0] * d1[4]) - (d0[4] * d1[0]));
+                t0.oSet(1, (d0[1] * d1[4]) - (d0[4] * d1[1]));
+                t0.oSet(2, (d0[2] * d1[4]) - (d0[4] * d1[2]));
 
-                f = idMath.RSqrt(t0.x * t0.x + t0.y * t0.y + t0.z * t0.z);
+                f = idMath.RSqrt((t0.x * t0.x) + (t0.y * t0.y) + (t0.z * t0.z));
+                f = Float.intBitsToFloat(Float.floatToIntBits(f) ^ signBit);
+
+                t0.x *= f;
+                t0.y *= f;
+                t0.z *= f;
+
+                // second tangent
+                t1.oSet(0, (d0[3] * d1[0]) - (d0[0] * d1[3]));
+                t1.oSet(1, (d0[3] * d1[1]) - (d0[1] * d1[3]));
+                t1.oSet(2, (d0[3] * d1[2]) - (d0[2] * d1[3]));
+
+                f = idMath.RSqrt((t1.x * t1.x) + (t1.y * t1.y) + (t1.z * t1.z));
                 f = Float.intBitsToFloat(Float.floatToIntBits(f) ^ signBit);
 
                 t0.x *= f;
@@ -2964,13 +3007,13 @@ public class Simd_Generic {
          ============
          */
         @Override
-        public void CreateSpecularTextureCoords(idVec4[] texCoords, idVec3 lightOrigin, idVec3 viewOrigin, idDrawVert[] verts, int numVerts, int[] indexes, int numIndexes) {
+        public void CreateSpecularTextureCoords(idVec4[] texCoords, idVec3 lightOrigin, idVec3 viewOrigin, idDrawVert[] verts, int numVerts, IntBuffer indexes, int numIndexes) {
 
-            boolean[] used = new boolean[numVerts];
+            final boolean[] used = new boolean[numVerts];
 //	memset( used, 0, numVerts * sizeof( used[0] ) );
 
             for (int i = numIndexes - 1; i >= 0; i--) {
-                used[indexes[i]] = true;
+                used[indexes.get(i)] = true;
             }
 
             for (int i = 0; i < numVerts; i++) {
@@ -2980,8 +3023,8 @@ public class Simd_Generic {
 
                 final idDrawVert v = verts[i];
 
-                idVec3 lightDir = lightOrigin.oMinus(v.xyz);
-                idVec3 viewDir = viewOrigin.oMinus(v.xyz);
+                final idVec3 lightDir = lightOrigin.oMinus(v.xyz);
+                final idVec3 viewDir = viewOrigin.oMinus(v.xyz);
 
                 float ilength;
 

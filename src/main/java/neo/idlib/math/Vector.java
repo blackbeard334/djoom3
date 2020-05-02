@@ -3,10 +3,9 @@ package neo.idlib.math;
 import static neo.idlib.math.Simd.SIMDProcessor;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
-
-import org.lwjgl.BufferUtils;
 
 import neo.TempDump;
 import neo.TempDump.SERiAL;
@@ -19,6 +18,7 @@ import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Matrix.idMat4;
 import neo.idlib.math.Matrix.idMatX;
+import neo.open.Nio;
 
 /**
  *
@@ -137,7 +137,11 @@ public class Vector {
     //===============================================================
     public static class idVec2 implements idVec<idVec2>, SERiAL {
 
-        public static final transient int SIZE  = 2 * Float.SIZE;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public static final transient int SIZE  = 2 * Float.SIZE;
         public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
@@ -355,6 +359,11 @@ public class Vector {
         @Override
         public int GetDimension() {
             return 2;
+        }
+
+        public FloatBuffer toFloatBuffer() {
+            return (FloatBuffer) Nio.newFloatBuffer(2).put(this.x)
+                	.put(this.y).flip();
         }
 
         public float[] ToFloatPtr() {
@@ -927,6 +936,12 @@ public class Vector {
         }
 //public	idVec2 &		ToVec2( void );
 
+        public FloatBuffer toFloatBuffer() {
+            return (FloatBuffer) Nio.newFloatBuffer(3).put(this.x)
+                	.put(this.y)
+                	.put(this.z).flip();
+        }
+
         public float[] ToFloatPtr() {
             return new float[]{x, y, z};
         }
@@ -1228,7 +1243,7 @@ public class Vector {
         }
 
         public static ByteBuffer toByteBuffer(idVec3[] vecs) {
-            ByteBuffer data = BufferUtils.createByteBuffer(idVec3.BYTES * vecs.length);
+            final ByteBuffer data = Nio.newByteBuffer(idVec3.BYTES * vecs.length);
 
             for (idVec3 vec : vecs) {
                 data.put((ByteBuffer) vec.Write().rewind());
@@ -1445,6 +1460,13 @@ public class Vector {
         }
 //public	idVec3 &		ToVec3( void );
 
+        public FloatBuffer toFloatBuffer() {
+            return (FloatBuffer) Nio.newFloatBuffer(4).put(this.x)
+                	.put(this.y)
+                	.put(this.z)
+                	.put(this.w).flip();
+        }
+
         public final float[] ToFloatPtr() {
             return new float[]{x, y, z, w};//TODO:put shit in array si we can referef it
         }
@@ -1584,7 +1606,7 @@ public class Vector {
         }
 
         public static ByteBuffer toByteBuffer(idVec4[] vecs) {
-            ByteBuffer data = BufferUtils.createByteBuffer(idVec4.BYTES * vecs.length);
+            final ByteBuffer data = Nio.newByteBuffer(idVec4.BYTES * vecs.length);
 
             for (idVec4 vec : vecs) {
                 data.put((ByteBuffer) vec.Write().rewind());
@@ -1706,6 +1728,12 @@ public class Vector {
         public final idVec3 ToVec3() {
 //	return *reinterpret_cast<const idVec3 *>(this);
             return new idVec3(x, y, z);
+        }
+
+        public FloatBuffer toFloatBuffer() {
+            return (FloatBuffer) Nio.newFloatBuffer(3).put(this.x)
+                	.put(this.y)
+                	.put(this.z).flip();
         }
 
         //public	idVec3 &		ToVec3( void );
@@ -1965,6 +1993,10 @@ public class Vector {
             return new idVec3(p[index *= 3], p[index + 1], p[index + 2]);
         }
 //public 	idVec3 &		SubVec3( int index );
+
+        public FloatBuffer toFloatBuffer() {
+            return Nio.wrap(this.p);
+        }
 
         public final float[] ToFloatPtr() {
             return p;
@@ -2497,6 +2529,10 @@ public class Vector {
             return new idVec6(p[index *= 6], p[index + 1], p[index + 2], p[index + 3], p[index + 4], p[index + 5]);
         }
 //public	idVec6 &		SubVec6( int index );
+
+        public FloatBuffer toFloatBuffer() {
+            return Nio.wrap(this.p);
+        }
 
         public float[] ToFloatPtr() {
             return p;
