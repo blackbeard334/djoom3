@@ -94,8 +94,6 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import org.lwjgl.BufferUtils;
-
 import neo.TempDump.TODO_Exception;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.tr_local.drawSurf_s;

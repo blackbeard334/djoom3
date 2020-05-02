@@ -41,6 +41,42 @@ import static neo.Renderer.RenderSystem_init.r_useShadowVertexProgram;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.draw_arb.RB_ARB_DrawInteractions;
 import static neo.Renderer.draw_arb2.RB_ARB2_DrawInteractions;
+import static neo.Renderer.qgl.GL_ALPHA_SCALE;
+import static neo.Renderer.qgl.GL_ALPHA_TEST;
+import static neo.Renderer.qgl.GL_ALWAYS;
+import static neo.Renderer.qgl.GL_COLOR_ARRAY;
+import static neo.Renderer.qgl.GL_DEPTH_TEST;
+import static neo.Renderer.qgl.GL_FLOAT;
+import static neo.Renderer.qgl.GL_GEQUAL;
+import static neo.Renderer.qgl.GL_GREATER;
+import static neo.Renderer.qgl.GL_KEEP;
+import static neo.Renderer.qgl.GL_MODELVIEW;
+import static neo.Renderer.qgl.GL_MODULATE;
+import static neo.Renderer.qgl.GL_NORMAL_ARRAY;
+import static neo.Renderer.qgl.GL_OBJECT_LINEAR;
+import static neo.Renderer.qgl.GL_OBJECT_PLANE;
+import static neo.Renderer.qgl.GL_ONE_MINUS_SRC_COLOR;
+import static neo.Renderer.qgl.GL_POLYGON_OFFSET_FILL;
+import static neo.Renderer.qgl.GL_PROJECTION;
+import static neo.Renderer.qgl.GL_Q;
+import static neo.Renderer.qgl.GL_QUADS;
+import static neo.Renderer.qgl.GL_R;
+import static neo.Renderer.qgl.GL_REFLECTION_MAP;
+import static neo.Renderer.qgl.GL_S;
+import static neo.Renderer.qgl.GL_SRC_ALPHA;
+import static neo.Renderer.qgl.GL_SRC_COLOR;
+import static neo.Renderer.qgl.GL_STENCIL_TEST;
+import static neo.Renderer.qgl.GL_T;
+import static neo.Renderer.qgl.GL_TEXTURE;
+import static neo.Renderer.qgl.GL_TEXTURE_COORD_ARRAY;
+import static neo.Renderer.qgl.GL_TEXTURE_ENV;
+import static neo.Renderer.qgl.GL_TEXTURE_ENV_COLOR;
+import static neo.Renderer.qgl.GL_TEXTURE_GEN_MODE;
+import static neo.Renderer.qgl.GL_TEXTURE_GEN_Q;
+import static neo.Renderer.qgl.GL_TEXTURE_GEN_R;
+import static neo.Renderer.qgl.GL_TEXTURE_GEN_S;
+import static neo.Renderer.qgl.GL_TEXTURE_GEN_T;
+import static neo.Renderer.qgl.GL_UNSIGNED_BYTE;
 //import static neo.Renderer.draw_nv10.RB_NV10_DrawInteractions;
 //import static neo.Renderer.draw_nv20.RB_NV20_DrawInteractions;
 //import static neo.Renderer.draw_r200.RB_R200_DrawInteractions;
@@ -154,42 +190,6 @@ import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_SOURCE1_ALPHA_ARB;
 import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_SOURCE1_RGB_ARB;
 import static org.lwjgl.opengl.ARBVertexProgram.GL_VERTEX_PROGRAM_ARB;
 import static org.lwjgl.opengl.EXTDepthBoundsTest.GL_DEPTH_BOUNDS_TEST_EXT;
-import static neo.Renderer.qgl.GL_ALPHA_SCALE;
-import static neo.Renderer.qgl.GL_ALPHA_TEST;
-import static neo.Renderer.qgl.GL_ALWAYS;
-import static neo.Renderer.qgl.GL_COLOR_ARRAY;
-import static neo.Renderer.qgl.GL_DEPTH_TEST;
-import static neo.Renderer.qgl.GL_FLOAT;
-import static neo.Renderer.qgl.GL_GEQUAL;
-import static neo.Renderer.qgl.GL_GREATER;
-import static neo.Renderer.qgl.GL_KEEP;
-import static neo.Renderer.qgl.GL_MODELVIEW;
-import static neo.Renderer.qgl.GL_MODULATE;
-import static neo.Renderer.qgl.GL_NORMAL_ARRAY;
-import static neo.Renderer.qgl.GL_OBJECT_LINEAR;
-import static neo.Renderer.qgl.GL_OBJECT_PLANE;
-import static neo.Renderer.qgl.GL_ONE_MINUS_SRC_COLOR;
-import static neo.Renderer.qgl.GL_POLYGON_OFFSET_FILL;
-import static neo.Renderer.qgl.GL_PROJECTION;
-import static neo.Renderer.qgl.GL_Q;
-import static neo.Renderer.qgl.GL_QUADS;
-import static neo.Renderer.qgl.GL_R;
-import static neo.Renderer.qgl.GL_S;
-import static neo.Renderer.qgl.GL_SRC_ALPHA;
-import static neo.Renderer.qgl.GL_SRC_COLOR;
-import static neo.Renderer.qgl.GL_STENCIL_TEST;
-import static neo.Renderer.qgl.GL_T;
-import static neo.Renderer.qgl.GL_TEXTURE;
-import static neo.Renderer.qgl.GL_TEXTURE_COORD_ARRAY;
-import static neo.Renderer.qgl.GL_TEXTURE_ENV;
-import static neo.Renderer.qgl.GL_TEXTURE_ENV_COLOR;
-import static neo.Renderer.qgl.GL_TEXTURE_GEN_MODE;
-import static neo.Renderer.qgl.GL_TEXTURE_GEN_Q;
-import static neo.Renderer.qgl.GL_TEXTURE_GEN_R;
-import static neo.Renderer.qgl.GL_TEXTURE_GEN_S;
-import static neo.Renderer.qgl.GL_TEXTURE_GEN_T;
-import static neo.Renderer.qgl.GL_UNSIGNED_BYTE;
-import static neo.Renderer.qgl.GL_REFLECTION_MAP;
 
 import java.nio.FloatBuffer;
 import java.util.Arrays;
@@ -224,40 +224,24 @@ public class draw_common {
      */
 
     public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/) {
-        final float[] genMatrix = new float[16];
-        final float[] finale = new float[16];
+        final FloatBuffer genMatrix = Nio.newFloatBuffer(16);
+        final FloatBuffer finale = Nio.newFloatBuffer(16);
 
-        genMatrix[ 0] = lightProject[0].oGet(0);
-        genMatrix[ 4] = lightProject[0].oGet(1);
-        genMatrix[ 8] = lightProject[0].oGet(2);
-        genMatrix[12] = lightProject[0].oGet(3);
-
-        genMatrix[ 1] = lightProject[1].oGet(0);
-        genMatrix[ 5] = lightProject[1].oGet(1);
-        genMatrix[ 9] = lightProject[1].oGet(2);
-        genMatrix[13] = lightProject[1].oGet(3);
-
-        genMatrix[ 2] = 0;
-        genMatrix[ 6] = 0;
-        genMatrix[10] = 0;
-        genMatrix[14] = 0;
-
-        genMatrix[ 3] = lightProject[2].oGet(0);
-        genMatrix[ 7] = lightProject[2].oGet(1);
-        genMatrix[11] = lightProject[2].oGet(2);
-        genMatrix[15] = lightProject[2].oGet(3);
+        int i;
+        for (int j = 0; j < 4; j++) {
+            genMatrix.put(j * 4 + (i=0), lightProject[0].oGet(i)); // 0, 4, 8, 12
+           	genMatrix.put(j * 4 + ++i, lightProject[1].oGet(i)); // 1, 5, 9, 13
+           	genMatrix.put(j * 4 + ++i, 0); // 2, 6, 10, 14
+           	genMatrix.put(j * 4 + ++i, lightProject[2].oGet(i)); // 3, 7, 11, 15
+        }
 
         myGlMultMatrix(genMatrix, backEnd.lightTextureMatrix, finale);
 
-        lightProject[0].oSet(0, finale[0]);
-        lightProject[0].oSet(1, finale[4]);
-        lightProject[0].oSet(2, finale[8]);
-        lightProject[0].oSet(3, finale[12]);
+        for (int j = 0; j < 4; j++) {
+            lightProject[0].oSet(j, finale.get(j * 4 + 0));
 
-        lightProject[1].oSet(0, finale[1]);
-        lightProject[1].oSet(1, finale[5]);
-        lightProject[1].oSet(2, finale[9]);
-        lightProject[1].oSet(3, finale[13]);
+            lightProject[1].oSet(j, finale.get(j * 4 + 1));
+        }
     }
 
     /**
@@ -379,7 +363,7 @@ public class draw_common {
         qglEnable(GL_TEXTURE_GEN_T);
         qglEnable(GL_TEXTURE_GEN_Q);
 
-        final float[] mat = new float[16]; //, plane = new float[4];
+        final FloatBuffer mat = Nio.newFloatBuffer(16); //, plane = new float[4];
         myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.projectionMatrix, mat);
 
 //        plane[0] = mat[0];
@@ -387,21 +371,21 @@ public class draw_common {
 //        plane[2] = mat[8];
 //        plane[3] = mat[12];
 //        qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
-        qglTexGenfv(GL_S, GL_OBJECT_PLANE, toFloatBuffer(mat[0], mat[4], mat[8], mat[12]));
+        qglTexGenfv(GL_S, GL_OBJECT_PLANE, toFloatBuffer(mat.get(0), mat.get(4), mat.get(8), mat.get(12)));
 
 //        plane[0] = mat[1];
 //        plane[1] = mat[5];
 //        plane[2] = mat[9];
 //        plane[3] = mat[13];
 //        qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
-        qglTexGenfv(GL_T, GL_OBJECT_PLANE, toFloatBuffer(mat[1], mat[5], mat[6], mat[13]));
+        qglTexGenfv(GL_T, GL_OBJECT_PLANE, toFloatBuffer(mat.get(1), mat.get(5), mat.get(6), mat.get(13)));
 
 //        plane[0] = mat[3];
 //        plane[1] = mat[7];
 //        plane[2] = mat[11];
 //        plane[3] = mat[15];
 //        qglTexGenfv(GL_S, GL_OBJECT_PLANE, plane);
-        qglTexGenfv(GL_Q, GL_OBJECT_PLANE, toFloatBuffer(mat[3], mat[7], mat[11], mat[15]));
+        qglTexGenfv(GL_Q, GL_OBJECT_PLANE, toFloatBuffer(mat.get(3), mat.get(7), mat.get(11), mat.get(15)));
     }
 
     private static FloatBuffer toFloatBuffer(float x, float y, float z, float d) {
@@ -842,22 +826,20 @@ public class draw_common {
 
         // we need the model matrix without it being combined with the view matrix
         // so we can transform local vectors to global coordinates
-        parm.put(0, space.modelMatrix[ 0]);
-        parm.put(1, space.modelMatrix[ 4]);
-        parm.put(2, space.modelMatrix[ 8]);
-        parm.put(3, space.modelMatrix[12]);
-        qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 6, parm);
-        parm.put(0, space.modelMatrix[ 1]);
-        parm.put(1, space.modelMatrix[ 5]);
-        parm.put(2, space.modelMatrix[ 9]);
-        parm.put(3, space.modelMatrix[13]);
-        qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 7, parm);
-        parm.put(0, space.modelMatrix[ 2]);
-        parm.put(1, space.modelMatrix[ 6]);
-        parm.put(2, space.modelMatrix[10]);
-        parm.put(3, space.modelMatrix[14]);
-        qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 8, parm);
+        // we need the model matrix without it being combined with the view matrix
+        // so we can transform local vectors to global coordinates
+        int row = 0;
+        qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 6, putRowFromMatrix(space.modelMatrix, row++, parm));
+        qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 7, putRowFromMatrix(space.modelMatrix, row++, parm));
+        qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 8, putRowFromMatrix(space.modelMatrix, row++, parm));
     }
+
+	private static FloatBuffer putRowFromMatrix(FloatBuffer modelMatrix, int row, FloatBuffer parm) {
+        for (int i = 0; i < 4; i++) {
+            parm.put(i, modelMatrix.get( i * 4 + row));
+		}
+        return parm;
+ 	}
 
     /*
      ==================

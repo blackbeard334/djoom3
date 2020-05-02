@@ -6,6 +6,8 @@ import static neo.idlib.Lib.colorGreen;
 import static neo.idlib.Lib.colorRed;
 import static neo.idlib.Lib.colorYellow;
 
+import java.nio.FloatBuffer;
+
 import neo.Renderer.tr_local.idRenderEntityLocal;
 import neo.Renderer.tr_local.idRenderLightLocal;
 import neo.Renderer.tr_local.idScreenRect;
@@ -498,12 +500,12 @@ public class tr_shadowbounds {
 
     }
 
-    public static idMat4 make_idMat4(final float[] m) {
+    public static idMat4 make_idMat4(final FloatBuffer m) {
         return new idMat4(
-                m[ 0], m[ 4], m[ 8], m[12],
-                m[ 1], m[ 5], m[ 9], m[13],
-                m[ 2], m[ 6], m[10], m[14],
-                m[ 3], m[ 7], m[11], m[15]);
+                m.get( 0), m.get( 4), m.get( 8), m.get(12),
+                m.get( 1), m.get( 5), m.get( 9), m.get(13),
+                m.get( 2), m.get( 6), m.get(10), m.get(14),
+                m.get( 3), m.get( 7), m.get(11), m.get(15));
     }
 
     public static idVec3 v4to3(final idVec4 v) {

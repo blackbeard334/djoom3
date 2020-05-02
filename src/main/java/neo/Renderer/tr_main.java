@@ -31,8 +31,6 @@ import static neo.idlib.math.Vector.VectorSubtract;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
@@ -377,30 +375,30 @@ public class tr_main {
     }
 
 //==========================================================================
-    public static void R_AxisToModelMatrix(final idMat3 axis, final idVec3 origin, float[] modelMatrix/*[16]*/) {
-        modelMatrix[ 0] = axis.oGet(0, 0);
-        modelMatrix[ 4] = axis.oGet(1, 0);
-        modelMatrix[ 8] = axis.oGet(2, 0);
-        modelMatrix[12] = origin.oGet(0);
+    public static void R_AxisToModelMatrix(final idMat3 axis, final idVec3 origin, final FloatBuffer modelMatrix/*[16]*/) {
+        modelMatrix.put( 0, axis.oGet(0, 0));
+        modelMatrix.put( 4, axis.oGet(1, 0));
+        modelMatrix.put( 8, axis.oGet(2, 0));
+        modelMatrix.put(12, origin.oGet(0));
 
-        modelMatrix[ 1] = axis.oGet(0, 1);
-        modelMatrix[ 5] = axis.oGet(1, 1);
-        modelMatrix[ 9] = axis.oGet(2, 1);
-        modelMatrix[13] = origin.oGet(1);
+        modelMatrix.put( 1, axis.oGet(0, 1));
+        modelMatrix.put( 5, axis.oGet(1, 1));
+        modelMatrix.put( 9, axis.oGet(2, 1));
+        modelMatrix.put(13, origin.oGet(1));
 
-        modelMatrix[ 2] = axis.oGet(0, 2);
-        modelMatrix[ 6] = axis.oGet(1, 2);
-        modelMatrix[10] = axis.oGet(2, 2);
-        modelMatrix[14] = origin.oGet(2);
+        modelMatrix.put( 2, axis.oGet(0, 2));
+        modelMatrix.put( 6, axis.oGet(1, 2));
+        modelMatrix.put(10, axis.oGet(2, 2));
+        modelMatrix.put(14, origin.oGet(2));
 
-        modelMatrix[ 3] = 0;
-        modelMatrix[ 7] = 0;
-        modelMatrix[11] = 0;
-        modelMatrix[15] = 1;
+        modelMatrix.put( 3, 0);
+        modelMatrix.put( 7, 0);
+        modelMatrix.put(11, 0);
+        modelMatrix.put(15, 1);
     }
 
     // FIXME: these assume no skewing or scaling transforms
-    public static idVec3 R_LocalPointToGlobal(final float[] modelMatrix/*[16]*/, final idVec3 in) {
+    public static idVec3 R_LocalPointToGlobal(final FloatBuffer modelMatrix/*[16]*/, final idVec3 in) {
         idVec3 out;
 
 // if (MACOS_X && __i386__){
@@ -431,76 +429,76 @@ public class tr_main {
 // }else
         {
             out = new idVec3(
-                    (in.oGet(0) * modelMatrix[0] + in.oGet(1) * modelMatrix[4] + in.oGet(2) * modelMatrix[ 8] + modelMatrix[12]),
-                    (in.oGet(0) * modelMatrix[1] + in.oGet(1) * modelMatrix[5] + in.oGet(2) * modelMatrix[ 9] + modelMatrix[13]),
-                    (in.oGet(0) * modelMatrix[2] + in.oGet(1) * modelMatrix[6] + in.oGet(2) * modelMatrix[10] + modelMatrix[14])
+                    (in.oGet(0) * modelMatrix.get(0) + in.oGet(1) * modelMatrix.get(4) + in.oGet(2) * modelMatrix.get( 8) + modelMatrix.get(12)),
+                    (in.oGet(0) * modelMatrix.get(1) + in.oGet(1) * modelMatrix.get(5) + in.oGet(2) * modelMatrix.get( 9) + modelMatrix.get(13)),
+                    (in.oGet(0) * modelMatrix.get(2) + in.oGet(1) * modelMatrix.get(6) + in.oGet(2) * modelMatrix.get(10) + modelMatrix.get(14))
             );
         }
         return out;
     }
 
-    public static void R_PointTimesMatrix(final float[] modelMatrix/*[16]*/, final idVec4 in, idVec4 out) {
-        out.oSet(0, in.oGet(0) * modelMatrix[0] + in.oGet(1) * modelMatrix[4] + in.oGet(2) * modelMatrix[ 8] + modelMatrix[12]);
-        out.oSet(1, in.oGet(0) * modelMatrix[1] + in.oGet(1) * modelMatrix[5] + in.oGet(2) * modelMatrix[ 9] + modelMatrix[13]);
-        out.oSet(2, in.oGet(0) * modelMatrix[2] + in.oGet(1) * modelMatrix[6] + in.oGet(2) * modelMatrix[10] + modelMatrix[14]);
-        out.oSet(3, in.oGet(0) * modelMatrix[3] + in.oGet(1) * modelMatrix[7] + in.oGet(2) * modelMatrix[11] + modelMatrix[15]);
+    public static void R_PointTimesMatrix(final FloatBuffer modelMatrix/*[16]*/, final idVec4 in, idVec4 out) {
+        out.oSet(0, in.oGet(0) * modelMatrix.get(0) + in.oGet(1) * modelMatrix.get(4) + in.oGet(2) * modelMatrix.get( 8) + modelMatrix.get(12));
+        out.oSet(1, in.oGet(0) * modelMatrix.get(1) + in.oGet(1) * modelMatrix.get(5) + in.oGet(2) * modelMatrix.get( 9) + modelMatrix.get(13));
+        out.oSet(2, in.oGet(0) * modelMatrix.get(2) + in.oGet(1) * modelMatrix.get(6) + in.oGet(2) * modelMatrix.get(10) + modelMatrix.get(14));
+        out.oSet(3, in.oGet(0) * modelMatrix.get(3) + in.oGet(1) * modelMatrix.get(7) + in.oGet(2) * modelMatrix.get(11) + modelMatrix.get(15));
     }
 
-    public static void R_GlobalPointToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, idVec out) {
+    public static void R_GlobalPointToLocal(final FloatBuffer modelMatrix/*[16]*/, final idVec3 in, idVec out) {
         float[] temp = new float[4];
 
-        VectorSubtract(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 12, 16), temp);
+        VectorSubtract(in.ToFloatPtr(), Nio.copyOfRange(modelMatrix, 12, 16), temp);
 
-        out.oSet(0, DotProduct(temp, modelMatrix));
-        out.oSet(1, DotProduct(temp, Arrays.copyOfRange(modelMatrix, 4, 8)));
-        out.oSet(2, DotProduct(temp, Arrays.copyOfRange(modelMatrix, 8, 12)));
+        out.oSet(0, DotProduct(temp, Nio.copyOfRange(modelMatrix, 0, 3)));
+        out.oSet(1, DotProduct(temp, Nio.copyOfRange(modelMatrix, 4, 8)));
+        out.oSet(2, DotProduct(temp, Nio.copyOfRange(modelMatrix, 8, 12)));
     }
 
-    public static void R_GlobalPointToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, float[] out) {
+    public static void R_GlobalPointToLocal(final FloatBuffer modelMatrix/*[16]*/, final idVec3 in, float[] out) {
         float[] temp = new float[4];
 
-        VectorSubtract(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 12, 16), temp);
+        VectorSubtract(in.ToFloatPtr(), Nio.copyOfRange(modelMatrix, 12, 16), temp);
 
-        out[0] = DotProduct(temp, modelMatrix);
-        out[1] = DotProduct(temp, Arrays.copyOfRange(modelMatrix, 4, 8));
-        out[2] = DotProduct(temp, Arrays.copyOfRange(modelMatrix, 8, 12));
+        out[0] = DotProduct(temp, Nio.copyOfRange(modelMatrix, 0, 3));
+        out[1] = DotProduct(temp, Nio.copyOfRange(modelMatrix, 4, 8));
+        out[2] = DotProduct(temp, Nio.copyOfRange(modelMatrix, 8, 12));
     }
 
-    public static void R_GlobalPointToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, FloatBuffer out) {
+    public static void R_GlobalPointToLocal(final FloatBuffer modelMatrix/*[16]*/, final idVec3 in, FloatBuffer out) {
         float[] temp = new float[4];
 
-        VectorSubtract(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 12, 16), temp);
+        VectorSubtract(in.ToFloatPtr(), Nio.copyOfRange(modelMatrix, 12, 16), temp);
 
-        out.put(0, DotProduct(temp, modelMatrix));
-        out.put(1, DotProduct(temp, Arrays.copyOfRange(modelMatrix, 4, 8)));
-        out.put(2, DotProduct(temp, Arrays.copyOfRange(modelMatrix, 8, 12)));
+        out.put(0, DotProduct(temp, Nio.copyOfRange(modelMatrix, 0, 3)));
+        out.put(1, DotProduct(temp, Nio.copyOfRange(modelMatrix, 4, 8)));
+        out.put(2, DotProduct(temp, Nio.copyOfRange(modelMatrix, 8, 12)));
     }
 
-    public static void R_LocalVectorToGlobal(final float[] modelMatrix/*[16]*/, final idVec3 in, idVec3 out) {
-        out.oSet(0, in.oGet(0) * modelMatrix[0] + in.oGet(1) * modelMatrix[4] + in.oGet(2) * modelMatrix[ 8]);
-        out.oSet(1, in.oGet(0) * modelMatrix[1] + in.oGet(1) * modelMatrix[5] + in.oGet(2) * modelMatrix[ 9]);
-        out.oSet(2, in.oGet(0) * modelMatrix[2] + in.oGet(1) * modelMatrix[6] + in.oGet(2) * modelMatrix[10]);
+    public static void R_LocalVectorToGlobal(final FloatBuffer modelMatrix/*[16]*/, final idVec3 in, idVec3 out) {
+        out.oSet(0, in.oGet(0) * modelMatrix.get(0) + in.oGet(1) * modelMatrix.get(4) + in.oGet(2) * modelMatrix.get( 8));
+        out.oSet(1, in.oGet(0) * modelMatrix.get(1) + in.oGet(1) * modelMatrix.get(5) + in.oGet(2) * modelMatrix.get( 9));
+        out.oSet(2, in.oGet(0) * modelMatrix.get(2) + in.oGet(1) * modelMatrix.get(6) + in.oGet(2) * modelMatrix.get(10));
     }
 
-    public static void R_GlobalVectorToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, idVec3 out) {
-        out.oSet(0, DotProduct(in.ToFloatPtr(), modelMatrix));
-        out.oSet(1, DotProduct(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 4, 8)));
-        out.oSet(2, DotProduct(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 8, 12)));
+    public static void R_GlobalVectorToLocal(final FloatBuffer modelMatrix/*[16]*/, final idVec3 in, idVec3 out) {
+        out.oSet(0, DotProduct(in.ToFloatPtr(), Nio.copyOfRange(modelMatrix, 0, 3)));
+        out.oSet(1, DotProduct(in.ToFloatPtr(), Nio.copyOfRange(modelMatrix, 4, 8)));
+        out.oSet(2, DotProduct(in.ToFloatPtr(), Nio.copyOfRange(modelMatrix, 8, 12)));
     }
 
-    public static void R_GlobalPlaneToLocal(final float[] modelMatrix/*[16]*/, final idPlane in, idPlane out) {
-        out.oSet(0, DotProduct(in.ToFloatPtr(), modelMatrix));
-        out.oSet(1, DotProduct(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 4, 8)));
-        out.oSet(2, DotProduct(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 8, 12)));
-        out.oSet(3, in.oGet(3) + modelMatrix[12] * in.oGet(0) + modelMatrix[13] * in.oGet(1) + modelMatrix[14] * in.oGet(2));
+    public static void R_GlobalPlaneToLocal(final FloatBuffer modelMatrix/*[16]*/, final idPlane in, idPlane out) {
+        out.oSet(0, DotProduct(in.ToFloatPtr(), Nio.copyOfRange(modelMatrix, 0, 3)));
+        out.oSet(1, DotProduct(in.ToFloatPtr(), Nio.copyOfRange(modelMatrix, 4, 8)));
+        out.oSet(2, DotProduct(in.ToFloatPtr(), Nio.copyOfRange(modelMatrix, 8, 12)));
+        out.oSet(3, in.oGet(3) + modelMatrix.get(12) * in.oGet(0) + modelMatrix.get(13) * in.oGet(1) + modelMatrix.get(14) * in.oGet(2));
     }
 
-    public static void R_LocalPlaneToGlobal(final float[] modelMatrix/*[16]*/, final idPlane in, idPlane out) {
+    public static void R_LocalPlaneToGlobal(final FloatBuffer modelMatrix/*[16]*/, final idPlane in, idPlane out) {
         final float offset;
 
         R_LocalVectorToGlobal(modelMatrix, in.Normal(), out.Normal());
 
-        offset = modelMatrix[12] * out.oGet(0) + modelMatrix[13] * out.oGet(1) + modelMatrix[14] * out.oGet(2);
+        offset = modelMatrix.get(12) * out.oGet(0) + modelMatrix.get(13) * out.oGet(1) + modelMatrix.get(14) * out.oGet(2);
         out.oSet(3, in.oGet(3) - offset);
     }
 
@@ -528,7 +526,7 @@ public class tr_main {
      Returns true if the box is outside the given global frustum, (positive sides are out)
      =================
      */
-    public static boolean R_RadiusCullLocalBox(final idBounds bounds, final float[] modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
+    public static boolean R_RadiusCullLocalBox(final idBounds bounds, final FloatBuffer modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
         int i;
         float d;
         idVec3 worldOrigin;
@@ -566,7 +564,7 @@ public class tr_main {
      Returns true if the box is outside the given global frustum, (positive sides are out)
      =================
      */    private static int DBG_R_CornerCullLocalBox = 0;
-    public static boolean R_CornerCullLocalBox(final idBounds bounds, final float[] modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
+    public static boolean R_CornerCullLocalBox(final idBounds bounds, final FloatBuffer modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
         int i, j;
         final idVec3[] transformed = idVec3.generateArray(8);
         final float[] dists = new float[8];
@@ -626,7 +624,7 @@ public class tr_main {
      Returns true if the box is outside the given global frustum, (positive sides are out)
      =================
      */
-    public static boolean R_CullLocalBox(final idBounds bounds, final float[] modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
+    public static boolean R_CullLocalBox(final idBounds bounds, final FloatBuffer modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
         if (R_RadiusCullLocalBox(bounds, modelMatrix, numPlanes, planes)) {
             return true;
         }
@@ -771,90 +769,6 @@ public class tr_main {
         }
     }
 
-    /**
-     * TBD - delete method after converting float[] to FloatBuffer
-     *  
-     * @param a
-     * @param b
-     * @param out
-     * 
-     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
-     */
-    public static void myGlMultMatrix(final float[] a/*[16]*/, final float[] b/*[16]*/, FloatBuffer out/*[16]*/) {
-    	myGlMultMatrix(Nio.wrap(a), Nio.wrap(b), out);
-    }
-
-    /**
-     * TBD - delete method after converting float[] to FloatBuffer
-     * 
-     * @param a
-     * @param b
-     * @param out
-     * 
-     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
-     */
-    public static void myGlMultMatrix(final float[] a/*[16]*/, final FloatBuffer b/*[16]*/, FloatBuffer out/*[16]*/) {
-    	myGlMultMatrix(Nio.wrap(a), b, out);
-    }
-
-    /**
-     * TBD - delete method after converting float[] to FloatBuffer
-     * 
-     * @param a
-     * @param b
-     * @param out
-     * 
-     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
-     */
-    public static void myGlMultMatrix(final float[] a/*[16]*/, final float[] b/*[16]*/, float[] out/*[16]*/) {
-    	myGlMultMatrix(Nio.wrap(a), Nio.wrap(b), out);
-    }
-
-    /**
-     * TBD - delete method after converting float[] to FloatBuffer
-     * 
-     * @param a
-     * @param b
-     * @param out
-     * 
-     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
-     */
-    public static void myGlMultMatrix(final float[] a/*[16]*/, final FloatBuffer b/*[16]*/, float[] out/*[16]*/) {
-    	myGlMultMatrix(Nio.wrap(a), b, out);
-    }
-
-    /**
-     * TBD - delete method after converting float[] to FloatBuffer
-     * 
-     * @param a
-     * @param b
-     * @param out
-     * 
-     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
-     */
-    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final float[] b/*[16]*/, float[] out/*[16]*/) {
-    	myGlMultMatrix(a, Nio.wrap(b), out);
-    }
-
-    /**
-     * TBD - delete method after converting float[] to FloatBuffer
-     * 
-     * @param a
-     * @param b
-     * @param out
-     * 
-     * @Deprecated use public static void myGlMultMatrix(final FloatBuffer a, final FloatBuffer b, FloatBuffer out) instead
-     */
-    public static void myGlMultMatrix(final FloatBuffer a/*[16]*/, final FloatBuffer b/*[16]*/, float[] out/*[16]*/) {
-		ByteBuffer bb = ByteBuffer.allocate(16 * Nio.SIZEOF_FLOAT);
-		bb.order(ByteOrder.nativeOrder());
-		FloatBuffer fb = bb.asFloatBuffer();
-		myGlMultMatrix(a, b, fb);
-		for (int i = 0; i < out.length; i++) {
-			out[i] = fb.get(i);
-		}
-    }
-
     /*
      ================
      R_TransposeGLMatrix
@@ -878,49 +792,49 @@ public class tr_main {
      Sets up the world to view matrix for a given viewParm
      =================
      */
-    private static final float[] s_flipMatrix/*[16]*/ = {
+    private static final FloatBuffer s_flipMatrix/*[16]*/ = Nio.newFloatBuffer(16)
                 // convert from our coordinate system (looking down X)
                 // to OpenGL's coordinate system (looking down -Z)
-                -0, 0, -1, 0,
-                -1, 0, -0, 0,
-                -0, 1, -0, 0,
-                -0, 0, -0, 1
-            };
+                .put(0, -0).put(1, 0).put(2, -1).put(3, 0)
+                .put(4, -1).put(5, 0).put(6, -0).put(7, 0)
+                .put(8, -0).put(9, 1).put(10, -0).put(11, 0)
+                .put(12, -0).put(13, 0).put(14, -0).put(15, 1)
+;
 
     public static void R_SetViewMatrix(viewDef_s viewDef) {
         idVec3 origin;
         viewEntity_s world;
-        float[] viewerMatrix = new float[16];
+        FloatBuffer viewerMatrix = Nio.newFloatBuffer(16);
 
         world = viewDef.worldSpace = new viewEntity_s();//memset(world, 0, sizeof(world));
 
         // the model matrix is an identity
-        world.modelMatrix[0 * 4 + 0] = 1;
-        world.modelMatrix[1 * 4 + 1] = 1;
-        world.modelMatrix[2 * 4 + 2] = 1;
+        world.modelMatrix.put(0 * 4 + 0, 1);
+        world.modelMatrix.put(1 * 4 + 1, 1);
+        world.modelMatrix.put(2 * 4 + 2, 1);
 
         // transform by the camera placement
         origin = viewDef.renderView.vieworg;
 
-        viewerMatrix[ 0] = viewDef.renderView.viewaxis.oGet(0, 0);
-        viewerMatrix[ 4] = viewDef.renderView.viewaxis.oGet(0, 1);
-        viewerMatrix[ 8] = viewDef.renderView.viewaxis.oGet(0, 2);
-        viewerMatrix[12] = -origin.oGet(0) * viewerMatrix[0] + -origin.oGet(1) * viewerMatrix[4] + -origin.oGet(2) * viewerMatrix[8];
+        viewerMatrix.put( 0, viewDef.renderView.viewaxis.oGet(0, 0));
+        viewerMatrix.put( 4, viewDef.renderView.viewaxis.oGet(0, 1));
+        viewerMatrix.put( 8, viewDef.renderView.viewaxis.oGet(0, 2));
+        viewerMatrix.put(12, -origin.oGet(0) * viewerMatrix.get(0) + -origin.oGet(1) * viewerMatrix.get(4) + -origin.oGet(2) * viewerMatrix.get(8));
 
-        viewerMatrix[ 1] = viewDef.renderView.viewaxis.oGet(1, 0);
-        viewerMatrix[ 5] = viewDef.renderView.viewaxis.oGet(1, 1);
-        viewerMatrix[ 9] = viewDef.renderView.viewaxis.oGet(1, 2);
-        viewerMatrix[13] = -origin.oGet(0) * viewerMatrix[1] + -origin.oGet(1) * viewerMatrix[5] + -origin.oGet(2) * viewerMatrix[9];
+        viewerMatrix.put( 1, viewDef.renderView.viewaxis.oGet(1, 0));
+        viewerMatrix.put( 5, viewDef.renderView.viewaxis.oGet(1, 1));
+        viewerMatrix.put( 9, viewDef.renderView.viewaxis.oGet(1, 2));
+        viewerMatrix.put(13, -origin.oGet(0) * viewerMatrix.get(1) + -origin.oGet(1) * viewerMatrix.get(5) + -origin.oGet(2) * viewerMatrix.get(9));
 
-        viewerMatrix[ 2] = viewDef.renderView.viewaxis.oGet(2, 0);
-        viewerMatrix[ 6] = viewDef.renderView.viewaxis.oGet(2, 1);
-        viewerMatrix[10] = viewDef.renderView.viewaxis.oGet(2, 2);
-        viewerMatrix[14] = -origin.oGet(0) * viewerMatrix[2] + -origin.oGet(1) * viewerMatrix[6] + -origin.oGet(2) * viewerMatrix[10];
+        viewerMatrix.put( 2, viewDef.renderView.viewaxis.oGet(2, 0));
+        viewerMatrix.put( 6, viewDef.renderView.viewaxis.oGet(2, 1));
+        viewerMatrix.put(10, viewDef.renderView.viewaxis.oGet(2, 2));
+        viewerMatrix.put(14, -origin.oGet(0) * viewerMatrix.get(2) + -origin.oGet(1) * viewerMatrix.get(6) + -origin.oGet(2) * viewerMatrix.get(10));
 
-        viewerMatrix[ 3] = 0;
-        viewerMatrix[ 7] = 0;
-        viewerMatrix[11] = 0;
-        viewerMatrix[15] = 1;
+        viewerMatrix.put( 3, 0);
+        viewerMatrix.put( 7, 0);
+        viewerMatrix.put(11, 0);
+        viewerMatrix.put(15, 1);
 
         // convert from our coordinate system (looking down X)
         // to OpenGL's coordinate system (looking down -Z)

@@ -161,8 +161,17 @@ public class Nio {
 		}
 	}
 
+	public static float[] copyOfRange(final FloatBuffer src, int from, int to) {
+		final int length = to - from;
+		float[] dest = new float[length];
+		for (int i = 0; i < length; i++) {
+			dest[i] = src.get(from + i);
+		}
+		return dest;
+	}
+
 //	public static void matrixcopy(final Matrix4f src, final Matrix4f dest) {
-//		dest.set(src);
+//	dest.set(src);
 //}
 
 	public static ByteBuffer newByteBuffer(int numElements) {

@@ -15,6 +15,8 @@ import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfIndexes;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfVerts;
 import static neo.Renderer.tr_trisurf.R_BoundTriSurf;
 
+import java.nio.FloatBuffer;
+
 import neo.Renderer.Model.dynamicModel_t;
 import neo.Renderer.Model.idRenderModel;
 import neo.Renderer.Model.modelSurface_s;
@@ -25,6 +27,7 @@ import neo.Renderer.tr_local.viewDef_s;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
+import neo.open.Nio;
 
 /**
  *
@@ -129,7 +132,7 @@ public class Model_beam {
             // we need the view direction to project the minor axis of the tube
             // as the view changes
             final idVec3 localView = new idVec3(), localTarget = new idVec3();
-            final float[] modelMatrix = new float[16];
+            final FloatBuffer modelMatrix = Nio.newFloatBuffer(16);
             R_AxisToModelMatrix(renderEntity.axis, renderEntity.origin, modelMatrix);
             R_GlobalPointToLocal(modelMatrix, viewDef.renderView.vieworg, localView);
             R_GlobalPointToLocal(modelMatrix, target, localTarget);
@@ -192,7 +195,7 @@ public class Model_beam {
             } else {
                 final idVec3 target = /* * reinterpret_cast<const idVec3 *>*/ new idVec3(renderEntity.shaderParms, SHADERPARM_BEAM_END_X);
                 final idVec3 localTarget = new idVec3();
-                final float[] modelMatrix = new float[16];
+                final FloatBuffer modelMatrix = Nio.newFloatBuffer(16);
                 R_AxisToModelMatrix(renderEntity.axis, renderEntity.origin, modelMatrix);
                 R_GlobalPointToLocal(modelMatrix, target, localTarget);
 

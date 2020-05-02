@@ -2649,6 +2649,10 @@ public class Vector {
         return (a[0] * b[0] + a[1] * b[1] + a[2] * b[2]);
     }
 
+    public static float DotProduct(final FloatBuffer a, final FloatBuffer b) {
+        return (a.get(0) * b.get(0) + a.get(1) * b.get(1) + a.get(2) * b.get(2));
+    }
+
     public static float DotProduct(idVec3 a, idVec3 b) {
         return (a.oGet(0) * b.oGet(0)
                 + a.oGet(1) * b.oGet(1)
@@ -2680,6 +2684,13 @@ public class Vector {
         c[0] = a[0] - b[0];
         c[1] = a[1] - b[1];
         c[2] = a[2] - b[2];
+        return c;
+    }
+
+    public static FloatBuffer VectorSubtract(final FloatBuffer a, final FloatBuffer b, FloatBuffer c) {
+        c.put(0, a.get(0) - b.get(0));
+        c.put(1, a.get(1) - b.get(1));
+        c.put(2, a.get(2) - b.get(2));
         return c;
     }
 

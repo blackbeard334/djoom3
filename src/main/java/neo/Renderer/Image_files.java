@@ -1,7 +1,6 @@
 package neo.Renderer;
 
 import static neo.Renderer.Image.MAX_IMAGE_NAME;
-import static neo.Renderer.Image.globalImages;
 import static neo.Renderer.Image.cubeFiles_t.CF_CAMERA;
 import static neo.Renderer.Image_process.R_HorizontalFlip;
 import static neo.Renderer.Image_process.R_ResampleTexture;
@@ -26,8 +25,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
-
-import org.lwjgl.BufferUtils;
 
 import neo.TempDump.TODO_Exception;
 import neo.Renderer.Image.cubeFiles_t;

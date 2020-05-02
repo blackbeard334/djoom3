@@ -166,6 +166,7 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 
 /**
  *
@@ -1186,7 +1187,7 @@ public class RenderWorld_local {
             modelSurface_s surf;
             localTrace_t localTrace;
             idRenderModel model;
-            final float[] modelMatrix = new float[16];
+            final FloatBuffer modelMatrix = Nio.newFloatBuffer(16);
             final idVec3 localStart = new idVec3(), localEnd = new idVec3();
             idMaterial shader;
 
@@ -1287,7 +1288,7 @@ public class RenderWorld_local {
             final int[] areas = new int[128];
             int numAreas, i, j, numSurfaces;
             final idBounds traceBounds = new idBounds(), bounds = new idBounds();
-            final float[] modelMatrix = new float[16];
+            final FloatBuffer modelMatrix = Nio.newFloatBuffer(16);
             final idVec3 localStart = new idVec3(), localEnd = new idVec3();
             idMaterial shader;
 
@@ -4458,8 +4459,8 @@ public class RenderWorld_local {
 
                     // do a check of the entity reference bounds against the light frustum,
                     // trying to avoid creating a viewEntity if it hasn't been already
-                    final float[] modelMatrix = new float[16];
-                    float[] m;
+                    final FloatBuffer modelMatrix = Nio.newFloatBuffer(16);
+                    final FloatBuffer m;
 
                     if (eDef.viewCount == tr.viewCount) {
                         m = eDef.viewEntity.modelMatrix;

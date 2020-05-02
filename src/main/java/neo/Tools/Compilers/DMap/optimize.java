@@ -1,5 +1,11 @@
 package neo.Tools.Compilers.DMap;
 
+import static neo.Renderer.qgl.GL_BLEND;
+import static neo.Renderer.qgl.GL_LINES;
+import static neo.Renderer.qgl.GL_LINE_LOOP;
+import static neo.Renderer.qgl.GL_ONE;
+import static neo.Renderer.qgl.GL_POINTS;
+import static neo.Renderer.qgl.GL_TRIANGLES;
 import static neo.Renderer.qgl.qglBegin;
 import static neo.Renderer.qgl.qglBlendFunc;
 import static neo.Renderer.qgl.qglColor3f;
@@ -9,12 +15,6 @@ import static neo.Renderer.qgl.qglEnd;
 import static neo.Renderer.qgl.qglFlush;
 import static neo.Renderer.qgl.qglPointSize;
 import static neo.Renderer.qgl.qglVertex3fv;
-import static neo.Renderer.qgl.GL_BLEND;
-import static neo.Renderer.qgl.GL_LINES;
-import static neo.Renderer.qgl.GL_LINE_LOOP;
-import static neo.Renderer.qgl.GL_ONE;
-import static neo.Renderer.qgl.GL_POINTS;
-import static neo.Renderer.qgl.GL_TRIANGLES;
 import static neo.TempDump.NOT;
 import static neo.Tools.Compilers.DMap.dmap.dmapGlobals;
 import static neo.Tools.Compilers.DMap.gldraw.Draw_ClearWindow;

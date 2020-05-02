@@ -174,7 +174,7 @@ public class GuiModel {
             }
         }
 
-        public void EmitToCurrentView(float[] modelMatrix/*[16]*/, boolean depthHack) {
+        public void EmitToCurrentView(final FloatBuffer modelMatrix/*[16]*/, boolean depthHack) {
             final FloatBuffer modelViewMatrix = Nio.newFloatBuffer(16);
 
             myGlMultMatrix(modelMatrix, tr.viewDef.worldSpace.modelViewMatrix,
@@ -654,21 +654,7 @@ public class GuiModel {
         }
         static int bla555 = 0;
 
-        /**
-         * TBD delete method after float[] to FloatBuffer
-         * 
-         * @param surf
-         * @param modelMatrix
-         * @param modelViewMatrix
-         * @param depthHack
-         * 
-         * @deprecated use private void EmitSurface(guiModelSurface_t surf, FloatBuffer modelMatrix, FloatBuffer modelViewMatrix, boolean depthHack) instead
-         */
-        private void EmitSurface(guiModelSurface_t surf, float[] modelMatrix/*[16]*/, FloatBuffer modelViewMatrix/*[16]*/, boolean depthHack) {
-        	EmitSurface(surf, Nio.wrap(modelMatrix), modelViewMatrix, depthHack);
-        }
-
-        private void EmitSurface(guiModelSurface_t surf, FloatBuffer modelMatrix/*[16]*/, FloatBuffer modelViewMatrix/*[16]*/, boolean depthHack) {
+        private void EmitSurface(guiModelSurface_t surf, final FloatBuffer modelMatrix/*[16]*/, FloatBuffer modelViewMatrix/*[16]*/, boolean depthHack) {
             srfTriangles_s tri;
 
             if (surf.numVerts == 0) {
@@ -714,7 +700,7 @@ public class GuiModel {
             final viewEntity_s guiSpace = new viewEntity_s();///*(viewEntity_t *)*/ R_ClearedFrameAlloc(sizeof( * guiSpace));
 //            memcpy(guiSpace.modelMatrix, modelMatrix, sizeof(guiSpace.modelMatrix));
             //System.arraycopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.length);
-            Nio.arraycopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.length);
+            Nio.buffercopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.limit());
             // preview Nio.buffercopy(modelMatrix, 0, guiSpace.modelMatrix, 0, guiSpace.modelMatrix.limit());
 //            memcpy(guiSpace.modelViewMatrix, modelViewMatrix, sizeof(guiSpace.modelViewMatrix));
             //System.arraycopy(modelViewMatrix, 0, guiSpace.modelViewMatrix, 0, guiSpace.modelViewMatrix.length);

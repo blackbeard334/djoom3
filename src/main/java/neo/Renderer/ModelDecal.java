@@ -10,6 +10,7 @@ import static neo.framework.Common.common;
 import static neo.idlib.math.Plane.SIDE_CROSS;
 import static neo.idlib.math.Simd.SIMDProcessor;
 
+import java.nio.FloatBuffer;
 import java.util.Arrays;
 
 import neo.Renderer.Material.decalInfo_t;
@@ -28,6 +29,7 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
 import neo.idlib.math.Matrix.idMat3;
+import neo.open.Nio;
 
 /**
  *
@@ -188,7 +190,7 @@ public class ModelDecal {
 
         // Transform the projection info from global space to local.
         public static void GlobalProjectionInfoToLocal(decalProjectionInfo_s localInfo, final decalProjectionInfo_s info, final idVec3 origin, final idMat3 axis) {
-            final float[] modelMatrix = new float[16];
+            final FloatBuffer modelMatrix = Nio.newFloatBuffer(16);
 
             R_AxisToModelMatrix(axis, origin, modelMatrix);
 

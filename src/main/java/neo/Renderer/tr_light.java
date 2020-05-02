@@ -47,6 +47,7 @@ import static neo.framework.Common.common;
 import static neo.idlib.math.Simd.SIMDProcessor;
 import static neo.idlib.precompiled.MAX_EXPRESSION_REGISTERS;
 
+import java.nio.FloatBuffer;
 import java.util.stream.Stream;
 
 import neo.Renderer.Interaction.idInteraction;
@@ -259,7 +260,7 @@ public class tr_light {
      ==================
      */
     public static void R_WobbleskyTexGen(drawSurf_s surf, final idVec3 viewOrg) {
-        int i;
+    	int i, j;
         final idVec3 localViewOrigin = new idVec3();
 
         final int[] parms = surf.material.GetTexGenRegisters();
@@ -273,7 +274,7 @@ public class tr_light {
         rotateSpeed = rotateSpeed * 2 * idMath.PI / 60;
 
         // very ad-hoc "wobble" transform
-        final float[] transform = new float[16];
+        final FloatBuffer transform = Nio.newFloatBuffer(16);
         final float a = tr.viewDef.floatTime * wobbleSpeed;
         float s = (float) (Math.sin(a) * Math.sin(wobbleDegrees));
         float c = (float) (Math.cos(a) * Math.sin(wobbleDegrees));
@@ -300,20 +301,30 @@ public class tr_light {
         s = (float) Math.sin(rotateSpeed * tr.viewDef.floatTime);
         c = (float) Math.cos(rotateSpeed * tr.viewDef.floatTime);
 
-        transform[ 0] = axis[0].oGet(0) * c + axis[1].oGet(0) * s;
-        transform[ 4] = axis[0].oGet(1) * c + axis[1].oGet(1) * s;
-        transform[ 8] = axis[0].oGet(2) * c + axis[1].oGet(2) * s;
+        float axis0GetI = 0;
+        float axis1GetI = 0;
+        for (i = 0; i < 2; i++) {
+        	axis0GetI = axis[0].oGet(i);
+        	axis1GetI = axis[1].oGet(i);
+            transform.put( (j=0) * 4 + i, (axis0GetI * c) + (axis1GetI * s));
+            transform.put( ++j * 4 + i, (axis1GetI * c) - (axis0GetI * s));
+            transform.put( ++j * 4 + i, axis[2].oGet(0));
+        }
 
-        transform[ 1] = axis[1].oGet(0) * c - axis[0].oGet(0) * s;
-        transform[ 5] = axis[1].oGet(1) * c - axis[0].oGet(1) * s;
-        transform[ 9] = axis[1].oGet(2) * c - axis[0].oGet(2) * s;
+        // i = 2, j iter
+        transform.put( (j=0) * 4 + i, axis[i].oGet(0));
+        transform.put( ++j * 4 + i, axis[i].oGet(1));
+        transform.put( ++j * 4 + i, axis[i].oGet(2));
 
-        transform[ 2] = axis[2].oGet(0);
-        transform[ 6] = axis[2].oGet(1);
-        transform[10] = axis[2].oGet(2);
+    	// i = 3, j iter
+        transform.put( (j=0) * 4 + i, 0.0f);
+        transform.put( ++j * 4 + i, 0.0f);
+        transform.put( ++j * 4 + i, 0.0f);
 
-        transform[3] = transform[7] = transform[11] = 0.0f;
-        transform[12] = transform[13] = transform[14] = 0.0f;
+    	// j = 3, i iter
+        transform.put( ++j * 4 + (i=0), 0.0f);
+        transform.put( j * 4 + ++i, 0.0f);
+        transform.put( j * 4 + ++i, 0.0f);
 
         R_GlobalPointToLocal(surf.space.modelMatrix, viewOrg, localViewOrigin);
 

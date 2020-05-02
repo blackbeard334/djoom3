@@ -430,7 +430,7 @@ public class tr_local {
         public boolean lightHasMoved;			// the light has changed its position since it was
 //                                                      // first added, so the prelight model is not valid
 //
-        public float[] modelMatrix = new float[16];	// this is just a rearrangement of parms.axis and parms.origin
+        public final FloatBuffer modelMatrix = Nio.newFloatBuffer(16);	// this is just a rearrangement of parms.axis and parms.origin
 //
         public idRenderWorldLocal world;
         public int index;				// in world lightdefs
@@ -536,7 +536,7 @@ public class tr_local {
 
         public renderEntity_s parms;
 //
-        public float[] modelMatrix = new float[16];	// this is just a rearrangement of parms.axis and parms.origin
+        public final FloatBuffer modelMatrix = Nio.newFloatBuffer(16);	// this is just a rearrangement of parms.axis and parms.origin
 //
         public idRenderWorldLocal world;
         public int index;				// in world entityDefs
@@ -707,7 +707,8 @@ public class tr_local {
         public boolean             weaponDepthHack;
         public float               modelDepthHack;
         //
-        public float[]             modelMatrix     = new float[16];         // local coords to global coords
+        //public float[]             modelMatrix     = new float[16];         // local coords to eye coords
+        public final FloatBuffer   modelMatrix     = Nio.newFloatBuffer(16);         // local coords to global coords
         //public float[]             modelViewMatrix = new float[16];         // local coords to eye coords
         public final FloatBuffer  modelViewMatrix = Nio.newFloatBuffer(16);         // local coords to eye coords
 
@@ -725,7 +726,7 @@ public class tr_local {
             this.weaponDepthHack = v.weaponDepthHack;
             this.modelDepthHack = v.modelDepthHack;
             //System.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
-            Nio.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
+            Nio.buffercopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
             //System.arraycopy(v.modelViewMatrix, 0, this.modelViewMatrix, 0, 16);
             Nio.buffercopy(v.modelViewMatrix, 0, this.modelViewMatrix, 0, 16);
         }
@@ -1435,9 +1436,9 @@ public class tr_local {
             renderModelManager.Init();
 
             // set the identity space
-            this.identitySpace.modelMatrix[(0 * 4) + 0] = 1.0f;
-            this.identitySpace.modelMatrix[(1 * 4) + 1] = 1.0f;
-            this.identitySpace.modelMatrix[(2 * 4) + 2] = 1.0f;
+            this.identitySpace.modelMatrix.put((0 * 4) + 0, 1.0f);
+            this.identitySpace.modelMatrix.put((1 * 4) + 1, 1.0f);
+            this.identitySpace.modelMatrix.put((2 * 4) + 2, 1.0f);
 
             // determine which back end we will use
             // ??? this is invalid here as there is not enough information to set it up correctly

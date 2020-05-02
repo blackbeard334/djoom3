@@ -33,10 +33,6 @@ import neo.Renderer.tr_local.optimizedShadow_t;
 import neo.Tools.Compilers.DMap.dmap.mapLight_t;
 import neo.Tools.Compilers.DMap.dmap.mapTri_s;
 import neo.Tools.Compilers.DMap.dmap.optimizeGroup_s;
-import neo.Tools.Compilers.DMap.shadowopt3.shadowOptEdge_s;
-import neo.Tools.Compilers.DMap.shadowopt3.shadowTri_t;
-import neo.Tools.Compilers.DMap.shadowopt3.silPlane_t;
-import neo.Tools.Compilers.DMap.shadowopt3.silQuad_s;
 import neo.idlib.containers.List.cmp_t;
 import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Plane.idPlane;
@@ -1272,10 +1268,10 @@ public class shadowopt3 {
         // let the renderer build the shadow volume normally
         final idRenderEntityLocal space = new idRenderEntityLocal();
 
-        space.modelMatrix[0] = 1;
-        space.modelMatrix[5] = 1;
-        space.modelMatrix[10] = 1;
-        space.modelMatrix[15] = 1;
+        for (int i = 0; i < 4; i++) {
+        	//space.modelMatrix[(i * 4) + i] = 1;
+            space.modelMatrix.put((i * 4) + i, 1);
+		}
 
         final srfCullInfo_t cullInfo = new srfCullInfo_t();
 //	memset( &cullInfo, 0, sizeof( cullInfo ) );

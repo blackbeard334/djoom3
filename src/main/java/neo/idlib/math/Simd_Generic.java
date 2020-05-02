@@ -22,7 +22,6 @@ import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Vector.idVecX;
 import neo.idlib.math.Matrix.idMatX;
-import neo.open.Nio;
 
 /**
  *
