@@ -20,7 +20,7 @@
         <maven.natives.version>0.0.7</maven.natives.version>
         <maven.resources.version>2.7</maven.resources.version>
 
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
 
         <output.folder>/bla</output.folder>
 
