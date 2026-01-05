@@ -424,8 +424,12 @@ public class Interaction {
             for (int i = 0; i < numSurfaces; i++) {
                 surfaceInteraction_t inter = surfaces[i];
 
-                total += R_TriSurfMemory(inter.lightTris);
-                total += R_TriSurfMemory(inter.shadowTris);
+                if (inter.lightTris != null && inter.lightTris != LIGHT_TRIS_DEFERRED) {
+                    total += R_TriSurfMemory(inter.lightTris);
+                }
+                if (inter.shadowTris != null && inter.shadowTris != LIGHT_TRIS_DEFERRED) {
+                    total += R_TriSurfMemory(inter.shadowTris);
+                }
             }
 
             return total;
